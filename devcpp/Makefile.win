@@ -1,4 +1,4 @@
-# Project: GEST
+# Project: unGEST
 # Makefile created by Dev-C++ 5.3.0.3
 
 CPP      = g++.exe -D__DEBUG__
@@ -10,7 +10,7 @@ LINKOBJ  = ../strings.o ../cheats.o ../config.o ../cpu.o ../debug.o ../devices.o
 LIBS     = -L"C:/Program Files (x86)/Dev-Cpp/MinGW64/x86_64-w64-mingw32/lib32" -static-libgcc -L"D:/gest-test/libs" -L"C:/Program Files (x86)/Microsoft DirectX SDK (August 2009)/Lib/x86" -mwindows ../../MinGW/lib/libdxguid.a ../../MinGW/lib/libddraw.a ../../MinGW/lib/libdinput.a ../../MinGW/lib/libdinput8.a ../libs/libfmod.a ../libs/libz.a ../../MinGW/lib/libwinmm.a  -m32 -g3 -mwindows
 INCS     = -I"C:/Program Files (x86)/Dev-Cpp/MinGW64/x86_64-w64-mingw32/include" -I"C:/Program Files (x86)/Microsoft DirectX SDK (August 2009)/Include"
 CXXINCS  = -I"C:/Program Files (x86)/Dev-Cpp/MinGW64/x86_64-w64-mingw32/include" -I"C:/Program Files (x86)/Microsoft DirectX SDK (August 2009)/Include"
-BIN      = GEST.exe
+BIN      = unGEST.exe
 CXXFLAGS = $(CXXINCS)  -m32 -w -Wextra -g3 -mwindows
 CFLAGS   = $(INCS)  -m32 -w -Wextra -g3 -mwindows
 RM       = rm -f

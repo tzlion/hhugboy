@@ -61,7 +61,7 @@ gb_system* GB = NULL;
 gb_system* GB1 = NULL;
 gb_system* GB2 = NULL;
 
-const char* prg_version = "1.1.1";
+const char* prg_version = "0.2";
 
 // Windows stuff ----------------------------------------
 HWND hwnd = NULL;           
@@ -72,7 +72,7 @@ HINSTANCE hinst;
 LRESULT CALLBACK WindowProcedure (HWND, UINT, WPARAM, LPARAM);
 
 char szClassName[] = "GESTclass";
-char emu_title[] = "GEST";
+char emu_title[] = "unGEST";
 char title_text[ROM_FILENAME_SIZE + 8];
 
 int timer_id = 0;

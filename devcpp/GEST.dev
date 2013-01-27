@@ -1,6 +1,6 @@
 [Project]
 FileName=GEST.dev
-Name=GEST
+Name=unGEST
 UnitCount=50
 Type=0
 Ver=2
@@ -14,11 +14,11 @@ Compiler=
 CppCompiler=
 Linker=../../MinGW/lib/libdxguid.a_@@_../../MinGW/lib/libddraw.a_@@_../../MinGW/lib/libdinput.a_@@_../../MinGW/lib/libdinput8.a_@@_../libs/libfmod.a_@@_../libs/libz.a_@@_../../MinGW/lib/libwinmm.a_@@_
 IsCpp=1
-Icon=
+Icon=GEST.ico
 ExeOutput=
 ObjectOutput=
-OverrideOutput=0
-OverrideOutputName=GEST.exe
+OverrideOutput=1
+OverrideOutputName=unGEST.exe
 HostApplication=
 Folders=
 CommandLine=
@@ -532,20 +532,20 @@ BuildCmd=
 
 [VersionInfo]
 Major=0
-Minor=1
-Release=11
-Build=0
-LanguageID=1033
+Minor=2
+Release=0
+Build=5
+LanguageID=2057
 CharsetID=1252
 CompanyName=
-FileVersion=0.1.11.0
-FileDescription=GEST GB emulator.
+FileVersion=0.2.0.5
+FileDescription=unGEST GB emulator
 InternalName=
 LegalCopyright=
 LegalTrademarks=
 OriginalFilename=gest.exe
-ProductName=GEST
-ProductVersion=1.1.1
-AutoIncBuildNr=0
-SyncProduct=0
+ProductName=unGEST
+ProductVersion=0.2.0.5
+AutoIncBuildNr=1
+SyncProduct=1
 

@@ -32,13 +32,13 @@ char* str_table[40] =
  "Writing save file failed!",
  "Error loading rom!",
  "GG cheat format: xxx-xxx-xxx or xxx-xxx",
- "\tGEST\nGameboy Emulation SysTem \nVersion %s\nMade by TM.",
+ "unGEST v%s\nbased on GEST 1.1.1 by TM\nmodified by taizou",
  "Current slot:",
  "Not a GB rom!",
  "Save to slot", // shouldn't be very long
  "failed!",
  "OK!",
- "Load from slot", // shouldn't be very long
+ "Load from slot", // shouldn't be very long // that's what he said
  "Unknown ROM size! (Really a Game Boy ROM?)",
  "Cannot open file!",
  "Finding file from zip failed!",
