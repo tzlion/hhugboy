@@ -1,0 +1,426 @@
+/*
+GEST - Gameboy emulator
+Copyright (C) 2003-2004 TM
+
+This program is free software; you can redistribute it and/or
+modify it under the terms of the GNU General Public License
+as published by the Free Software Foundation; either version 2
+of the License, or (at your option) any later version.
+
+This program is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+GNU General Public License for more details.
+
+You should have received a copy of the GNU General Public License
+along with this program; if not, write to the Free Software
+Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
+*/
+// GEST resource file
+// default English language
+
+#include <windows.h>
+#include "main.h"
+
+ID_ICON ICON MOVEABLE DISCARDABLE "GEST.ico"
+
+ID_F_DIALOG DIALOGEX 0, 0, 200, 100
+STYLE DS_MODALFRAME | WS_POPUP | WS_CAPTION | WS_SYSMENU
+CAPTION "GEST - Directories:"
+LANGUAGE LANG_ENGLISH, SUBLANG_ENGLISH_US
+FONT 8, "MS Sans Serif"
+{
+    PUSHBUTTON      "OK",IDOK,30,70,52,15
+    PUSHBUTTON      "Cancel",IDCANCEL,100,70,52,15
+    CTEXT           "SRAM dir:", -1,  10,  10, 40,  8
+    CTEXT           "Save state dir:", -1,  10,  40, 55,  8
+    EDITTEXT        ID_F_SAVE,10,20,180,15,ES_MULTILINE | ES_AUTOHSCROLL
+    EDITTEXT        ID_F_STATE,10,50,180,15,ES_MULTILINE | ES_AUTOHSCROLL
+}
+
+ID_CHT_DIALOG DIALOGEX 0, 0, 250, 150
+STYLE DS_MODALFRAME | WS_POPUP | WS_CAPTION | WS_SYSMENU
+CAPTION "Game Genie Cheats:"
+LANGUAGE LANG_ENGLISH, SUBLANG_ENGLISH_US
+FONT 8, "MS Sans Serif"
+{
+    PUSHBUTTON      "OK",IDOK,50,120,52,15
+    PUSHBUTTON      "Cancel",IDCANCEL,120,120,52,15
+    PUSHBUTTON      "Add",ID_CHT_ADDBTN,160,40,52,15
+    PUSHBUTTON      "Remove",ID_CHT_RMVBTN,30,95,52,15    
+    CTEXT           "Cheats:", -1,  10,  10, 40,  8
+    CTEXT           "Add cheat:", -1,  130,  10, 55,  8
+    LISTBOX         ID_CHT_CHEATS, /*LBS_NOTIFY | LBS_NOINTEGRALHEIGHT | WS_CHILD | WS_VISIBLE | WS_BORDER | WS_VSCROLL | WS_TABSTOP,*/ 10, 20, 90, 70
+    EDITTEXT        ID_CHT_ADD,130,20,90,15,ES_MULTILINE | ES_AUTOHSCROLL
+}
+
+ID_CTRL_DIALOG DIALOGEX 0, 0, 120, 265
+STYLE DS_MODALFRAME | WS_POPUP | WS_CAPTION | WS_SYSMENU
+CAPTION "GEST - Controls:"
+LANGUAGE LANG_ENGLISH, SUBLANG_ENGLISH_US
+FONT 8, "MS Sans Serif"
+{
+    CTEXT           "Up:", -1,  10,  10, 30,  8
+    EDITTEXT        ID_CTRL_UP,60,10,50,10,ES_AUTOHSCROLL
+
+    CTEXT           "Down:", -1,  10,  25, 30,  8
+    EDITTEXT        ID_CTRL_DOWN,60,25,50,10,ES_AUTOHSCROLL
+
+    CTEXT           "Left:", -1,  10,  40, 30,  8
+    EDITTEXT        ID_CTRL_LEFT,60,40,50,10,ES_AUTOHSCROLL
+
+    CTEXT           "Right:", -1,  10,  55, 30,  8
+    EDITTEXT        ID_CTRL_RIGHT,60,55,50,10,ES_AUTOHSCROLL
+
+    CTEXT           "A:", -1,  10,  70, 30,  8
+    EDITTEXT        ID_CTRL_A,60,70,50,10,ES_AUTOHSCROLL
+
+    CTEXT           "B:", -1,  10,  85, 30,  8
+    EDITTEXT        ID_CTRL_B,60,85,50,10,ES_AUTOHSCROLL
+
+    CTEXT           "Start:", -1,  10,  100, 30,  8
+    EDITTEXT        ID_CTRL_START,60,100,50,10,ES_AUTOHSCROLL
+
+    CTEXT           "Select:", -1,  10,  115, 30,  8
+    EDITTEXT        ID_CTRL_SELECT,60,115,50,10,ES_AUTOHSCROLL
+
+    CTEXT           "Autofire A:", -1,  5,  130, 35,  8
+    EDITTEXT        ID_CTRL_AUTO_A,60,130,50,10,ES_AUTOHSCROLL
+
+    CTEXT           "Autofire B:", -1,  5,  145, 35,  8
+    EDITTEXT        ID_CTRL_AUTO_B,60,145,50,10,ES_AUTOHSCROLL
+
+    CTEXT           "Autofire Start:", -1,  5,  160, 45,  8
+    EDITTEXT        ID_CTRL_AUTO_START,60,160,50,10,ES_AUTOHSCROLL
+
+    CTEXT           "Autofire Select:", -1,  5,  175, 50,  8
+    EDITTEXT        ID_CTRL_AUTO_SELECT,60,175,50,10,ES_AUTOHSCROLL
+
+    CTEXT           "L:", -1, 10,  190, 30,  8
+    EDITTEXT        ID_CTRL_L,60,190,50,10,ES_AUTOHSCROLL
+
+    CTEXT           "R:", -1, 10,  205, 30,  8
+    EDITTEXT        ID_CTRL_R, 60,205,50,10,ES_AUTOHSCROLL
+
+    CTEXT           "Speedup:", -1,  10,  220, 30,  8
+    EDITTEXT        ID_CTRL_SPEEDUP,60,220,50,10,ES_AUTOHSCROLL
+
+    PUSHBUTTON      "OK",IDOK,35,240,52,15
+}
+
+ID_CTRLMULTI_DIALOG DIALOGEX 0, 0, 120, 210
+STYLE DS_MODALFRAME | WS_POPUP | WS_CAPTION | WS_SYSMENU
+CAPTION "GEST - Controls:"
+LANGUAGE LANG_ENGLISH, SUBLANG_ENGLISH_US
+FONT 8, "MS Sans Serif"
+{
+    CTEXT           "Up:", -1,  10,  10, 30,  8
+    EDITTEXT        ID_CTRL_UP,60,10,50,10,ES_AUTOHSCROLL
+
+    CTEXT           "Down:", -1,  10,  25, 30,  8
+    EDITTEXT        ID_CTRL_DOWN,60,25,50,10,ES_AUTOHSCROLL
+
+    CTEXT           "Left:", -1,  10,  40, 30,  8
+    EDITTEXT        ID_CTRL_LEFT,60,40,50,10,ES_AUTOHSCROLL
+
+    CTEXT           "Right:", -1,  10,  55, 30,  8
+    EDITTEXT        ID_CTRL_RIGHT,60,55,50,10,ES_AUTOHSCROLL
+
+    CTEXT           "A:", -1,  10,  70, 30,  8
+    EDITTEXT        ID_CTRL_A,60,70,50,10,ES_AUTOHSCROLL
+
+    CTEXT           "B:", -1,  10,  85, 30,  8
+    EDITTEXT        ID_CTRL_B,60,85,50,10,ES_AUTOHSCROLL
+
+    CTEXT           "Start:", -1,  10,  100, 30,  8
+    EDITTEXT        ID_CTRL_START,60,100,50,10,ES_AUTOHSCROLL
+
+    CTEXT           "Select:", -1,  10,  115, 30,  8
+    EDITTEXT        ID_CTRL_SELECT,60,115,50,10,ES_AUTOHSCROLL
+
+    CTEXT           "Autofire A:", -1,  5,  130, 35,  8
+    EDITTEXT        ID_CTRL_AUTO_A,60,130,50,10,ES_AUTOHSCROLL
+
+    CTEXT           "Autofire B:", -1,  5,  145, 35,  8
+    EDITTEXT        ID_CTRL_AUTO_B,60,145,50,10,ES_AUTOHSCROLL
+
+    CTEXT           "Autofire Start:", -1,  5,  160, 45,  8
+    EDITTEXT        ID_CTRL_AUTO_START,60,160,50,10,ES_AUTOHSCROLL
+
+    CTEXT           "Autofire Select:", -1,  5,  175, 50,  8
+    EDITTEXT        ID_CTRL_AUTO_SELECT,60,175,50,10,ES_AUTOHSCROLL
+
+    PUSHBUTTON      "OK",IDOK,10,190,40,15
+    PUSHBUTTON      "Clear",ID_CTRL_CLEAR,60,190,40,15
+}
+
+ID_CTRLJOY_DIALOG DIALOGEX 0, 0, 100, 120
+STYLE DS_MODALFRAME | WS_POPUP | WS_CAPTION | WS_SYSMENU
+CAPTION "GEST - Controls:"
+LANGUAGE LANG_ENGLISH, SUBLANG_ENGLISH_US
+FONT 8, "MS Sans Serif"
+{
+    CTEXT           "A:", -1,  0,  10, 30,  8
+    EDITTEXT        ID_CTRLJOY_A,40,10,50,10,ES_AUTOHSCROLL
+    CTEXT           "B:", -1,  0,  25, 30,  8
+    EDITTEXT        ID_CTRLJOY_B,40,25,50,10,ES_AUTOHSCROLL
+    CTEXT           "Start:", -1,  0,  40, 30,  8
+    EDITTEXT        ID_CTRLJOY_START,40,40,50,10,ES_AUTOHSCROLL
+    CTEXT           "Select:", -1,  0,  55, 30,  8
+    EDITTEXT        ID_CTRLJOY_SELECT,40,55,50,10,ES_AUTOHSCROLL
+    CTEXT           "Autofire A:", -1,  0,  70, 35,  8
+    EDITTEXT        ID_CTRLJOY_AUTO_A,40,70,50,10,ES_AUTOHSCROLL
+    CTEXT           "Autofire B:", -1,  0,  85, 35,  8
+    EDITTEXT        ID_CTRLJOY_AUTO_B,40,85,50,10,ES_AUTOHSCROLL
+    
+    PUSHBUTTON      "OK",IDOK,25,100,40,15
+}
+
+ID_SENSOR_DIALOG DIALOGEX 0, 0, 100, 100
+STYLE DS_MODALFRAME | WS_POPUP | WS_CAPTION | WS_SYSMENU
+CAPTION "GEST - Sensor:"
+LANGUAGE LANG_ENGLISH, SUBLANG_ENGLISH_US
+FONT 8, "MS Sans Serif"
+{
+    CTEXT           "Up:", -1,  0,  10, 30,  8
+    EDITTEXT        ID_SENSOR_UP,40,10,50,10,ES_AUTOHSCROLL    
+    CTEXT           "Down:", -1,  0,  25, 30,  8
+    EDITTEXT        ID_SENSOR_DOWN,40,25,50,10,ES_AUTOHSCROLL
+    CTEXT           "Left:", -1,  0,  40, 30,  8
+    EDITTEXT        ID_SENSOR_LEFT,40,40,50,10,ES_AUTOHSCROLL
+    CTEXT           "Right:", -1,  0,  55, 30,  8
+    EDITTEXT        ID_SENSOR_RIGHT,40,55,50,10,ES_AUTOHSCROLL
+
+    PUSHBUTTON      "OK",IDOK,30,80,52,15
+}
+
+ID_MENU MENU 
+BEGIN
+	POPUP "&File"
+	BEGIN
+		MENUITEM "&Load Rom...", IDM_FILEOPEN
+		MENUITEM "&Close Rom", IDM_FILECLOSE
+		MENUITEM "&Rom Info...", IDM_ROMINFO
+    	        POPUP "&GB2"
+    	        BEGIN
+                    MENUITEM "&Load Rom...", IDM_FILEOPEN2
+                    MENUITEM "L&oad Same as GB1", IDM_FILEOPENSAMEASGB1
+                    MENUITEM "&Close Rom", IDM_FILECLOSE2
+                    MENUITEM SEPARATOR
+                    MENUITEM "So&ft Reset", IDM_CPUSOFTRESET2
+                    MENUITEM "Hard &Reset", IDM_CPURESET2
+                    MENUITEM "L&oad GB1 Batt. Save and Reset", IDM_LOADGB1SAVE
+                    MENUITEM SEPARATOR
+                    POPUP "S&tate"
+                    BEGIN
+                       MENUITEM "&Load", IDM_CPU2STATELOAD
+                       MENUITEM "&Save", IDM_CPU2STATESAVE
+                       MENUITEM SEPARATOR
+                       MENUITEM "Slot 0",IDM_CPU2STATESLOT0,CHECKED
+                       MENUITEM "Slot 1",IDM_CPU2STATESLOT1
+                       MENUITEM "Slot 2",IDM_CPU2STATESLOT2
+                       MENUITEM "Slot 3",IDM_CPU2STATESLOT3
+                       MENUITEM "Slot 4",IDM_CPU2STATESLOT4
+                       MENUITEM "Slot 5",IDM_CPU2STATESLOT5
+                       MENUITEM "Slot 6",IDM_CPU2STATESLOT6
+                       MENUITEM "Slot 7",IDM_CPU2STATESLOT7
+                       MENUITEM "Slot 8",IDM_CPU2STATESLOT8
+                       MENUITEM "Slot 9",IDM_CPU2STATESLOT9
+                    END
+                    POPUP "&System Type"
+                    BEGIN
+                        MENUITEM "&Automatic", IDM_CPUAUTO2, CHECKED
+                        MENUITEM "GB &Original", IDM_CPUGB2
+                        MENUITEM "GB &Pocket", IDM_CPUGBP2
+                        MENUITEM "GB &Color", IDM_CPUGBC2
+                        MENUITEM "&GBA", IDM_CPUGBA2
+                    END
+                END
+   		MENUITEM SEPARATOR
+		MENUITEM "&Directories...", IDM_FOLDERS
+		MENUITEM SEPARATOR
+		MENUITEM "E&xit", IDM_FILEEXIT
+	END
+	POPUP "&System"
+	BEGIN
+  		MENUITEM "So&ft Reset\tCtrl+F", IDM_CPUSOFTRESET
+  		MENUITEM "Hard &Reset\tCtrl+R", IDM_CPURESET
+		MENUITEM "&Pause\tCtrl+P", IDM_CPUPAUSE
+		POPUP "S&tate"
+		BEGIN
+		   MENUITEM "&Load\tF4", IDM_CPUSTATELOAD
+		   MENUITEM "&Save\tF2", IDM_CPUSTATESAVE
+		   MENUITEM SEPARATOR
+		   MENUITEM "Slot 0",IDM_CPUSTATESLOT0,CHECKED
+		   MENUITEM "Slot 1",IDM_CPUSTATESLOT1
+		   MENUITEM "Slot 2",IDM_CPUSTATESLOT2     		   
+		   MENUITEM "Slot 3",IDM_CPUSTATESLOT3
+		   MENUITEM "Slot 4",IDM_CPUSTATESLOT4
+		   MENUITEM "Slot 5",IDM_CPUSTATESLOT5
+		   MENUITEM "Slot 6",IDM_CPUSTATESLOT6
+		   MENUITEM "Slot 7",IDM_CPUSTATESLOT7
+		   MENUITEM "Slot 8",IDM_CPUSTATESLOT8
+		   MENUITEM "Slot 9",IDM_CPUSTATESLOT9                              		   
+		END
+                POPUP "&System Type"
+		BEGIN
+                    MENUITEM "&Automatic", IDM_CPUAUTO, CHECKED
+                    MENUITEM "GB &Original", IDM_CPUGB
+                    MENUITEM "GB &Pocket", IDM_CPUGBP
+                    MENUITEM "GB &Color", IDM_CPUGBC
+                    MENUITEM "&GBA", IDM_CPUGBA
+                    MENUITEM "&Super GB", IDM_CPUSGB
+                    MENUITEM "S&uper GB 2", IDM_CPUSGB2
+                    MENUITEM SEPARATOR
+                    MENUITEM "G&BC with SGB Border", IDM_CPUGBCSGB
+                    MENUITEM "GBC &with Initial SGB Border", IDM_CPUGBCSGBI
+                END
+                /*POPUP "&Unlicensed Compatibility Mode"
+                BEGIN
+                    MENUITEM "&Auto", IDM_UNLAUTO, CHECKED
+                    MENUITEM "&Niutoude", IDM_UNLNIUTOUDE
+                    MENUITEM "&Disabled", IDM_UNLNONE
+                END*/
+                POPUP "E&xternal Device"
+                BEGIN
+                    MENUITEM "&None", IDM_DEVICENONE, CHECKED
+                    MENUITEM "&Barcode Boy", IDM_DEVICEBARCODE
+                END
+                MENUITEM SEPARATOR
+                POPUP "&On Speedup"
+                BEGIN
+                    MENUITEM "&Skip 9 Frames", IDM_CPUSPFS9
+                    MENUITEM "S&ound Off", IDM_CPUSPSNDOFF
+                END
+                MENUITEM "&Halt on Unknown Opcode", IDM_CPUOPCODE, CHECKED
+                MENUITEM "Reduce CPU &Usage", IDM_OPTIONCPUUSAGE, CHECKED
+                MENUITEM SEPARATOR
+                MENUITEM "&Game Genie...", IDM_CHEATS
+        END
+	   POPUP "&Video"
+      BEGIN
+         MENUITEM "&1x", IDM_OPTIONVIDEOSIZE1
+         MENUITEM "&2x", IDM_OPTIONVIDEOSIZE2
+         MENUITEM "&3x", IDM_OPTIONVIDEOSIZE3
+         MENUITEM "&4x", IDM_OPTIONVIDEOSIZE4
+	     MENUITEM SEPARATOR     	   
+         POPUP "GB &Color"
+         BEGIN
+            MENUITEM "&Black&&White", IDM_OPTIONVIDEOBW
+            MENUITEM "&Gray", IDM_OPTIONVIDEOGRAY            
+            MENUITEM "LCD alike &Brown", IDM_OPTIONVIDEOLCDBROWN
+            MENUITEM "LCD alike &Green", IDM_OPTIONVIDEOLCDGREEN
+         END
+         POPUP "GB &Filter"
+         BEGIN
+            MENUITEM "&None", IDM_VIDEOFILTERNONE
+            MENUITEM "&Software 2x", IDM_VIDEOFILTERSOFT2X
+            MENUITEM "&Scale 2x", IDM_VIDEOFILTERSCALE2X
+            MENUITEM "&Scale 3x", IDM_VIDEOFILTERSCALE3X
+            //MENUITEM "&Blur", IDM_VIDEOFILTERBLUR
+            MENUITEM SEPARATOR
+            MENUITEM "&Use MMX", IDM_VIDEOFILTERUSEMMX            
+         END         
+         POPUP "Border F&ilter"
+         BEGIN
+            MENUITEM "&None", IDM_VIDEOFILTERBORDERNONE
+            MENUITEM "&Software 2x", IDM_VIDEOFILTERBORDERSOFT2X
+            MENUITEM "&Scale 2x", IDM_VIDEOFILTERBORDERSCALE2X
+            MENUITEM "&Scale 3x", IDM_VIDEOFILTERBORDERSCALE3X            
+            //MENUITEM "&Blur", IDM_VIDEOFILTERBORDERBLUR
+         END                  
+         POPUP "&Frame skip"
+         BEGIN
+            MENUITEM "&Auto Frameskip", IDM_OPTIONVIDEOFSAUTO
+            MENUITEM SEPARATOR         
+            MENUITEM "&0", IDM_OPTIONVIDEOFS0, CHECKED
+            MENUITEM "&1", IDM_OPTIONVIDEOFS1
+            MENUITEM "&2", IDM_OPTIONVIDEOFS2
+            MENUITEM "&3", IDM_OPTIONVIDEOFS3
+            MENUITEM "&4", IDM_OPTIONVIDEOFS4
+            MENUITEM "&5", IDM_OPTIONVIDEOFS5
+            MENUITEM "&6", IDM_OPTIONVIDEOFS6
+            MENUITEM "&7", IDM_OPTIONVIDEOFS7
+            MENUITEM "&8", IDM_OPTIONVIDEOFS8
+            MENUITEM "&9", IDM_OPTIONVIDEOFS9                                                                                                            
+         END
+         POPUP "&Mix Frames"
+         BEGIN
+            MENUITEM "&Off", IDM_OPTIONVIDEOMIXOFF
+            MENUITEM "O&n", IDM_OPTIONVIDEOMIXON, CHECKED
+            MENUITEM "On, &Mix More Frames in GB Mode", IDM_OPTIONVIDEOMIXMORE
+         END
+         MENUITEM SEPARATOR
+         POPUP "&Enable"
+         BEGIN
+            MENUITEM "&BG\tF5", IDM_OPTIONVIDEOENBG, CHECKED
+            MENUITEM "&WIN\tF6", IDM_OPTIONVIDEOENWIN, CHECKED
+            MENUITEM "&Sprites\tF7", IDM_OPTIONVIDEOENSPRITE, CHECKED
+         END
+         MENUITEM "&Realistic GBC/GBA Colors", IDM_OPTIONVIDEOGBCCOLORS
+         MENUITEM "&Sprite Limit", IDM_OPTIONVIDEOSPRLIM, CHECKED
+         MENUITEM SEPARATOR
+         MENUITEM "Empty Screen when &LCD Off", IDM_OPTIONVIDEOLCDOFF, CHECKED
+         MENUITEM "&Visual Rumble", IDM_OPTIONVIDEOVISUALRUMBLE, CHECKED
+      END
+
+      POPUP "&Sound"
+      BEGIN
+           MENUITEM "&Sound On", IDM_OPTIONSOUND, CHECKED
+           POPUP "&Enable"
+           BEGIN
+              MENUITEM "Channel &1", IDM_OPTIONSOUNDENCH1, CHECKED
+              MENUITEM "Channel &2", IDM_OPTIONSOUNDENCH2, CHECKED              
+              MENUITEM "Channel &3", IDM_OPTIONSOUNDENCH3, CHECKED
+              MENUITEM "Channel &4", IDM_OPTIONSOUNDENCH4, CHECKED                            
+           END
+           MENUITEM SEPARATOR
+           POPUP "&Low Pass Filter"
+           BEGIN
+              MENUITEM "&None", IDM_OPTIONSOUNDLOWPASSNONE, CHECKED                    
+              MENUITEM "Level &1", IDM_OPTIONSOUNDLOWPASS1         
+              MENUITEM "Level &2", IDM_OPTIONSOUNDLOWPASS2       
+           END    
+           POPUP "&Volume" 
+           BEGIN
+              MENUITEM "&100%", IDM_OPTIONSOUNDVOL1                
+              MENUITEM "&200%", IDM_OPTIONSOUNDVOL2
+              MENUITEM "&300%", IDM_OPTIONSOUNDVOL3
+              MENUITEM "&400%", IDM_OPTIONSOUNDVOL4
+           END                  
+           MENUITEM "&Reverse Stereo", IDM_OPTIONSOUNDRSTEREO                     
+        END
+
+        POPUP "&Controls"
+        BEGIN
+           MENUITEM "&1...", IDM_OPTIONCONTROL1
+           MENUITEM "&2...", IDM_OPTIONCONTROL2
+           MENUITEM "&3...", IDM_OPTIONCONTROL3
+           MENUITEM "&4...", IDM_OPTIONCONTROL4
+           POPUP "&Use Joystick for" 
+           BEGIN
+             MENUITEM "&1", IDM_OPTIONCONTROLJOY1
+             MENUITEM "&2", IDM_OPTIONCONTROLJOY2
+             MENUITEM "&3", IDM_OPTIONCONTROLJOY3
+             MENUITEM "&4", IDM_OPTIONCONTROLJOY4           
+           END               
+           MENUITEM "&Joystick Buttons...", IDM_OPTIONCONTROLJOYCH
+           MENUITEM "&Sensor...", IDM_OPTIONSENSOR
+           MENUITEM SEPARATOR
+           MENUITEM "&Allow Opposite Directions", IDM_OPTIONOPPOSITEDIRECTIONS
+           POPUP "Autofire &Speed"
+           BEGIN
+                MENUITEM "&Fastest", IDM_OPTIONCONTROL_AUTOFIRE_SPEED_FASTEST, CHECKED
+                MENUITEM "F&ast", IDM_OPTIONCONTROL_AUTOFIRE_SPEED_FAST
+                MENUITEM "&Medium", IDM_OPTIONCONTROL_AUTOFIRE_SPEED_MEDIUM
+                MENUITEM "&Slow", IDM_OPTIONCONTROL_AUTOFIRE_SPEED_SLOW
+           END
+        END
+
+	POPUP "&Help"
+	BEGIN
+		MENUITEM "&About...", IDM_HELPABOUT
+	END
+END
+
+

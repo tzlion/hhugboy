@@ -1,0 +1,235 @@
+/*
+GEST - Gameboy emulator
+Copyright (C) 2003-2010 TM
+
+This program is free software; you can redistribute it and/or
+modify it under the terms of the GNU General Public License
+as published by the Free Software Foundation; either version 2
+of the License, or (at your option) any later version.
+
+This program is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+GNU General Public License for more details.
+
+You should have received a copy of the GNU General Public License
+along with this program; if not, write to the Free Software
+Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
+*/
+
+#define ID_MENU 501
+#define ID_ICON 601
+
+#define ID_F_DIALOG 701
+#define ID_F_SAVE 702
+#define ID_F_STATE 703
+
+#define ID_CHT_DIALOG 711
+#define ID_CHT_CHEATS 712
+#define ID_CHT_ADD    713
+#define ID_CHT_ADDBTN 714
+#define ID_CHT_RMVBTN 715
+
+#define ID_CTRL_DIALOG 720
+#define ID_CTRL_A      721
+#define ID_CTRL_B      722
+#define ID_CTRL_START  723
+#define ID_CTRL_SELECT 724
+#define ID_CTRL_AUTO_A 725
+#define ID_CTRL_AUTO_B 726
+#define ID_CTRL_AUTO_START 727
+#define ID_CTRL_AUTO_SELECT 728
+#define ID_CTRL_UP     729
+#define ID_CTRL_DOWN   730
+#define ID_CTRL_LEFT   731
+#define ID_CTRL_RIGHT  732
+#define ID_CTRL_L      733
+#define ID_CTRL_R      734
+#define ID_CTRL_SPEEDUP 735
+
+#define ID_SENSOR_LEFT   736
+#define ID_SENSOR_RIGHT  737
+#define ID_SENSOR_UP     738
+#define ID_SENSOR_DOWN   739
+
+#define ID_CTRL_CLEAR  742
+
+#define ID_CTRLMULTI_DIALOG 750
+
+#define ID_SENSOR_DIALOG 745
+
+#define ID_CTRLJOY_DIALOG 790
+#define ID_CTRLJOY_A      791
+#define ID_CTRLJOY_B      792
+#define ID_CTRLJOY_START  793
+#define ID_CTRLJOY_SELECT 794
+#define ID_CTRLJOY_AUTO_A 795
+#define ID_CTRLJOY_AUTO_B 796
+
+#define IDM_FILEOPEN        200
+#define IDM_FILEOPEN2       1600
+#define IDM_FILECLOSE2      1611
+#define IDM_CPURESET2       1601
+#define IDM_CPUGBA2         1602
+#define IDM_CPUGBC2         1603
+#define IDM_CPUGB2          1604
+#define IDM_CPUGBP2         1605
+#define IDM_CPUAUTO2        1606
+#define IDM_FILEOPENSAMEASGB1 1607
+#define IDM_LOADGB1SAVE     1608
+#define IDM_CPU2STATELOAD   1609
+#define IDM_CPU2STATESAVE    1620
+#define IDM_CPU2STATESLOT0   1621
+#define IDM_CPU2STATESLOT1   1622
+#define IDM_CPU2STATESLOT2   1623
+#define IDM_CPU2STATESLOT3   1624
+#define IDM_CPU2STATESLOT4   1625
+#define IDM_CPU2STATESLOT5   1626
+#define IDM_CPU2STATESLOT6   1627
+#define IDM_CPU2STATESLOT7   1628
+#define IDM_CPU2STATESLOT8   1629
+#define IDM_CPU2STATESLOT9   1630
+
+#define IDM_ROMINFO         201
+#define IDM_FILECLOSE       202
+#define IDM_FILEEXIT        203
+#define IDM_FOLDERS         204
+#define IDM_CHEATS          205
+
+#define IDM_CPURESET        210
+#define IDM_CPUSOFTRESET    610
+#define IDM_CPUSOFTRESET2   612
+#define IDM_CPUPAUSE        211
+#define IDM_CPUGBA          212
+#define IDM_CPUGBC          213
+#define IDM_CPUSGB          215
+#define IDM_CPUSGB2         216
+#define IDM_CPUGBCSGB       217
+#define IDM_CPUGBCSGBI      218
+#define IDM_CPUGB           219
+#define IDM_CPUGBP          220
+#define IDM_CPUAUTO         221
+#define IDM_CPUSTATELOAD    222
+#define IDM_CPUSTATESAVE    223
+#define IDM_CPUSTATESLOT0   224
+#define IDM_CPUSTATESLOT1   225
+#define IDM_CPUSTATESLOT2   226
+#define IDM_CPUSTATESLOT3   227
+#define IDM_CPUSTATESLOT4   228
+#define IDM_CPUSTATESLOT5   229
+#define IDM_CPUSTATESLOT6   230
+#define IDM_CPUSTATESLOT7   231
+#define IDM_CPUSTATESLOT8   232
+#define IDM_CPUSTATESLOT9   233
+
+#define IDM_CPUSPFS9        234
+#define IDM_CPUSPSNDOFF     235
+
+#define IDM_CPUOPCODE       236
+
+#define IDM_OPTIONVIDEOSIZE1 240
+#define IDM_OPTIONVIDEOSIZE2 241
+#define IDM_OPTIONVIDEOSIZE3 242
+#define IDM_OPTIONVIDEOSIZE4 243
+#define IDM_OPTIONVIDEOBW    244
+#define IDM_OPTIONVIDEOLCDBROWN 245
+#define IDM_OPTIONVIDEOLCDGREEN 846
+#define IDM_OPTIONVIDEOGRAY   847
+
+#define IDM_VIDEOFILTERNONE     946
+#define IDM_VIDEOFILTERSOFT2X   947
+#define IDM_VIDEOFILTERSCALE2X  948
+#define IDM_VIDEOFILTERSCALE3X  1999
+#define IDM_VIDEOFILTERBLUR     949
+#define IDM_VIDEOFILTER5        950
+#define IDM_VIDEOFILTERUSEMMX   959
+
+#define IDM_VIDEOFILTERBORDERNONE     970
+#define IDM_VIDEOFILTERBORDERSOFT2X   971
+#define IDM_VIDEOFILTERBORDERSCALE2X  972
+#define IDM_VIDEOFILTERBORDERSCALE3X  1972
+#define IDM_VIDEOFILTERBORDERBLUR     973
+#define IDM_VIDEOFILTERBORDER5        974
+#define IDM_OPTIONVIDEOGBCCOLORS      982
+
+#define IDM_OPTIONVIDEOFSAUTO 444
+#define IDM_OPTIONVIDEOFS0   248
+#define IDM_OPTIONVIDEOFS1   249
+#define IDM_OPTIONVIDEOFS2   250
+#define IDM_OPTIONVIDEOFS3   251
+#define IDM_OPTIONVIDEOFS4   252
+#define IDM_OPTIONVIDEOFS5   253
+#define IDM_OPTIONVIDEOFS6   254
+#define IDM_OPTIONVIDEOFS7   256
+#define IDM_OPTIONVIDEOFS8   257
+#define IDM_OPTIONVIDEOFS9   258
+#define IDM_OPTIONVIDEOENBG  259
+#define IDM_OPTIONVIDEOENWIN 260
+#define IDM_OPTIONVIDEOENSPRITE 261
+#define IDM_OPTIONVIDEOMIXOFF   2620
+#define IDM_OPTIONVIDEOMIXON   2621
+#define IDM_OPTIONVIDEOMIXMORE   2622
+
+#define IDM_OPTIONVIDEOSPRLIM 263
+#define IDM_OPTIONVIDEOLCDOFF 264
+
+#define IDM_OPTIONVIDEOVISUALRUMBLE 267
+
+#define IDM_OPTIONCPUUSAGE 265
+
+#define IDM_OPTIONOPPOSITEDIRECTIONS 266
+
+#define IDM_OPTIONSOUND     270
+
+#define IDM_OPTIONSOUNDENCH1 271
+#define IDM_OPTIONSOUNDENCH2 272
+#define IDM_OPTIONSOUNDENCH3 273
+#define IDM_OPTIONSOUNDENCH4 274
+#define IDM_OPTIONSOUNDLOWPASS1 275
+#define IDM_OPTIONSOUNDLOWPASS2 276
+#define IDM_OPTIONSOUNDLOWPASSNONE 277
+#define IDM_OPTIONSOUNDRSTEREO 278
+
+#define IDM_OPTIONSOUNDVOL1 279
+#define IDM_OPTIONSOUNDVOL2 280
+#define IDM_OPTIONSOUNDVOL3 281
+#define IDM_OPTIONSOUNDVOL4 282
+
+#define IDM_OPTIONCONTROL   290
+#define IDM_OPTIONCONTROL1  291
+#define IDM_OPTIONCONTROL2  292
+#define IDM_OPTIONCONTROL3  293
+#define IDM_OPTIONCONTROL4  294
+
+#define IDM_OPTIONSENSOR    295
+
+#define IDM_OPTIONCONTROL_AUTOFIRE_SPEED_SLOW 296
+#define IDM_OPTIONCONTROL_AUTOFIRE_SPEED_FASTEST 297
+#define IDM_OPTIONCONTROL_AUTOFIRE_SPEED_FAST 298
+#define IDM_OPTIONCONTROL_AUTOFIRE_SPEED_MEDIUM 299
+
+#define IDM_OPTIONCONTROLJOY1  396
+#define IDM_OPTIONCONTROLJOY2  397
+#define IDM_OPTIONCONTROLJOY3  398
+#define IDM_OPTIONCONTROLJOY4  399
+#define IDM_OPTIONCONTROLJOYCH 2222
+#define IDM_HELPABOUT       400
+
+#define IDM_DEVICENONE       1500
+#define IDM_DEVICEBARCODE    1501
+
+//#define IDM_UNLAUTO			10640
+//#define IDM_UNLNIUTOUDE		10642
+//#define IDM_UNLNONE 		10641
+
+extern bool paused;
+extern bool menupause; 
+extern int sizen_w;
+extern int sizen_h;
+extern HMENU menu;
+extern int timer_id;
+extern HWND hwndCtrl;    
+
+extern int current_controller;
+
+

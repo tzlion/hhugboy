@@ -1,0 +1,6 @@
+*.o
+*.sav
+devcpp/*.exe
+devcpp/*.cfg
+*.layout
+devcpp/*.res

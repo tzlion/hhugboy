@@ -1,0 +1,99 @@
+# Project: GEST
+# Makefile created by Dev-C++ 5.3.0.3
+
+CPP      = g++.exe -D__DEBUG__
+CC       = gcc.exe -D__DEBUG__
+WINDRES  = windres.exe
+RES      = GEST_private.res
+OBJ      = ../strings.o ../cheats.o ../config.o ../cpu.o ../debug.o ../devices.o ../dialogs.o ../directdraw.o ../directinput.o ../GB.o ../GB_gfx.o ../GB_ioregs.o ../GB_MBC.o ../GB_mem.o ../GB_sound.o ../main.o ../mainloop.o ../render.o ../rom.o ../scale2x.o ../scale3x.o ../SGB.o ../zlib/unzip.o $(RES)
+LINKOBJ  = ../strings.o ../cheats.o ../config.o ../cpu.o ../debug.o ../devices.o ../dialogs.o ../directdraw.o ../directinput.o ../GB.o ../GB_gfx.o ../GB_ioregs.o ../GB_MBC.o ../GB_mem.o ../GB_sound.o ../main.o ../mainloop.o ../render.o ../rom.o ../scale2x.o ../scale3x.o ../SGB.o ../zlib/unzip.o $(RES)
+LIBS     = -L"C:/Program Files (x86)/Dev-Cpp/MinGW64/x86_64-w64-mingw32/lib32" -static-libgcc -L"D:/gest-test/libs" -L"C:/Program Files (x86)/Microsoft DirectX SDK (August 2009)/Lib/x86" -mwindows ../../MinGW/lib/libdxguid.a ../../MinGW/lib/libddraw.a ../../MinGW/lib/libdinput.a ../../MinGW/lib/libdinput8.a ../libs/libfmod.a ../libs/libz.a ../../MinGW/lib/libwinmm.a  -m32 -g3 -mwindows
+INCS     = -I"C:/Program Files (x86)/Dev-Cpp/MinGW64/x86_64-w64-mingw32/include" -I"C:/Program Files (x86)/Microsoft DirectX SDK (August 2009)/Include"
+CXXINCS  = -I"C:/Program Files (x86)/Dev-Cpp/MinGW64/x86_64-w64-mingw32/include" -I"C:/Program Files (x86)/Microsoft DirectX SDK (August 2009)/Include"
+BIN      = GEST.exe
+CXXFLAGS = $(CXXINCS)  -m32 -w -Wextra -g3 -mwindows
+CFLAGS   = $(INCS)  -m32 -w -Wextra -g3 -mwindows
+RM       = rm -f
+
+.PHONY: all all-before all-after clean clean-custom
+
+all: all-before $(BIN) all-after
+
+
+clean: clean-custom
+	${RM} $(OBJ) $(BIN)
+
+$(BIN): $(OBJ)
+	$(CPP) $(LINKOBJ) -o $(BIN) $(LIBS)
+
+../strings.o: ../strings.cpp
+	$(CPP) -c ../strings.cpp -o ../strings.o $(CXXFLAGS)
+
+../cheats.o: ../cheats.cpp
+	$(CPP) -c ../cheats.cpp -o ../cheats.o $(CXXFLAGS)
+
+../config.o: ../config.cpp
+	$(CPP) -c ../config.cpp -o ../config.o $(CXXFLAGS)
+
+../cpu.o: ../cpu.cpp
+	$(CPP) -c ../cpu.cpp -o ../cpu.o $(CXXFLAGS)
+
+../debug.o: ../debug.cpp
+	$(CPP) -c ../debug.cpp -o ../debug.o $(CXXFLAGS)
+
+../devices.o: ../devices.cpp
+	$(CPP) -c ../devices.cpp -o ../devices.o $(CXXFLAGS)
+
+../dialogs.o: ../dialogs.cpp
+	$(CPP) -c ../dialogs.cpp -o ../dialogs.o $(CXXFLAGS)
+
+../directdraw.o: ../directdraw.cpp
+	$(CPP) -c ../directdraw.cpp -o ../directdraw.o $(CXXFLAGS)
+
+../directinput.o: ../directinput.cpp
+	$(CPP) -c ../directinput.cpp -o ../directinput.o $(CXXFLAGS)
+
+../GB.o: ../GB.cpp
+	$(CPP) -c ../GB.cpp -o ../GB.o $(CXXFLAGS)
+
+../GB_gfx.o: ../GB_gfx.cpp
+	$(CPP) -c ../GB_gfx.cpp -o ../GB_gfx.o $(CXXFLAGS)
+
+../GB_ioregs.o: ../GB_ioregs.cpp
+	$(CPP) -c ../GB_ioregs.cpp -o ../GB_ioregs.o $(CXXFLAGS)
+
+../GB_MBC.o: ../GB_MBC.cpp
+	$(CPP) -c ../GB_MBC.cpp -o ../GB_MBC.o $(CXXFLAGS)
+
+../GB_mem.o: ../GB_mem.cpp
+	$(CPP) -c ../GB_mem.cpp -o ../GB_mem.o $(CXXFLAGS)
+
+../GB_sound.o: ../GB_sound.cpp
+	$(CPP) -c ../GB_sound.cpp -o ../GB_sound.o $(CXXFLAGS)
+
+../main.o: ../main.cpp
+	$(CPP) -c ../main.cpp -o ../main.o $(CXXFLAGS)
+
+../mainloop.o: ../mainloop.cpp
+	$(CPP) -c ../mainloop.cpp -o ../mainloop.o $(CXXFLAGS)
+
+../render.o: ../render.cpp
+	$(CPP) -c ../render.cpp -o ../render.o $(CXXFLAGS)
+
+../rom.o: ../rom.cpp
+	$(CPP) -c ../rom.cpp -o ../rom.o $(CXXFLAGS)
+
+../scale2x.o: ../scale2x.cpp
+	$(CPP) -c ../scale2x.cpp -o ../scale2x.o $(CXXFLAGS)
+
+../scale3x.o: ../scale3x.cpp
+	$(CPP) -c ../scale3x.cpp -o ../scale3x.o $(CXXFLAGS)
+
+../SGB.o: ../SGB.cpp
+	$(CPP) -c ../SGB.cpp -o ../SGB.o $(CXXFLAGS)
+
+../zlib/unzip.o: ../zlib/unzip.c
+	$(CPP) -c ../zlib/unzip.c -o ../zlib/unzip.o $(CXXFLAGS)
+
+GEST_private.res: GEST_private.rc ../menu.rc 
+	$(WINDRES) -i GEST_private.rc -F pe-i386 --input-format=rc -o GEST_private.res -O coff 
