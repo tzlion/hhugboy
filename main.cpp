@@ -266,10 +266,17 @@ int WINAPI WinMain(HINSTANCE hThisInstance,HINSTANCE hPrevInstance, LPSTR  lpszA
   
    DragAcceptFiles(hwnd,TRUE);
    
+   wchar_t* wcmd = GetCommandLineW();
+   
+   //char clz[1000];
+   //wcstombs(clz,wcmd,1000);
+   //debug_print(lpszArgument);
+   //debug_print(clz);
+   
    if(strlen(lpszArgument)>4)
    {
    	
-      wchar_t* ptr = wcschr((const wchar_t*)lpszArgument,'"');
+      wchar_t* ptr = wcschr(wcmd,'"');
       if(ptr != NULL) // does the filename contain " " ?
       {
          ptr += 1;
@@ -278,7 +285,7 @@ int WINAPI WinMain(HINSTANCE hThisInstance,HINSTANCE hPrevInstance, LPSTR  lpszA
          wcsncpy(load_filename,ptr,wcslen(ptr)-1);
          GB1->load_rom(load_filename); 
       } else
-         GB1->load_rom((const wchar_t*)lpszArgument); 
+         GB1->load_rom(wcmd); 
       
       if(GB1->romloaded)
       {

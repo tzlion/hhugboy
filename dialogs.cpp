@@ -64,7 +64,10 @@ bool DoFileOpen(HWND hwnd,int gb_number)
    cptr = stpncpy(cptr,str_table[ALL_FILES],strlen(str_table[ALL_FILES]));
    cptr = stpncpy(cptr," (*.*)\0*.*\0\0",strlen(" (*.*)*.*")+3);
    
-   ofn.lpstrFilter =  (const wchar_t*)ctrl_str;//"GB roms (*.gb,*.gbc,*.sgb,*.zip)\0*.gb;*.gbc;*.sgb;*.zip\0All files (*.*)\0*.*\0\0";
+   wchar_t w_ctrl_str[150];
+   mbstowcs(w_ctrl_str,ctrl_str,150);
+   //ofn.lpstrFilter =  w_ctrl_str; // removed for now, just to get it working..
+   ofn.lpstrFilter =  L"GB roms (*.gb,*.gbc,*.sgb,*.zip)\0*.gb;*.gbc;*.sgb;*.zip\0All files (*.*)\0*.*\0\0";
    ofn.lpstrFile = szFileName;
    ofn.nMaxFile = MAX_PATH;
    ofn.lpstrDefExt = L"gb";
