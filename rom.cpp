@@ -768,7 +768,7 @@ bool gb_system::load_rom(const wchar_t* filename)
    wchar_t temp2[ROM_FILENAME_SIZE];
 
    // Get filename
-   wchar_t* temp = wcschr(filename,(wchar_t)'\\'); // find last '\'
+   wchar_t* temp = wcsrchr(filename,L'\\'); // find last '\'
    if(temp == NULL)
    {
       wcscpy(temp2,filename);
@@ -778,7 +778,7 @@ bool gb_system::load_rom(const wchar_t* filename)
    else
       temp += 1;
       
-   wchar_t* temp3 = wcschr(temp,(wchar_t)'.'); // find last '.'
+   wchar_t* temp3 = wcsrchr(temp,L'.'); // find last '.'
    if(temp3 == NULL) // no extension
       wcsncpy(rom_filename,temp,wcslen(temp));
    else

@@ -34,6 +34,8 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
     along with this program; if not, write to the Free Software
     Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 */
+
+#define UNICODE
  
 #include <stdio.h>
 #include <stdlib.h>
@@ -301,14 +303,19 @@ bool gb_system::write_save()
 {
    if(rom->RAMsize == 0) return true;
 
-   char old_directory[PROGRAM_PATH_SIZE];
+   wchar_t old_directory[PROGRAM_PATH_SIZE];
+
 
    GetCurrentDirectory(PROGRAM_PATH_SIZE,old_directory);
 
-   SetCurrentDirectory(options->save_directory.c_str());
+	wchar_t saveDirW[PROGRAM_PATH_SIZE];
+	mbstowcs(saveDirW,options->save_directory.c_str(),PROGRAM_PATH_SIZE);
+
+   SetCurrentDirectory(saveDirW);
    
    wchar_t save_filename[275]; 
    wcscpy(save_filename,rom_filename);
+   
 
    if(this == GB1)
    {
@@ -318,6 +325,11 @@ bool gb_system::write_save()
    {
        wcscat(save_filename,L".sv2");
    }
+   
+   
+   //char saveFileA[PROGRAM_PATH_SIZE];
+   //wcstombs(saveFileA,save_filename,PROGRAM_PATH_SIZE);
+   //debug_print(saveFileA);
 
    FILE* savefile = _wfopen(save_filename,L"wb");
    if(!savefile)
@@ -393,11 +405,14 @@ bool gb_system::load_save(bool loading_GB1_save_to_GB2)
 {
    if(rom->RAMsize == 0) return true;
 
-   char old_directory[PROGRAM_PATH_SIZE];
+   wchar_t old_directory[PROGRAM_PATH_SIZE];
 
    GetCurrentDirectory(PROGRAM_PATH_SIZE,old_directory);
+   
+   	wchar_t saveDirW[PROGRAM_PATH_SIZE];
+	mbstowcs(saveDirW,options->save_directory.c_str(),PROGRAM_PATH_SIZE);
 
-   SetCurrentDirectory(options->save_directory.c_str());
+   SetCurrentDirectory(saveDirW);
      
    wchar_t save_filename[275];
    wcscpy(save_filename,rom_filename);

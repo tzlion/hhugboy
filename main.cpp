@@ -268,6 +268,7 @@ int WINAPI WinMain(HINSTANCE hThisInstance,HINSTANCE hPrevInstance, LPSTR  lpszA
    
    if(strlen(lpszArgument)>4)
    {
+   	
       wchar_t* ptr = wcschr((const wchar_t*)lpszArgument,'"');
       if(ptr != NULL) // does the filename contain " " ?
       {

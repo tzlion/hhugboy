@@ -5,19 +5,19 @@
 #define GEST_PRIVATE_H
 
 /* VERSION DEFINITIONS */
-#define VER_STRING	"0.2.1.24"
+#define VER_STRING	"0.2.1.47"
 #define VER_MAJOR	0
 #define VER_MINOR	2
 #define VER_RELEASE	1
-#define VER_BUILD	24
+#define VER_BUILD	47
 #define COMPANY_NAME	""
-#define FILE_VERSION	"0.2.1.24"
+#define FILE_VERSION	"0.2.1.47"
 #define FILE_DESCRIPTION	"unGEST GB emulator"
 #define INTERNAL_NAME	""
 #define LEGAL_COPYRIGHT	""
 #define LEGAL_TRADEMARKS	""
 #define ORIGINAL_FILENAME	"gest.exe"
 #define PRODUCT_NAME	"unGEST"
-#define PRODUCT_VERSION	"0.2.1.24"
+#define PRODUCT_VERSION	"0.2.1.47"
 
 #endif /*GEST_PRIVATE_H*/
