@@ -24,7 +24,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
 using namespace std;
 
-extern string gb1_loaded_file_name;
+extern wstring gb1_loaded_file_name;
 
 #include "dialogs.h"
 #include "strings.h"
@@ -47,8 +47,8 @@ char* stpncpy(char* to,char* from,int count)
 
 bool DoFileOpen(HWND hwnd,int gb_number)
 {
-   OPENFILENAME ofn;
-   char szFileName[MAX_PATH];
+   OPENFILENAMEW ofn;
+   wchar_t szFileName[MAX_PATH];
 
    ZeroMemory(&ofn, sizeof(ofn));
    szFileName[0] = 0;
@@ -64,16 +64,16 @@ bool DoFileOpen(HWND hwnd,int gb_number)
    cptr = stpncpy(cptr,str_table[ALL_FILES],strlen(str_table[ALL_FILES]));
    cptr = stpncpy(cptr," (*.*)\0*.*\0\0",strlen(" (*.*)*.*")+3);
    
-   ofn.lpstrFilter = ctrl_str;//"GB roms (*.gb,*.gbc,*.sgb,*.zip)\0*.gb;*.gbc;*.sgb;*.zip\0All files (*.*)\0*.*\0\0";
+   ofn.lpstrFilter =  (const wchar_t*)ctrl_str;//"GB roms (*.gb,*.gbc,*.sgb,*.zip)\0*.gb;*.gbc;*.sgb;*.zip\0All files (*.*)\0*.*\0\0";
    ofn.lpstrFile = szFileName;
    ofn.nMaxFile = MAX_PATH;
-   ofn.lpstrDefExt = "gb";
+   ofn.lpstrDefExt = L"gb";
 
    ofn.Flags = OFN_EXPLORER | OFN_FILEMUSTEXIST | OFN_HIDEREADONLY;
    
    SetCurrentDirectory(options->rom_directory.c_str());
 
-   if(GetOpenFileName(&ofn))
+   if(GetOpenFileNameW(&ofn))
    {
       char temp[PROGRAM_PATH_SIZE];
 

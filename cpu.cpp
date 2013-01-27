@@ -26,6 +26,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #include "mainloop.h"
 
 #define WIN32_LEAN_AND_MEAN
+
 #include <windows.h>
 #include <winbase.h>
 #include <stdlib.h>
@@ -141,13 +142,13 @@ bool init_gb2()
 
 bool gb_system::save_state()
 {
-   char old_directory[PROGRAM_PATH_SIZE];
+   char old_directory[PROGRAM_PATH_SIZE]; // this needs unicode too
    GetCurrentDirectory(PROGRAM_PATH_SIZE,old_directory);
    SetCurrentDirectory(options->state_directory.c_str());
    
-   char save_filename[275]; 
-   char file_ext[5];
-   strcpy(save_filename,rom_filename);
+   wchar_t save_filename[275]; 
+   wchar_t file_ext[5];
+   wcscpy(save_filename,rom_filename);
 
    int save_state_slot = 0;
 
@@ -155,17 +156,17 @@ bool gb_system::save_state()
    {
       message_GB = GB1;
       save_state_slot =  GB1_state_slot;
-      sprintf(file_ext,".st%d",GB1_state_slot);
-      strcat(save_filename,file_ext);
+      swprintf(file_ext,L".st%d",GB1_state_slot);
+      wcscat(save_filename,file_ext);
    } else
    {
       message_GB = GB2;
       save_state_slot = GB2_state_slot;
-      sprintf(file_ext,".s2%d",GB2_state_slot);
-      strcat(save_filename,file_ext);
+      swprintf(file_ext,L".s2%d",GB2_state_slot);
+      wcscat(save_filename,file_ext);
    }
 
-   FILE* statefile = fopen(save_filename,"wb");
+   FILE* statefile = _wfopen(save_filename,L"wb");
    if(!statefile) 
    {       
       sprintf(dx_message,"%s %d %s",str_table[SAVE_TO_SLOT],save_state_slot,str_table[SAVE_FAILED]);
@@ -406,9 +407,9 @@ bool gb_system::load_state()
    GetCurrentDirectory(PROGRAM_PATH_SIZE,old_directory);
    SetCurrentDirectory(options->state_directory.c_str());
    
-   char save_filename[275]; 
-   char file_ext[5];
-   strcpy(save_filename,rom_filename);
+   wchar_t save_filename[275]; 
+   wchar_t file_ext[5];
+   wcscpy(save_filename,rom_filename);
 
    int save_state_slot = 0;
 
@@ -416,17 +417,17 @@ bool gb_system::load_state()
    {
       message_GB = GB1;
       save_state_slot =  GB1_state_slot;
-      sprintf(file_ext,".st%d",GB1_state_slot);
-      strcat(save_filename,file_ext);
+      swprintf(file_ext,L".st%d",GB1_state_slot);
+      wcscat(save_filename,file_ext);
    } else
    {
       message_GB = GB2;
       save_state_slot = GB2_state_slot;
-      sprintf(file_ext,".s2%d",GB2_state_slot);
-      strcat(save_filename,file_ext);
+      swprintf(file_ext,L".s2%d",GB2_state_slot);
+      wcscat(save_filename,file_ext);
    }
    
-   FILE* statefile = fopen(save_filename,"rb");
+   FILE* statefile = _wfopen(save_filename,L"rb");
    if(!statefile) 
    { 
       sprintf(dx_message,"%s %d %s",str_table[LOAD_FROM_SLOT],save_state_slot,str_table[SAVE_FAILED]);

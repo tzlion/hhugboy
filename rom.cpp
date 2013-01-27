@@ -518,6 +518,7 @@ int get_size(int real_size) // return good size to use
 
 bool gb_system::loadrom_zip(const char* filename)
 {
+	/*
    memset(rom_filename,0,ROM_FILENAME_SIZE);  
 
    char temp2[ROM_FILENAME_SIZE];
@@ -659,14 +660,15 @@ bool gb_system::loadrom_zip(const char* filename)
       rom->ROMsize--;
       
    romloaded = true;
-
+   */  // this ALL needs to be redone to support unicode
    return true;
 }
 
-bool gb_system::load_rom(const char* filename)
-{     
-   if(strstr(filename,".zip") || strstr(filename,".ZIP"))
-      return loadrom_zip(filename);
+bool gb_system::load_rom(const wchar_t* filename)
+{    
+   // todo: Reinstate later... 
+   //if(strstr(filename,".zip") || strstr(filename,".ZIP"))
+   //   return loadrom_zip(filename);
         
    struct stat file_stat;
 
@@ -674,7 +676,7 @@ bool gb_system::load_rom(const char* filename)
    byte rominfo[30];
 
    romloaded = false;
-   FILE* romfile = fopen(filename,"rb");
+   FILE* romfile = _wfopen(filename,L"rb");
    if(!romfile) 
    { 
       debug_print(str_table[ERROR_OPEN_FILE]); 
@@ -710,7 +712,7 @@ bool gb_system::load_rom(const char* filename)
    
    int file_size = 0;
    
-   if(stat(filename,&file_stat) == 0)
+   if(wstat(filename,&file_stat) == 0)
    {
       file_size = file_stat.st_size;
       
@@ -763,24 +765,24 @@ bool gb_system::load_rom(const char* filename)
       //don't care...
    }    
 
-   char temp2[ROM_FILENAME_SIZE];
+   wchar_t temp2[ROM_FILENAME_SIZE];
 
    // Get filename
-   char* temp = strrchr(filename,'\\'); // find last '\'
+   wchar_t* temp = wcschr(filename,(wchar_t)'\\'); // find last '\'
    if(temp == NULL)
    {
-      strcpy(temp2,filename);
+      wcscpy(temp2,filename);
       
       temp = temp2;
    }
    else
       temp += 1;
       
-   char* temp3 = strrchr(temp,'.'); // find last '.'
+   wchar_t* temp3 = wcschr(temp,(wchar_t)'.'); // find last '.'
    if(temp3 == NULL) // no extension
-      strncpy(rom_filename,temp,strlen(temp));
+      wcsncpy(rom_filename,temp,wcslen(temp));
    else
-      strncpy(rom_filename,temp,strlen(temp)-strlen(temp3));
+      wcsncpy(rom_filename,temp,wcslen(temp)-wcslen(temp3));
 
    romloaded = true;
    fclose(romfile);

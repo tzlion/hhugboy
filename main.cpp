@@ -18,7 +18,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 */
 
 #define WIN32_LEAN_AND_MEAN
-
+#define UNICODE
 #include <windows.h>
 #include <shellapi.h>
 #include <commdlg.h>
@@ -72,8 +72,11 @@ HINSTANCE hinst;
 LRESULT CALLBACK WindowProcedure (HWND, UINT, WPARAM, LPARAM);
 
 char szClassName[] = "GESTclass";
+wchar_t w_szClassName[] = L"GESTclass";
 char emu_title[] = "unGEST";
+wchar_t w_emu_title[] = L"unGEST";
 char title_text[ROM_FILENAME_SIZE + 8];
+wchar_t w_title_text[ROM_FILENAME_SIZE + 16];
 
 int timer_id = 0;
 int sizen_w,sizen_h; // Size needed for menu,borders,etc.
@@ -90,7 +93,7 @@ int speedup = 0;
 
 program_configuration* options = NULL;
 
-string gb1_loaded_file_name;
+wstring gb1_loaded_file_name;
 
 #ifdef ALLOW_DEBUG
 bool debug = false;
@@ -157,7 +160,7 @@ void cleanup()
    FSOUND_Close();
 }
 
-int WINAPI WinMain(HINSTANCE hThisInstance,HINSTANCE hPrevInstance,LPSTR lpszArgument,int nFunsterStil)
+int WINAPI WinMain(HINSTANCE hThisInstance,HINSTANCE hPrevInstance, LPSTR  lpszArgument,int nFunsterStil)
 {
    WNDCLASSEX wincl;        
    MSG msg;    
@@ -165,7 +168,7 @@ int WINAPI WinMain(HINSTANCE hThisInstance,HINSTANCE hPrevInstance,LPSTR lpszArg
    /* The Window structure */
    hinst = hThisInstance;
    wincl.hInstance = hThisInstance;
-   wincl.lpszClassName = szClassName;
+   wincl.lpszClassName = (const wchar_t*)szClassName;
    wincl.lpfnWndProc = WindowProcedure;      
    wincl.style = CS_DBLCLKS;                 /* Catch double-clicks */
    wincl.cbSize = sizeof(WNDCLASSEX);
@@ -182,8 +185,8 @@ int WINAPI WinMain(HINSTANCE hThisInstance,HINSTANCE hPrevInstance,LPSTR lpszArg
       return 0;
    
    menu = LoadMenu(hThisInstance, MAKEINTRESOURCE(ID_MENU));
-
-   hwnd = CreateWindowEx(0,szClassName,emu_title,WS_SIZEBOX|WS_OVERLAPPEDWINDOW,150,150,2*160,2*144,HWND_DESKTOP,menu,hThisInstance,NULL);
+	// not sure why but if i fuck with szClassName here, dinput init will fail. the cast is BULLSHIT btw
+   hwnd = CreateWindowEx(0,(const wchar_t*)szClassName,w_emu_title,WS_SIZEBOX|WS_OVERLAPPEDWINDOW,150,150,2*160,2*144,HWND_DESKTOP,menu,hThisInstance,NULL);
    
    RECT adjrect;
    GetClientRect(hwnd,&adjrect);
@@ -229,10 +232,10 @@ int WINAPI WinMain(HINSTANCE hThisInstance,HINSTANCE hPrevInstance,LPSTR lpszArg
    }
 
    //Get program directory
-   char buffer[PROGRAM_PATH_SIZE];
+   wchar_t buffer[PROGRAM_PATH_SIZE];
    GetModuleFileName(NULL,buffer,PROGRAM_PATH_SIZE);
 
-   options->program_directory = buffer;
+   options->program_directory = (char*)buffer;
    size_t found = options->program_directory.rfind('\\'); // Cut program name
    if(found != string::npos)
    {
@@ -265,16 +268,16 @@ int WINAPI WinMain(HINSTANCE hThisInstance,HINSTANCE hPrevInstance,LPSTR lpszArg
    
    if(strlen(lpszArgument)>4)
    {
-      char* ptr = strchr(lpszArgument,'"');
+      wchar_t* ptr = wcschr((const wchar_t*)lpszArgument,'"');
       if(ptr != NULL) // does the filename contain " " ?
       {
          ptr += 1;
-         char load_filename[600];
+         wchar_t load_filename[600];
          memset(load_filename,0,600);
-         strncpy(load_filename,ptr,strlen(ptr)-1);
+         wcsncpy(load_filename,ptr,wcslen(ptr)-1);
          GB1->load_rom(load_filename); 
       } else
-         GB1->load_rom(lpszArgument); 
+         GB1->load_rom((const wchar_t*)lpszArgument); 
       
       if(GB1->romloaded)
       {
@@ -295,8 +298,9 @@ int WINAPI WinMain(HINSTANCE hThisInstance,HINSTANCE hPrevInstance,LPSTR lpszArg
          if(!GB1->load_save())
             debug_print(str_table[ERROR_SAVE_FILE_READ]);
       
-         sprintf(title_text,"%s - %s",emu_title,GB1->rom_filename);
-         SetWindowText(hwnd,title_text);
+
+         swprintf(w_title_text,L"%s - %s",w_emu_title,GB1->rom_filename);
+         SetWindowText(hwnd,w_title_text);
       }
    }
 
@@ -396,10 +400,10 @@ int WINAPI WinMain(HINSTANCE hThisInstance,HINSTANCE hPrevInstance,LPSTR lpszArg
                 }
                 
                 if(multiple_gb)
-                   sprintf(title_text,"%s - %s --- %s, frameskip: %i",emu_title,GB1->rom_filename,GB2->rom_filename,options->video_frameskip);
+                   swprintf(w_title_text,L"%s - %s --- %s, frameskip: %i",w_emu_title,GB1->rom_filename,GB2->rom_filename,options->video_frameskip);
                 else
-                   sprintf(title_text,"%s - %s, frameskip: %i",emu_title,GB1->rom_filename,options->video_frameskip);
-                SetWindowText(hwnd,title_text);                
+                   swprintf(w_title_text,L"%s - %s, frameskip: %i",w_emu_title,GB1->rom_filename,options->video_frameskip);
+                SetWindowText(hwnd,w_title_text);                
              }
              //-----Auto frameskip----
 
@@ -466,11 +470,11 @@ LRESULT CALLBACK WindowProcedure(HWND hwnd, UINT message, WPARAM wParam, LPARAM 
                         debug_print(str_table[ERROR_SAVE_FILE_READ]);
 
                      if(multiple_gb)
-                        sprintf(title_text,"%s - %s --- %s",emu_title,GB1->rom_filename,GB2->rom_filename);
+                        swprintf(w_title_text,L"%s - %s --- %s",w_emu_title,GB1->rom_filename,GB2->rom_filename);
                      else
-                        sprintf(title_text,"%s - %s",emu_title,GB1->rom_filename);
+                        swprintf(w_title_text,L"%s - %s",w_emu_title,GB1->rom_filename);
 
-                     SetWindowText(hwnd,title_text);
+                     SetWindowText(hwnd,w_title_text);
 
                      if(!paused)
                         FSOUND_SetMute(FSOUND_ALL,FALSE);   
@@ -517,8 +521,8 @@ LRESULT CALLBACK WindowProcedure(HWND hwnd, UINT message, WPARAM wParam, LPARAM 
                      if(!GB2->load_save())
                         debug_print(str_table[ERROR_SAVE_FILE_READ]);
                      
-                     sprintf(title_text,"%s - %s --- %s",emu_title,GB1->rom_filename,GB2->rom_filename);
-                     SetWindowText(hwnd,title_text);
+                     swprintf(w_title_text,L"%s - %s --- %s",w_emu_title,GB1->rom_filename,GB2->rom_filename);
+                     SetWindowText(hwnd,w_title_text);
                      
                      if(!paused)
                         FSOUND_SetMute(FSOUND_ALL,FALSE);   
@@ -559,8 +563,8 @@ LRESULT CALLBACK WindowProcedure(HWND hwnd, UINT message, WPARAM wParam, LPARAM 
                         if(!GB2->load_save())
                            debug_print(str_table[ERROR_SAVE_FILE_READ]);
 
-                        sprintf(title_text,"%s - %s --- %s",emu_title,GB1->rom_filename,GB2->rom_filename);
-                        SetWindowText(hwnd,title_text);
+                        swprintf(w_title_text,L"%s - %s --- %s",w_emu_title,GB1->rom_filename,GB2->rom_filename);
+                        SetWindowText(hwnd,w_title_text);
 
                         if(!paused)
                            FSOUND_SetMute(FSOUND_ALL,FALSE);
@@ -570,7 +574,7 @@ LRESULT CALLBACK WindowProcedure(HWND hwnd, UINT message, WPARAM wParam, LPARAM 
                   
              case IDM_FILECLOSE:
                   FSOUND_SetMute(FSOUND_ALL,TRUE);
-                  SetWindowText(hwnd,emu_title);
+                  SetWindowText(hwnd,w_emu_title);
                   if(GB1->romloaded)
                   {
                      if(!GB1->write_save())
@@ -612,7 +616,7 @@ LRESULT CALLBACK WindowProcedure(HWND hwnd, UINT message, WPARAM wParam, LPARAM 
                   if(!GB1->romloaded) 
                   {
                      FSOUND_SetMute(FSOUND_ALL,TRUE);
-                     SetWindowText(hwnd,emu_title);
+                     SetWindowText(hwnd,w_emu_title);
                   }
                   RECT winRect;
                   GetWindowRect(hwnd,&winRect);      
@@ -623,8 +627,8 @@ LRESULT CALLBACK WindowProcedure(HWND hwnd, UINT message, WPARAM wParam, LPARAM 
                      if(!GB2->write_save())
                         debug_print(str_table[ERROR_SAVE_FILE_WRITE]);
 
-                     sprintf(title_text,"%s - %s",emu_title,GB1->rom_filename);
-                     SetWindowText(hwnd,title_text);
+                     swprintf(w_title_text,L"%s - %s",w_emu_title,GB1->rom_filename);
+                     SetWindowText(hwnd,w_title_text);
                   }
                   if(GB2->cartridge)
                   {
@@ -2070,7 +2074,7 @@ LRESULT CALLBACK WindowProcedure(HWND hwnd, UINT message, WPARAM wParam, LPARAM 
              case IDM_HELPABOUT:
                   char about_str[200];
                   sprintf(about_str,str_table[ABOUT_STR],prg_version);
-                  MessageBox(NULL, about_str, emu_title, 0);
+                  MessageBoxA(NULL, about_str, emu_title, 0);
              break;
 
            }
@@ -2529,9 +2533,9 @@ LRESULT CALLBACK WindowProcedure(HWND hwnd, UINT message, WPARAM wParam, LPARAM 
            if(GB1->romloaded && !GB1->write_save())
               debug_print(str_table[ERROR_SAVE_FILE_WRITE]);
            HDROP d_handle = (HDROP)wParam;      
-           char drag_filename[500];
-           DragQueryFile(d_handle,0,drag_filename,500);
-           if(!strstr(drag_filename,".zip") && !strstr(drag_filename,".ZIP") && !strstr(drag_filename,".sgb") && !strstr(drag_filename,".SGB") && !strstr(drag_filename,".GB") && !strstr(drag_filename,".gb"))
+           wchar_t drag_filename[500];
+           DragQueryFileW(d_handle,0,drag_filename,500);
+           if(!wcsstr(drag_filename,L".zip") && !wcsstr(drag_filename,L".ZIP") && !wcsstr(drag_filename,L".sgb") && !wcsstr(drag_filename,L".SGB") && !wcsstr(drag_filename,L".GB") && !wcsstr(drag_filename,L".gb"))
            {
               debug_print(str_table[NOT_A_ROM]);
               GB1->romloaded = false;
@@ -2557,8 +2561,8 @@ LRESULT CALLBACK WindowProcedure(HWND hwnd, UINT message, WPARAM wParam, LPARAM 
               if(!GB1->load_save())
                  debug_print(str_table[ERROR_SAVE_FILE_READ]);
                   
-              sprintf(title_text,"%s - %s",emu_title,GB1->rom_filename);
-              SetWindowText(hwnd,title_text);
+              swprintf(w_title_text,L"%s - %s",w_emu_title,GB1->rom_filename);
+              SetWindowText(hwnd,w_title_text);
               if(!paused)
                  FSOUND_SetMute(FSOUND_ALL,FALSE);   
            } else 

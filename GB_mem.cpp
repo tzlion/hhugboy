@@ -38,6 +38,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #include <stdio.h>
 #include <stdlib.h>
 #include <time.h>
+
 #include <windows.h>
 
 #include <iostream>
@@ -306,19 +307,19 @@ bool gb_system::write_save()
 
    SetCurrentDirectory(options->save_directory.c_str());
    
-   char save_filename[275]; 
-   strcpy(save_filename,rom_filename);
+   wchar_t save_filename[275]; 
+   wcscpy(save_filename,rom_filename);
 
    if(this == GB1)
    {
-       strcat(save_filename,".sav");
+       wcscat(save_filename,L".sav");
    }
    else
    {
-       strcat(save_filename,".sv2");
+       wcscat(save_filename,L".sv2");
    }
 
-   FILE* savefile = fopen(save_filename,"wb");
+   FILE* savefile = _wfopen(save_filename,L"wb");
    if(!savefile)
    {
       SetCurrentDirectory(old_directory);
@@ -398,19 +399,19 @@ bool gb_system::load_save(bool loading_GB1_save_to_GB2)
 
    SetCurrentDirectory(options->save_directory.c_str());
      
-   char save_filename[275];
-   strcpy(save_filename,rom_filename);
+   wchar_t save_filename[275];
+   wcscpy(save_filename,rom_filename);
 
    if(this == GB1 || loading_GB1_save_to_GB2)
    {
-      strcat(save_filename,".sav");
+      wcscat(save_filename,L".sav");
    }
    else
    {
-      strcat(save_filename,".sv2");
+      wcscat(save_filename,L".sv2");
    }
 
-   FILE* savefile = fopen(save_filename,"rb");
+   FILE* savefile = _wfopen(save_filename,L"rb");
    if(!savefile) 
    {
       SetCurrentDirectory(old_directory);

@@ -64,8 +64,8 @@ public:
    void cpu_reset();
    void memory_variables_reset();
 
-   char rom_filename[ROM_FILENAME_SIZE];
-   bool load_rom(const char* filename);
+   wchar_t rom_filename[ROM_FILENAME_SIZE];
+   bool load_rom(const wchar_t* filename);
    bool loadrom_zip(const char* filename);
    bool romloaded;
    void crdtype(byte value,byte romsize,byte ramsize);

@@ -21,7 +21,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
 #include "types.h"
 
-#define ROM_FILENAME_SIZE 257
+#define ROM_FILENAME_SIZE 1024
 
 enum { ROM, MBC1, MBC2, MMM01, MBC3, MBC4, MBC5, MBC7, Camera, TAMA5, HuC3, HuC1, UnknownCart, Niutoude };
 
