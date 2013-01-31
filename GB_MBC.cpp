@@ -1056,7 +1056,7 @@ void gb_system::writememory_MBC5(register unsigned short address,register byte d
    if(address < 0x3000)
    {    
    
-      if (isNiutoude && address >= 0x2800) {
+      if (isNiutoude && address >= 0x2100) { // Increased from 2800.. Too far?
       	return;
       }
       rom_bank = data|(MBChi<<8); 
