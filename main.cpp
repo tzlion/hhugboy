@@ -61,7 +61,7 @@ gb_system* GB = NULL;
 gb_system* GB1 = NULL;
 gb_system* GB2 = NULL;
 
-const char* prg_version = "0.2";
+const char* prg_version = "0.21";
 
 // Windows stuff ----------------------------------------
 HWND hwnd = NULL;           
@@ -1171,7 +1171,7 @@ LRESULT CALLBACK WindowProcedure(HWND hwnd, UINT message, WPARAM wParam, LPARAM 
                 }                    
              break;      
              
-             /*case IDM_UNLAUTO:
+             case IDM_UNLAUTO:
              	options->unl_compat_mode = UNL_AUTO;
              	CheckMenuItem(menu,IDM_UNLAUTO,MF_CHECKED);
              	CheckMenuItem(menu,IDM_UNLNONE,MF_UNCHECKED);
@@ -1188,7 +1188,7 @@ LRESULT CALLBACK WindowProcedure(HWND hwnd, UINT message, WPARAM wParam, LPARAM 
              	CheckMenuItem(menu,IDM_UNLAUTO,MF_UNCHECKED);
              	CheckMenuItem(menu,IDM_UNLNONE,MF_UNCHECKED);
              	CheckMenuItem(menu,IDM_UNLNIUTOUDE,MF_CHECKED);
-        	 break;*/
+        	 break;
              
              case IDM_CPUSPFS9:
                 if(options->speedup_skip_9frames)

@@ -49,7 +49,7 @@ char rom_directory[ROM_PATH_SIZE];*/
 
 program_configuration::program_configuration():
         halt_on_unknown_opcode(true),
-        reduce_cpu_usage(true),
+        reduce_cpu_usage(false),
         speedup_skip_9frames(false),
         speedup_sound_off(false),
         GBC_SGB_border(OFF),
@@ -71,7 +71,8 @@ program_configuration::program_configuration():
         sound_volume(VOLUME_1X),
         opposite_directions_allowed(false),
         use_joystick_input(-1),
-        autofire_speed(0)
+        autofire_speed(0),
+        unl_compat_mode(UNL_AUTO)
 {
     multi_key_config[PLAYER1][BUTTON_A] = DIK_Z;
     multi_key_config[PLAYER1][BUTTON_B] = DIK_X;
@@ -115,7 +116,7 @@ program_configuration::~program_configuration()
 
 void init_menu_options()
 {
-   /* switch(options->unl_compat_mode)
+    switch(options->unl_compat_mode)
    {
       case UNL_AUTO:
          CheckMenuItem(menu,IDM_UNLAUTO,MF_CHECKED);       
@@ -129,7 +130,7 @@ void init_menu_options()
       default:
          CheckMenuItem(menu,IDM_UNLAUTO,MF_CHECKED);    
       break;
-   } */
+   } 
 
 	
 	

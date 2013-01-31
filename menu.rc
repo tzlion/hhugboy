@@ -275,12 +275,12 @@ BEGIN
                     MENUITEM "G&BC with SGB Border", IDM_CPUGBCSGB
                     MENUITEM "GBC &with Initial SGB Border", IDM_CPUGBCSGBI
                 END
-                /*POPUP "&Unlicensed Compatibility Mode"
+                POPUP "&Unlicensed Compatibility Mode"
                 BEGIN
                     MENUITEM "&Auto", IDM_UNLAUTO, CHECKED
-                    MENUITEM "&Niutoude", IDM_UNLNIUTOUDE
+                    MENUITEM "&Li Cheng (XingXing/Niutoude)", IDM_UNLNIUTOUDE
                     MENUITEM "&Disabled", IDM_UNLNONE
-                END*/
+                END
                 POPUP "E&xternal Device"
                 BEGIN
                     MENUITEM "&None", IDM_DEVICENONE, CHECKED
@@ -293,7 +293,7 @@ BEGIN
                     MENUITEM "S&ound Off", IDM_CPUSPSNDOFF
                 END
                 MENUITEM "&Halt on Unknown Opcode", IDM_CPUOPCODE, CHECKED
-                MENUITEM "Reduce CPU &Usage", IDM_OPTIONCPUUSAGE, CHECKED
+                MENUITEM "Reduce CPU &Usage", IDM_OPTIONCPUUSAGE
                 MENUITEM SEPARATOR
                 MENUITEM "&Game Genie...", IDM_CHEATS
         END

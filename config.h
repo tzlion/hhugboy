@@ -100,12 +100,12 @@ enum mixframestype
     MIX_FRAMES_MORE = 2
 };
 
-//enum unlCompatMode
-//{
-//	UNL_AUTO,
-//	UNL_NONE,
-//	UNL_NIUTOUDE
-//};
+enum unlCompatMode
+{
+	UNL_AUTO,
+	UNL_NONE,
+	UNL_NIUTOUDE
+};
 
 #include <string>
 #include <fstream>
@@ -141,8 +141,6 @@ public:
     videofiltertype video_SGBborder_filter;
     bool video_filter_use_mmx;
     bool video_visual_rumble;
-    
-    //unlCompatMode unl_compat_mode;
 
     int sound_on;
     bool sound_reverse_stereo;
@@ -157,6 +155,10 @@ public:
     int joystick_config[6];
 
     int autofire_speed;
+    
+        
+    unlCompatMode unl_compat_mode;
+
 };
 
 extern program_configuration* options;

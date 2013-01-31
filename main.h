@@ -218,9 +218,9 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #define IDM_DEVICENONE       1500
 #define IDM_DEVICEBARCODE    1501
 
-//#define IDM_UNLAUTO			10640
-//#define IDM_UNLNIUTOUDE		10642
-//#define IDM_UNLNONE 		10641
+#define IDM_UNLAUTO			10640
+#define IDM_UNLNIUTOUDE		10642
+#define IDM_UNLNONE 		10641
 
 extern bool paused;
 extern bool menupause; 

@@ -41,6 +41,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
 #include "strings.h"
 
+#include "config.h"
 #include "rom.h"
 #include "debug.h"
 #include "cpu.h"
@@ -283,20 +284,7 @@ void gb_system::crdtype(byte value,byte romsize,byte ramsize)
 
 int gb_system::process_rom_info(byte *rominfo,byte *logo1, byte *logo2)
 {
-	
-	//byte ts = 0; 
-	int ts2= 0;
-	//for(int lb=0;lb<0x30;++lb) {
-	//	ts+=logo1[lb];
-	//}		
-	for(int lb=0;lb<0x30;++lb) {
-		ts2+=logo2[lb];
-	}
-	//char text[2];
-	//sprintf(text,"\t%d \t%d",ts,ts2);
-    //debug_print(text);
-    
-    
+
    int addr = 0;
    byte data;
    for(;addr<=14; ++addr)
@@ -322,18 +310,43 @@ int gb_system::process_rom_info(byte *rominfo,byte *logo1, byte *logo2)
       
    ++addr; crdtype(rominfo[addr],data=rominfo[addr+1],rominfo[addr+2]);
    
-   // 4876 = "niutoude"
-   // 5152= odd logo from Digimon Fight
-   // 3746 = not a logo at all; data from Cap vs SNK (its logo is at 0x0904 instead)
+   bool useNiutoude = false;
    
-   if ( ts2 == 5152 || ts2 == 3746 || ts2 == 4876 ) 
-   {
-   	    debug_print("Niutoude enabled");
+   switch(options->unl_compat_mode) {
+   	
+   		case UNL_AUTO: {
+   			int ts2= 0;
+			for(int lb=0;lb<0x30;++lb) {
+				ts2+=logo2[lb];
+			}
+   		   	// 4876 = "niutoude"
+		   	// 5152= odd logo from Digimon Fight
+		  	// 3746 = not a logo at all; data from Cap vs SNK (its logo is at 0x0904 instead)
+	      	if ( ts2 == 4876 ) {
+	      		useNiutoude = true;
+	      	}
+   			break;
+   		}
+
+   		break;
+   		case UNL_NIUTOUDE:
+   			useNiutoude = true;
+   		break;
+   		case UNL_NONE: default:
+   			
+   		break;
+   	
+   }
+   
+
+	if (useNiutoude) {
+
+   	    //debug_print("Niutoude enabled");
 		rom->battery = true;
 		rom->bankType = MBC5;
 		memory_write = MEMORY_NIUTOUDE;
 		rom->ROMsize=07; // assumption for now
-		rom->RAMsize=02; // assumption for now
+		rom->RAMsize=03; // assumption for now; Sango5 doesnt work with smaller
 		rom->carttype=0x1B;
    }
       
