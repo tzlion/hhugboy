@@ -442,7 +442,7 @@ public:
             if(address == cheat[i].address && (!(cheat[i].long_code) || (cheat[i].old_value == mem_map[address>>12][address&0x0fff])))
                return cheat[i].new_value;
               
-      if ((address >= 0x4000 && address < 0x8000)&&sintax_currentxor) {
+      if (sintax_currentxor > 0 && (address >= 0x4000 && address < 0x8000)) {
       	return (mem_map[address>>12][address&0x0FFF]) ^ sintax_currentxor;
       }
 
@@ -451,6 +451,18 @@ public:
 
    unsigned short readword(register unsigned short address) //for fast memory access
    {
+      if (sintax_currentxor > 0 && (address >= 0x4000 && address < 0x8000)) {
+      	return 
+		  (unsigned short)
+		  (
+		  	(mem_map[address>>12][address&0x0FFF]  ^ sintax_currentxor)
+			  |
+			((mem_map[(address+1)>>12][(address+1)&0x0FFF]^ sintax_currentxor)<<8)
+		  );
+		  (mem_map[address>>12][address&0x0FFF]);
+      }
+   		
+   		
       return (unsigned short)(mem_map[address>>12][address&0x0FFF]|(mem_map[(address+1)>>12][(address+1)&0x0FFF]<<8));
    }
 
