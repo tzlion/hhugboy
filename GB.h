@@ -436,10 +436,15 @@ public:
 
    inline byte readopcode(register unsigned short address) //for fast memory access
    {
+   	
       if(number_of_cheats)
          for(int i=0;i<number_of_cheats;++i)
             if(address == cheat[i].address && (!(cheat[i].long_code) || (cheat[i].old_value == mem_map[address>>12][address&0x0fff])))
                return cheat[i].new_value;
+              
+      if ((address >= 0x4000 && address < 0x8000)&&sintax_currentxor) {
+      	return (mem_map[address>>12][address&0x0FFF]) ^ sintax_currentxor;
+      }
 
       return mem_map[address>>12][address&0x0FFF];
    }

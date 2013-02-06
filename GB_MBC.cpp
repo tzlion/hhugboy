@@ -221,9 +221,9 @@ byte gb_system::readmemory_sintax(register unsigned short address)
    	byte data = io_reg_read(address);
 
    	
-   	char buff[100];
-	sprintf(buff,"MBCLo %X Addr %X Data %X XOR %X XOR'd data %X",MBClo,address,data,sintax_currentxor, data ^ sintax_currentxor);
-	debug_print(buff);
+   	//char buff[100];
+	//sprintf(buff,"MBCLo %X Addr %X Data %X XOR %X XOR'd data %X",MBClo,address,data,sintax_currentxor, data ^ sintax_currentxor);
+	//debug_print(buff);
    	
      return  data ^ sintax_currentxor;
    }
@@ -1197,6 +1197,10 @@ void gb_system::writememory_MBC5(register unsigned short address,register byte d
    			break;
    		 }
    		 sintax_mode=data;
+   		 
+   		 writememory_MBC5(0x2000,01,false,true); // force a fake bank switch
+   		 
+   		 return;
 
    		}
    

@@ -154,6 +154,8 @@ void gb_system::mainloop()
    } else 
    { 
       opcode = readopcode(PC.W++);
+      
+
 
       cur_cycle = cycles[opcode];    
 
