@@ -313,6 +313,8 @@ int gb_system::process_rom_info(byte *rominfo,byte *logo1, byte *logo2)
    bool useNiutoude = false;
    bool useSintax = false;
    
+   sintax_currentxor = 0; // reset this, otherwise it leaks over into other roms
+   
    switch(options->unl_compat_mode) {
    	
    		case UNL_AUTO: {

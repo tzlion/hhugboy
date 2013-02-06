@@ -474,13 +474,29 @@ public:
 
    void copy_memory(unsigned short to,unsigned short from,int count)
    {
-      while(count)
-      {
-         mem_map[to>>12][to&0x0FFF] = mem_map[from>>12][from&0x0FFF];
-         ++to;
-         ++from;
-         --count;
-      }
+		if ( sintax_currentxor > 0 && from >= 0x4000 && from < 0x8000 ) {
+			
+			while(count)
+		      {
+		         mem_map[to>>12][to&0x0FFF] = (mem_map[from>>12][from&0x0FFF] ^ sintax_currentxor);
+		         ++to;
+		         ++from;
+		         --count;
+		      }
+			
+		} else {
+			
+			while(count)
+		      {
+		         mem_map[to>>12][to&0x0FFF] = mem_map[from>>12][from&0x0FFF];
+		         ++to;
+		         ++from;
+		         --count;
+		      }
+      
+		}
+   	
+
    }
    
    void mainloop();

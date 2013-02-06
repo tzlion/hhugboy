@@ -533,19 +533,19 @@ BuildCmd=
 [VersionInfo]
 Major=0
 Minor=2
-Release=1
-Build=272
+Release=2
+Build=2
 LanguageID=2057
 CharsetID=1252
 CompanyName=
-FileVersion=0.2.1.272
+FileVersion=0.2.2.2
 FileDescription=unGEST GB emulator
 InternalName=
 LegalCopyright=
 LegalTrademarks=
 OriginalFilename=gest.exe
 ProductName=unGEST
-ProductVersion=0.2.1.272
+ProductVersion=0.2.2.2
 AutoIncBuildNr=1
 SyncProduct=1
 
