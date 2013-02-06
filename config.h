@@ -104,7 +104,8 @@ enum unlCompatMode
 {
 	UNL_AUTO,
 	UNL_NONE,
-	UNL_NIUTOUDE
+	UNL_NIUTOUDE,
+	UNL_SINTAX
 };
 
 #include <string>

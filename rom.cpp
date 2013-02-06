@@ -311,19 +311,39 @@ int gb_system::process_rom_info(byte *rominfo,byte *logo1, byte *logo2)
    ++addr; crdtype(rominfo[addr],data=rominfo[addr+1],rominfo[addr+2]);
    
    bool useNiutoude = false;
+   bool useSintax = false;
    
    switch(options->unl_compat_mode) {
    	
    		case UNL_AUTO: {
+   			//int ts1= 0;
+			//for(int lb=0;lb<0x30;++lb) {
+			//	ts1+=logo1[lb];
+			//}
    			int ts2= 0;
 			for(int lb=0;lb<0x30;++lb) {
 				ts2+=logo2[lb];
 			}
+			//char buff[1000];
+			//sprintf(buff,"%d %d",ts1,ts2);
+			//debug_print(buff);
    		   	// 4876 = "niutoude"
+   		   	// 4125 = Sintax "Kwichvu" (corrupted Nintendo)
+   		   	// 4138 = Slight variation on Sintax, seen in Sintax Harry.
 		   	// 5152= odd logo from Digimon Fight
 		  	// 3746 = not a logo at all; data from Cap vs SNK (its logo is at 0x0904 instead)
 	      	if ( ts2 == 4876 ) {
 	      		useNiutoude = true;
+	      	}
+	      	
+	      	switch ( ts2 ) {
+	      		case 4876:
+	      			useNiutoude = true;
+	      		break;
+	      		case 4138:
+	      		case 4125:
+	      			useSintax = true;
+	      		break;
 	      	}
    			break;
    		}
@@ -331,6 +351,9 @@ int gb_system::process_rom_info(byte *rominfo,byte *logo1, byte *logo2)
    		break;
    		case UNL_NIUTOUDE:
    			useNiutoude = true;
+   		break;
+   		case UNL_SINTAX:
+   			useSintax = true;
    		break;
    		case UNL_NONE: default:
    			
@@ -348,6 +371,14 @@ int gb_system::process_rom_info(byte *rominfo,byte *logo1, byte *logo2)
 		rom->ROMsize=07; // assumption for now
 		rom->RAMsize=03; // assumption for now; Sango5 doesnt work with smaller
 		rom->carttype=0x1B;
+   } else if (useSintax) {
+   		rom->battery = true;
+		rom->bankType = MBC5;
+		memory_read = MEMORY_SINTAX;
+   		memory_write = MEMORY_SINTAX;
+   		rom->ROMsize=07; // assumption for now
+   		rom->RAMsize=03; // assumption for now
+   		rom->carttype=0x1B; // same
    }
       
    if(!strcmp(rom->name,"GB SMART CARD"))

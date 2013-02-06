@@ -43,6 +43,7 @@ enum memoryaccess
     MEMORY_MK12,
     MEMORY_POKE,
     MEMORY_NIUTOUDE,
+    MEMORY_SINTAX
 };
 
 enum
@@ -223,7 +224,7 @@ public:
 
    void writememory_MBC3(unsigned short address,register byte data);
 
-   void writememory_MBC5(unsigned short address,register byte data, bool isNiutoude);
+   void writememory_MBC5(unsigned short address,register byte data, bool isNiutoude, bool isSintax);
 
    void writememory_Camera(unsigned short address,register byte data);
 
@@ -238,6 +239,8 @@ public:
    void writememory_TAMA5(register unsigned short address,register byte data);
 
    byte readmemory_TAMA5(register unsigned short address);
+   
+   byte readmemory_sintax(register unsigned short address);
 
    void writememory_Rockman8(register unsigned short address,register byte data);
 
@@ -250,6 +253,8 @@ public:
    void writememory_MK12(register unsigned short address,register byte data);
 
    void writememory_poke(register unsigned short address,register byte data);
+   
+   void setXorForBank(byte bankNo);
 
    byte* memory;
    byte *cartRAM;
@@ -303,6 +308,13 @@ public:
    int tama_change_clock;
 
    int rumble_counter;
+   
+   byte sintax_mode;
+   byte sintax_xor2;
+   byte sintax_xor3;
+   byte sintax_xor4;
+   byte sintax_xor5;
+   byte sintax_currentxor;
 
    //Sound ---------------------------------------
    byte sound_buffer[4][735];

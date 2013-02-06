@@ -127,6 +127,9 @@ void init_menu_options()
       case UNL_NIUTOUDE:
          CheckMenuItem(menu,IDM_UNLNIUTOUDE,MF_CHECKED);       
       break;
+      case UNL_SINTAX:
+      	CheckMenuItem(menu,IDM_UNLSINTAX,MF_CHECKED);
+      break;
       default:
          CheckMenuItem(menu,IDM_UNLAUTO,MF_CHECKED);    
       break;

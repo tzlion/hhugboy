@@ -1176,19 +1176,29 @@ LRESULT CALLBACK WindowProcedure(HWND hwnd, UINT message, WPARAM wParam, LPARAM 
              	CheckMenuItem(menu,IDM_UNLAUTO,MF_CHECKED);
              	CheckMenuItem(menu,IDM_UNLNONE,MF_UNCHECKED);
              	CheckMenuItem(menu,IDM_UNLNIUTOUDE,MF_UNCHECKED);
+             	CheckMenuItem(menu,IDM_UNLSINTAX,MF_UNCHECKED);
         	 break;
         	 case IDM_UNLNONE:
         	 	options->unl_compat_mode = UNL_NONE;
              	CheckMenuItem(menu,IDM_UNLAUTO,MF_UNCHECKED);
              	CheckMenuItem(menu,IDM_UNLNONE,MF_CHECKED);
              	CheckMenuItem(menu,IDM_UNLNIUTOUDE,MF_UNCHECKED);
+             	CheckMenuItem(menu,IDM_UNLSINTAX,MF_UNCHECKED);
         	 break;
         	 case IDM_UNLNIUTOUDE:
         	 	options->unl_compat_mode = UNL_NIUTOUDE;
              	CheckMenuItem(menu,IDM_UNLAUTO,MF_UNCHECKED);
              	CheckMenuItem(menu,IDM_UNLNONE,MF_UNCHECKED);
              	CheckMenuItem(menu,IDM_UNLNIUTOUDE,MF_CHECKED);
+             	CheckMenuItem(menu,IDM_UNLSINTAX,MF_UNCHECKED);
         	 break;
+        	 case IDM_UNLSINTAX:
+        	 	options->unl_compat_mode = UNL_SINTAX;
+        	 	CheckMenuItem(menu,IDM_UNLAUTO,MF_UNCHECKED);
+             	CheckMenuItem(menu,IDM_UNLNONE,MF_UNCHECKED);
+             	CheckMenuItem(menu,IDM_UNLNIUTOUDE,MF_UNCHECKED);
+             	CheckMenuItem(menu,IDM_UNLSINTAX,MF_CHECKED);
+        	break;
              
              case IDM_CPUSPFS9:
                 if(options->speedup_skip_9frames)

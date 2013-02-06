@@ -195,7 +195,14 @@ gb_system::gb_system():
         tama_month(0),
         tama_change_clock(0),
 
-        rumble_counter(0)
+        rumble_counter(0),
+        
+        sintax_mode(0),
+        sintax_xor2(0),
+        sintax_xor3(0),
+        sintax_xor4(0),
+        sintax_xor5(0),
+        sintax_currentxor(0)
 {
    button_pressed[B_LEFT]=button_pressed[B_RIGHT]=button_pressed[B_DOWN]=button_pressed[B_UP]=1;
    button_pressed[B_START]=button_pressed[B_SELECT]=button_pressed[B_A]=button_pressed[B_B]=1;

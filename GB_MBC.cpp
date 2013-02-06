@@ -41,7 +41,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
 #include "debug.h"
 #include "zlib/zconf.h"
-
+#include <stdio.h>
 int maxROMbank[9] =
 {
  1, 3, 7, 15, 31, 63, 127, 255, 511
@@ -89,6 +89,8 @@ byte gb_system::readmemory(unsigned short address)
              return readmemory_HuC3(address);
          case MEMORY_TAMA5:
              return readmemory_TAMA5(address);
+    	 case MEMORY_SINTAX:
+    	 	return readmemory_sintax(address);
          default:
          case MEMORY_DEFAULT:
              return readmemory_default(address);
@@ -112,7 +114,7 @@ void gb_system::writememory(unsigned short address,byte data)
          break;
 
          case MEMORY_MBC5:
-             writememory_MBC5(address,data,false);
+             writememory_MBC5(address,data,false,false);
          break;
 
          case MEMORY_MBC7:
@@ -156,7 +158,11 @@ void gb_system::writememory(unsigned short address,byte data)
          break;
 
 		 case MEMORY_NIUTOUDE:
-		 	 writememory_MBC5(address,data,true);
+		 	 writememory_MBC5(address,data,true,false);
+		 break;
+		 
+		 case MEMORY_SINTAX:
+		 	 writememory_MBC5(address,data,false,true);
 		 break;
 
          default:
@@ -164,6 +170,28 @@ void gb_system::writememory(unsigned short address,byte data)
              writememory_default(address,data);
          break;
      }
+}
+
+void gb_system::setXorForBank(byte bankNo)
+{
+  	switch(bankNo & 0x0F) {
+	case 0x00: case 0x04: case 0x08: case 0x0C:
+		sintax_currentxor = sintax_xor2;
+		break;
+	case 0x01: case 0x05: case 0x09: case 0x0D:
+		sintax_currentxor = sintax_xor3;
+		break;
+	case 0x02: case 0x06: case 0x0A: case 0x0E:
+		sintax_currentxor = sintax_xor4;
+		break;
+	case 0x03: case 0x07: case 0x0B: case 0x0F:
+		sintax_currentxor = sintax_xor5;
+		break;
+  	}
+  	
+  	//char buff[200];
+  //	sprintf(buff,"bank no %x abbr %x xor %x",bankNo,bankNo&0x0F,sintax_currentxor);
+  //	debug_print(buff);
 }
 
 //-------------------------------------------------------------------------
@@ -180,6 +208,29 @@ byte gb_system::readmemory_default(register unsigned short address)
 
    return io_reg_read(address);
 }
+
+//-------------------------------------------------------------------------
+// readmemory_sintax:
+// for SiNTAX
+//-------------------------------------------------------------------------
+byte gb_system::readmemory_sintax(register unsigned short address)
+{            
+
+   if(address >= 0x4000 && address < 0x8000)
+   {
+   	byte data = io_reg_read(address);
+
+   	
+   	char buff[100];
+	sprintf(buff,"MBCLo %X Addr %X Data %X XOR %X XOR'd data %X",MBClo,address,data,sintax_currentxor, data ^ sintax_currentxor);
+	debug_print(buff);
+   	
+     return  data ^ sintax_currentxor;
+   }
+
+   return io_reg_read(address);
+}
+
 
 //-------------------------------------------------------------------------
 // readmemory_MBC3:
@@ -1045,7 +1096,7 @@ void gb_system::writememory_MBC3(register unsigned short address,register byte d
 // writememory_MBC5:
 // for MBC5 and MBC5 rumble
 //-------------------------------------------------------------------------
-void gb_system::writememory_MBC5(register unsigned short address,register byte data,bool isNiutoude)
+void gb_system::writememory_MBC5(register unsigned short address,register byte data,bool isNiutoude,bool isSintax)
 {
    if(address < 0x2000)// Is it a RAM bank enable/disable?
    {
@@ -1059,6 +1110,29 @@ void gb_system::writememory_MBC5(register unsigned short address,register byte d
       if (isNiutoude && address >= 0x2100) { // Increased from 2800.. Too far?
       	return;
       }
+      byte origData = data;
+      
+      if (isSintax) {
+      	switch(sintax_mode) {
+      		case 0x1D: {
+      			data = ((data & 0x03) << 6 ) + ( data >> 2 );
+      			break;
+      		}
+      		case 0x19:
+      			data = data;
+      			break;
+      		case 0x10:
+      			data = data;
+      			break;
+      	}
+      	
+      	setXorForBank(origData);
+    
+      }
+    
+	
+      // Set current xor so we dont have to figure it out on every read
+      
       rom_bank = data|(MBChi<<8); 
       cart_address = rom_bank<<14;
       
@@ -1070,6 +1144,14 @@ void gb_system::writememory_MBC5(register unsigned short address,register byte d
       mem_map[0x5] = &cartridge[cart_address+0x1000];
       mem_map[0x6] = &cartridge[cart_address+0x2000];
       mem_map[0x7] = &cartridge[cart_address+0x3000];
+      
+    //  if(origData == 0x69) {   
+	//    	char buff[100];
+	//		sprintf(buff,"%X %X %X",origData,data,cart_address);
+	//		debug_print(buff);
+    //  }
+
+	
       
       return;
    }
@@ -1094,7 +1176,30 @@ void gb_system::writememory_MBC5(register unsigned short address,register byte d
    }
    
    if(address < 0x6000) // Is it a RAM bank switch?
-   {               
+   {        
+
+   		// sintaxs not entirely understood addressing thing hi  
+   		if (isSintax && address >= 0x5000) {
+   		 switch(data) {
+   		 	case 0x1D:
+   		 	//	debug_print("Easy mode not implemented yet");
+   		 	break;
+   		 	case 0x19:
+   		 		debug_print("??? Mode not implemented yet");
+   		 	break;
+   		 	case 0x10:
+   		 		debug_print("LION mode not implemented yet");
+   		 	break;
+   		 	default:
+      		 	char buff[100];
+   		 		sprintf(buff,"Unknown Sintax Mode %d - probably won't work!",data);
+   		 		debug_print(buff);
+   			break;
+   		 }
+   		 sintax_mode=data;
+
+   		}
+   
       if(rom->rumble)
       {
          if(data&0x08)
@@ -1120,6 +1225,33 @@ void gb_system::writememory_MBC5(register unsigned short address,register byte d
    
    if(address<0x8000)
    {
+   		if ( isSintax && address >= 0x7000 ) {
+   			int xorNo = ( address & 0x00F0 ) >> 4;
+   			switch (xorNo) {
+   				case 2:
+   					sintax_xor2 = data;
+   				break;
+   				case 3:
+   					sintax_xor3 = data;
+   				break;
+   				case 4:
+   					sintax_xor4 = data;
+   				break;
+   				case 5:
+					sintax_xor5 = data;   					
+   				break;
+   			}
+   			
+   			if (sintax_currentxor == 0 ) {
+   				setXorForBank(4);
+   			}
+   	   	    
+   			
+   			return;
+   			
+   		}
+   	
+   	
     /*  if(++bc_select == 2 && rom->ROMsize>1) 
       {
          MBChi = (data&0xFF);
