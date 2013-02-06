@@ -2379,7 +2379,8 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
         if(options->halt_on_unknown_opcode)
         {
            char buffer[100];
-           sprintf(buffer,"%s PC:%x, %s:%x",str_table[ERROR_UNK_OPCODE],PC.W,str_table[ERROR_OPCODE],opcode);
+
+           sprintf(buffer,"%s PC:%x, %s:%x bank %x",str_table[ERROR_UNK_OPCODE],PC.W,str_table[ERROR_OPCODE],opcode,gb_system::MBClo);
            debug_print(buffer);  
 
            emulating = false;
