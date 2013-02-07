@@ -1132,6 +1132,12 @@ void gb_system::writememory_MBC5(register unsigned short address,register byte d
       			data = switchOrder( data, flips );
       			break;
       		}
+      		
+      		case 0x11: {
+      			byte flips[] = {7,6,1,0,3,2,5,4};
+      			data = switchOrder( data, flips );
+      			break;
+      		}
 
       	}
       	
@@ -1198,6 +1204,9 @@ void gb_system::writememory_MBC5(register unsigned short address,register byte d
    		 	break;
    		 	case 0x10:
    		 		// LiON
+   		 	break;
+   		 	case 0x11:
+   		 		//LANGRISSER
    		 	break;
    		 	default:
       		 	char buff[100];
