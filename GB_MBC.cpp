@@ -1115,15 +1115,24 @@ void gb_system::writememory_MBC5(register unsigned short address,register byte d
       if (isSintax) {
       	switch(sintax_mode) {
       		case 0x1D: {
-      			data = ((data & 0x03) << 6 ) + ( data >> 2 );
+      			byte flips[] = {6,7,0,1,2,3,4,5};
+      			data = switchOrder( data, flips );
+      			//data = ((data & 0x03) << 6 ) + ( data >> 2 );
       			break;
       		}
-      		case 0x19:
-      			data = data;
+      		case 0x19: {
+      		//	byte flips[] = {4,5,2,3,7,6,1,0}; // Monkey..no
+      			byte flips[] = {3,2,5,4,7,6,1,0};
+      			data = switchOrder( data, flips );
       			break;
-      		case 0x10:
-      			data = data;
+      		}
+
+      		case 0x10: {
+      			byte flips[] = {0,7,2,1,4,3,6,5};
+      			data = switchOrder( data, flips );
       			break;
+      		}
+
       	}
       	
       	setXorForBank(origData);
@@ -1182,13 +1191,13 @@ void gb_system::writememory_MBC5(register unsigned short address,register byte d
    		if (isSintax && address >= 0x5000) {
    		 switch(data) {
    		 	case 0x1D:
-   		 	//	debug_print("Easy mode not implemented yet");
+   		 		// easy
    		 	break;
    		 	case 0x19:
-   		 		debug_print("??? Mode not implemented yet");
+   		 	 	// ???
    		 	break;
    		 	case 0x10:
-   		 		debug_print("LION mode not implemented yet");
+   		 		// LiON
    		 	break;
    		 	default:
       		 	char buff[100];
