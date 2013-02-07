@@ -1113,28 +1113,35 @@ void gb_system::writememory_MBC5(register unsigned short address,register byte d
       byte origData = data;
       
       if (isSintax) {
-      	switch(sintax_mode) {
-      		case 0x1D: {
+      	switch(sintax_mode & 0x0f) {
+      		// Maybe these could go in a config file, so new ones can be added easily?
+      		case 0x0D: {
       			byte flips[] = {6,7,0,1,2,3,4,5};
       			data = switchOrder( data, flips );
       			//data = ((data & 0x03) << 6 ) + ( data >> 2 );
       			break;
       		}
-      		case 0x19: {
+      		case 0x09: {
       		//	byte flips[] = {4,5,2,3,7,6,1,0}; // Monkey..no
       			byte flips[] = {3,2,5,4,7,6,1,0};
       			data = switchOrder( data, flips );
       			break;
       		}
 
-      		case 0x10: {
+      		case 0x00: { // 0x10=lion 0x00 hmmmmm
       			byte flips[] = {0,7,2,1,4,3,6,5};
       			data = switchOrder( data, flips );
       			break;
       		}
       		
-      		case 0x11: {
+      		case 0x01: {
       			byte flips[] = {7,6,1,0,3,2,5,4};
+      			data = switchOrder( data, flips );
+      			break;
+      		}
+      		      		
+      		case 0x05: {
+      			byte flips[] = {0,1,6,7,4,5,2,3}; // Not 100% on this one
       			data = switchOrder( data, flips );
       			break;
       		}
@@ -1192,25 +1199,19 @@ void gb_system::writememory_MBC5(register unsigned short address,register byte d
    
    if(address < 0x6000) // Is it a RAM bank switch?
    {        
-
    		// sintaxs not entirely understood addressing thing hi  
    		if (isSintax && address >= 0x5000) {
-   		 switch(data) {
-   		 	case 0x1D:
-   		 		// easy
-   		 	break;
-   		 	case 0x19:
-   		 	 	// ???
-   		 	break;
-   		 	case 0x10:
-   		 		// LiON
-   		 	break;
-   		 	case 0x11:
-   		 		//LANGRISSER
+   		 switch(0x0F & data) {
+   		 	case 0x0D: // old
+   		 	case 0x09: // ???
+   		 	case 0x00:// case 0x10: // LiON, GoldenSun
+   		 	case 0x01: // LANGRISSER
+   		 	case 0x05: // Maple, PK Platinum
+   		 		// These are all supported
    		 	break;
    		 	default:
-      		 	char buff[100];
-   		 		sprintf(buff,"Unknown Sintax Mode %d - probably won't work!",data);
+	 			char buff[100];
+   		 		sprintf(buff,"Unknown Sintax Mode %X - probably won't work!",data);
    		 		debug_print(buff);
    			break;
    		 }
