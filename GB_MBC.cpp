@@ -1199,8 +1199,12 @@ void gb_system::writememory_MBC5(register unsigned short address,register byte d
    
    if(address < 0x6000) // Is it a RAM bank switch?
    {        
+
    		// sintaxs not entirely understood addressing thing hi  
-   		if (isSintax && address >= 0x5000) {
+   		
+   		// check sintax_mode was not already set; if it was, ignore it (otherwise Metal Max breaks)
+   		if (isSintax && sintax_mode ==0 && address >= 0x5000 ) {
+   					
    		 switch(0x0F & data) {
    		 	case 0x0D: // old
    		 	case 0x09: // ???
@@ -1209,9 +1213,10 @@ void gb_system::writememory_MBC5(register unsigned short address,register byte d
    		 	case 0x05: // Maple, PK Platinum
    		 		// These are all supported
    		 	break;
+
    		 	default:
 	 			char buff[100];
-   		 		sprintf(buff,"Unknown Sintax Mode %X - probably won't work!",data);
+   		 		sprintf(buff,"Unknown Sintax Mode %X Addr %X - probably won't work!",data,address);
    		 		debug_print(buff);
    			break;
    		 }
@@ -1249,6 +1254,7 @@ void gb_system::writememory_MBC5(register unsigned short address,register byte d
    if(address<0x8000)
    {
    		if ( isSintax && address >= 0x7000 ) {
+
    			int xorNo = ( address & 0x00F0 ) >> 4;
    			switch (xorNo) {
    				case 2:
