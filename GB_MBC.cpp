@@ -1128,7 +1128,7 @@ void gb_system::writememory_MBC5(register unsigned short address,register byte d
       			break;
       		}
 
-      		case 0x00: { // 0x10=lion 0x00 hmmmmm
+      		case 0x00: { // 0x10=lion 0x00 hmmmmm // 1 and 0 unconfirmed
       			byte flips[] = {0,7,2,1,4,3,6,5};
       			data = switchOrder( data, flips );
       			break;
@@ -1142,6 +1142,18 @@ void gb_system::writememory_MBC5(register unsigned short address,register byte d
       		      		
       		case 0x05: {
       			byte flips[] = {0,1,6,7,4,5,2,3}; // Not 100% on this one
+      			data = switchOrder( data, flips );
+      			break;
+      		}
+      		
+      		case 0x07: {
+      			byte flips[] = {5,7,4,6,2,3,0,1}; // 5 and 7 unconfirmed
+      			data = switchOrder( data, flips );
+      			break;
+      		}
+      		
+      		case 0x0B: {
+      			byte flips[] = {5,4,7,6,1,0,3,2}; // 5 and 6 unconfirmed
       			data = switchOrder( data, flips );
       			break;
       		}
@@ -1211,6 +1223,8 @@ void gb_system::writememory_MBC5(register unsigned short address,register byte d
    		 	case 0x00:// case 0x10: // LiON, GoldenSun
    		 	case 0x01: // LANGRISSER
    		 	case 0x05: // Maple, PK Platinum
+   		 	case 0x07: // Bynasty5
+   		 	case 0x0B: // Shaolin
    		 		// These are all supported
    		 	break;
 
