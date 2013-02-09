@@ -67,7 +67,7 @@ public:
 
    wchar_t rom_filename[ROM_FILENAME_SIZE];
    bool load_rom(const wchar_t* filename);
-   bool loadrom_zip(const char* filename);
+   bool loadrom_zip(const wchar_t* filename);
    bool romloaded;
    void crdtype(byte value,byte romsize,byte ramsize);
    int process_rom_info(byte *rominfo, byte *logo1, byte *logo2);

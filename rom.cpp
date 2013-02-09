@@ -564,29 +564,32 @@ int get_size(int real_size) // return good size to use
       return real_size;                                 
 }
 
-bool gb_system::loadrom_zip(const char* filename)
+bool gb_system::loadrom_zip(const wchar_t* filename)
 {
-	/*
+	
    memset(rom_filename,0,ROM_FILENAME_SIZE);  
 
-   char temp2[ROM_FILENAME_SIZE];
+   wchar_t temp2[ROM_FILENAME_SIZE];
 
-   char* temp = strrchr(filename,'\\'); // find last '\'
+   wchar_t* temp = wcsrchr(filename,'\\'); // find last '\'
    if(temp == NULL)
    {
-      strcpy(temp2,filename);
+      wcscpy(temp2,filename);
       
       temp = temp2;
    }
    else
       temp += 1;
       
-   strncpy(rom_filename,temp,strlen(temp)-4);
+   wcsncpy(rom_filename,temp,wcslen(temp)-4);
 
    byte rominfo[30];  
    
    romloaded = false;
-   unzFile unz = unzOpen(filename);
+   
+   char mFilename[ROM_FILENAME_SIZE];
+   wcstombs(mFilename,filename,ROM_FILENAME_SIZE);
+   unzFile unz = unzOpen(mFilename);
    if(unz == NULL)
    {
       debug_print(str_table[ERROR_OPEN_FILE]);
@@ -708,15 +711,15 @@ bool gb_system::loadrom_zip(const char* filename)
       rom->ROMsize--;
       
    romloaded = true;
-   */  // this ALL needs to be redone to support unicode
+
    return true;
 }
 
 bool gb_system::load_rom(const wchar_t* filename)
 {    
    // todo: Reinstate later... 
-   //if(strstr(filename,".zip") || strstr(filename,".ZIP"))
-   //   return loadrom_zip(filename);
+   if(wcsstr(filename,L".zip") || wcsstr(filename,L".ZIP"))
+      return loadrom_zip(filename);
         
    struct stat file_stat;
 

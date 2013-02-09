@@ -20,7 +20,7 @@ ObjectOutput=
 OverrideOutput=1
 OverrideOutputName=unGEST.exe
 HostApplication=
-Folders=
+Folders=gfx,input,rom,sound,ui,zip
 CommandLine=
 UseCustomMakefile=0
 CustomMakefile=
@@ -34,7 +34,7 @@ LogOutputEnabled=0
 [Unit1]
 FileName=..\strings.cpp
 CompileCpp=1
-Folder=GEST
+Folder=ui
 Compile=1
 Link=1
 Priority=1000
@@ -44,7 +44,7 @@ BuildCmd=
 [Unit2]
 FileName=..\cheats.cpp
 CompileCpp=1
-Folder=GEST
+Folder=
 Compile=1
 Link=1
 Priority=1000
@@ -54,7 +54,7 @@ BuildCmd=
 [Unit3]
 FileName=..\config.cpp
 CompileCpp=1
-Folder=GEST
+Folder=
 Compile=1
 Link=1
 Priority=1000
@@ -64,7 +64,7 @@ BuildCmd=
 [Unit4]
 FileName=..\cpu.cpp
 CompileCpp=1
-Folder=GEST
+Folder=
 Compile=1
 Link=1
 Priority=1000
@@ -74,7 +74,7 @@ BuildCmd=
 [Unit5]
 FileName=..\debug.cpp
 CompileCpp=1
-Folder=GEST
+Folder=
 Compile=1
 Link=1
 Priority=1000
@@ -84,7 +84,7 @@ BuildCmd=
 [Unit6]
 FileName=..\devices.cpp
 CompileCpp=1
-Folder=GEST
+Folder=
 Compile=1
 Link=1
 Priority=1000
@@ -94,7 +94,7 @@ BuildCmd=
 [Unit7]
 FileName=..\dialogs.cpp
 CompileCpp=1
-Folder=GEST
+Folder=ui
 Compile=1
 Link=1
 Priority=1000
@@ -104,7 +104,7 @@ BuildCmd=
 [Unit8]
 FileName=..\directdraw.cpp
 CompileCpp=1
-Folder=GEST
+Folder=gfx
 Compile=1
 Link=1
 Priority=1000
@@ -114,7 +114,7 @@ BuildCmd=
 [Unit9]
 FileName=..\directinput.cpp
 CompileCpp=1
-Folder=GEST
+Folder=input
 Compile=1
 Link=1
 Priority=1000
@@ -124,7 +124,7 @@ BuildCmd=
 [Unit10]
 FileName=..\GB.cpp
 CompileCpp=1
-Folder=GEST
+Folder=
 Compile=1
 Link=1
 Priority=1000
@@ -134,7 +134,7 @@ BuildCmd=
 [Unit11]
 FileName=..\GB_gfx.cpp
 CompileCpp=1
-Folder=GEST
+Folder=gfx
 Compile=1
 Link=1
 Priority=1000
@@ -144,7 +144,7 @@ BuildCmd=
 [Unit12]
 FileName=..\GB_ioregs.cpp
 CompileCpp=1
-Folder=GEST
+Folder=
 Compile=1
 Link=1
 Priority=1000
@@ -154,7 +154,7 @@ BuildCmd=
 [Unit13]
 FileName=..\GB_MBC.cpp
 CompileCpp=1
-Folder=GEST
+Folder=rom
 Compile=1
 Link=1
 Priority=1000
@@ -164,7 +164,7 @@ BuildCmd=
 [Unit14]
 FileName=..\GB_mem.cpp
 CompileCpp=1
-Folder=GEST
+Folder=
 Compile=1
 Link=1
 Priority=1000
@@ -174,7 +174,7 @@ BuildCmd=
 [Unit15]
 FileName=..\GB_sound.cpp
 CompileCpp=1
-Folder=GEST
+Folder=sound
 Compile=1
 Link=1
 Priority=1000
@@ -184,7 +184,7 @@ BuildCmd=
 [Unit16]
 FileName=..\main.cpp
 CompileCpp=1
-Folder=GEST
+Folder=
 Compile=1
 Link=1
 Priority=1000
@@ -194,7 +194,7 @@ BuildCmd=
 [Unit17]
 FileName=..\mainloop.cpp
 CompileCpp=1
-Folder=GEST
+Folder=
 Compile=1
 Link=1
 Priority=1000
@@ -204,7 +204,7 @@ BuildCmd=
 [Unit18]
 FileName=..\render.cpp
 CompileCpp=1
-Folder=GEST
+Folder=gfx
 Compile=1
 Link=1
 Priority=1000
@@ -214,7 +214,7 @@ BuildCmd=
 [Unit19]
 FileName=..\rom.cpp
 CompileCpp=1
-Folder=GEST
+Folder=rom
 Compile=1
 Link=1
 Priority=1000
@@ -224,7 +224,7 @@ BuildCmd=
 [Unit20]
 FileName=..\scale2x.cpp
 CompileCpp=1
-Folder=GEST
+Folder=gfx
 Compile=1
 Link=1
 Priority=1000
@@ -234,7 +234,7 @@ BuildCmd=
 [Unit21]
 FileName=..\scale3x.cpp
 CompileCpp=1
-Folder=GEST
+Folder=gfx
 Compile=1
 Link=1
 Priority=1000
@@ -244,7 +244,7 @@ BuildCmd=
 [Unit22]
 FileName=..\SGB.cpp
 CompileCpp=1
-Folder=GEST
+Folder=
 Compile=1
 Link=1
 Priority=1000
@@ -254,7 +254,7 @@ BuildCmd=
 [Unit23]
 FileName=..\cheats.h
 CompileCpp=1
-Folder=GEST
+Folder=
 Compile=1
 Link=1
 Priority=1000
@@ -264,7 +264,7 @@ BuildCmd=
 [Unit24]
 FileName=..\config.h
 CompileCpp=1
-Folder=GEST
+Folder=
 Compile=1
 Link=1
 Priority=1000
@@ -274,7 +274,7 @@ BuildCmd=
 [Unit25]
 FileName=..\cpu.h
 CompileCpp=1
-Folder=GEST
+Folder=
 Compile=1
 Link=1
 Priority=1000
@@ -284,7 +284,7 @@ BuildCmd=
 [Unit26]
 FileName=..\cpucore.h
 CompileCpp=1
-Folder=GEST
+Folder=
 Compile=1
 Link=1
 Priority=1000
@@ -294,7 +294,7 @@ BuildCmd=
 [Unit27]
 FileName=..\debug.h
 CompileCpp=1
-Folder=GEST
+Folder=
 Compile=1
 Link=1
 Priority=1000
@@ -304,7 +304,7 @@ BuildCmd=
 [Unit28]
 FileName=..\devices.h
 CompileCpp=1
-Folder=GEST
+Folder=
 Compile=1
 Link=1
 Priority=1000
@@ -314,7 +314,7 @@ BuildCmd=
 [Unit29]
 FileName=..\dialogs.h
 CompileCpp=1
-Folder=GEST
+Folder=ui
 Compile=1
 Link=1
 Priority=1000
@@ -324,7 +324,7 @@ BuildCmd=
 [Unit30]
 FileName=..\directdraw.h
 CompileCpp=1
-Folder=GEST
+Folder=gfx
 Compile=1
 Link=1
 Priority=1000
@@ -334,7 +334,7 @@ BuildCmd=
 [Unit31]
 FileName=..\directinput.h
 CompileCpp=1
-Folder=GEST
+Folder=input
 Compile=1
 Link=1
 Priority=1000
@@ -344,7 +344,7 @@ BuildCmd=
 [Unit32]
 FileName=..\GB.h
 CompileCpp=1
-Folder=GEST
+Folder=
 Compile=1
 Link=1
 Priority=1000
@@ -354,7 +354,7 @@ BuildCmd=
 [Unit33]
 FileName=..\GB_gfx.h
 CompileCpp=1
-Folder=GEST
+Folder=gfx
 Compile=1
 Link=1
 Priority=1000
@@ -364,7 +364,7 @@ BuildCmd=
 [Unit34]
 FileName=..\keynames.h
 CompileCpp=1
-Folder=GEST
+Folder=input
 Compile=1
 Link=1
 Priority=1000
@@ -374,7 +374,7 @@ BuildCmd=
 [Unit35]
 FileName=..\licnames.h
 CompileCpp=1
-Folder=GEST
+Folder=
 Compile=1
 Link=1
 Priority=1000
@@ -384,7 +384,7 @@ BuildCmd=
 [Unit36]
 FileName=..\main.h
 CompileCpp=1
-Folder=GEST
+Folder=
 Compile=1
 Link=1
 Priority=1000
@@ -394,7 +394,7 @@ BuildCmd=
 [Unit37]
 FileName=..\mainloop.h
 CompileCpp=1
-Folder=GEST
+Folder=
 Compile=1
 Link=1
 Priority=1000
@@ -404,7 +404,7 @@ BuildCmd=
 [Unit38]
 FileName=..\render.h
 CompileCpp=1
-Folder=GEST
+Folder=gfx
 Compile=1
 Link=1
 Priority=1000
@@ -414,7 +414,7 @@ BuildCmd=
 [Unit39]
 FileName=..\rom.h
 CompileCpp=1
-Folder=GEST
+Folder=rom
 Compile=1
 Link=1
 Priority=1000
@@ -424,7 +424,7 @@ BuildCmd=
 [Unit40]
 FileName=..\scale2x.h
 CompileCpp=1
-Folder=GEST
+Folder=gfx
 Compile=1
 Link=1
 Priority=1000
@@ -434,7 +434,7 @@ BuildCmd=
 [Unit41]
 FileName=..\scale3x.h
 CompileCpp=1
-Folder=GEST
+Folder=gfx
 Compile=1
 Link=1
 Priority=1000
@@ -444,7 +444,7 @@ BuildCmd=
 [Unit42]
 FileName=..\SGB.h
 CompileCpp=1
-Folder=GEST
+Folder=
 Compile=1
 Link=1
 Priority=1000
@@ -454,7 +454,7 @@ BuildCmd=
 [Unit43]
 FileName=..\sound.h
 CompileCpp=1
-Folder=GEST
+Folder=sound
 Compile=1
 Link=1
 Priority=1000
@@ -464,7 +464,7 @@ BuildCmd=
 [Unit44]
 FileName=..\strings.h
 CompileCpp=1
-Folder=GEST
+Folder=ui
 Compile=1
 Link=1
 Priority=1000
@@ -474,7 +474,7 @@ BuildCmd=
 [Unit45]
 FileName=..\types.h
 CompileCpp=1
-Folder=GEST
+Folder=
 Compile=1
 Link=1
 Priority=1000
@@ -483,7 +483,7 @@ BuildCmd=
 
 [Unit46]
 FileName=..\menu.rc
-Folder=GEST
+Folder=ui
 Compile=1
 Link=0
 Priority=1000
@@ -493,7 +493,7 @@ BuildCmd=
 [Unit47]
 FileName=..\zlib\unzip.c
 CompileCpp=1
-Folder=GEST
+Folder=zip
 Compile=1
 Link=1
 Priority=1000
@@ -503,7 +503,7 @@ BuildCmd=
 [Unit48]
 FileName=..\zlib\unzip.h
 CompileCpp=1
-Folder=GEST
+Folder=zip
 Compile=1
 Link=1
 Priority=1000
@@ -513,7 +513,7 @@ BuildCmd=
 [Unit49]
 FileName=..\zlib\zconf.h
 CompileCpp=1
-Folder=GEST
+Folder=zip
 Compile=1
 Link=1
 Priority=1000
@@ -523,7 +523,7 @@ BuildCmd=
 [Unit50]
 FileName=..\zlib\zlib.h
 CompileCpp=1
-Folder=GEST
+Folder=zip
 Compile=1
 Link=1
 Priority=1000
@@ -534,18 +534,18 @@ BuildCmd=
 Major=0
 Minor=2
 Release=2
-Build=148
+Build=185
 LanguageID=2057
 CharsetID=1252
 CompanyName=
-FileVersion=0.2.2.148
+FileVersion=0.2.2.185
 FileDescription=unGEST GB emulator
 InternalName=
 LegalCopyright=
 LegalTrademarks=
 OriginalFilename=gest.exe
 ProductName=unGEST
-ProductVersion=0.2.2.148
+ProductVersion=0.2.2.185
 AutoIncBuildNr=1
 SyncProduct=1
 
