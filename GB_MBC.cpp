@@ -1106,8 +1106,10 @@ void gb_system::writememory_MBC5(register unsigned short address,register byte d
    
    if(address < 0x3000)
    {    
-   
-      if (isNiutoude && address >= 0x2100) { // Increased from 2800.. Too far?
+	   	// 2100 needs to be not-ignored (for Cannon Fodder's sound)
+	   	// but 2180 DOES need to be ignored (for FF DX3)
+	   	// Determined to find the right number here
+      if (isNiutoude && address > 0x2100) {
       	return;
       }
       byte origData = data;

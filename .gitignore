@@ -4,3 +4,4 @@ devcpp/*.exe
 devcpp/*.cfg
 *.layout
 devcpp/*.res
+*.st0
