@@ -64,8 +64,8 @@ program_configuration::program_configuration():
         video_frameskip(0),
         video_sprite_limit(true),
         video_LCDoff_clear_screen(true),
-        video_filter(VIDEO_FILTER_NONE),
-        video_SGBborder_filter(VIDEO_FILTER_NONE),
+        video_filter(VIDEO_FILTER_SOFTXX),
+        video_SGBborder_filter(VIDEO_FILTER_SOFTXX),
         video_filter_use_mmx(true),
         video_visual_rumble(true),
         sound_on(1),
@@ -190,6 +190,12 @@ void init_menu_options()
          border_filter_width = 2;
          border_filter_height = 2;
       break;   
+      case VIDEO_FILTER_SOFTXX:
+         CheckMenuItem(menu,IDM_VIDEOFILTERBORDERSOFTXX,MF_CHECKED);  
+         
+         border_filter_width = 8;
+         border_filter_height = 8;
+      break;  
       case VIDEO_FILTER_SCALE2X:
          CheckMenuItem(menu,IDM_VIDEOFILTERBORDERSCALE2X,MF_CHECKED);  
          
@@ -215,7 +221,7 @@ void init_menu_options()
          CheckMenuItem(menu,IDM_VIDEOFILTERBORDERNONE,MF_CHECKED);
          border_filter_width = 1;
          border_filter_height = 1;         
-      break;
+      break; 
    }
  
    switch(options->video_filter)
@@ -227,7 +233,15 @@ void init_menu_options()
          filter_height = 2;
                    
          change_filter(); 
-      break;   
+      break;  
+      case VIDEO_FILTER_SOFTXX:
+         CheckMenuItem(menu,IDM_VIDEOFILTERSOFTXX,MF_CHECKED);  
+         
+         filter_width = 8;
+         filter_height = 8;
+                   
+         change_filter(); 
+      break;  
       case VIDEO_FILTER_SCALE2X:
          CheckMenuItem(menu,IDM_VIDEOFILTERSCALE2X,MF_CHECKED);  
          
@@ -262,7 +276,7 @@ void init_menu_options()
          filter_height = 1;        
          
          change_filter(); 
-      break;
+      break;  
    }
 
    if(!options->video_visual_rumble)

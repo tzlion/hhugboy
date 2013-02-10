@@ -297,7 +297,7 @@ BEGIN
                     MENUITEM "S&ound Off", IDM_CPUSPSNDOFF
                 END
                 MENUITEM "&Halt on Unknown Opcode", IDM_CPUOPCODE, CHECKED
-                MENUITEM "Reduce CPU &Usage", IDM_OPTIONCPUUSAGE
+                MENUITEM "Reduce &CPU Usage", IDM_OPTIONCPUUSAGE
                 MENUITEM SEPARATOR
                 MENUITEM "&Game Genie...", IDM_CHEATS
         END
@@ -317,23 +317,25 @@ BEGIN
          END
          POPUP "GB &Filter"
          BEGIN
-            MENUITEM "&None", IDM_VIDEOFILTERNONE
-            MENUITEM "&Software 2x", IDM_VIDEOFILTERSOFT2X
-            MENUITEM "&Scale 2x", IDM_VIDEOFILTERSCALE2X
-            MENUITEM "&Scale 3x", IDM_VIDEOFILTERSCALE3X
+            MENUITEM "&Off", IDM_VIDEOFILTERNONE
+            MENUITEM "&Nearest Neighbour to 2x", IDM_VIDEOFILTERSOFT2X
+            MENUITEM "Nearest Neighbour to &8x", IDM_VIDEOFILTERSOFTXX
+            MENUITEM "Scale &2x", IDM_VIDEOFILTERSCALE2X
+            MENUITEM "Scale &3x", IDM_VIDEOFILTERSCALE3X
             //MENUITEM "&Blur", IDM_VIDEOFILTERBLUR
             MENUITEM SEPARATOR
             MENUITEM "&Use MMX", IDM_VIDEOFILTERUSEMMX            
          END         
          POPUP "Border F&ilter"
          BEGIN
-            MENUITEM "&None", IDM_VIDEOFILTERBORDERNONE
-            MENUITEM "&Software 2x", IDM_VIDEOFILTERBORDERSOFT2X
-            MENUITEM "&Scale 2x", IDM_VIDEOFILTERBORDERSCALE2X
-            MENUITEM "&Scale 3x", IDM_VIDEOFILTERBORDERSCALE3X            
+            MENUITEM "&Off", IDM_VIDEOFILTERBORDERNONE
+            MENUITEM "&Nearest Neighbour to 2x", IDM_VIDEOFILTERBORDERSOFT2X
+            MENUITEM "Nearest Neighbour to &8x", IDM_VIDEOFILTERBORDERSOFTXX
+            MENUITEM "Scale &2x", IDM_VIDEOFILTERBORDERSCALE2X
+            MENUITEM "Scale &3x", IDM_VIDEOFILTERBORDERSCALE3X            
             //MENUITEM "&Blur", IDM_VIDEOFILTERBORDERBLUR
          END                  
-         POPUP "&Frame skip"
+         POPUP "Frame &skip"
          BEGIN
             MENUITEM "&Auto Frameskip", IDM_OPTIONVIDEOFSAUTO
             MENUITEM SEPARATOR         
@@ -362,9 +364,9 @@ BEGIN
             MENUITEM "&Sprites\tF7", IDM_OPTIONVIDEOENSPRITE, CHECKED
          END
          MENUITEM "&Realistic GBC/GBA Colors", IDM_OPTIONVIDEOGBCCOLORS
-         MENUITEM "&Sprite Limit", IDM_OPTIONVIDEOSPRLIM, CHECKED
+         MENUITEM "Sprite &Limit", IDM_OPTIONVIDEOSPRLIM, CHECKED
          MENUITEM SEPARATOR
-         MENUITEM "Empty Screen when &LCD Off", IDM_OPTIONVIDEOLCDOFF, CHECKED
+         MENUITEM "Empty Screen when LCD &Off", IDM_OPTIONVIDEOLCDOFF, CHECKED
          MENUITEM "&Visual Rumble", IDM_OPTIONVIDEOVISUALRUMBLE, CHECKED
       END
 

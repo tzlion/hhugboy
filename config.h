@@ -49,7 +49,8 @@ enum videofiltertype
     VIDEO_FILTER_SOFT2X = 1,
     VIDEO_FILTER_SCALE2X = 2,
     VIDEO_FILTER_BLUR = 3,
-    VIDEO_FILTER_SCALE3X = 4
+    VIDEO_FILTER_SCALE3X = 4,
+    VIDEO_FILTER_SOFTXX = 5
 };
 
 enum soundvolumetype

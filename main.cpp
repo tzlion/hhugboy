@@ -1402,7 +1402,8 @@ LRESULT CALLBACK WindowProcedure(HWND hwnd, UINT message, WPARAM wParam, LPARAM 
                    CheckMenuItem(menu,IDM_VIDEOFILTERSOFT2X,MF_UNCHECKED);              
                    CheckMenuItem(menu,IDM_VIDEOFILTERSCALE2X,MF_UNCHECKED);
                    CheckMenuItem(menu,IDM_VIDEOFILTERSCALE3X,MF_UNCHECKED);                   
-                   CheckMenuItem(menu,IDM_VIDEOFILTERBLUR,MF_UNCHECKED);                                                     
+                   CheckMenuItem(menu,IDM_VIDEOFILTERBLUR,MF_UNCHECKED);     
+				   CheckMenuItem(menu,IDM_VIDEOFILTERSOFTXX,MF_UNCHECKED);                                                 
                                                      
                    options->video_filter = VIDEO_FILTER_NONE;
                    filter_width = 1;
@@ -1418,7 +1419,8 @@ LRESULT CALLBACK WindowProcedure(HWND hwnd, UINT message, WPARAM wParam, LPARAM 
                    CheckMenuItem(menu,IDM_VIDEOFILTERNONE,MF_UNCHECKED); 
                    CheckMenuItem(menu,IDM_VIDEOFILTERSCALE2X,MF_UNCHECKED);
                    CheckMenuItem(menu,IDM_VIDEOFILTERSCALE3X,MF_UNCHECKED);                   
-                   CheckMenuItem(menu,IDM_VIDEOFILTERBLUR,MF_UNCHECKED);                                  
+                   CheckMenuItem(menu,IDM_VIDEOFILTERBLUR,MF_UNCHECKED); 
+				   CheckMenuItem(menu,IDM_VIDEOFILTERSOFTXX,MF_UNCHECKED);                                  
                                                      
                    options->video_filter = VIDEO_FILTER_SOFT2X;
                    filter_width=2;
@@ -1427,6 +1429,23 @@ LRESULT CALLBACK WindowProcedure(HWND hwnd, UINT message, WPARAM wParam, LPARAM 
                    change_filter();
                 }
              break;     
+             case IDM_VIDEOFILTERSOFTXX:
+                if(options->video_filter != VIDEO_FILTER_SOFTXX)
+                {
+                   CheckMenuItem(menu,IDM_VIDEOFILTERSOFT2X,MF_UNCHECKED);
+                   CheckMenuItem(menu,IDM_VIDEOFILTERNONE,MF_UNCHECKED); 
+                   CheckMenuItem(menu,IDM_VIDEOFILTERSCALE2X,MF_UNCHECKED);
+                   CheckMenuItem(menu,IDM_VIDEOFILTERSCALE3X,MF_UNCHECKED);                   
+                   CheckMenuItem(menu,IDM_VIDEOFILTERBLUR,MF_UNCHECKED); 
+				   CheckMenuItem(menu,IDM_VIDEOFILTERSOFTXX,MF_CHECKED);                                  
+                                                     
+                   options->video_filter = VIDEO_FILTER_SOFTXX;
+                   filter_width=8;
+                   filter_height=8;
+                   
+                   change_filter();
+                }
+             break;   
              case IDM_VIDEOFILTERSCALE2X:
                 if(options->video_filter != VIDEO_FILTER_SCALE2X)
                 {
@@ -1434,7 +1453,8 @@ LRESULT CALLBACK WindowProcedure(HWND hwnd, UINT message, WPARAM wParam, LPARAM 
                    CheckMenuItem(menu,IDM_VIDEOFILTERNONE,MF_UNCHECKED); 
                    CheckMenuItem(menu,IDM_VIDEOFILTERSOFT2X,MF_UNCHECKED);
                    CheckMenuItem(menu,IDM_VIDEOFILTERSCALE3X,MF_UNCHECKED);                    
-                   CheckMenuItem(menu,IDM_VIDEOFILTERBLUR,MF_UNCHECKED);                                  
+                   CheckMenuItem(menu,IDM_VIDEOFILTERBLUR,MF_UNCHECKED);  
+				   CheckMenuItem(menu,IDM_VIDEOFILTERSOFTXX,MF_UNCHECKED);                                 
                    
                    options->video_filter = VIDEO_FILTER_SCALE2X;
                    filter_width=2;
@@ -1450,7 +1470,8 @@ LRESULT CALLBACK WindowProcedure(HWND hwnd, UINT message, WPARAM wParam, LPARAM 
                    CheckMenuItem(menu,IDM_VIDEOFILTERSCALE2X,MF_UNCHECKED);                   
                    CheckMenuItem(menu,IDM_VIDEOFILTERNONE,MF_UNCHECKED); 
                    CheckMenuItem(menu,IDM_VIDEOFILTERSOFT2X,MF_UNCHECKED); 
-                   CheckMenuItem(menu,IDM_VIDEOFILTERBLUR,MF_UNCHECKED);                                  
+                   CheckMenuItem(menu,IDM_VIDEOFILTERBLUR,MF_UNCHECKED);   
+				   CheckMenuItem(menu,IDM_VIDEOFILTERSOFTXX,MF_UNCHECKED);                                
                    
                    options->video_filter = VIDEO_FILTER_SCALE3X;
                    filter_width=3;
@@ -1467,6 +1488,7 @@ LRESULT CALLBACK WindowProcedure(HWND hwnd, UINT message, WPARAM wParam, LPARAM 
                    CheckMenuItem(menu,IDM_VIDEOFILTERSCALE3X,MF_UNCHECKED);                   
                    CheckMenuItem(menu,IDM_VIDEOFILTERNONE,MF_UNCHECKED); 
                    CheckMenuItem(menu,IDM_VIDEOFILTERSOFT2X,MF_UNCHECKED); 
+                   CheckMenuItem(menu,IDM_VIDEOFILTERSOFTXX,MF_UNCHECKED); 
                                   
                    options->video_filter = VIDEO_FILTER_BLUR;
                    filter_width=2;
@@ -1491,7 +1513,8 @@ LRESULT CALLBACK WindowProcedure(HWND hwnd, UINT message, WPARAM wParam, LPARAM 
                 if(options->video_SGBborder_filter != VIDEO_FILTER_NONE)
                 {
                    CheckMenuItem(menu,IDM_VIDEOFILTERBORDERNONE,MF_CHECKED);
-                   CheckMenuItem(menu,IDM_VIDEOFILTERBORDERSOFT2X,MF_UNCHECKED);              
+                   CheckMenuItem(menu,IDM_VIDEOFILTERBORDERSOFT2X,MF_UNCHECKED);           
+				   CheckMenuItem(menu,IDM_VIDEOFILTERBORDERSOFTXX,MF_UNCHECKED);    
                    CheckMenuItem(menu,IDM_VIDEOFILTERBORDERSCALE2X,MF_UNCHECKED);
                    CheckMenuItem(menu,IDM_VIDEOFILTERBORDERSCALE3X,MF_UNCHECKED);                   
                    CheckMenuItem(menu,IDM_VIDEOFILTERBORDERBLUR,MF_UNCHECKED);                                                     
@@ -1507,6 +1530,7 @@ LRESULT CALLBACK WindowProcedure(HWND hwnd, UINT message, WPARAM wParam, LPARAM 
                 if(options->video_SGBborder_filter != VIDEO_FILTER_SOFT2X)
                 {
                    CheckMenuItem(menu,IDM_VIDEOFILTERBORDERSOFT2X,MF_CHECKED);
+                   CheckMenuItem(menu,IDM_VIDEOFILTERBORDERSOFTXX,MF_UNCHECKED);    
                    CheckMenuItem(menu,IDM_VIDEOFILTERBORDERNONE,MF_UNCHECKED); 
                    CheckMenuItem(menu,IDM_VIDEOFILTERBORDERSCALE2X,MF_UNCHECKED);
                    CheckMenuItem(menu,IDM_VIDEOFILTERBORDERSCALE3X,MF_UNCHECKED);                   
@@ -1519,10 +1543,28 @@ LRESULT CALLBACK WindowProcedure(HWND hwnd, UINT message, WPARAM wParam, LPARAM 
                    change_filter();
                 }
              break;     
+             case IDM_VIDEOFILTERBORDERSOFTXX:
+                if(options->video_SGBborder_filter != VIDEO_FILTER_SOFTXX)
+                {
+                   CheckMenuItem(menu,IDM_VIDEOFILTERBORDERSOFT2X,MF_UNCHECKED);
+                   CheckMenuItem(menu,IDM_VIDEOFILTERBORDERSOFTXX,MF_CHECKED);    
+                   CheckMenuItem(menu,IDM_VIDEOFILTERBORDERNONE,MF_UNCHECKED); 
+                   CheckMenuItem(menu,IDM_VIDEOFILTERBORDERSCALE2X,MF_UNCHECKED);
+                   CheckMenuItem(menu,IDM_VIDEOFILTERBORDERSCALE3X,MF_UNCHECKED);                   
+                   CheckMenuItem(menu,IDM_VIDEOFILTERBORDERBLUR,MF_UNCHECKED);                                  
+                                                     
+                   options->video_SGBborder_filter = VIDEO_FILTER_SOFTXX;
+                   border_filter_width=8;
+                   border_filter_height=8;
+                   
+                   change_filter();
+                }
+             break;   
              case IDM_VIDEOFILTERBORDERSCALE2X:
                 if(options->video_SGBborder_filter != VIDEO_FILTER_SCALE2X)
                 {
                    CheckMenuItem(menu,IDM_VIDEOFILTERBORDERSCALE2X,MF_CHECKED);
+                   CheckMenuItem(menu,IDM_VIDEOFILTERBORDERSOFTXX,MF_UNCHECKED);    
                    CheckMenuItem(menu,IDM_VIDEOFILTERBORDERNONE,MF_UNCHECKED); 
                    CheckMenuItem(menu,IDM_VIDEOFILTERBORDERSOFT2X,MF_UNCHECKED); 
                    CheckMenuItem(menu,IDM_VIDEOFILTERBORDERSCALE3X,MF_UNCHECKED);                   
@@ -1538,7 +1580,8 @@ LRESULT CALLBACK WindowProcedure(HWND hwnd, UINT message, WPARAM wParam, LPARAM 
              case IDM_VIDEOFILTERBORDERSCALE3X:
                 if(options->video_SGBborder_filter != VIDEO_FILTER_SCALE3X)
                 {
-                   CheckMenuItem(menu,IDM_VIDEOFILTERBORDERSCALE3X,MF_CHECKED);                  
+                   CheckMenuItem(menu,IDM_VIDEOFILTERBORDERSCALE3X,MF_CHECKED);     
+				   CheckMenuItem(menu,IDM_VIDEOFILTERBORDERSOFTXX,MF_UNCHECKED);                 
                    CheckMenuItem(menu,IDM_VIDEOFILTERBORDERSCALE2X,MF_UNCHECKED);
                    CheckMenuItem(menu,IDM_VIDEOFILTERBORDERNONE,MF_UNCHECKED); 
                    CheckMenuItem(menu,IDM_VIDEOFILTERBORDERSOFT2X,MF_UNCHECKED); 
@@ -1554,7 +1597,8 @@ LRESULT CALLBACK WindowProcedure(HWND hwnd, UINT message, WPARAM wParam, LPARAM 
              case IDM_VIDEOFILTERBORDERBLUR:
                 if(options->video_SGBborder_filter != VIDEO_FILTER_BLUR)
                 {
-                   CheckMenuItem(menu,IDM_VIDEOFILTERBORDERBLUR,MF_CHECKED);                
+                   CheckMenuItem(menu,IDM_VIDEOFILTERBORDERBLUR,MF_CHECKED);        
+				   CheckMenuItem(menu,IDM_VIDEOFILTERBORDERSOFTXX,MF_UNCHECKED);            
                    CheckMenuItem(menu,IDM_VIDEOFILTERBORDERSCALE2X,MF_UNCHECKED);
                    CheckMenuItem(menu,IDM_VIDEOFILTERBORDERSCALE3X,MF_UNCHECKED);                   
                    CheckMenuItem(menu,IDM_VIDEOFILTERBORDERNONE,MF_UNCHECKED); 

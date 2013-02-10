@@ -285,39 +285,46 @@ void filter_none_16(WORD *pointer,WORD *source,int width,int height,int pitch)
    copy_line16(pointer,source,width*height);
 }
 
-void software2x_16(WORD *pointer,WORD *source,int width,int height,int pitch)
+void softwarexx_16(WORD *pointer,WORD *source,int width,int height,int pitch)
 {
    register WORD *target;
    WORD* init = source;
    
+	// filter_height indicates scale 
    for(register int y = 0;y < height*filter_height;y++)
    { 
       target = pointer + y*pitch;
-      source = init + (y>>1)*width;
-      for(int x = 0;x < width;x++)
+      source = init + (y/filter_height)*width;
+      for(int x = 0;x < width; x++)
       {
-         *target++ = *source;
-         *target++ = *source++;                                    
-      } 
-   } 
+      	 for (int s = 0; s < filter_height - 1; s++) {
+      	 	*target++ = *source;
+      	 }
+         *target++ = *source++;
+      }
+  }
 }
 
-void software2x_32(DWORD *pointer,DWORD *source,int width,int height,int pitch)
+void softwarexx_32(DWORD *pointer,DWORD *source,int width,int height,int pitch)
 {
    register DWORD *target;
    DWORD* init = source;
-    
+
+	// filter_height indicates scale 
    for(register int y = 0;y < height*filter_height;y++)
    { 
       target = pointer + y*pitch;
-      source = init + (y>>1)*width;
+      source = init + (y/filter_height)*width;
       for(int x = 0;x < width; x++)
       {
-         *target++ = *source;
+      	 for (int s = 0; s < filter_height - 1; s++) {
+      	 	*target++ = *source;
+      	 }
          *target++ = *source++;
       }
-   } 
+  }
 }
+
 /*
 void blur_32(DWORD *pointer,DWORD *source,int width,int height,int pitch)
 {
@@ -577,7 +584,8 @@ bool change_filter()
       switch(options->video_filter)
       {
       case VIDEO_FILTER_SOFT2X:
-         filter_f_16 = software2x_16;      
+      case VIDEO_FILTER_SOFTXX:
+         filter_f_16 = softwarexx_16;      
       break;
       case VIDEO_FILTER_SCALE2X:
          filter_f_16 = Scale2x16;      
@@ -596,7 +604,8 @@ bool change_filter()
       switch(options->video_SGBborder_filter)
       {
       case VIDEO_FILTER_SOFT2X:
-         border_filter_f_16 = software2x_16;      
+      case VIDEO_FILTER_SOFTXX:
+         border_filter_f_16 = softwarexx_16;      
       break;
       case VIDEO_FILTER_SCALE2X:
          border_filter_f_16 = Scale2x16;      
@@ -620,7 +629,8 @@ bool change_filter()
       switch(options->video_filter)
       {
       case VIDEO_FILTER_SOFT2X:
-         filter_f_32 = software2x_32;      
+      case VIDEO_FILTER_SOFTXX:
+         filter_f_32 = softwarexx_32;      
       break;
       case VIDEO_FILTER_SCALE2X:
          filter_f_32 = Scale2x32;      
@@ -639,7 +649,8 @@ bool change_filter()
       switch(options->video_SGBborder_filter)
       {
       case VIDEO_FILTER_SOFT2X:
-         border_filter_f_32 = software2x_32;      
+      case VIDEO_FILTER_SOFTXX:
+         border_filter_f_32 = softwarexx_32;      
       break;
       case VIDEO_FILTER_SCALE2X:
          border_filter_f_32 = Scale2x32;      

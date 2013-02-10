@@ -11,8 +11,8 @@ A ICON MOVEABLE PURE LOADONCALL DISCARDABLE "GEST.ico"
 // TO CHANGE VERSION INFORMATION, EDIT PROJECT OPTIONS...
 //
 1 VERSIONINFO
-FILEVERSION 0,3,0,49
-PRODUCTVERSION 0,3,0,49
+FILEVERSION 0,3,0,121
+PRODUCTVERSION 0,3,0,121
 FILETYPE VFT_APP
 {
   BLOCK "StringFileInfo"
@@ -20,14 +20,14 @@ FILETYPE VFT_APP
     BLOCK "080904E4"
     {
       VALUE "CompanyName", ""
-      VALUE "FileVersion", "0.3.0.49"
+      VALUE "FileVersion", "0.3.0.121"
       VALUE "FileDescription", "unGEST GB emulator"
       VALUE "InternalName", ""
       VALUE "LegalCopyright", ""
       VALUE "LegalTrademarks", ""
       VALUE "OriginalFilename", "ungest.exe"
       VALUE "ProductName", "unGEST"
-      VALUE "ProductVersion", "0.3.0.49"
+      VALUE "ProductVersion", "0.3.0.121"
     }
   }
   BLOCK "VarFileInfo"
