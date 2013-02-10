@@ -61,7 +61,7 @@ gb_system* GB = NULL;
 gb_system* GB1 = NULL;
 gb_system* GB2 = NULL;
 
-const char* prg_version = "0.21";
+const char* prg_version = "0.3";
 
 // Windows stuff ----------------------------------------
 HWND hwnd = NULL;           
@@ -71,10 +71,10 @@ HINSTANCE hinst;
 
 LRESULT CALLBACK WindowProcedure (HWND, UINT, WPARAM, LPARAM);
 
-char szClassName[] = "GESTclass";
 wchar_t w_szClassName[] = L"GESTclass";
 char emu_title[] = "unGEST";
 wchar_t w_emu_title[] = L"unGEST";
+
 char title_text[ROM_FILENAME_SIZE + 8];
 wchar_t w_title_text[ROM_FILENAME_SIZE + 16];
 
@@ -168,7 +168,7 @@ int WINAPI WinMain(HINSTANCE hThisInstance,HINSTANCE hPrevInstance, LPSTR  lpszA
    /* The Window structure */
    hinst = hThisInstance;
    wincl.hInstance = hThisInstance;
-   wincl.lpszClassName = (const wchar_t*)szClassName;
+   wincl.lpszClassName = w_szClassName;
    wincl.lpfnWndProc = WindowProcedure;      
    wincl.style = CS_DBLCLKS;                 /* Catch double-clicks */
    wincl.cbSize = sizeof(WNDCLASSEX);
@@ -185,8 +185,8 @@ int WINAPI WinMain(HINSTANCE hThisInstance,HINSTANCE hPrevInstance, LPSTR  lpszA
       return 0;
    
    menu = LoadMenu(hThisInstance, MAKEINTRESOURCE(ID_MENU));
-	// not sure why but if i fuck with szClassName here, dinput init will fail. the cast is BULLSHIT btw
-   hwnd = CreateWindowEx(0,(const wchar_t*)szClassName,w_emu_title,WS_SIZEBOX|WS_OVERLAPPEDWINDOW,150,150,2*160,2*144,HWND_DESKTOP,menu,hThisInstance,NULL);
+
+   hwnd = CreateWindowEx(0,w_szClassName,w_emu_title,WS_SIZEBOX|WS_OVERLAPPEDWINDOW,150,150,2*160,2*144,HWND_DESKTOP,menu,hThisInstance,NULL);
    
    RECT adjrect;
    GetClientRect(hwnd,&adjrect);
