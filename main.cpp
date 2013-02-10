@@ -166,6 +166,7 @@ void cleanup()
 
 int WINAPI WinMain(HINSTANCE hThisInstance,HINSTANCE hPrevInstance, LPSTR  lpszArgument,int nFunsterStil)
 {
+	
    WNDCLASSEX wincl;        
    MSG msg;    
    
@@ -269,32 +270,15 @@ int WINAPI WinMain(HINSTANCE hThisInstance,HINSTANCE hPrevInstance, LPSTR  lpszA
       channel_n = FSOUND_PlaySound(FSOUND_FREE,FSbuffer);
   
    DragAcceptFiles(hwnd,TRUE);
+
+   int noArgs;
+   LPWSTR *argList = CommandLineToArgvW(GetCommandLineW(), &noArgs);
    
-   wchar_t* wcmd = GetCommandLineW();
-   
-   //char clz[1000];
-   //wcstombs(clz,wcmd,1000);
-   //debug_print(lpszArgument);
-   //debug_print(clz);
-   
-   if(strlen(lpszArgument)>4)
+   if(noArgs >= 2)
    {
-   	
-      wchar_t* ptr = wcschr(wcmd,'"');
-      if(ptr != NULL) // does the filename contain " " ?
-      {
-         ptr += 1;
-         wchar_t load_filename[600];
-         memset(load_filename,0,600);
-         wcsncpy(load_filename,ptr,wcslen(ptr)-1);
-         gb1_loaded_file_name = load_filename;
-         GB1->load_rom(load_filename); 
-      } else { 
-        gb1_loaded_file_name = wcmd;
-	  	GB1->load_rom(wcmd); 
-      }
-        
-      
+      gb1_loaded_file_name = argList[1];
+      GB1->load_rom(argList[1]); 
+
       if(GB1->romloaded)
       {
          GB1->reset();
