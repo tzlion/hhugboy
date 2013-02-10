@@ -283,9 +283,13 @@ int WINAPI WinMain(HINSTANCE hThisInstance,HINSTANCE hPrevInstance, LPSTR  lpszA
          wchar_t load_filename[600];
          memset(load_filename,0,600);
          wcsncpy(load_filename,ptr,wcslen(ptr)-1);
+         gb1_loaded_file_name = load_filename;
          GB1->load_rom(load_filename); 
-      } else
-         GB1->load_rom(wcmd); 
+      } else { 
+        gb1_loaded_file_name = wcmd;
+	  	GB1->load_rom(wcmd); 
+      }
+        
       
       if(GB1->romloaded)
       {
@@ -2557,8 +2561,12 @@ LRESULT CALLBACK WindowProcedure(HWND hwnd, UINT message, WPARAM wParam, LPARAM 
            {
               debug_print(str_table[NOT_A_ROM]);
               GB1->romloaded = false;
-           } else 
+           } else {
+		      gb1_loaded_file_name = drag_filename;
               GB1->load_rom(drag_filename);
+           }
+           
+              
                   
            if(GB1->romloaded)
            {                    
