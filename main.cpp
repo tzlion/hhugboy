@@ -284,14 +284,10 @@ int WINAPI WinMain(HINSTANCE hThisInstance,HINSTANCE hPrevInstance, LPSTR  lpszA
               
          if(sgb_mode)
          {
-            RECT winRect;
-            GetWindowRect(hwnd,&winRect);      
-            MoveWindow(hwnd,winRect.left,winRect.top,256*options->video_size+sizen_w,224*options->video_size+sizen_h,TRUE);
+         	setWinSize(256,224);
          } else
          {
-            RECT winRect;
-            GetWindowRect(hwnd,&winRect);      
-            MoveWindow(hwnd,winRect.left,winRect.top,160*options->video_size+sizen_w,144*options->video_size+sizen_h,TRUE);
+         	setWinSize(160,144);
          }
                      
          if(!GB1->load_save())
@@ -617,9 +613,7 @@ LRESULT CALLBACK WindowProcedure(HWND hwnd, UINT message, WPARAM wParam, LPARAM 
                      FSOUND_SetMute(FSOUND_ALL,TRUE);
                      SetWindowText(hwnd,w_emu_title);
                   }
-                  RECT winRect;
-                  GetWindowRect(hwnd,&winRect);      
-                  MoveWindow(hwnd,winRect.left,winRect.top,160*options->video_size+sizen_w,144*options->video_size+sizen_h,TRUE);
+                  setWinSize(160,144);
 
                   if(GB2->romloaded)
                   {
@@ -1262,74 +1256,66 @@ LRESULT CALLBACK WindowProcedure(HWND hwnd, UINT message, WPARAM wParam, LPARAM 
              break;                                                                                
              case IDM_OPTIONVIDEOSIZE1:
              {
-                  RECT winRect;
-                  GetWindowRect(hwnd,&winRect);
                   options->video_size = 1;
                   if(!sgb_mode && !(options->GBC_SGB_border == GBC_WITH_INITIAL_SGB_BORDER && border_uploaded))
-                     MoveWindow(hwnd,winRect.left,winRect.top,160*options->video_size+sizen_w,144*options->video_size+sizen_h,TRUE);
+					 setWinSize(160,144);
                   else
                   {
-                     MoveWindow(hwnd,winRect.left,winRect.top,256*options->video_size+sizen_w,224*options->video_size+sizen_h,TRUE);
+					 setWinSize(256,224);
                      draw_border();
                   }
 
                   if(multiple_gb)
-                     MoveWindow(hwnd,winRect.left,winRect.top,2*160*options->video_size+sizen_w,144*options->video_size+sizen_h,TRUE);
+					setWinSize(320,144);
              }
              break;
 
              case IDM_OPTIONVIDEOSIZE2:
-             {
-                  RECT winRect;
-                  GetWindowRect(hwnd,&winRect);             
+             {            
                   options->video_size = 2;
                   if(!sgb_mode && !(options->GBC_SGB_border == GBC_WITH_INITIAL_SGB_BORDER && border_uploaded))
-                     MoveWindow(hwnd,winRect.left,winRect.top,160*options->video_size+sizen_w,144*options->video_size+sizen_h,TRUE);
+					 setWinSize(160,144);
                   else
                   {
-                     MoveWindow(hwnd,winRect.left,winRect.top,256*options->video_size+sizen_w,224*options->video_size+sizen_h,TRUE);
+					 setWinSize(256,224);
                      draw_border();
                   }
 
                   if(multiple_gb)
-                     MoveWindow(hwnd,winRect.left,winRect.top,2*160*options->video_size+sizen_w,144*options->video_size+sizen_h,TRUE);
+					setWinSize(320,144);
              }
              break;
 
              case IDM_OPTIONVIDEOSIZE3:
-             {
-                  RECT winRect;
-                  GetWindowRect(hwnd,&winRect);             
+             {       
                   options->video_size = 3;
                   if(!sgb_mode && !(options->GBC_SGB_border == GBC_WITH_INITIAL_SGB_BORDER && border_uploaded))
-                     MoveWindow(hwnd,winRect.left,winRect.top,160*options->video_size+sizen_w,144*options->video_size+sizen_h,TRUE);
+					 setWinSize(160,144);
                   else
                   {
-                     MoveWindow(hwnd,winRect.left,winRect.top,256*options->video_size+sizen_w,224*options->video_size+sizen_h,TRUE);
+					 setWinSize(256,224);
                      draw_border();
                   }
 
                   if(multiple_gb)
-                     MoveWindow(hwnd,winRect.left,winRect.top,2*160*options->video_size+sizen_w,144*options->video_size+sizen_h,TRUE);
+					setWinSize(320,144);
                      
              }
              break;
 
              case IDM_OPTIONVIDEOSIZE4:
-             {
-                  RECT winRect;
-                  GetWindowRect(hwnd,&winRect);             
+             {       
                   options->video_size = 4;
                   if(!sgb_mode && !(options->GBC_SGB_border == GBC_WITH_INITIAL_SGB_BORDER && border_uploaded))
-                     MoveWindow(hwnd,winRect.left,winRect.top,160*options->video_size+sizen_w,144*options->video_size+sizen_h,TRUE);
+					 setWinSize(160,144);
                   else
                   {
-                     MoveWindow(hwnd,winRect.left,winRect.top,256*options->video_size+sizen_w,224*options->video_size+sizen_h,TRUE);
+					 setWinSize(256,224);
                      draw_border();
                   }
 
                   if(multiple_gb)
-                     MoveWindow(hwnd,winRect.left,winRect.top,2*160*options->video_size+sizen_w,144*options->video_size+sizen_h,TRUE);
+					setWinSize(320,144);
                      
              }
              break;
@@ -2603,17 +2589,15 @@ LRESULT CALLBACK WindowProcedure(HWND hwnd, UINT message, WPARAM wParam, LPARAM 
            {                    
               GB1->reset();
               
+              int reswidth,resheight;
+              
               if(sgb_mode)
               {
-                 RECT winRect;
-                 GetWindowRect(hwnd,&winRect);      
-                 MoveWindow(hwnd,winRect.left,winRect.top,256*options->video_size+sizen_w,224*options->video_size+sizen_h,TRUE);
+              	setWinSize(256,224);
               } else
               {
-                 RECT winRect;
-                 GetWindowRect(hwnd,&winRect);      
-                 MoveWindow(hwnd,winRect.left,winRect.top,160*options->video_size+sizen_w,144*options->video_size+sizen_h,TRUE);
-              }
+				setWinSize(160,144);
+			  }
                      
               if(!GB1->load_save())
                  debug_print(str_table[ERROR_SAVE_FILE_READ]);
@@ -2635,4 +2619,19 @@ LRESULT CALLBACK WindowProcedure(HWND hwnd, UINT message, WPARAM wParam, LPARAM 
     }
 
     return 0;
+}
+
+void setWinSize(int width,int height) 
+{
+	// width, height are the base width and height for the screen size
+	
+   RECT winRect;
+   GetWindowRect(hwnd,&winRect);
+   MoveWindow(hwnd,winRect.left,winRect.top,options->video_size * width + sizen_w,options->video_size * height + sizen_h,TRUE);
+   
+   RECT adjrect;
+   GetClientRect(hwnd,&adjrect);
+   int sizen_w2 = options->video_size * width-(adjrect.right-adjrect.left);
+   int sizen_h2 = options->video_size * height-(adjrect.bottom-adjrect.top);
+   MoveWindow(hwnd,winRect.left,winRect.top,width*options->video_size+sizen_w+sizen_w2,height*options->video_size+sizen_h+sizen_h2,TRUE);
 }

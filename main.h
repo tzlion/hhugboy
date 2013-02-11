@@ -237,4 +237,6 @@ extern HWND hwndCtrl;
 
 extern int current_controller;
 
+void setWinSize(int width, int height);
+
 

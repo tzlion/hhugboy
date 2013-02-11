@@ -39,6 +39,8 @@ using namespace std;
 #include "render.h"
 #include "config.h"
 
+#include "main.h"
+
 int RGB_BIT_MASK = 0;
 
 int change_rect = 0;
@@ -87,9 +89,7 @@ extern int sizen_h;
 
 void resize_window(int width, int height)
 {
-   RECT winRect;
-   GetWindowRect(hwnd,&winRect);      
-   MoveWindow(hwnd,winRect.left,winRect.top,width*options->video_size+sizen_w,height*options->video_size+sizen_h,TRUE);
+	setWinSize(width,height);
 }
 
 DWORD* gfx_pal32 = NULL;

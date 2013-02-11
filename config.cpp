@@ -363,12 +363,12 @@ void init_menu_options()
       else
          draw_screen = draw_screen32;             	                           
    }
-   
-   RECT winRect;
-   GetWindowRect(hwnd,&winRect);
+
    if(options->video_size <= 0 || options->video_size > 4)
       options->video_size = 2;
-   MoveWindow(hwnd,winRect.left,winRect.top,options->video_size * 160 + sizen_w,options->video_size * 144 + sizen_h,TRUE);
+      
+    setWinSize(160,144);
+   
 }
 
 void read_comment_line(ifstream& in)

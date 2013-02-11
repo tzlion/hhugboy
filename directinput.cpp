@@ -32,6 +32,8 @@
 #include "GB.h"
 #include "config.h"
 
+#include "main.h"
+
 #include "keynames.h"
 
 extern int speedup;
@@ -321,17 +323,13 @@ void Check_KBInput(int i)
             
    if(KEYDOWN(buffer,options->special_keys[BUTTON_L]) && !multiple_gb)
    {
-      RECT winRect;
-      GetWindowRect(hwnd,&winRect); 
       if(GB1->system_type == SYS_GBA) 
-         MoveWindow(hwnd,winRect.left,winRect.top,sizen_w+options->video_size*240,options->video_size*144+sizen_h,TRUE);
+         setWinSize(240,144);
    } else
    if(KEYDOWN(buffer,options->special_keys[BUTTON_R]) && !multiple_gb)
    {
-      RECT winRect;
-      GetWindowRect(hwnd,&winRect); 
       if(GB1->system_type == SYS_GBA) 
-         MoveWindow(hwnd,winRect.left,winRect.top,sizen_w+options->video_size*160,options->video_size*144+sizen_h,TRUE);
+         setWinSize(160,144);
    }                                                                              
 }
 
@@ -372,17 +370,13 @@ void check_system_keys()
             
    if(KEYDOWN(buffer,options->special_keys[BUTTON_L]) && !multiple_gb)
    {
-      RECT winRect;
-      GetWindowRect(hwnd,&winRect); 
       if(GB1->system_type == SYS_GBA) 
-         MoveWindow(hwnd,winRect.left,winRect.top,sizen_w+options->video_size*240,options->video_size*144+sizen_h,TRUE);
+      	 setWinSize(240,144);
    } else
    if(KEYDOWN(buffer,options->special_keys[BUTTON_R]) && !multiple_gb)
    {
-      RECT winRect;
-      GetWindowRect(hwnd,&winRect); 
       if(GB1->system_type == SYS_GBA) 
-         MoveWindow(hwnd,winRect.left,winRect.top,sizen_w+options->video_size*160,options->video_size*144+sizen_h,TRUE);
+         setWinSize(160,144);
    }                  
 
 }
