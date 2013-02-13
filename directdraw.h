@@ -79,6 +79,9 @@ void draw_screen_mix32();
 void draw_screen16();
 void draw_screen32();
 
+void fuckingScreenshotPng(char* filename);
+void fuckingScreenshotHtml(char* filename);
+
 #ifdef ALLOW_DEBUG
 void draw_debug_screen();
 #endif

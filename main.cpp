@@ -2300,6 +2300,39 @@ LRESULT CALLBACK WindowProcedure(HWND hwnd, UINT message, WPARAM wParam, LPARAM 
                    message_GB = GB1;
                 }              
             break;
+            case VK_F12: {
+            	
+            	wchar_t img_filename[275];
+				wcscpy(img_filename,GB->rom_filename);  // get the unicode filename
+				char img_filename_mb[275]; 
+				wcstombs(img_filename_mb,img_filename,275); // but then oh well, look what happened
+				// due to a limitation of png++ i cba to work around right now
+				
+				// now figure out the first available filename
+				char final_filename[275];
+				int fileno = 1;
+				bool fileok = false;
+				while ( fileok == false ) {
+					char tmp_filename[275];
+					strcpy(tmp_filename,img_filename_mb);
+					char fileext[10];
+					sprintf(fileext," %04d.png",fileno);
+			        strcat(tmp_filename,fileext);
+			        ifstream ifile(tmp_filename);
+					if ((bool)ifile) {
+						fileno++;
+					} else {
+						fileok = true;
+						strcpy(final_filename,tmp_filename);
+					}
+				}
+
+				// and then screenshot this thing
+            	fuckingScreenshotPng(final_filename);
+            	break;
+            	
+            }
+            	
             #ifdef ALLOW_DEBUG
             case 'D': // DEBUG
                if(!control_pressed)
