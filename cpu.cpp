@@ -145,9 +145,13 @@ bool init_gb2()
 
 bool gb_system::save_state()
 {
+   
    char old_directory[PROGRAM_PATH_SIZE]; // this needs unicode too
    GetCurrentDirectory(PROGRAM_PATH_SIZE,old_directory);
-   SetCurrentDirectory(options->state_directory.c_str());
+   if (!SetCurrentDirectory(options->state_directory.c_str())) {
+   		CreateDirectory(options->state_directory.c_str(),NULL);
+   		SetCurrentDirectory(options->state_directory.c_str());
+   }
    
    wchar_t save_filename[275]; 
    wchar_t file_ext[5];

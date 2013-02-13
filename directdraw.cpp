@@ -284,7 +284,7 @@ int filter_height = 1;
 int border_filter_width = 1;
 int border_filter_height = 1;
 
-void fuckingScreenshotPng(char* filename) 
+void screenshotPng(char* filename) 
 {
 	int height=144;
 	int width=160;
@@ -327,7 +327,7 @@ void fuckingScreenshotPng(char* filename)
 
 // this is what you might call a novelty
 // not enabled at the moment
-void fuckingScreenshotHtml(char* filename) 
+void screenshotHtml(char* filename) 
 {
 	ofstream myfile;
 	myfile.open (filename);

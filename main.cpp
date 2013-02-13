@@ -238,8 +238,11 @@ int WINAPI WinMain(HINSTANCE hThisInstance,HINSTANCE hPrevInstance, LPSTR  lpszA
    //Get program directory
    wchar_t buffer[PROGRAM_PATH_SIZE];
    GetModuleFileName(NULL,buffer,PROGRAM_PATH_SIZE);
-
-   options->program_directory = (char*)buffer;
+   
+	char buffer2[PROGRAM_PATH_SIZE];
+	wcstombs(buffer2,buffer,PROGRAM_PATH_SIZE);
+	
+   options->program_directory = buffer2;
    size_t found = options->program_directory.rfind('\\'); // Cut program name
    if(found != string::npos)
    {
@@ -2328,7 +2331,7 @@ LRESULT CALLBACK WindowProcedure(HWND hwnd, UINT message, WPARAM wParam, LPARAM 
 				}
 
 				// and then screenshot this thing
-            	fuckingScreenshotPng(final_filename);
+            	screenshotPng(final_filename);
             	break;
             	
             }

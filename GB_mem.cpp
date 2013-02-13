@@ -398,6 +398,11 @@ bool gb_system::load_save(bool loading_GB1_save_to_GB2)
    
    	wchar_t saveDirW[PROGRAM_PATH_SIZE];
 	mbstowcs(saveDirW,options->save_directory.c_str(),PROGRAM_PATH_SIZE);
+	
+   if (!SetCurrentDirectory(saveDirW)) {
+   		CreateDirectory(saveDirW,NULL);
+   		SetCurrentDirectory(saveDirW);
+   }
 
    SetCurrentDirectory(saveDirW);
      
