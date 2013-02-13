@@ -11,23 +11,23 @@ A ICON MOVEABLE PURE LOADONCALL DISCARDABLE "unGEST.ico"
 // TO CHANGE VERSION INFORMATION, EDIT PROJECT OPTIONS...
 //
 1 VERSIONINFO
-FILEVERSION 0,3,0,361
-PRODUCTVERSION 0,3,0,361
+FILEVERSION 0,4,0,1
+PRODUCTVERSION 0,4,0,1
 FILETYPE VFT_APP
 {
   BLOCK "StringFileInfo"
   {
     BLOCK "080904E4"
     {
-      VALUE "CompanyName", ""
-      VALUE "FileVersion", "0.3.0.361"
+      VALUE "CompanyName", "hhug.me"
+      VALUE "FileVersion", "0.4.0.1"
       VALUE "FileDescription", "unGEST GB emulator"
       VALUE "InternalName", ""
-      VALUE "LegalCopyright", ""
+      VALUE "LegalCopyright", "taizou 2013"
       VALUE "LegalTrademarks", ""
       VALUE "OriginalFilename", "unGEST.exe"
       VALUE "ProductName", "unGEST"
-      VALUE "ProductVersion", "0.3.0.361"
+      VALUE "ProductVersion", "0.4.0.1"
     }
   }
   BLOCK "VarFileInfo"

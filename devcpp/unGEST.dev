@@ -532,20 +532,20 @@ BuildCmd=
 
 [VersionInfo]
 Major=0
-Minor=3
+Minor=4
 Release=0
-Build=361
+Build=1
 LanguageID=2057
 CharsetID=1252
-CompanyName=
-FileVersion=0.3.0.361
+CompanyName=hhug.me
+FileVersion=0.4.0.1
 FileDescription=unGEST GB emulator
 InternalName=
-LegalCopyright=
+LegalCopyright=taizou 2013
 LegalTrademarks=
 OriginalFilename=unGEST.exe
 ProductName=unGEST
-ProductVersion=0.3.0.361
+ProductVersion=0.4.0.1
 AutoIncBuildNr=1
 SyncProduct=1
 
