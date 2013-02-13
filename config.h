@@ -1,5 +1,5 @@
 /*
-   unGEST Game Boy emulator
+   hhugboy Game Boy emulator
    copyright 2013 taizou
 
    Based on GEST

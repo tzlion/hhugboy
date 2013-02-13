@@ -1,5 +1,5 @@
 /*
-   unGEST Game Boy emulator
+   hhugboy Game Boy emulator
    copyright 2013 taizou
 
    Based on GEST
@@ -35,7 +35,7 @@ char* str_table[40] =
  "Writing save file failed!",
  "Error loading rom!",
  "GG cheat format: xxx-xxx-xxx or xxx-xxx",
- "unGEST v%s\nbased on GEST 1.1.1 by TM\nmodified by taizou",
+ "hhugboy v%s\nbased on GEST 1.1.1 by TM\nmodified by taizou",
  "Current slot:",
  "Not a GB rom!",
  "Save to slot", // shouldn't be very long

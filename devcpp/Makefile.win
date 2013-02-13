@@ -1,5 +1,5 @@
-# Project: unGEST
-# Makefile created by Dev-C++ 5.3.0.3
+# Project: hhugboy
+# Makefile created by Dev-C++ 5.3.0.4
 
 CPP      = g++.exe
 CC       = gcc.exe
@@ -10,7 +10,7 @@ LINKOBJ  = ../strings.o ../cheats.o ../config.o ../cpu.o ../debug.o ../devices.o
 LIBS     = -L"C:/Program Files (x86)/Dev-Cpp/MinGW64/x86_64-w64-mingw32/lib32" -static-libgcc -L"C:/Program Files (x86)/Microsoft DirectX SDK (August 2009)/Lib/x86" -mwindows ../libs/libdxguid.a ../libs/libddraw.a ../libs/libdinput.a ../libs/libdinput8.a ../libs/libfmod.a ../libs/libz.a ../libs/libwinmm.a ../libs/libpng12.dll.a  -m32 -mwindows -s
 INCS     = -I"C:/Program Files (x86)/Dev-Cpp/MinGW64/x86_64-w64-mingw32/include" -I"C:/Program Files (x86)/Microsoft DirectX SDK (August 2009)/Include" -I"C:/png/png++-0.2.5/png++-0.2.5" -I"../libpng12/" -I"../zlib/"
 CXXINCS  = -I"C:/Program Files (x86)/Dev-Cpp/MinGW64/x86_64-w64-mingw32/include" -I"C:/Program Files (x86)/Microsoft DirectX SDK (August 2009)/Include" -I"C:/png/png++-0.2.5/png++-0.2.5" -I"../libpng12/" -I"../zlib/"
-BIN      = unGEST.exe
+BIN      = hhugboy.exe
 CXXFLAGS = $(CXXINCS)  -m32 -w -Wextra -mwindows
 CFLAGS   = $(INCS)  -m32 -w -Wextra -mwindows
 RM       = rm -f

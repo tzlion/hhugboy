@@ -1,5 +1,5 @@
 /*
-   unGEST Game Boy emulator
+   hhugboy Game Boy emulator
    copyright 2013 taizou
 
    Based on GEST
@@ -64,7 +64,7 @@ gb_system* GB = NULL;
 gb_system* GB1 = NULL;
 gb_system* GB2 = NULL;
 
-const char* prg_version = "0.4";
+const char* prg_version = "1.0";
 
 // Windows stuff ----------------------------------------
 HWND hwnd = NULL;           
@@ -75,8 +75,8 @@ HINSTANCE hinst;
 LRESULT CALLBACK WindowProcedure (HWND, UINT, WPARAM, LPARAM);
 
 wchar_t w_szClassName[] = L"GESTclass";
-char emu_title[] = "unGEST";
-wchar_t w_emu_title[] = L"unGEST";
+char emu_title[] = "hhugboy";
+wchar_t w_emu_title[] = L"hhugboy";
 
 char title_text[ROM_FILENAME_SIZE + 8];
 wchar_t w_title_text[ROM_FILENAME_SIZE + 16];

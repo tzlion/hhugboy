@@ -1,5 +1,5 @@
 /*
-   unGEST Game Boy emulator
+   hhugboy Game Boy emulator
    copyright 2013 taizou
 
    Based on GEST
@@ -709,7 +709,7 @@ bool read_config_file()
 
    options->rom_directory = options->program_directory;
 
-   ifstream configfile("gest.cfg", ifstream::in);
+   ifstream configfile("hhugboy.cfg", ifstream::in);
    if(configfile.fail())
    {
        cout << "Config file load failed, using defaults.";
@@ -732,7 +732,7 @@ bool write_config_file()
 {
     SetCurrentDirectory(options->program_directory.c_str());
 
-    ofstream configfile("gest.cfg");
+    ofstream configfile("hhugboy.cfg");
     if(configfile.fail())
     {
       debug_print(str_table[ERROR_CFG_FILE]);

@@ -1,5 +1,5 @@
 /*
-   unGEST Game Boy emulator
+   hhugboy Game Boy emulator
    copyright 2013 taizou
 
    Based on GEST
@@ -19,17 +19,17 @@
    along with this program; if not, write to the Free Software Foundation, Inc.,
    51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
-// unGEST resource file
+// hhugboy resource file
 // default English language
 
 #include <windows.h>
 #include "main.h"
 
-ID_ICON ICON MOVEABLE DISCARDABLE "unGEST.ico"
+ID_ICON ICON MOVEABLE DISCARDABLE "hhugboy.ico"
 
 ID_F_DIALOG DIALOGEX 0, 0, 200, 100
 STYLE DS_MODALFRAME | WS_POPUP | WS_CAPTION | WS_SYSMENU
-CAPTION "unGEST - Directories:"
+CAPTION "hhugboy - Directories:"
 LANGUAGE LANG_ENGLISH, SUBLANG_ENGLISH_US
 FONT 8, "MS Sans Serif"
 {
@@ -59,7 +59,7 @@ FONT 8, "MS Sans Serif"
 
 ID_CTRL_DIALOG DIALOGEX 0, 0, 120, 265
 STYLE DS_MODALFRAME | WS_POPUP | WS_CAPTION | WS_SYSMENU
-CAPTION "unGEST - Controls:"
+CAPTION "hhugboy - Controls:"
 LANGUAGE LANG_ENGLISH, SUBLANG_ENGLISH_US
 FONT 8, "MS Sans Serif"
 {
@@ -113,7 +113,7 @@ FONT 8, "MS Sans Serif"
 
 ID_CTRLMULTI_DIALOG DIALOGEX 0, 0, 120, 210
 STYLE DS_MODALFRAME | WS_POPUP | WS_CAPTION | WS_SYSMENU
-CAPTION "unGEST - Controls:"
+CAPTION "hhugboy - Controls:"
 LANGUAGE LANG_ENGLISH, SUBLANG_ENGLISH_US
 FONT 8, "MS Sans Serif"
 {
@@ -159,7 +159,7 @@ FONT 8, "MS Sans Serif"
 
 ID_CTRLJOY_DIALOG DIALOGEX 0, 0, 100, 120
 STYLE DS_MODALFRAME | WS_POPUP | WS_CAPTION | WS_SYSMENU
-CAPTION "unGEST - Controls:"
+CAPTION "hhugboy - Controls:"
 LANGUAGE LANG_ENGLISH, SUBLANG_ENGLISH_US
 FONT 8, "MS Sans Serif"
 {
@@ -181,7 +181,7 @@ FONT 8, "MS Sans Serif"
 
 ID_SENSOR_DIALOG DIALOGEX 0, 0, 100, 100
 STYLE DS_MODALFRAME | WS_POPUP | WS_CAPTION | WS_SYSMENU
-CAPTION "unGEST - Sensor:"
+CAPTION "hhugboy - Sensor:"
 LANGUAGE LANG_ENGLISH, SUBLANG_ENGLISH_US
 FONT 8, "MS Sans Serif"
 {

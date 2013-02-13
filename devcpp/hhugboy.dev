@@ -1,6 +1,6 @@
 [Project]
-FileName=unGEST.dev
-Name=unGEST
+FileName=hhugboy.dev
+Name=hhugboy
 UnitCount=50
 Type=0
 Ver=2
@@ -14,11 +14,11 @@ Compiler=
 CppCompiler=
 Linker=../libs/libdxguid.a_@@_../libs/libddraw.a_@@_../libs/libdinput.a_@@_../libs/libdinput8.a_@@_../libs/libfmod.a_@@_../libs/libz.a_@@_../libs/libwinmm.a_@@_../libs/libpng12.dll.a_@@_
 IsCpp=1
-Icon=unGEST.ico
+Icon=hhugboy.ico
 ExeOutput=
 ObjectOutput=
-OverrideOutput=1
-OverrideOutputName=unGEST.exe
+OverrideOutput=0
+OverrideOutputName=hhugboy.exe
 HostApplication=
 Folders=gfx,input,rom,sound,ui,zip
 CommandLine=
@@ -531,21 +531,21 @@ OverrideBuildCmd=0
 BuildCmd=
 
 [VersionInfo]
-Major=0
-Minor=4
+Major=1
+Minor=0
 Release=0
-Build=2
+Build=1
 LanguageID=2057
 CharsetID=1252
 CompanyName=hhug.me
-FileVersion=0.4.0.2
-FileDescription=unGEST GB emulator
+FileVersion=1.0.0.1
+FileDescription=hhugboy GB emulator
 InternalName=
 LegalCopyright=taizou 2013
 LegalTrademarks=
-OriginalFilename=unGEST.exe
-ProductName=unGEST
-ProductVersion=0.4.0.2
+OriginalFilename=hhugboy.exe
+ProductName=hhugboy
+ProductVersion=1.0.0.1
 AutoIncBuildNr=1
 SyncProduct=1
 
