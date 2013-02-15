@@ -1,7 +1,7 @@
 [Project]
 FileName=hhugboy.dev
 Name=hhugboy
-UnitCount=50
+UnitCount=52
 Type=0
 Ver=2
 ObjFiles=
@@ -534,18 +534,41 @@ BuildCmd=
 Major=1
 Minor=0
 Release=0
-Build=1
+Build=177
 LanguageID=2057
 CharsetID=1252
 CompanyName=hhug.me
-FileVersion=1.0.0.1
+FileVersion=1.0.0.177
 FileDescription=hhugboy GB emulator
 InternalName=
 LegalCopyright=taizou 2013
 LegalTrademarks=
 OriginalFilename=hhugboy.exe
 ProductName=hhugboy
-ProductVersion=1.0.0.1
+ProductVersion=1.0.0.177
 AutoIncBuildNr=1
 SyncProduct=1
+
+[Unit52]
+FileName=..\menu.cpp
+CompileCpp=1
+Folder=ui
+Compile=1
+Link=1
+Priority=1000
+OverrideBuildCmd=0
+BuildCmd=
+
+[Unit53]
+FileName=..\menu.cpp
+
+[Unit51]
+FileName=..\menu.h
+CompileCpp=1
+Folder=ui
+Compile=1
+Link=1
+Priority=1000
+OverrideBuildCmd=0
+BuildCmd=
 

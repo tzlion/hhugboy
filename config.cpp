@@ -35,7 +35,9 @@ using namespace std;
 #include "debug.h"
 #include "types.h"
 #include "config.h"
+#include "menu.h"
 #include "main.h"
+
 #include "mainloop.h"
 #include "directdraw.h"
 #include "sound.h"
@@ -122,19 +124,19 @@ void init_menu_options()
     switch(options->unl_compat_mode)
    {
       case UNL_AUTO:
-         CheckMenuItem(menu,IDM_UNLAUTO,MF_CHECKED);       
+         menu::checkOption(IDM_UNLAUTO);       
       break;
       case UNL_NONE:
-         CheckMenuItem(menu,IDM_UNLNONE,MF_CHECKED);      
+         menu::checkOption(IDM_UNLNONE);      
       break;
       case UNL_NIUTOUDE:
-         CheckMenuItem(menu,IDM_UNLNIUTOUDE,MF_CHECKED);       
+         menu::checkOption(IDM_UNLNIUTOUDE);       
       break;
       case UNL_SINTAX:
-      	CheckMenuItem(menu,IDM_UNLSINTAX,MF_CHECKED);
+      	menu::checkOption(IDM_UNLSINTAX);
       break;
       default:
-         CheckMenuItem(menu,IDM_UNLAUTO,MF_CHECKED);    
+         menu::checkOption(IDM_UNLAUTO);    
       break;
    } 
 
@@ -142,74 +144,74 @@ void init_menu_options()
 	
    if(options->GBC_SGB_border == GBC_WITH_SGB_BORDER)
    {
-      CheckMenuItem(menu,IDM_CPUGBCSGB,MF_CHECKED);
+      menu::checkOption(IDM_CPUGBCSGB);
    } else if(options->GBC_SGB_border == GBC_WITH_INITIAL_SGB_BORDER)
    {
-      CheckMenuItem(menu,IDM_CPUGBCSGBI,MF_CHECKED);
+      menu::checkOption(IDM_CPUGBCSGBI);
    }
    
    if(options->video_auto_frameskip)
-      CheckMenuItem(menu,IDM_OPTIONVIDEOFSAUTO,MF_CHECKED);  
+      menu::checkOption(IDM_OPTIONVIDEOFSAUTO);  
       
    if(options->video_GBCBGA_real_colors)
-      CheckMenuItem(menu,IDM_OPTIONVIDEOGBCCOLORS,MF_CHECKED);  
+      menu::checkOption(IDM_OPTIONVIDEOGBCCOLORS);  
       
    switch(options->sound_volume)
    {
       case VOLUME_2X:
-         CheckMenuItem(menu,IDM_OPTIONSOUNDVOL2,MF_CHECKED);       
+         menu::checkOption(IDM_OPTIONSOUNDVOL2);       
       break;
       case VOLUME_3X:
-         CheckMenuItem(menu,IDM_OPTIONSOUNDVOL3,MF_CHECKED);       
+         menu::checkOption(IDM_OPTIONSOUNDVOL3);       
       break;
       case VOLUME_4X:
-         CheckMenuItem(menu,IDM_OPTIONSOUNDVOL4,MF_CHECKED);       
+         menu::checkOption(IDM_OPTIONSOUNDVOL4);       
       break;
       case VOLUME_1X:
       default:
-         CheckMenuItem(menu,IDM_OPTIONSOUNDVOL1,MF_CHECKED);      
+         menu::checkOption(IDM_OPTIONSOUNDVOL1);      
       break;
    }
 
    if(options->sound_reverse_stereo)
-      CheckMenuItem(menu,IDM_OPTIONSOUNDRSTEREO,MF_CHECKED);   
+      menu::checkOption(IDM_OPTIONSOUNDRSTEREO);   
    
    if(options->sound_lowpass_filter)
-      CheckMenuItem(menu,IDM_OPTIONSOUNDLOWPASSNONE,MF_UNCHECKED);   
+      menu::uncheckOption(IDM_OPTIONSOUNDLOWPASSNONE);   
    if(options->sound_lowpass_filter == LOWPASS_LEVEL1)
-      CheckMenuItem(menu,IDM_OPTIONSOUNDLOWPASS1,MF_CHECKED);
+      menu::checkOption(IDM_OPTIONSOUNDLOWPASS1);
    else
    if(options->sound_lowpass_filter == LOWPASS_LEVEL2)
-      CheckMenuItem(menu,IDM_OPTIONSOUNDLOWPASS2,MF_CHECKED);
+      menu::checkOption(IDM_OPTIONSOUNDLOWPASS2);
 
    switch(options->video_SGBborder_filter)
    {
       case VIDEO_FILTER_SOFT2X:
-         CheckMenuItem(menu,IDM_VIDEOFILTERBORDERSOFT2X,MF_CHECKED);  
+         menu::checkOption(IDM_VIDEOFILTERBORDERSOFT2X);  
          
          border_filter_width = 2;
          border_filter_height = 2;
       break;   
       case VIDEO_FILTER_SOFTXX:
-         CheckMenuItem(menu,IDM_VIDEOFILTERBORDERSOFTXX,MF_CHECKED);  
+         menu::checkOption(IDM_VIDEOFILTERBORDERSOFTXX);  
          
          border_filter_width = 8;
          border_filter_height = 8;
       break;  
       case VIDEO_FILTER_SCALE2X:
-         CheckMenuItem(menu,IDM_VIDEOFILTERBORDERSCALE2X,MF_CHECKED);  
+         menu::checkOption(IDM_VIDEOFILTERBORDERSCALE2X);  
          
          border_filter_width = 2;
          border_filter_height = 2;
       break;    
       case VIDEO_FILTER_SCALE3X:
-         CheckMenuItem(menu,IDM_VIDEOFILTERBORDERSCALE3X,MF_CHECKED);  
+         menu::checkOption(IDM_VIDEOFILTERBORDERSCALE3X);  
          
          border_filter_width = 3;
          border_filter_height = 3;
       break;          
  /*     case VIDEO_FILTER_BLUR:
-         CheckMenuItem(menu,IDM_VIDEOFILTERBORDERBLUR,MF_CHECKED);  
+         menu::checkOption(IDM_VIDEOFILTERBORDERBLUR);  
          
          border_filter_width = 2;
          border_filter_height = 2;
@@ -218,7 +220,7 @@ void init_menu_options()
       default:
          options->video_SGBborder_filter = VIDEO_FILTER_NONE;
          
-         CheckMenuItem(menu,IDM_VIDEOFILTERBORDERNONE,MF_CHECKED);
+         menu::checkOption(IDM_VIDEOFILTERBORDERNONE);
          border_filter_width = 1;
          border_filter_height = 1;         
       break; 
@@ -227,7 +229,7 @@ void init_menu_options()
    switch(options->video_filter)
    {
       case VIDEO_FILTER_SOFT2X:
-         CheckMenuItem(menu,IDM_VIDEOFILTERSOFT2X,MF_CHECKED);  
+         menu::checkOption(IDM_VIDEOFILTERSOFT2X);  
          
          filter_width = 2;
          filter_height = 2;
@@ -235,7 +237,7 @@ void init_menu_options()
          change_filter(); 
       break;  
       case VIDEO_FILTER_SOFTXX:
-         CheckMenuItem(menu,IDM_VIDEOFILTERSOFTXX,MF_CHECKED);  
+         menu::checkOption(IDM_VIDEOFILTERSOFTXX);  
          
          filter_width = 8;
          filter_height = 8;
@@ -243,7 +245,7 @@ void init_menu_options()
          change_filter(); 
       break;  
       case VIDEO_FILTER_SCALE2X:
-         CheckMenuItem(menu,IDM_VIDEOFILTERSCALE2X,MF_CHECKED);  
+         menu::checkOption(IDM_VIDEOFILTERSCALE2X);  
          
          filter_width = 2;
          filter_height = 2;
@@ -251,7 +253,7 @@ void init_menu_options()
          change_filter(); 
       break;    
       case VIDEO_FILTER_SCALE3X:
-         CheckMenuItem(menu,IDM_VIDEOFILTERSCALE3X,MF_CHECKED);  
+         menu::checkOption(IDM_VIDEOFILTERSCALE3X);  
          
          filter_width = 3;
          filter_height = 3;
@@ -259,7 +261,7 @@ void init_menu_options()
          change_filter(); 
       break;          
    /*   case VIDEO_FILTER_BLUR:
-         CheckMenuItem(menu,IDM_VIDEOFILTERBLUR,MF_CHECKED);  
+         menu::checkOption(IDM_VIDEOFILTERBLUR);  
          
          filter_width = 2;
          filter_height = 2;
@@ -270,7 +272,7 @@ void init_menu_options()
       default:
          options->video_filter = VIDEO_FILTER_NONE;
          
-         CheckMenuItem(menu,IDM_VIDEOFILTERNONE,MF_CHECKED);
+         menu::checkOption(IDM_VIDEOFILTERNONE);
 
          filter_width = 1;
          filter_height = 1;        
@@ -280,65 +282,64 @@ void init_menu_options()
    }
 
    if(!options->video_visual_rumble)
-      CheckMenuItem(menu,IDM_OPTIONVIDEOVISUALRUMBLE,MF_UNCHECKED);
+      menu::uncheckOption(IDM_OPTIONVIDEOVISUALRUMBLE);
 
    if(options->video_filter_use_mmx)
-      CheckMenuItem(menu,IDM_VIDEOFILTERUSEMMX,MF_CHECKED);
+      menu::checkOption(IDM_VIDEOFILTERUSEMMX);
    
    if(!options->halt_on_unknown_opcode)
-      CheckMenuItem(menu,IDM_CPUOPCODE,MF_UNCHECKED);
+      menu::uncheckOption(IDM_CPUOPCODE);
    
    if(!options->reduce_cpu_usage)
-      CheckMenuItem(menu,IDM_OPTIONCPUUSAGE,MF_UNCHECKED);  
+      menu::uncheckOption(IDM_OPTIONCPUUSAGE);  
   
    if(options->opposite_directions_allowed)
-      CheckMenuItem(menu,IDM_OPTIONOPPOSITEDIRECTIONS,MF_CHECKED);
+      menu::checkOption(IDM_OPTIONOPPOSITEDIRECTIONS);
    
    switch(options->use_joystick_input)
    {
-     case 0: CheckMenuItem(menu,IDM_OPTIONCONTROLJOY1,MF_CHECKED); break;
-     case 1: CheckMenuItem(menu,IDM_OPTIONCONTROLJOY2,MF_CHECKED); break;
-     case 2: CheckMenuItem(menu,IDM_OPTIONCONTROLJOY3,MF_CHECKED); break;
-     case 3: CheckMenuItem(menu,IDM_OPTIONCONTROLJOY4,MF_CHECKED); break;
+     case 0: menu::checkOption(IDM_OPTIONCONTROLJOY1); break;
+     case 1: menu::checkOption(IDM_OPTIONCONTROLJOY2); break;
+     case 2: menu::checkOption(IDM_OPTIONCONTROLJOY3); break;
+     case 3: menu::checkOption(IDM_OPTIONCONTROLJOY4); break;
    }
    
-   CheckMenuItem(menu,IDM_OPTIONVIDEOFS0,MF_UNCHECKED); 
-   CheckMenuItem(menu,IDM_OPTIONVIDEOFS0 + options->video_frameskip,MF_CHECKED);
+   menu::checkOption(IDM_OPTIONVIDEOFS0 + options->video_frameskip);
    
    if(!options->video_sprite_limit)
-      CheckMenuItem(menu,IDM_OPTIONVIDEOSPRLIM,MF_UNCHECKED);   
+      menu::uncheckOption(IDM_OPTIONVIDEOSPRLIM);   
       
    if(!options->video_LCDoff_clear_screen)
-      CheckMenuItem(menu,IDM_OPTIONVIDEOLCDOFF,MF_UNCHECKED);
+      menu::uncheckOption(IDM_OPTIONVIDEOLCDOFF);
       
    if(options->speedup_skip_9frames)
-      CheckMenuItem(menu,IDM_CPUSPFS9,MF_CHECKED);
+      menu::checkOption(IDM_CPUSPFS9);
 
    if(options->speedup_sound_off)
-      CheckMenuItem(menu,IDM_CPUSPSNDOFF,MF_CHECKED);
+      menu::checkOption(IDM_CPUSPSNDOFF);
    
    if(!options->sound_on)
-      CheckMenuItem(menu,IDM_OPTIONSOUND,MF_UNCHECKED);   
+      menu::uncheckOption(IDM_OPTIONSOUND);   
     
    switch(options->video_GB_color)
    {
       case LCD_BROWN:
-         CheckMenuItem(menu,IDM_OPTIONVIDEOLCDBROWN,MF_CHECKED);  
+         menu::checkOption(IDM_OPTIONVIDEOLCDBROWN);  
       break; 
       case LCD_GREEN:
-         CheckMenuItem(menu,IDM_OPTIONVIDEOLCDGREEN,MF_CHECKED);  
+         menu::checkOption(IDM_OPTIONVIDEOLCDGREEN);  
       break;
       case GRAY:
-         CheckMenuItem(menu,IDM_OPTIONVIDEOGRAY,MF_CHECKED);  
+         menu::checkOption(IDM_OPTIONVIDEOGRAY);  
       break;            
       case BLACK_WHITE:
       default:
-         CheckMenuItem(menu,IDM_OPTIONVIDEOBW,MF_CHECKED);
+         menu::checkOption(IDM_OPTIONVIDEOBW);
       break;	 
    }
    if(options->video_mix_frames == MIX_FRAMES_ON)
    {
-      CheckMenuItem(menu,IDM_OPTIONVIDEOMIXON,MF_CHECKED);
+      menu::uncheckOption(IDM_OPTIONVIDEOMIXON);
 
       if(dx_bitcount == 16)
          draw_screen = draw_screen_mix16;
@@ -346,8 +347,7 @@ void init_menu_options()
          draw_screen = draw_screen_mix32;             	              
    } else if(options->video_mix_frames == MIX_FRAMES_MORE)
    {
-      CheckMenuItem(menu,IDM_OPTIONVIDEOMIXMORE,MF_CHECKED);
-      CheckMenuItem(menu,IDM_OPTIONVIDEOMIXON,MF_UNCHECKED);
+      menu::checkOption(IDM_OPTIONVIDEOMIXMORE);
 
       if(dx_bitcount == 16)
          draw_screen = draw_screen_mix16;
@@ -355,8 +355,7 @@ void init_menu_options()
          draw_screen = draw_screen_mix32; 
    } else
    {
-      CheckMenuItem(menu,IDM_OPTIONVIDEOMIXOFF,MF_CHECKED);
-      CheckMenuItem(menu,IDM_OPTIONVIDEOMIXON,MF_UNCHECKED);
+      menu::uncheckOption(IDM_OPTIONVIDEOMIXOFF);
 
       if(dx_bitcount == 16)
          draw_screen = draw_screen16;

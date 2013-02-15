@@ -24,6 +24,7 @@
 
 #include <windows.h>
 #include "main.h"
+#include "menu.h"
 
 ID_ICON ICON MOVEABLE DISCARDABLE "hhugboy.ico"
 
@@ -201,14 +202,14 @@ ID_MENU MENU
 BEGIN
 	POPUP "&File"
 	BEGIN
-		MENUITEM "&Load Rom...", IDM_FILEOPEN
-		MENUITEM "&Close Rom", IDM_FILECLOSE
-		MENUITEM "&Rom Info...", IDM_ROMINFO
+		MENUITEM "&Load ROM...", IDM_FILEOPEN
+		MENUITEM "&Close ROM", IDM_FILECLOSE
+		MENUITEM "&ROM Info...", IDM_ROMINFO
     	        POPUP "&GB2"
     	        BEGIN
-                    MENUITEM "&Load Rom...", IDM_FILEOPEN2
+                    MENUITEM "&Load ROM...", IDM_FILEOPEN2
                     MENUITEM "L&oad Same as GB1", IDM_FILEOPENSAMEASGB1
-                    MENUITEM "&Close Rom", IDM_FILECLOSE2
+                    MENUITEM "&Close ROM", IDM_FILECLOSE2
                     MENUITEM SEPARATOR
                     MENUITEM "So&ft Reset", IDM_CPUSOFTRESET2
                     MENUITEM "Hard &Reset", IDM_CPURESET2
@@ -363,7 +364,7 @@ BEGIN
             MENUITEM "&WIN\tF6", IDM_OPTIONVIDEOENWIN, CHECKED
             MENUITEM "&Sprites\tF7", IDM_OPTIONVIDEOENSPRITE, CHECKED
          END
-         MENUITEM "&Realistic GBC/GBA Colors", IDM_OPTIONVIDEOGBCCOLORS
+         MENUITEM "&Realistic GBC/GBA Colours", IDM_OPTIONVIDEOGBCCOLORS
          MENUITEM "Sprite &Limit", IDM_OPTIONVIDEOSPRLIM, CHECKED
          MENUITEM SEPARATOR
          MENUITEM "Empty Screen when LCD &Off", IDM_OPTIONVIDEOLCDOFF, CHECKED

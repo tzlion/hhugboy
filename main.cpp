@@ -58,6 +58,9 @@ using namespace std;
 #include "directdraw.h"
 #include "directinput.h"
 
+
+#include "menu.h"
+
 #include "GB.h"
 
 gb_system* GB = NULL;
@@ -69,7 +72,7 @@ const char* prg_version = "1.0";
 // Windows stuff ----------------------------------------
 HWND hwnd = NULL;           
 HWND hwndCtrl = NULL;    
-HMENU menu;
+
 HINSTANCE hinst;
 
 LRESULT CALLBACK WindowProcedure (HWND, UINT, WPARAM, LPARAM);
@@ -83,6 +86,8 @@ wchar_t w_title_text[ROM_FILENAME_SIZE + 16];
 
 int timer_id = 0;
 int sizen_w,sizen_h; // Size needed for menu,borders,etc.
+
+
 
 // Options ----------------------------------------------
 bool paused = false;
@@ -188,9 +193,9 @@ int WINAPI WinMain(HINSTANCE hThisInstance,HINSTANCE hPrevInstance, LPSTR  lpszA
    if(!RegisterClassEx(&wincl))
       return 0;
    
-   menu = LoadMenu(hThisInstance, MAKEINTRESOURCE(ID_MENU));
+   menu::menuBar = LoadMenu(hThisInstance, MAKEINTRESOURCE(ID_MENU));
 
-   hwnd = CreateWindowEx(0,w_szClassName,w_emu_title,WS_SIZEBOX|WS_OVERLAPPEDWINDOW,150,150,2*160,2*144,HWND_DESKTOP,menu,hThisInstance,NULL);
+   hwnd = CreateWindowEx(0,w_szClassName,w_emu_title,WS_SIZEBOX|WS_OVERLAPPEDWINDOW,150,150,2*160,2*144,HWND_DESKTOP,menu::menuBar,hThisInstance,NULL);
    
    RECT adjrect;
    GetClientRect(hwnd,&adjrect);
@@ -695,12 +700,12 @@ LRESULT CALLBACK WindowProcedure(HWND hwnd, UINT message, WPARAM wParam, LPARAM 
                 {
                    if(GB1->romloaded)
                       FSOUND_SetMute(FSOUND_ALL,FALSE);
-                   CheckMenuItem(menu,IDM_CPUPAUSE,MF_UNCHECKED);
+                   menu::uncheckOption(IDM_CPUPAUSE);
                 }
                 else
                 {
                    FSOUND_SetMute(FSOUND_ALL,TRUE);
-                   CheckMenuItem(menu,IDM_CPUPAUSE,MF_CHECKED); 
+                   menu::checkOption(IDM_CPUPAUSE); 
                 }
                 menupause=!menupause;
                 paused=!paused;
@@ -717,7 +722,7 @@ LRESULT CALLBACK WindowProcedure(HWND hwnd, UINT message, WPARAM wParam, LPARAM 
              break;
 
              case IDM_CPUSTATESAVE:
-                if(GB1->romloaded)
+                if(GB1->romloaded)	
                    GB1->save_state();
              break;     
              
@@ -727,147 +732,87 @@ LRESULT CALLBACK WindowProcedure(HWND hwnd, UINT message, WPARAM wParam, LPARAM 
              break;
 
              case IDM_CPUSTATESLOT0:
-                CheckMenuItem(menu,IDM_CPUSTATESLOT0 + GB1_state_slot,MF_UNCHECKED);
-
                 GB1_state_slot = 0;
-
-                CheckMenuItem(menu,IDM_CPUSTATESLOT0 + GB1_state_slot,MF_CHECKED);
+                menu::checkOption(IDM_CPUSTATESLOT0 + GB1_state_slot);
              break;       
              case IDM_CPUSTATESLOT1:
-                CheckMenuItem(menu,IDM_CPUSTATESLOT0 + GB1_state_slot,MF_UNCHECKED);
-
                 GB1_state_slot = 1;
-
-                CheckMenuItem(menu,IDM_CPUSTATESLOT0 + GB1_state_slot,MF_CHECKED);
+                menu::checkOption(IDM_CPUSTATESLOT0 + GB1_state_slot);
              break; 
              case IDM_CPUSTATESLOT2:
-                CheckMenuItem(menu,IDM_CPUSTATESLOT0 + GB1_state_slot,MF_UNCHECKED);
-
                 GB1_state_slot = 2;
-
-                CheckMenuItem(menu,IDM_CPUSTATESLOT0 + GB1_state_slot,MF_CHECKED);
+                menu::checkOption(IDM_CPUSTATESLOT0 + GB1_state_slot);
              break; 
              case IDM_CPUSTATESLOT3:
-                CheckMenuItem(menu,IDM_CPUSTATESLOT0 + GB1_state_slot,MF_UNCHECKED);
-
                 GB1_state_slot = 3;
-
-                CheckMenuItem(menu,IDM_CPUSTATESLOT0 + GB1_state_slot,MF_CHECKED);
+                menu::checkOption(IDM_CPUSTATESLOT0 + GB1_state_slot);
              break; 
              case IDM_CPUSTATESLOT4:
-                CheckMenuItem(menu,IDM_CPUSTATESLOT0 + GB1_state_slot,MF_UNCHECKED);
-
                 GB1_state_slot = 4;
-
-                CheckMenuItem(menu,IDM_CPUSTATESLOT0 + GB1_state_slot,MF_CHECKED);
+                menu::checkOption(IDM_CPUSTATESLOT0 + GB1_state_slot);
              break; 
              case IDM_CPUSTATESLOT5:
-                CheckMenuItem(menu,IDM_CPUSTATESLOT0 + GB1_state_slot,MF_UNCHECKED);
-
                 GB1_state_slot = 5;
-
-                CheckMenuItem(menu,IDM_CPUSTATESLOT0 + GB1_state_slot,MF_CHECKED);
+                menu::checkOption(IDM_CPUSTATESLOT0 + GB1_state_slot);
              break; 
              case IDM_CPUSTATESLOT6:
-                CheckMenuItem(menu,IDM_CPUSTATESLOT0 + GB1_state_slot,MF_UNCHECKED);
-
                 GB1_state_slot = 6;
-
-                CheckMenuItem(menu,IDM_CPUSTATESLOT0 + GB1_state_slot,MF_CHECKED);
+                menu::checkOption(IDM_CPUSTATESLOT0 + GB1_state_slot);
              break; 
              case IDM_CPUSTATESLOT7:
-                CheckMenuItem(menu,IDM_CPUSTATESLOT0 + GB1_state_slot,MF_UNCHECKED);
-
                 GB1_state_slot = 7;
-
-                CheckMenuItem(menu,IDM_CPUSTATESLOT0 + GB1_state_slot,MF_CHECKED);
+                menu::checkOption(IDM_CPUSTATESLOT0 + GB1_state_slot);
              break; 
              case IDM_CPUSTATESLOT8:
-                CheckMenuItem(menu,IDM_CPUSTATESLOT0 + GB1_state_slot,MF_UNCHECKED);
-
                 GB1_state_slot = 8;
-
-                CheckMenuItem(menu,IDM_CPUSTATESLOT0 + GB1_state_slot,MF_CHECKED);
+                menu::checkOption(IDM_CPUSTATESLOT0 + GB1_state_slot);
              break; 
              case IDM_CPUSTATESLOT9:
-                CheckMenuItem(menu,IDM_CPUSTATESLOT0 + GB1_state_slot,MF_UNCHECKED);
-
                 GB1_state_slot = 9;
-
-                CheckMenuItem(menu,IDM_CPUSTATESLOT0 + GB1_state_slot,MF_CHECKED);
+                menu::checkOption(IDM_CPUSTATESLOT0 + GB1_state_slot);
              break;
 
              // GB2 save state slots -----------------------------------
 
              case IDM_CPU2STATESLOT0:
-                CheckMenuItem(menu,IDM_CPU2STATESLOT0 + GB2_state_slot,MF_UNCHECKED);
-
                 GB2_state_slot = 0;
-
-                CheckMenuItem(menu,IDM_CPU2STATESLOT0 + GB2_state_slot,MF_CHECKED);
+                menu::checkOption(IDM_CPU2STATESLOT0 + GB2_state_slot);
              break;
              case IDM_CPU2STATESLOT1:
-                CheckMenuItem(menu,IDM_CPU2STATESLOT0 + GB2_state_slot,MF_UNCHECKED);
-
                 GB2_state_slot = 1;
-
-                CheckMenuItem(menu,IDM_CPU2STATESLOT0 + GB2_state_slot,MF_CHECKED);
+                menu::checkOption(IDM_CPU2STATESLOT0 + GB2_state_slot);
              break;
              case IDM_CPU2STATESLOT2:
-                CheckMenuItem(menu,IDM_CPU2STATESLOT0 + GB2_state_slot,MF_UNCHECKED);
-
                 GB2_state_slot = 2;
-
-                CheckMenuItem(menu,IDM_CPU2STATESLOT0 + GB2_state_slot,MF_CHECKED);
+                menu::checkOption(IDM_CPU2STATESLOT0 + GB2_state_slot);
              break;
              case IDM_CPU2STATESLOT3:
-                CheckMenuItem(menu,IDM_CPU2STATESLOT0 + GB2_state_slot,MF_UNCHECKED);
-
                 GB2_state_slot = 3;
-
-                CheckMenuItem(menu,IDM_CPU2STATESLOT0 + GB2_state_slot,MF_CHECKED);
+                menu::checkOption(IDM_CPU2STATESLOT0 + GB2_state_slot);
              break;
              case IDM_CPU2STATESLOT4:
-                CheckMenuItem(menu,IDM_CPU2STATESLOT0 + GB2_state_slot,MF_UNCHECKED);
-
                 GB2_state_slot = 4;
-
-                CheckMenuItem(menu,IDM_CPU2STATESLOT0 + GB2_state_slot,MF_CHECKED);
+                menu::checkOption(IDM_CPU2STATESLOT0 + GB2_state_slot);
              break;
              case IDM_CPU2STATESLOT5:
-                CheckMenuItem(menu,IDM_CPU2STATESLOT0 + GB2_state_slot,MF_UNCHECKED);
-
                 GB2_state_slot = 5;
-
-                CheckMenuItem(menu,IDM_CPU2STATESLOT0 + GB2_state_slot,MF_CHECKED);
+                menu::checkOption(IDM_CPU2STATESLOT0 + GB2_state_slot);
              break;
              case IDM_CPU2STATESLOT6:
-                CheckMenuItem(menu,IDM_CPU2STATESLOT0 + GB2_state_slot,MF_UNCHECKED);
-
                 GB2_state_slot = 6;
-
-                CheckMenuItem(menu,IDM_CPU2STATESLOT0 + GB2_state_slot,MF_CHECKED);
+                menu::checkOption(IDM_CPU2STATESLOT0 + GB2_state_slot);
              break;
              case IDM_CPU2STATESLOT7:
-                CheckMenuItem(menu,IDM_CPU2STATESLOT0 + GB2_state_slot,MF_UNCHECKED);
-
                 GB2_state_slot = 7;
-
-                CheckMenuItem(menu,IDM_CPU2STATESLOT0 + GB2_state_slot,MF_CHECKED);
+                menu::checkOption(IDM_CPU2STATESLOT0 + GB2_state_slot);
              break;
              case IDM_CPU2STATESLOT8:
-                CheckMenuItem(menu,IDM_CPU2STATESLOT0 + GB2_state_slot,MF_UNCHECKED);
-
                 GB2_state_slot = 8;
-
-                CheckMenuItem(menu,IDM_CPU2STATESLOT0 + GB2_state_slot,MF_CHECKED);
+                menu::checkOption(IDM_CPU2STATESLOT0 + GB2_state_slot);
              break;
              case IDM_CPU2STATESLOT9:
-                CheckMenuItem(menu,IDM_CPU2STATESLOT0 + GB2_state_slot,MF_UNCHECKED);
-
                 GB2_state_slot = 9;
-
-                CheckMenuItem(menu,IDM_CPU2STATESLOT0 + GB2_state_slot,MF_CHECKED);
+                menu::checkOption(IDM_CPU2STATESLOT0 + GB2_state_slot);
              break;
 
              case IDM_CPUAUTO2:
@@ -887,12 +832,7 @@ LRESULT CALLBACK WindowProcedure(HWND hwnd, UINT message, WPARAM wParam, LPARAM 
                      if(GB2->romloaded && !GB2->load_save())
                         debug_print(str_table[ERROR_SAVE_FILE_READ]);         
                   }
-                  CheckMenuItem(menu,IDM_CPUAUTO2,MF_CHECKED);
-                  
-                  CheckMenuItem(menu,IDM_CPUGB2,MF_UNCHECKED);
-                  CheckMenuItem(menu,IDM_CPUGBP2,MF_UNCHECKED);
-                  CheckMenuItem(menu,IDM_CPUGBA2,MF_UNCHECKED);
-                  CheckMenuItem(menu,IDM_CPUGBC2,MF_UNCHECKED);                                                                          
+                  menu::checkOption(IDM_CPUAUTO2);                                                                            
              break;                  
              case IDM_CPUGBA2:
                   if(!GB2)
@@ -911,12 +851,7 @@ LRESULT CALLBACK WindowProcedure(HWND hwnd, UINT message, WPARAM wParam, LPARAM 
                      if(GB2->romloaded && !GB2->load_save())
                         debug_print(str_table[ERROR_SAVE_FILE_READ]);         
                   }
-                  CheckMenuItem(menu,IDM_CPUAUTO2,MF_UNCHECKED);
-                  CheckMenuItem(menu,IDM_CPUGB2,MF_UNCHECKED);
-                  CheckMenuItem(menu,IDM_CPUGBP2,MF_UNCHECKED);
-                  CheckMenuItem(menu,IDM_CPUGBC2,MF_UNCHECKED);                                     
-                                    
-                  CheckMenuItem(menu,IDM_CPUGBA2,MF_CHECKED);            
+                  menu::checkOption(IDM_CPUGBA2);             
              break;
              case IDM_CPUGB2:
                   if(!GB2)
@@ -935,12 +870,7 @@ LRESULT CALLBACK WindowProcedure(HWND hwnd, UINT message, WPARAM wParam, LPARAM 
                      if(GB2->romloaded && !GB2->load_save())
                         debug_print(str_table[ERROR_SAVE_FILE_READ]);                 
                   }
-                  CheckMenuItem(menu,IDM_CPUAUTO2,MF_UNCHECKED);
-                  CheckMenuItem(menu,IDM_CPUGBA2,MF_UNCHECKED);
-                  CheckMenuItem(menu,IDM_CPUGBP2,MF_UNCHECKED);
-                  CheckMenuItem(menu,IDM_CPUGBC2,MF_UNCHECKED);                                     
-                                    
-                  CheckMenuItem(menu,IDM_CPUGB2,MF_CHECKED);            
+                  menu::checkOption(IDM_CPUGB2);              
              break;                
              case IDM_CPUGBP2:
                   if(!GB2)
@@ -959,12 +889,7 @@ LRESULT CALLBACK WindowProcedure(HWND hwnd, UINT message, WPARAM wParam, LPARAM 
                      if(GB2->romloaded && !GB2->load_save())
                         debug_print(str_table[ERROR_SAVE_FILE_READ]);                 
                   }
-                  CheckMenuItem(menu,IDM_CPUAUTO2,MF_UNCHECKED);
-                  CheckMenuItem(menu,IDM_CPUGB2,MF_UNCHECKED);
-                  CheckMenuItem(menu,IDM_CPUGBA2,MF_UNCHECKED);
-                  CheckMenuItem(menu,IDM_CPUGBC2,MF_UNCHECKED);                   
-
-                  CheckMenuItem(menu,IDM_CPUGBP2,MF_CHECKED);            
+                  menu::checkOption(IDM_CPUGBP2);            
              break;       
              case IDM_CPUGBC2:
                   if(!GB2)
@@ -983,12 +908,7 @@ LRESULT CALLBACK WindowProcedure(HWND hwnd, UINT message, WPARAM wParam, LPARAM 
                      if(GB2->romloaded && !GB2->load_save())
                         debug_print(str_table[ERROR_SAVE_FILE_READ]);                
                   }
-                  CheckMenuItem(menu,IDM_CPUAUTO2,MF_UNCHECKED);
-                  CheckMenuItem(menu,IDM_CPUGB2,MF_UNCHECKED);
-                  CheckMenuItem(menu,IDM_CPUGBP2,MF_UNCHECKED);  
-                  CheckMenuItem(menu,IDM_CPUGBA2,MF_UNCHECKED);
-                                    
-                  CheckMenuItem(menu,IDM_CPUGBC2,MF_CHECKED);            
+                  menu::checkOption(IDM_CPUGBC2);            
              break;   
 
              case IDM_CPUAUTO:
@@ -1002,14 +922,7 @@ LRESULT CALLBACK WindowProcedure(HWND hwnd, UINT message, WPARAM wParam, LPARAM 
                      if(GB1->romloaded && !GB1->load_save())
                         debug_print(str_table[ERROR_SAVE_FILE_READ]);         
                   }
-                  CheckMenuItem(menu,IDM_CPUAUTO,MF_CHECKED);
-                  
-                  CheckMenuItem(menu,IDM_CPUGB,MF_UNCHECKED);
-                  CheckMenuItem(menu,IDM_CPUGBP,MF_UNCHECKED);
-                  CheckMenuItem(menu,IDM_CPUGBA,MF_UNCHECKED);
-                  CheckMenuItem(menu,IDM_CPUGBC,MF_UNCHECKED);                               
-                  CheckMenuItem(menu,IDM_CPUSGB,MF_UNCHECKED);                               
-                  CheckMenuItem(menu,IDM_CPUSGB2,MF_UNCHECKED);                                                 
+                  menu::checkOption(IDM_CPUAUTO);                                                  
              break;                  
              case IDM_CPUGBA:
                   if(GB1->system_type != SYS_GBA)
@@ -1022,14 +935,7 @@ LRESULT CALLBACK WindowProcedure(HWND hwnd, UINT message, WPARAM wParam, LPARAM 
                      if(GB1->romloaded && !GB1->load_save())
                         debug_print(str_table[ERROR_SAVE_FILE_READ]);         
                   }
-                  CheckMenuItem(menu,IDM_CPUAUTO,MF_UNCHECKED);
-                  CheckMenuItem(menu,IDM_CPUGB,MF_UNCHECKED);
-                  CheckMenuItem(menu,IDM_CPUGBP,MF_UNCHECKED);
-                  CheckMenuItem(menu,IDM_CPUGBC,MF_UNCHECKED);                                     
-                  CheckMenuItem(menu,IDM_CPUSGB,MF_UNCHECKED);                               
-                  CheckMenuItem(menu,IDM_CPUSGB2,MF_UNCHECKED); 
-                                    
-                  CheckMenuItem(menu,IDM_CPUGBA,MF_CHECKED);            
+                  menu::checkOption(IDM_CPUGBA);              
              break;
              case IDM_CPUGB:
                   if(GB1->system_type != SYS_GB)
@@ -1042,14 +948,7 @@ LRESULT CALLBACK WindowProcedure(HWND hwnd, UINT message, WPARAM wParam, LPARAM 
                      if(GB1->romloaded && !GB1->load_save())
                         debug_print(str_table[ERROR_SAVE_FILE_READ]);                 
                   }
-                  CheckMenuItem(menu,IDM_CPUAUTO,MF_UNCHECKED);
-                  CheckMenuItem(menu,IDM_CPUGBA,MF_UNCHECKED);
-                  CheckMenuItem(menu,IDM_CPUGBP,MF_UNCHECKED);
-                  CheckMenuItem(menu,IDM_CPUGBC,MF_UNCHECKED);                                     
-                  CheckMenuItem(menu,IDM_CPUSGB,MF_UNCHECKED);                               
-                  CheckMenuItem(menu,IDM_CPUSGB2,MF_UNCHECKED); 
-                                    
-                  CheckMenuItem(menu,IDM_CPUGB,MF_CHECKED);            
+                  menu::checkOption(IDM_CPUGB);          
              break;                
              case IDM_CPUGBP:
                   if(GB1->system_type != SYS_GBP)
@@ -1062,14 +961,7 @@ LRESULT CALLBACK WindowProcedure(HWND hwnd, UINT message, WPARAM wParam, LPARAM 
                      if(GB1->romloaded && !GB1->load_save())
                         debug_print(str_table[ERROR_SAVE_FILE_READ]);                 
                   }
-                  CheckMenuItem(menu,IDM_CPUAUTO,MF_UNCHECKED);
-                  CheckMenuItem(menu,IDM_CPUGB,MF_UNCHECKED);
-                  CheckMenuItem(menu,IDM_CPUGBA,MF_UNCHECKED);
-                  CheckMenuItem(menu,IDM_CPUGBC,MF_UNCHECKED);                   
-                  CheckMenuItem(menu,IDM_CPUSGB,MF_UNCHECKED);                               
-                  CheckMenuItem(menu,IDM_CPUSGB2,MF_UNCHECKED); 
-                                    
-                  CheckMenuItem(menu,IDM_CPUGBP,MF_CHECKED);            
+                  menu::checkOption(IDM_CPUGBP);             
              break;       
              case IDM_CPUGBC:
                   if(GB1->system_type != SYS_GBC)
@@ -1082,14 +974,7 @@ LRESULT CALLBACK WindowProcedure(HWND hwnd, UINT message, WPARAM wParam, LPARAM 
                      if(GB1->romloaded && !GB1->load_save())
                         debug_print(str_table[ERROR_SAVE_FILE_READ]);                
                   }
-                  CheckMenuItem(menu,IDM_CPUAUTO,MF_UNCHECKED);
-                  CheckMenuItem(menu,IDM_CPUGB,MF_UNCHECKED);
-                  CheckMenuItem(menu,IDM_CPUGBP,MF_UNCHECKED);  
-                  CheckMenuItem(menu,IDM_CPUGBA,MF_UNCHECKED);
-                  CheckMenuItem(menu,IDM_CPUSGB,MF_UNCHECKED);                               
-                  CheckMenuItem(menu,IDM_CPUSGB2,MF_UNCHECKED); 
-                                    
-                  CheckMenuItem(menu,IDM_CPUGBC,MF_CHECKED);            
+                  menu::checkOption(IDM_CPUGBC);            
              break;   
              case IDM_CPUSGB:
                   if(GB1->system_type != SYS_SGB)
@@ -1103,15 +988,7 @@ LRESULT CALLBACK WindowProcedure(HWND hwnd, UINT message, WPARAM wParam, LPARAM 
                      if(GB1->romloaded && !GB1->load_save())
                         debug_print(str_table[ERROR_SAVE_FILE_READ]);             
                   }
-                  CheckMenuItem(menu,IDM_CPUAUTO,MF_UNCHECKED);
-                  CheckMenuItem(menu,IDM_CPUGB,MF_UNCHECKED);
-                  CheckMenuItem(menu,IDM_CPUGBP,MF_UNCHECKED);  
-                  CheckMenuItem(menu,IDM_CPUGBA,MF_UNCHECKED);
-                  
-                  CheckMenuItem(menu,IDM_CPUSGB,MF_CHECKED);     
-                                            
-                  CheckMenuItem(menu,IDM_CPUSGB2,MF_UNCHECKED);                   
-                  CheckMenuItem(menu,IDM_CPUGBC,MF_UNCHECKED);            
+                  menu::checkOption(IDM_CPUSGB);             
              break;  
              case IDM_CPUSGB2:
                   if(GB1->system_type != SYS_SGB2)
@@ -1124,122 +1001,100 @@ LRESULT CALLBACK WindowProcedure(HWND hwnd, UINT message, WPARAM wParam, LPARAM 
                      if(GB1->romloaded && !GB1->load_save())
                         debug_print(str_table[ERROR_SAVE_FILE_READ]);                
                   }
-                  CheckMenuItem(menu,IDM_CPUAUTO,MF_UNCHECKED);
-                  CheckMenuItem(menu,IDM_CPUGB,MF_UNCHECKED);
-                  CheckMenuItem(menu,IDM_CPUGBP,MF_UNCHECKED);  
-                  CheckMenuItem(menu,IDM_CPUGBA,MF_UNCHECKED);
-                  CheckMenuItem(menu,IDM_CPUSGB,MF_UNCHECKED);  
-                                               
-                  CheckMenuItem(menu,IDM_CPUSGB2,MF_CHECKED); 
-                                    
-                  CheckMenuItem(menu,IDM_CPUGBC,MF_UNCHECKED);            
+                  menu::checkOption(IDM_CPUSGB2);       
              break;                                             
              case IDM_CPUGBCSGB:
                 if(options->GBC_SGB_border == GBC_WITH_SGB_BORDER)
                 {
-                   CheckMenuItem(menu,IDM_CPUGBCSGB,MF_UNCHECKED);
+                   menu::uncheckOption(IDM_CPUGBCSGB);
                    options->GBC_SGB_border = OFF;
                 } else
                 {
-                   CheckMenuItem(menu,IDM_CPUGBCSGBI,MF_UNCHECKED);
-                   CheckMenuItem(menu,IDM_CPUGBCSGB,MF_CHECKED);
+                   menu::checkOption(IDM_CPUGBCSGB);
                    options->GBC_SGB_border = GBC_WITH_SGB_BORDER;
                 }            
              break;         
              case IDM_CPUGBCSGBI:
                 if(options->GBC_SGB_border == GBC_WITH_INITIAL_SGB_BORDER)
                 {
-                   CheckMenuItem(menu,IDM_CPUGBCSGBI,MF_UNCHECKED);
+                   menu::uncheckOption(IDM_CPUGBCSGBI);
                    options->GBC_SGB_border = OFF;
                 } else
                 {
-                   CheckMenuItem(menu,IDM_CPUGBCSGB,MF_UNCHECKED);                
-                   CheckMenuItem(menu,IDM_CPUGBCSGBI,MF_CHECKED);
+                   menu::checkOption(IDM_CPUGBCSGBI);
                    options->GBC_SGB_border = GBC_WITH_INITIAL_SGB_BORDER;
                 }                    
              break;      
              
              case IDM_UNLAUTO:
              	options->unl_compat_mode = UNL_AUTO;
-             	CheckMenuItem(menu,IDM_UNLAUTO,MF_CHECKED);
-             	CheckMenuItem(menu,IDM_UNLNONE,MF_UNCHECKED);
-             	CheckMenuItem(menu,IDM_UNLNIUTOUDE,MF_UNCHECKED);
-             	CheckMenuItem(menu,IDM_UNLSINTAX,MF_UNCHECKED);
+             	menu::checkOption(IDM_UNLAUTO);
         	 break;
         	 case IDM_UNLNONE:
         	 	options->unl_compat_mode = UNL_NONE;
-             	CheckMenuItem(menu,IDM_UNLAUTO,MF_UNCHECKED);
-             	CheckMenuItem(menu,IDM_UNLNONE,MF_CHECKED);
-             	CheckMenuItem(menu,IDM_UNLNIUTOUDE,MF_UNCHECKED);
-             	CheckMenuItem(menu,IDM_UNLSINTAX,MF_UNCHECKED);
+             	menu::checkOption(IDM_UNLNONE);
         	 break;
         	 case IDM_UNLNIUTOUDE:
         	 	options->unl_compat_mode = UNL_NIUTOUDE;
-             	CheckMenuItem(menu,IDM_UNLAUTO,MF_UNCHECKED);
-             	CheckMenuItem(menu,IDM_UNLNONE,MF_UNCHECKED);
-             	CheckMenuItem(menu,IDM_UNLNIUTOUDE,MF_CHECKED);
-             	CheckMenuItem(menu,IDM_UNLSINTAX,MF_UNCHECKED);
+             	menu::checkOption(IDM_UNLNIUTOUDE);
         	 break;
         	 case IDM_UNLSINTAX:
         	 	options->unl_compat_mode = UNL_SINTAX;
-        	 	CheckMenuItem(menu,IDM_UNLAUTO,MF_UNCHECKED);
-             	CheckMenuItem(menu,IDM_UNLNONE,MF_UNCHECKED);
-             	CheckMenuItem(menu,IDM_UNLNIUTOUDE,MF_UNCHECKED);
-             	CheckMenuItem(menu,IDM_UNLSINTAX,MF_CHECKED);
+             	menu::checkOption(IDM_UNLSINTAX);
         	break;
              
              case IDM_CPUSPFS9:
                 if(options->speedup_skip_9frames)
                 {
-                   CheckMenuItem(menu,IDM_CPUSPFS9,MF_UNCHECKED);
+                   menu::uncheckOption(IDM_CPUSPFS9);
                    options->speedup_skip_9frames = false;
                 } else
                 {
-                   CheckMenuItem(menu,IDM_CPUSPFS9,MF_CHECKED);
+                   menu::checkOption(IDM_CPUSPFS9);
                    options->speedup_skip_9frames = true;
                 }                
              break;    
              case IDM_CPUSPSNDOFF:
                 if(options->speedup_sound_off)
                 {
-                   CheckMenuItem(menu,IDM_CPUSPSNDOFF,MF_UNCHECKED);
+                   menu::uncheckOption(IDM_CPUSPSNDOFF);
                    options->speedup_sound_off = false;
                 } else
                 {
-                   CheckMenuItem(menu,IDM_CPUSPSNDOFF,MF_CHECKED);
+                   menu::checkOption(IDM_CPUSPSNDOFF);
                    options->speedup_sound_off = true;
                 }                
              break;       
              case IDM_CPUOPCODE:
                 if(options->halt_on_unknown_opcode)
                 {
-                   CheckMenuItem(menu,IDM_CPUOPCODE,MF_UNCHECKED);
+                   menu::uncheckOption(IDM_CPUOPCODE);
                    options->halt_on_unknown_opcode = false;
                 } else
                 {
-                   CheckMenuItem(menu,IDM_CPUOPCODE,MF_CHECKED);
+                   menu::checkOption(IDM_CPUOPCODE);
                    options->halt_on_unknown_opcode = true;
                 }                
              break;       
              case IDM_OPTIONCPUUSAGE:
                 if(options->reduce_cpu_usage)
                 {
-                   CheckMenuItem(menu,IDM_OPTIONCPUUSAGE,MF_UNCHECKED);
+                   menu::uncheckOption(IDM_OPTIONCPUUSAGE);
                    options->reduce_cpu_usage = false;
                 } else
                 {
-                   CheckMenuItem(menu,IDM_OPTIONCPUUSAGE,MF_CHECKED);
+                   menu::checkOption(IDM_OPTIONCPUUSAGE);
                    options->reduce_cpu_usage = true;
                 }                
              break;      
              case IDM_OPTIONOPPOSITEDIRECTIONS:
                 if(options->opposite_directions_allowed)
                 {
-                   CheckMenuItem(menu,IDM_OPTIONOPPOSITEDIRECTIONS,MF_UNCHECKED);
+                   menu::uncheckOption(IDM_OPTIONOPPOSITEDIRECTIONS);
                    options->opposite_directions_allowed = false;
                 } else
                 {
-                   CheckMenuItem(menu,IDM_OPTIONOPPOSITEDIRECTIONS,MF_CHECKED);
+                   menu::checkOption(IDM_OPTIONOPPOSITEDIRECTIONS);
                    options->opposite_directions_allowed = true;
                 }                
              break;                            
@@ -1247,15 +1102,13 @@ LRESULT CALLBACK WindowProcedure(HWND hwnd, UINT message, WPARAM wParam, LPARAM 
                 connected_device = DEVICE_NONE;
                 reset_devices();
 
-                CheckMenuItem(menu,IDM_DEVICENONE,MF_CHECKED);
-                CheckMenuItem(menu,IDM_DEVICEBARCODE,MF_UNCHECKED);                           
+                menu::checkOption(IDM_DEVICENONE);                       
              break; 
              case IDM_DEVICEBARCODE:
                 connected_device = DEVICE_BARCODE;
                 reset_devices();
 
-                CheckMenuItem(menu,IDM_DEVICENONE,MF_UNCHECKED);
-                CheckMenuItem(menu,IDM_DEVICEBARCODE,MF_CHECKED);                           
+                menu::checkOption(IDM_DEVICEBARCODE);                           
              break;                                                                                
              case IDM_OPTIONVIDEOSIZE1:
              {
@@ -1325,10 +1178,7 @@ LRESULT CALLBACK WindowProcedure(HWND hwnd, UINT message, WPARAM wParam, LPARAM 
                   
              case IDM_OPTIONVIDEOBW: 
                 options->video_GB_color = BLACK_WHITE;
-                CheckMenuItem(menu,IDM_OPTIONVIDEOBW,MF_CHECKED);
-                CheckMenuItem(menu,IDM_OPTIONVIDEOLCDBROWN,MF_UNCHECKED);
-                CheckMenuItem(menu,IDM_OPTIONVIDEOLCDGREEN,MF_UNCHECKED);	
-                CheckMenuItem(menu,IDM_OPTIONVIDEOGRAY,MF_UNCHECKED);
+                menu::checkOption(IDM_OPTIONVIDEOBW);    
 
                 if(!GB->gbc_mode || !GB->rom->CGB)
                 {
@@ -1340,10 +1190,7 @@ LRESULT CALLBACK WindowProcedure(HWND hwnd, UINT message, WPARAM wParam, LPARAM 
                   
              case IDM_OPTIONVIDEOLCDBROWN:  
                 options->video_GB_color = LCD_BROWN;
-                CheckMenuItem(menu,IDM_OPTIONVIDEOLCDBROWN,MF_CHECKED);
-                CheckMenuItem(menu,IDM_OPTIONVIDEOBW,MF_UNCHECKED);	 
-                CheckMenuItem(menu,IDM_OPTIONVIDEOLCDGREEN,MF_UNCHECKED);	
-                CheckMenuItem(menu,IDM_OPTIONVIDEOGRAY,MF_UNCHECKED);                
+                menu::checkOption(IDM_OPTIONVIDEOLCDBROWN);    
                 
                 if(!GB->gbc_mode || !GB->rom->CGB)
                 {
@@ -1355,10 +1202,7 @@ LRESULT CALLBACK WindowProcedure(HWND hwnd, UINT message, WPARAM wParam, LPARAM 
              
              case IDM_OPTIONVIDEOLCDGREEN:  
                 options->video_GB_color = LCD_GREEN;
-                CheckMenuItem(menu,IDM_OPTIONVIDEOLCDGREEN,MF_CHECKED);
-                CheckMenuItem(menu,IDM_OPTIONVIDEOBW,MF_UNCHECKED);	 
-                CheckMenuItem(menu,IDM_OPTIONVIDEOLCDBROWN,MF_UNCHECKED);
-                CheckMenuItem(menu,IDM_OPTIONVIDEOGRAY,MF_UNCHECKED);                	
+                menu::checkOption(IDM_OPTIONVIDEOLCDGREEN);                	
                 
                 if(!GB->gbc_mode || !GB->rom->CGB)
                 {
@@ -1370,11 +1214,7 @@ LRESULT CALLBACK WindowProcedure(HWND hwnd, UINT message, WPARAM wParam, LPARAM 
 
              case IDM_OPTIONVIDEOGRAY:  
                 options->video_GB_color = GRAY;
-                CheckMenuItem(menu,IDM_OPTIONVIDEOGRAY,MF_CHECKED);
-                
-                CheckMenuItem(menu,IDM_OPTIONVIDEOBW,MF_UNCHECKED);	 
-                CheckMenuItem(menu,IDM_OPTIONVIDEOLCDBROWN,MF_UNCHECKED);
-                CheckMenuItem(menu,IDM_OPTIONVIDEOLCDGREEN,MF_UNCHECKED);                	
+                menu::checkOption(IDM_OPTIONVIDEOGRAY);                	
                 
                 if(!GB->gbc_mode || !GB->rom->CGB)
                 {
@@ -1387,12 +1227,7 @@ LRESULT CALLBACK WindowProcedure(HWND hwnd, UINT message, WPARAM wParam, LPARAM 
              case IDM_VIDEOFILTERNONE:
                 if(options->video_filter != VIDEO_FILTER_NONE)
                 {
-                   CheckMenuItem(menu,IDM_VIDEOFILTERNONE,MF_CHECKED);
-                   CheckMenuItem(menu,IDM_VIDEOFILTERSOFT2X,MF_UNCHECKED);              
-                   CheckMenuItem(menu,IDM_VIDEOFILTERSCALE2X,MF_UNCHECKED);
-                   CheckMenuItem(menu,IDM_VIDEOFILTERSCALE3X,MF_UNCHECKED);                   
-                   CheckMenuItem(menu,IDM_VIDEOFILTERBLUR,MF_UNCHECKED);     
-				   CheckMenuItem(menu,IDM_VIDEOFILTERSOFTXX,MF_UNCHECKED);                                                 
+                   menu::checkOption(IDM_VIDEOFILTERNONE);                                           
                                                      
                    options->video_filter = VIDEO_FILTER_NONE;
                    filter_width = 1;
@@ -1404,12 +1239,7 @@ LRESULT CALLBACK WindowProcedure(HWND hwnd, UINT message, WPARAM wParam, LPARAM 
              case IDM_VIDEOFILTERSOFT2X:
                 if(options->video_filter != VIDEO_FILTER_SOFT2X)
                 {
-                   CheckMenuItem(menu,IDM_VIDEOFILTERSOFT2X,MF_CHECKED);
-                   CheckMenuItem(menu,IDM_VIDEOFILTERNONE,MF_UNCHECKED); 
-                   CheckMenuItem(menu,IDM_VIDEOFILTERSCALE2X,MF_UNCHECKED);
-                   CheckMenuItem(menu,IDM_VIDEOFILTERSCALE3X,MF_UNCHECKED);                   
-                   CheckMenuItem(menu,IDM_VIDEOFILTERBLUR,MF_UNCHECKED); 
-				   CheckMenuItem(menu,IDM_VIDEOFILTERSOFTXX,MF_UNCHECKED);                                  
+                   menu::checkOption(IDM_VIDEOFILTERSOFT2X);                            
                                                      
                    options->video_filter = VIDEO_FILTER_SOFT2X;
                    filter_width=2;
@@ -1421,12 +1251,7 @@ LRESULT CALLBACK WindowProcedure(HWND hwnd, UINT message, WPARAM wParam, LPARAM 
              case IDM_VIDEOFILTERSOFTXX:
                 if(options->video_filter != VIDEO_FILTER_SOFTXX)
                 {
-                   CheckMenuItem(menu,IDM_VIDEOFILTERSOFT2X,MF_UNCHECKED);
-                   CheckMenuItem(menu,IDM_VIDEOFILTERNONE,MF_UNCHECKED); 
-                   CheckMenuItem(menu,IDM_VIDEOFILTERSCALE2X,MF_UNCHECKED);
-                   CheckMenuItem(menu,IDM_VIDEOFILTERSCALE3X,MF_UNCHECKED);                   
-                   CheckMenuItem(menu,IDM_VIDEOFILTERBLUR,MF_UNCHECKED); 
-				   CheckMenuItem(menu,IDM_VIDEOFILTERSOFTXX,MF_CHECKED);                                  
+                   menu::checkOption(IDM_VIDEOFILTERSOFTXX);                                      
                                                      
                    options->video_filter = VIDEO_FILTER_SOFTXX;
                    filter_width=8;
@@ -1438,12 +1263,7 @@ LRESULT CALLBACK WindowProcedure(HWND hwnd, UINT message, WPARAM wParam, LPARAM 
              case IDM_VIDEOFILTERSCALE2X:
                 if(options->video_filter != VIDEO_FILTER_SCALE2X)
                 {
-                   CheckMenuItem(menu,IDM_VIDEOFILTERSCALE2X,MF_CHECKED);
-                   CheckMenuItem(menu,IDM_VIDEOFILTERNONE,MF_UNCHECKED); 
-                   CheckMenuItem(menu,IDM_VIDEOFILTERSOFT2X,MF_UNCHECKED);
-                   CheckMenuItem(menu,IDM_VIDEOFILTERSCALE3X,MF_UNCHECKED);                    
-                   CheckMenuItem(menu,IDM_VIDEOFILTERBLUR,MF_UNCHECKED);  
-				   CheckMenuItem(menu,IDM_VIDEOFILTERSOFTXX,MF_UNCHECKED);                                 
+                   menu::checkOption(IDM_VIDEOFILTERSCALE2X);                                   
                    
                    options->video_filter = VIDEO_FILTER_SCALE2X;
                    filter_width=2;
@@ -1455,12 +1275,7 @@ LRESULT CALLBACK WindowProcedure(HWND hwnd, UINT message, WPARAM wParam, LPARAM 
              case IDM_VIDEOFILTERSCALE3X:
                 if(options->video_filter != VIDEO_FILTER_SCALE3X)
                 {
-                   CheckMenuItem(menu,IDM_VIDEOFILTERSCALE3X,MF_CHECKED);
-                   CheckMenuItem(menu,IDM_VIDEOFILTERSCALE2X,MF_UNCHECKED);                   
-                   CheckMenuItem(menu,IDM_VIDEOFILTERNONE,MF_UNCHECKED); 
-                   CheckMenuItem(menu,IDM_VIDEOFILTERSOFT2X,MF_UNCHECKED); 
-                   CheckMenuItem(menu,IDM_VIDEOFILTERBLUR,MF_UNCHECKED);   
-				   CheckMenuItem(menu,IDM_VIDEOFILTERSOFTXX,MF_UNCHECKED);                                
+                   menu::checkOption(IDM_VIDEOFILTERSCALE3X);                                     
                    
                    options->video_filter = VIDEO_FILTER_SCALE3X;
                    filter_width=3;
@@ -1472,12 +1287,7 @@ LRESULT CALLBACK WindowProcedure(HWND hwnd, UINT message, WPARAM wParam, LPARAM 
              case IDM_VIDEOFILTERBLUR:
                 if(options->video_filter != VIDEO_FILTER_BLUR)
                 {
-                   CheckMenuItem(menu,IDM_VIDEOFILTERBLUR,MF_CHECKED);                
-                   CheckMenuItem(menu,IDM_VIDEOFILTERSCALE2X,MF_UNCHECKED);
-                   CheckMenuItem(menu,IDM_VIDEOFILTERSCALE3X,MF_UNCHECKED);                   
-                   CheckMenuItem(menu,IDM_VIDEOFILTERNONE,MF_UNCHECKED); 
-                   CheckMenuItem(menu,IDM_VIDEOFILTERSOFT2X,MF_UNCHECKED); 
-                   CheckMenuItem(menu,IDM_VIDEOFILTERSOFTXX,MF_UNCHECKED); 
+                   menu::checkOption(IDM_VIDEOFILTERBLUR);       
                                   
                    options->video_filter = VIDEO_FILTER_BLUR;
                    filter_width=2;
@@ -1489,11 +1299,11 @@ LRESULT CALLBACK WindowProcedure(HWND hwnd, UINT message, WPARAM wParam, LPARAM 
              case IDM_VIDEOFILTERUSEMMX:
                 if(options->video_filter_use_mmx)
                 {
-                   CheckMenuItem(menu,IDM_VIDEOFILTERUSEMMX,MF_UNCHECKED);
+                   menu::uncheckOption(IDM_VIDEOFILTERUSEMMX);
                    options->video_filter_use_mmx = false;
                 } else
                 {
-                   CheckMenuItem(menu,IDM_VIDEOFILTERUSEMMX,MF_CHECKED);
+                   menu::checkOption(IDM_VIDEOFILTERUSEMMX);
                    options->video_filter_use_mmx = true;
                 }
              break;          
@@ -1501,12 +1311,7 @@ LRESULT CALLBACK WindowProcedure(HWND hwnd, UINT message, WPARAM wParam, LPARAM 
              case IDM_VIDEOFILTERBORDERNONE:
                 if(options->video_SGBborder_filter != VIDEO_FILTER_NONE)
                 {
-                   CheckMenuItem(menu,IDM_VIDEOFILTERBORDERNONE,MF_CHECKED);
-                   CheckMenuItem(menu,IDM_VIDEOFILTERBORDERSOFT2X,MF_UNCHECKED);           
-				   CheckMenuItem(menu,IDM_VIDEOFILTERBORDERSOFTXX,MF_UNCHECKED);    
-                   CheckMenuItem(menu,IDM_VIDEOFILTERBORDERSCALE2X,MF_UNCHECKED);
-                   CheckMenuItem(menu,IDM_VIDEOFILTERBORDERSCALE3X,MF_UNCHECKED);                   
-                   CheckMenuItem(menu,IDM_VIDEOFILTERBORDERBLUR,MF_UNCHECKED);                                                     
+                   menu::checkOption(IDM_VIDEOFILTERBORDERNONE);                                                     
                                                      
                    options->video_SGBborder_filter = VIDEO_FILTER_NONE;
                    border_filter_width=1;
@@ -1518,12 +1323,7 @@ LRESULT CALLBACK WindowProcedure(HWND hwnd, UINT message, WPARAM wParam, LPARAM 
              case IDM_VIDEOFILTERBORDERSOFT2X:
                 if(options->video_SGBborder_filter != VIDEO_FILTER_SOFT2X)
                 {
-                   CheckMenuItem(menu,IDM_VIDEOFILTERBORDERSOFT2X,MF_CHECKED);
-                   CheckMenuItem(menu,IDM_VIDEOFILTERBORDERSOFTXX,MF_UNCHECKED);    
-                   CheckMenuItem(menu,IDM_VIDEOFILTERBORDERNONE,MF_UNCHECKED); 
-                   CheckMenuItem(menu,IDM_VIDEOFILTERBORDERSCALE2X,MF_UNCHECKED);
-                   CheckMenuItem(menu,IDM_VIDEOFILTERBORDERSCALE3X,MF_UNCHECKED);                   
-                   CheckMenuItem(menu,IDM_VIDEOFILTERBORDERBLUR,MF_UNCHECKED);                                  
+                   menu::checkOption(IDM_VIDEOFILTERBORDERSOFT2X);                                  
                                                      
                    options->video_SGBborder_filter = VIDEO_FILTER_SOFT2X;
                    border_filter_width=2;
@@ -1535,12 +1335,7 @@ LRESULT CALLBACK WindowProcedure(HWND hwnd, UINT message, WPARAM wParam, LPARAM 
              case IDM_VIDEOFILTERBORDERSOFTXX:
                 if(options->video_SGBborder_filter != VIDEO_FILTER_SOFTXX)
                 {
-                   CheckMenuItem(menu,IDM_VIDEOFILTERBORDERSOFT2X,MF_UNCHECKED);
-                   CheckMenuItem(menu,IDM_VIDEOFILTERBORDERSOFTXX,MF_CHECKED);    
-                   CheckMenuItem(menu,IDM_VIDEOFILTERBORDERNONE,MF_UNCHECKED); 
-                   CheckMenuItem(menu,IDM_VIDEOFILTERBORDERSCALE2X,MF_UNCHECKED);
-                   CheckMenuItem(menu,IDM_VIDEOFILTERBORDERSCALE3X,MF_UNCHECKED);                   
-                   CheckMenuItem(menu,IDM_VIDEOFILTERBORDERBLUR,MF_UNCHECKED);                                  
+                   menu::checkOption(IDM_VIDEOFILTERBORDERSOFTXX);                                
                                                      
                    options->video_SGBborder_filter = VIDEO_FILTER_SOFTXX;
                    border_filter_width=8;
@@ -1552,12 +1347,7 @@ LRESULT CALLBACK WindowProcedure(HWND hwnd, UINT message, WPARAM wParam, LPARAM 
              case IDM_VIDEOFILTERBORDERSCALE2X:
                 if(options->video_SGBborder_filter != VIDEO_FILTER_SCALE2X)
                 {
-                   CheckMenuItem(menu,IDM_VIDEOFILTERBORDERSCALE2X,MF_CHECKED);
-                   CheckMenuItem(menu,IDM_VIDEOFILTERBORDERSOFTXX,MF_UNCHECKED);    
-                   CheckMenuItem(menu,IDM_VIDEOFILTERBORDERNONE,MF_UNCHECKED); 
-                   CheckMenuItem(menu,IDM_VIDEOFILTERBORDERSOFT2X,MF_UNCHECKED); 
-                   CheckMenuItem(menu,IDM_VIDEOFILTERBORDERSCALE3X,MF_UNCHECKED);                   
-                   CheckMenuItem(menu,IDM_VIDEOFILTERBORDERBLUR,MF_UNCHECKED);                                  
+                   menu::checkOption(IDM_VIDEOFILTERBORDERSCALE2X);                                   
                    
                    options->video_SGBborder_filter = VIDEO_FILTER_SCALE2X;
                    border_filter_width=2;
@@ -1569,12 +1359,7 @@ LRESULT CALLBACK WindowProcedure(HWND hwnd, UINT message, WPARAM wParam, LPARAM 
              case IDM_VIDEOFILTERBORDERSCALE3X:
                 if(options->video_SGBborder_filter != VIDEO_FILTER_SCALE3X)
                 {
-                   CheckMenuItem(menu,IDM_VIDEOFILTERBORDERSCALE3X,MF_CHECKED);     
-				   CheckMenuItem(menu,IDM_VIDEOFILTERBORDERSOFTXX,MF_UNCHECKED);                 
-                   CheckMenuItem(menu,IDM_VIDEOFILTERBORDERSCALE2X,MF_UNCHECKED);
-                   CheckMenuItem(menu,IDM_VIDEOFILTERBORDERNONE,MF_UNCHECKED); 
-                   CheckMenuItem(menu,IDM_VIDEOFILTERBORDERSOFT2X,MF_UNCHECKED); 
-                   CheckMenuItem(menu,IDM_VIDEOFILTERBORDERBLUR,MF_UNCHECKED);                                  
+                   menu::checkOption(IDM_VIDEOFILTERBORDERSCALE3X);                                   
                    
                    options->video_SGBborder_filter = VIDEO_FILTER_SCALE3X;
                    border_filter_width = 3;
@@ -1586,12 +1371,7 @@ LRESULT CALLBACK WindowProcedure(HWND hwnd, UINT message, WPARAM wParam, LPARAM 
              case IDM_VIDEOFILTERBORDERBLUR:
                 if(options->video_SGBborder_filter != VIDEO_FILTER_BLUR)
                 {
-                   CheckMenuItem(menu,IDM_VIDEOFILTERBORDERBLUR,MF_CHECKED);        
-				   CheckMenuItem(menu,IDM_VIDEOFILTERBORDERSOFTXX,MF_UNCHECKED);            
-                   CheckMenuItem(menu,IDM_VIDEOFILTERBORDERSCALE2X,MF_UNCHECKED);
-                   CheckMenuItem(menu,IDM_VIDEOFILTERBORDERSCALE3X,MF_UNCHECKED);                   
-                   CheckMenuItem(menu,IDM_VIDEOFILTERBORDERNONE,MF_UNCHECKED); 
-                   CheckMenuItem(menu,IDM_VIDEOFILTERBORDERSOFT2X,MF_UNCHECKED); 
+                   menu::checkOption(IDM_VIDEOFILTERBORDERBLUR);   
                                   
                    options->video_SGBborder_filter = VIDEO_FILTER_BLUR;
                    border_filter_width=2;
@@ -1602,9 +1382,7 @@ LRESULT CALLBACK WindowProcedure(HWND hwnd, UINT message, WPARAM wParam, LPARAM 
              break;                
 
              case IDM_OPTIONVIDEOMIXOFF:
-                CheckMenuItem(menu,IDM_OPTIONVIDEOMIXOFF,MF_CHECKED);
-                CheckMenuItem(menu,IDM_OPTIONVIDEOMIXON,MF_UNCHECKED);
-                CheckMenuItem(menu,IDM_OPTIONVIDEOMIXMORE,MF_UNCHECKED);
+                menu::checkOption(IDM_OPTIONVIDEOMIXOFF);
 
                 options->video_mix_frames = MIX_FRAMES_OFF;
                 if(dx_bitcount == 16)
@@ -1614,9 +1392,7 @@ LRESULT CALLBACK WindowProcedure(HWND hwnd, UINT message, WPARAM wParam, LPARAM 
              break;
 
              case IDM_OPTIONVIDEOMIXON:
-                CheckMenuItem(menu,IDM_OPTIONVIDEOMIXON,MF_CHECKED);
-                CheckMenuItem(menu,IDM_OPTIONVIDEOMIXOFF,MF_UNCHECKED);
-                CheckMenuItem(menu,IDM_OPTIONVIDEOMIXMORE,MF_UNCHECKED);
+                menu::checkOption(IDM_OPTIONVIDEOMIXON);
 
                 options->video_mix_frames = MIX_FRAMES_ON;
                 if(dx_bitcount == 16)
@@ -1626,9 +1402,7 @@ LRESULT CALLBACK WindowProcedure(HWND hwnd, UINT message, WPARAM wParam, LPARAM 
              break;
 
              case IDM_OPTIONVIDEOMIXMORE:
-                CheckMenuItem(menu,IDM_OPTIONVIDEOMIXMORE,MF_CHECKED);
-                CheckMenuItem(menu,IDM_OPTIONVIDEOMIXON,MF_UNCHECKED);
-                CheckMenuItem(menu,IDM_OPTIONVIDEOMIXOFF,MF_UNCHECKED);
+                menu::checkOption(IDM_OPTIONVIDEOMIXMORE);
 
                 options->video_mix_frames = MIX_FRAMES_MORE;
                 if(dx_bitcount == 16)
@@ -1641,208 +1415,118 @@ LRESULT CALLBACK WindowProcedure(HWND hwnd, UINT message, WPARAM wParam, LPARAM 
                 if(options->video_auto_frameskip)
                 {
                    options->video_auto_frameskip = false;
-                   CheckMenuItem(menu,IDM_OPTIONVIDEOFSAUTO,MF_UNCHECKED); 
+                   menu::uncheckOption(IDM_OPTIONVIDEOFSAUTO); 
                 } else
                 {
                    options->video_auto_frameskip = true;
-                   CheckMenuItem(menu,IDM_OPTIONVIDEOFSAUTO,MF_CHECKED);
+                   menu::checkOption(IDM_OPTIONVIDEOFSAUTO);
                 }               
              break;             
              case IDM_OPTIONVIDEOFS0:
                 options->video_frameskip = 0;
-                CheckMenuItem(menu,IDM_OPTIONVIDEOFS0,MF_CHECKED); 
-                CheckMenuItem(menu,IDM_OPTIONVIDEOFS1,MF_UNCHECKED); 
-                CheckMenuItem(menu,IDM_OPTIONVIDEOFS2,MF_UNCHECKED); 
-                CheckMenuItem(menu,IDM_OPTIONVIDEOFS3,MF_UNCHECKED); 
-                CheckMenuItem(menu,IDM_OPTIONVIDEOFS4,MF_UNCHECKED); 
-                CheckMenuItem(menu,IDM_OPTIONVIDEOFS5,MF_UNCHECKED); 
-                CheckMenuItem(menu,IDM_OPTIONVIDEOFS6,MF_UNCHECKED); 
-                CheckMenuItem(menu,IDM_OPTIONVIDEOFS7,MF_UNCHECKED); 
-                CheckMenuItem(menu,IDM_OPTIONVIDEOFS8,MF_UNCHECKED);                                                                                                                                 
-                CheckMenuItem(menu,IDM_OPTIONVIDEOFS9,MF_UNCHECKED);                 
+                menu::checkOption(IDM_OPTIONVIDEOFS0+options->video_frameskip);             
              break;
              case IDM_OPTIONVIDEOFS1:
                 options->video_frameskip = 1;
-                CheckMenuItem(menu,IDM_OPTIONVIDEOFS0,MF_UNCHECKED); 
-                CheckMenuItem(menu,IDM_OPTIONVIDEOFS1,MF_CHECKED); 
-                CheckMenuItem(menu,IDM_OPTIONVIDEOFS2,MF_UNCHECKED); 
-                CheckMenuItem(menu,IDM_OPTIONVIDEOFS3,MF_UNCHECKED); 
-                CheckMenuItem(menu,IDM_OPTIONVIDEOFS4,MF_UNCHECKED); 
-                CheckMenuItem(menu,IDM_OPTIONVIDEOFS5,MF_UNCHECKED); 
-                CheckMenuItem(menu,IDM_OPTIONVIDEOFS6,MF_UNCHECKED); 
-                CheckMenuItem(menu,IDM_OPTIONVIDEOFS7,MF_UNCHECKED); 
-                CheckMenuItem(menu,IDM_OPTIONVIDEOFS8,MF_UNCHECKED);                                                                                                                                 
-                CheckMenuItem(menu,IDM_OPTIONVIDEOFS9,MF_UNCHECKED);                 
+                menu::checkOption(IDM_OPTIONVIDEOFS0+options->video_frameskip);                    
              break;             
              case IDM_OPTIONVIDEOFS2:
                 options->video_frameskip = 2;
-                CheckMenuItem(menu,IDM_OPTIONVIDEOFS0,MF_UNCHECKED); 
-                CheckMenuItem(menu,IDM_OPTIONVIDEOFS1,MF_UNCHECKED); 
-                CheckMenuItem(menu,IDM_OPTIONVIDEOFS2,MF_CHECKED); 
-                CheckMenuItem(menu,IDM_OPTIONVIDEOFS3,MF_UNCHECKED); 
-                CheckMenuItem(menu,IDM_OPTIONVIDEOFS4,MF_UNCHECKED); 
-                CheckMenuItem(menu,IDM_OPTIONVIDEOFS5,MF_UNCHECKED); 
-                CheckMenuItem(menu,IDM_OPTIONVIDEOFS6,MF_UNCHECKED); 
-                CheckMenuItem(menu,IDM_OPTIONVIDEOFS7,MF_UNCHECKED); 
-                CheckMenuItem(menu,IDM_OPTIONVIDEOFS8,MF_UNCHECKED);                                                                                                                                 
-                CheckMenuItem(menu,IDM_OPTIONVIDEOFS9,MF_UNCHECKED);                 
+                menu::checkOption(IDM_OPTIONVIDEOFS0+options->video_frameskip);                  
              break;                             
              case IDM_OPTIONVIDEOFS3:
                 options->video_frameskip = 3;
-                CheckMenuItem(menu,IDM_OPTIONVIDEOFS0,MF_UNCHECKED); 
-                CheckMenuItem(menu,IDM_OPTIONVIDEOFS1,MF_UNCHECKED); 
-                CheckMenuItem(menu,IDM_OPTIONVIDEOFS2,MF_UNCHECKED); 
-                CheckMenuItem(menu,IDM_OPTIONVIDEOFS3,MF_CHECKED); 
-                CheckMenuItem(menu,IDM_OPTIONVIDEOFS4,MF_UNCHECKED); 
-                CheckMenuItem(menu,IDM_OPTIONVIDEOFS5,MF_UNCHECKED); 
-                CheckMenuItem(menu,IDM_OPTIONVIDEOFS6,MF_UNCHECKED); 
-                CheckMenuItem(menu,IDM_OPTIONVIDEOFS7,MF_UNCHECKED); 
-                CheckMenuItem(menu,IDM_OPTIONVIDEOFS8,MF_UNCHECKED);                                                                                                                                 
-                CheckMenuItem(menu,IDM_OPTIONVIDEOFS9,MF_UNCHECKED);                 
+                menu::checkOption(IDM_OPTIONVIDEOFS0+options->video_frameskip);                  
              break;  
              case IDM_OPTIONVIDEOFS4:
                 options->video_frameskip = 4;
-                CheckMenuItem(menu,IDM_OPTIONVIDEOFS0,MF_UNCHECKED); 
-                CheckMenuItem(menu,IDM_OPTIONVIDEOFS1,MF_UNCHECKED); 
-                CheckMenuItem(menu,IDM_OPTIONVIDEOFS2,MF_UNCHECKED); 
-                CheckMenuItem(menu,IDM_OPTIONVIDEOFS3,MF_UNCHECKED); 
-                CheckMenuItem(menu,IDM_OPTIONVIDEOFS4,MF_CHECKED); 
-                CheckMenuItem(menu,IDM_OPTIONVIDEOFS5,MF_UNCHECKED); 
-                CheckMenuItem(menu,IDM_OPTIONVIDEOFS6,MF_UNCHECKED); 
-                CheckMenuItem(menu,IDM_OPTIONVIDEOFS7,MF_UNCHECKED); 
-                CheckMenuItem(menu,IDM_OPTIONVIDEOFS8,MF_UNCHECKED);                                                                                                                                 
-                CheckMenuItem(menu,IDM_OPTIONVIDEOFS9,MF_UNCHECKED);                 
+                menu::checkOption(IDM_OPTIONVIDEOFS0+options->video_frameskip);                      
              break;              
              case IDM_OPTIONVIDEOFS5:
                 options->video_frameskip = 5;
-                CheckMenuItem(menu,IDM_OPTIONVIDEOFS0,MF_UNCHECKED); 
-                CheckMenuItem(menu,IDM_OPTIONVIDEOFS1,MF_UNCHECKED); 
-                CheckMenuItem(menu,IDM_OPTIONVIDEOFS2,MF_UNCHECKED); 
-                CheckMenuItem(menu,IDM_OPTIONVIDEOFS3,MF_UNCHECKED); 
-                CheckMenuItem(menu,IDM_OPTIONVIDEOFS4,MF_UNCHECKED); 
-                CheckMenuItem(menu,IDM_OPTIONVIDEOFS5,MF_CHECKED); 
-                CheckMenuItem(menu,IDM_OPTIONVIDEOFS6,MF_UNCHECKED); 
-                CheckMenuItem(menu,IDM_OPTIONVIDEOFS7,MF_UNCHECKED); 
-                CheckMenuItem(menu,IDM_OPTIONVIDEOFS8,MF_UNCHECKED);                                                                                                                                 
-                CheckMenuItem(menu,IDM_OPTIONVIDEOFS9,MF_UNCHECKED);                 
+                menu::checkOption(IDM_OPTIONVIDEOFS0+options->video_frameskip);                      
              break;           
              case IDM_OPTIONVIDEOFS6:
                 options->video_frameskip = 6;
-                CheckMenuItem(menu,IDM_OPTIONVIDEOFS0,MF_UNCHECKED); 
-                CheckMenuItem(menu,IDM_OPTIONVIDEOFS1,MF_UNCHECKED); 
-                CheckMenuItem(menu,IDM_OPTIONVIDEOFS2,MF_UNCHECKED); 
-                CheckMenuItem(menu,IDM_OPTIONVIDEOFS3,MF_UNCHECKED); 
-                CheckMenuItem(menu,IDM_OPTIONVIDEOFS4,MF_UNCHECKED); 
-                CheckMenuItem(menu,IDM_OPTIONVIDEOFS5,MF_UNCHECKED); 
-                CheckMenuItem(menu,IDM_OPTIONVIDEOFS6,MF_CHECKED); 
-                CheckMenuItem(menu,IDM_OPTIONVIDEOFS7,MF_UNCHECKED); 
-                CheckMenuItem(menu,IDM_OPTIONVIDEOFS8,MF_UNCHECKED);                                                                                                                                 
-                CheckMenuItem(menu,IDM_OPTIONVIDEOFS9,MF_UNCHECKED);                 
+                menu::checkOption(IDM_OPTIONVIDEOFS0+options->video_frameskip);                     
              break;            
              case IDM_OPTIONVIDEOFS7:
                 options->video_frameskip = 7;
-                CheckMenuItem(menu,IDM_OPTIONVIDEOFS0,MF_UNCHECKED); 
-                CheckMenuItem(menu,IDM_OPTIONVIDEOFS1,MF_UNCHECKED); 
-                CheckMenuItem(menu,IDM_OPTIONVIDEOFS2,MF_UNCHECKED); 
-                CheckMenuItem(menu,IDM_OPTIONVIDEOFS3,MF_UNCHECKED); 
-                CheckMenuItem(menu,IDM_OPTIONVIDEOFS4,MF_UNCHECKED); 
-                CheckMenuItem(menu,IDM_OPTIONVIDEOFS5,MF_UNCHECKED); 
-                CheckMenuItem(menu,IDM_OPTIONVIDEOFS6,MF_UNCHECKED); 
-                CheckMenuItem(menu,IDM_OPTIONVIDEOFS7,MF_CHECKED); 
-                CheckMenuItem(menu,IDM_OPTIONVIDEOFS8,MF_UNCHECKED);                                                                                                                                 
-                CheckMenuItem(menu,IDM_OPTIONVIDEOFS9,MF_UNCHECKED);                 
+                menu::checkOption(IDM_OPTIONVIDEOFS0+options->video_frameskip);                    
              break;                     
              case IDM_OPTIONVIDEOFS8:
                 options->video_frameskip = 8;
-                CheckMenuItem(menu,IDM_OPTIONVIDEOFS0,MF_UNCHECKED); 
-                CheckMenuItem(menu,IDM_OPTIONVIDEOFS1,MF_UNCHECKED); 
-                CheckMenuItem(menu,IDM_OPTIONVIDEOFS2,MF_UNCHECKED); 
-                CheckMenuItem(menu,IDM_OPTIONVIDEOFS3,MF_UNCHECKED); 
-                CheckMenuItem(menu,IDM_OPTIONVIDEOFS4,MF_UNCHECKED); 
-                CheckMenuItem(menu,IDM_OPTIONVIDEOFS5,MF_UNCHECKED); 
-                CheckMenuItem(menu,IDM_OPTIONVIDEOFS6,MF_UNCHECKED); 
-                CheckMenuItem(menu,IDM_OPTIONVIDEOFS7,MF_UNCHECKED); 
-                CheckMenuItem(menu,IDM_OPTIONVIDEOFS8,MF_CHECKED);                                                                                                                                 
-                CheckMenuItem(menu,IDM_OPTIONVIDEOFS9,MF_UNCHECKED);                 
+                menu::checkOption(IDM_OPTIONVIDEOFS0+options->video_frameskip);                   
              break;                  
              case IDM_OPTIONVIDEOFS9:
                 options->video_frameskip = 9;
-                CheckMenuItem(menu,IDM_OPTIONVIDEOFS0,MF_UNCHECKED); 
-                CheckMenuItem(menu,IDM_OPTIONVIDEOFS1,MF_UNCHECKED); 
-                CheckMenuItem(menu,IDM_OPTIONVIDEOFS2,MF_UNCHECKED); 
-                CheckMenuItem(menu,IDM_OPTIONVIDEOFS3,MF_UNCHECKED); 
-                CheckMenuItem(menu,IDM_OPTIONVIDEOFS4,MF_UNCHECKED); 
-                CheckMenuItem(menu,IDM_OPTIONVIDEOFS5,MF_UNCHECKED); 
-                CheckMenuItem(menu,IDM_OPTIONVIDEOFS6,MF_UNCHECKED); 
-                CheckMenuItem(menu,IDM_OPTIONVIDEOFS7,MF_UNCHECKED); 
-                CheckMenuItem(menu,IDM_OPTIONVIDEOFS8,MF_UNCHECKED);                                                                                                                                 
-                CheckMenuItem(menu,IDM_OPTIONVIDEOFS9,MF_CHECKED);                 
+                menu::checkOption(IDM_OPTIONVIDEOFS0+options->video_frameskip);                        
              break;       
              case IDM_OPTIONVIDEOENBG:
                 if(video_enable&VID_EN_BG)
                 {
-                   CheckMenuItem(menu,IDM_OPTIONVIDEOENBG,MF_UNCHECKED);
+                   menu::uncheckOption(IDM_OPTIONVIDEOENBG);
                    video_enable &= ~VID_EN_BG;
                 } else
                 {
-                   CheckMenuItem(menu,IDM_OPTIONVIDEOENBG,MF_CHECKED);
+                   menu::checkOption(IDM_OPTIONVIDEOENBG);
                    video_enable |= VID_EN_BG;                
                 }              
              break;   
              case IDM_OPTIONVIDEOENWIN:
                 if(video_enable&VID_EN_WIN)
                 {
-                   CheckMenuItem(menu,IDM_OPTIONVIDEOENWIN,MF_UNCHECKED);
+                   menu::uncheckOption(IDM_OPTIONVIDEOENWIN);
                    video_enable &= ~VID_EN_WIN;
                 } else
                 {
-                   CheckMenuItem(menu,IDM_OPTIONVIDEOENWIN,MF_CHECKED);
+                   menu::checkOption(IDM_OPTIONVIDEOENWIN);
                    video_enable |= VID_EN_WIN;                
                 }              
              break;  
              case IDM_OPTIONVIDEOENSPRITE:
                 if(video_enable&VID_EN_SPRITE)
                 {
-                   CheckMenuItem(menu,IDM_OPTIONVIDEOENSPRITE,MF_UNCHECKED);
+                   menu::uncheckOption(IDM_OPTIONVIDEOENSPRITE);
                    video_enable &= ~VID_EN_SPRITE;
                 } else
                 {
-                   CheckMenuItem(menu,IDM_OPTIONVIDEOENSPRITE,MF_CHECKED);
+                   menu::checkOption(IDM_OPTIONVIDEOENSPRITE);
                    video_enable |= VID_EN_SPRITE;                
                 }              
              break;  
              case IDM_OPTIONVIDEOSPRLIM:
                 if(options->video_sprite_limit)
                 {
-                   CheckMenuItem(menu,IDM_OPTIONVIDEOSPRLIM,MF_UNCHECKED);
+                   menu::uncheckOption(IDM_OPTIONVIDEOSPRLIM);
                    options->video_sprite_limit = false;
                 } else
                 {
-                   CheckMenuItem(menu,IDM_OPTIONVIDEOSPRLIM,MF_CHECKED);
+                   menu::checkOption(IDM_OPTIONVIDEOSPRLIM);
                    options->video_sprite_limit = true;
                 }              
              break;          
              case IDM_OPTIONVIDEOLCDOFF:
                 if(options->video_LCDoff_clear_screen)
                 {
-                   CheckMenuItem(menu,IDM_OPTIONVIDEOLCDOFF,MF_UNCHECKED);
+                   menu::uncheckOption(IDM_OPTIONVIDEOLCDOFF);
                    options->video_LCDoff_clear_screen = false;
                 } else
                 {
-                   CheckMenuItem(menu,IDM_OPTIONVIDEOLCDOFF,MF_CHECKED);
+                   menu::checkOption(IDM_OPTIONVIDEOLCDOFF);
                    options->video_LCDoff_clear_screen = true;
                 }              
              break;    
              case IDM_OPTIONVIDEOGBCCOLORS:
                 if(options->video_GBCBGA_real_colors)
                 {
-                   CheckMenuItem(menu,IDM_OPTIONVIDEOGBCCOLORS,MF_UNCHECKED);
+                   menu::uncheckOption(IDM_OPTIONVIDEOGBCCOLORS);
                    options->video_GBCBGA_real_colors = false;
 
                    mix_gbc_colors();
                 } else
                 {
-                   CheckMenuItem(menu,IDM_OPTIONVIDEOGBCCOLORS,MF_CHECKED);                
+                   menu::checkOption(IDM_OPTIONVIDEOGBCCOLORS);                
                    options->video_GBCBGA_real_colors = true;
 
                    if(GB1->romloaded && GB1->gbc_mode)
@@ -1852,11 +1536,11 @@ LRESULT CALLBACK WindowProcedure(HWND hwnd, UINT message, WPARAM wParam, LPARAM 
              case IDM_OPTIONVIDEOVISUALRUMBLE:
                  if(options->video_visual_rumble)
                  {
-                    CheckMenuItem(menu,IDM_OPTIONVIDEOVISUALRUMBLE,MF_UNCHECKED);
+                    menu::uncheckOption(IDM_OPTIONVIDEOVISUALRUMBLE);
                     options->video_visual_rumble = false;
                  } else
                  {
-                    CheckMenuItem(menu,IDM_OPTIONVIDEOVISUALRUMBLE,MF_CHECKED);
+                    menu::checkOption(IDM_OPTIONVIDEOVISUALRUMBLE);
                     options->video_visual_rumble = true;
                  }
              break;
@@ -1910,92 +1594,64 @@ LRESULT CALLBACK WindowProcedure(HWND hwnd, UINT message, WPARAM wParam, LPARAM 
                 if(options->use_joystick_input == 0)
                 {
                    options->use_joystick_input = -1;
-                   CheckMenuItem(menu,IDM_OPTIONCONTROLJOY1,MF_UNCHECKED);
+                   menu::uncheckOption(IDM_OPTIONCONTROLJOY1);
                 } else
                 {
                    options->use_joystick_input = 0;
-                   CheckMenuItem(menu,IDM_OPTIONCONTROLJOY1,MF_CHECKED);
-                   CheckMenuItem(menu,IDM_OPTIONCONTROLJOY2,MF_UNCHECKED);
-                   CheckMenuItem(menu,IDM_OPTIONCONTROLJOY3,MF_UNCHECKED);
-                   CheckMenuItem(menu,IDM_OPTIONCONTROLJOY4,MF_UNCHECKED);
+                   menu::checkOption(IDM_OPTIONCONTROLJOY1);
                 }
              break;    
              case IDM_OPTIONCONTROLJOY2:
                 if(options->use_joystick_input == 1)
                 {
                    options->use_joystick_input = -1;
-                   CheckMenuItem(menu,IDM_OPTIONCONTROLJOY2,MF_UNCHECKED);
+                   menu::uncheckOption(IDM_OPTIONCONTROLJOY2);
                 } else
                 {
                    options->use_joystick_input = 1;
-                   CheckMenuItem(menu,IDM_OPTIONCONTROLJOY1,MF_UNCHECKED);
-                   CheckMenuItem(menu,IDM_OPTIONCONTROLJOY2,MF_CHECKED);
-                   CheckMenuItem(menu,IDM_OPTIONCONTROLJOY3,MF_UNCHECKED);
-                   CheckMenuItem(menu,IDM_OPTIONCONTROLJOY4,MF_UNCHECKED);
+                   menu::checkOption(IDM_OPTIONCONTROLJOY2);       
                 }
              break;  
              case IDM_OPTIONCONTROLJOY3:
                 if(options->use_joystick_input == 2)
                 {
                    options->use_joystick_input = -1;
-                   CheckMenuItem(menu,IDM_OPTIONCONTROLJOY3,MF_UNCHECKED);
+                   menu::uncheckOption(IDM_OPTIONCONTROLJOY3);
                 } else
                 {
                    options->use_joystick_input = 2;
-                   CheckMenuItem(menu,IDM_OPTIONCONTROLJOY1,MF_UNCHECKED);
-                   CheckMenuItem(menu,IDM_OPTIONCONTROLJOY2,MF_UNCHECKED);
-                   CheckMenuItem(menu,IDM_OPTIONCONTROLJOY3,MF_CHECKED);
-                   CheckMenuItem(menu,IDM_OPTIONCONTROLJOY4,MF_UNCHECKED);
+                   menu::checkOption(IDM_OPTIONCONTROLJOY3);
                 }
              break; 
              case IDM_OPTIONCONTROLJOY4:
                 if(options->use_joystick_input == 3)
                 {
                    options->use_joystick_input = -1;
-                   CheckMenuItem(menu,IDM_OPTIONCONTROLJOY4,MF_UNCHECKED);
+                   menu::uncheckOption(IDM_OPTIONCONTROLJOY4);
                 } else
                 {
                    options->use_joystick_input = 3;
-                   CheckMenuItem(menu,IDM_OPTIONCONTROLJOY1,MF_UNCHECKED);
-                   CheckMenuItem(menu,IDM_OPTIONCONTROLJOY2,MF_UNCHECKED);
-                   CheckMenuItem(menu,IDM_OPTIONCONTROLJOY3,MF_UNCHECKED);
-                   CheckMenuItem(menu,IDM_OPTIONCONTROLJOY4,MF_CHECKED);
+                   menu::checkOption(IDM_OPTIONCONTROLJOY4);
                 }
              break;
 
              case IDM_OPTIONCONTROL_AUTOFIRE_SPEED_FASTEST:
-                 CheckMenuItem(menu,IDM_OPTIONCONTROL_AUTOFIRE_SPEED_FASTEST,MF_CHECKED);
-                 CheckMenuItem(menu,IDM_OPTIONCONTROL_AUTOFIRE_SPEED_FAST,MF_UNCHECKED);
-                 CheckMenuItem(menu,IDM_OPTIONCONTROL_AUTOFIRE_SPEED_MEDIUM,MF_UNCHECKED);
-                 CheckMenuItem(menu,IDM_OPTIONCONTROL_AUTOFIRE_SPEED_SLOW,MF_UNCHECKED);
-
+                 menu::checkOption(IDM_OPTIONCONTROL_AUTOFIRE_SPEED_FASTEST);
                  options->autofire_speed = AUTOFIRE_DELAY_FASTEST;
              break;
 
              case IDM_OPTIONCONTROL_AUTOFIRE_SPEED_FAST:
-                 CheckMenuItem(menu,IDM_OPTIONCONTROL_AUTOFIRE_SPEED_FASTEST,MF_UNCHECKED);
-                 CheckMenuItem(menu,IDM_OPTIONCONTROL_AUTOFIRE_SPEED_FAST,MF_CHECKED);
-                 CheckMenuItem(menu,IDM_OPTIONCONTROL_AUTOFIRE_SPEED_MEDIUM,MF_UNCHECKED);
-                 CheckMenuItem(menu,IDM_OPTIONCONTROL_AUTOFIRE_SPEED_SLOW,MF_UNCHECKED);
-
+                 menu::checkOption(IDM_OPTIONCONTROL_AUTOFIRE_SPEED_FAST);
                  options->autofire_speed = AUTOFIRE_DELAY_FAST;
              break;
 
              case IDM_OPTIONCONTROL_AUTOFIRE_SPEED_MEDIUM:
-                 CheckMenuItem(menu,IDM_OPTIONCONTROL_AUTOFIRE_SPEED_FASTEST,MF_UNCHECKED);
-                 CheckMenuItem(menu,IDM_OPTIONCONTROL_AUTOFIRE_SPEED_FAST,MF_UNCHECKED);
-                 CheckMenuItem(menu,IDM_OPTIONCONTROL_AUTOFIRE_SPEED_MEDIUM,MF_CHECKED);
-                 CheckMenuItem(menu,IDM_OPTIONCONTROL_AUTOFIRE_SPEED_SLOW,MF_UNCHECKED);
-
+                 menu::checkOption(IDM_OPTIONCONTROL_AUTOFIRE_SPEED_MEDIUM);
                  options->autofire_speed = AUTOFIRE_DELAY_MEDIUM;
              break;
 
              case IDM_OPTIONCONTROL_AUTOFIRE_SPEED_SLOW:
-                 CheckMenuItem(menu,IDM_OPTIONCONTROL_AUTOFIRE_SPEED_FASTEST,MF_UNCHECKED);
-                 CheckMenuItem(menu,IDM_OPTIONCONTROL_AUTOFIRE_SPEED_FAST,MF_UNCHECKED);
-                 CheckMenuItem(menu,IDM_OPTIONCONTROL_AUTOFIRE_SPEED_MEDIUM,MF_UNCHECKED);
-                 CheckMenuItem(menu,IDM_OPTIONCONTROL_AUTOFIRE_SPEED_SLOW,MF_CHECKED);
-
+                 menu::checkOption(IDM_OPTIONCONTROL_AUTOFIRE_SPEED_SLOW);
                  options->autofire_speed = AUTOFIRE_DELAY_SLOW;
              break;
 
@@ -2005,113 +1661,94 @@ LRESULT CALLBACK WindowProcedure(HWND hwnd, UINT message, WPARAM wParam, LPARAM 
                   if(options->sound_on)
                   {
                      FSOUND_StopSound(channel_n);
-                     CheckMenuItem(menu,IDM_OPTIONSOUND,MF_UNCHECKED);
+                     menu::uncheckOption(IDM_OPTIONSOUND);
                      options->sound_on = 0;
                   }
                   else
                   {
                      channel_n = FSOUND_PlaySound(FSOUND_FREE,FSbuffer);
-                     CheckMenuItem(menu,IDM_OPTIONSOUND,MF_CHECKED);
+                     menu::checkOption(IDM_OPTIONSOUND);
                      options->sound_on = 1;
                   }
              break;           
              case IDM_OPTIONSOUNDENCH1:
                 if(sound_enable&SND_EN_CH1)
                 {
-                   CheckMenuItem(menu,IDM_OPTIONSOUNDENCH1,MF_UNCHECKED);
+                   menu::uncheckOption(IDM_OPTIONSOUNDENCH1);
                    sound_enable &= ~SND_EN_CH1;
                 } else
                 {
-                   CheckMenuItem(menu,IDM_OPTIONSOUNDENCH1,MF_CHECKED);
+                   menu::checkOption(IDM_OPTIONSOUNDENCH1);
                    sound_enable |= SND_EN_CH1;                
                 }              
              break;   
              case IDM_OPTIONSOUNDENCH2:
                 if(sound_enable&SND_EN_CH2)
                 {
-                   CheckMenuItem(menu,IDM_OPTIONSOUNDENCH2,MF_UNCHECKED);
+                   menu::uncheckOption(IDM_OPTIONSOUNDENCH2);
                    sound_enable &= ~SND_EN_CH2;
                 } else
                 {
-                   CheckMenuItem(menu,IDM_OPTIONSOUNDENCH2,MF_CHECKED);
+                   menu::checkOption(IDM_OPTIONSOUNDENCH2);
                    sound_enable |= SND_EN_CH2;                
                 }              
              break;  
              case IDM_OPTIONSOUNDENCH4:
                 if(sound_enable&SND_EN_CH4)
                 {
-                   CheckMenuItem(menu,IDM_OPTIONSOUNDENCH4,MF_UNCHECKED);
+                   menu::uncheckOption(IDM_OPTIONSOUNDENCH4);
                    sound_enable &= ~SND_EN_CH4;
                 } else
                 {
-                   CheckMenuItem(menu,IDM_OPTIONSOUNDENCH4,MF_CHECKED);
+                   menu::checkOption(IDM_OPTIONSOUNDENCH4);
                    sound_enable |= SND_EN_CH4;                
                 }              
              break;               
              case IDM_OPTIONSOUNDENCH3:
                 if(sound_enable&SND_EN_CH3)
                 {
-                   CheckMenuItem(menu,IDM_OPTIONSOUNDENCH3,MF_UNCHECKED);
+                   menu::uncheckOption(IDM_OPTIONSOUNDENCH3);
                    sound_enable &= ~SND_EN_CH3;
                 } else
                 {
-                   CheckMenuItem(menu,IDM_OPTIONSOUNDENCH3,MF_CHECKED);
+                   menu::checkOption(IDM_OPTIONSOUNDENCH3);
                    sound_enable |= SND_EN_CH3;                
                 }              
              break;   
              case IDM_OPTIONSOUNDLOWPASSNONE:
                 options->sound_lowpass_filter = 0;
-                CheckMenuItem(menu,IDM_OPTIONSOUNDLOWPASSNONE,MF_CHECKED);                  
-                CheckMenuItem(menu,IDM_OPTIONSOUNDLOWPASS1,MF_UNCHECKED);      
-                CheckMenuItem(menu,IDM_OPTIONSOUNDLOWPASS2,MF_UNCHECKED);                                      
+                menu::checkOption(IDM_OPTIONSOUNDLOWPASSNONE);                                   
              break;                     
              case IDM_OPTIONSOUNDLOWPASS1:
                 options->sound_lowpass_filter = LOWPASS_LEVEL1;
-                CheckMenuItem(menu,IDM_OPTIONSOUNDLOWPASS1,MF_CHECKED);  
-                CheckMenuItem(menu,IDM_OPTIONSOUNDLOWPASS2,MF_UNCHECKED); 
-                CheckMenuItem(menu,IDM_OPTIONSOUNDLOWPASSNONE,MF_UNCHECKED);                                                         
+                menu::checkOption(IDM_OPTIONSOUNDLOWPASS1);                                                           
              break;   
              case IDM_OPTIONSOUNDLOWPASS2:
                 options->sound_lowpass_filter = LOWPASS_LEVEL2;
-                CheckMenuItem(menu,IDM_OPTIONSOUNDLOWPASS2,MF_CHECKED);  
-                CheckMenuItem(menu,IDM_OPTIONSOUNDLOWPASS1,MF_UNCHECKED); 
-                CheckMenuItem(menu,IDM_OPTIONSOUNDLOWPASSNONE,MF_UNCHECKED);                                                          
+                menu::checkOption(IDM_OPTIONSOUNDLOWPASS2);                                                             
              break;         
              case IDM_OPTIONSOUNDRSTEREO:
                 options->sound_reverse_stereo = !options->sound_reverse_stereo;
-                CheckMenuItem(menu,IDM_OPTIONSOUNDRSTEREO,options->sound_reverse_stereo?MF_CHECKED:MF_UNCHECKED);
+                if (options->sound_reverse_stereo)
+                    menu::checkOption(IDM_OPTIONSOUNDRSTEREO);
+                else
+                    menu::uncheckOption(IDM_OPTIONSOUNDRSTEREO);
              break;      
              case IDM_OPTIONSOUNDVOL1:
                 options->sound_volume = VOLUME_1X;
-                CheckMenuItem(menu,IDM_OPTIONSOUNDVOL1,MF_CHECKED);   
-
-                CheckMenuItem(menu,IDM_OPTIONSOUNDVOL2,MF_UNCHECKED);  
-                CheckMenuItem(menu,IDM_OPTIONSOUNDVOL3,MF_UNCHECKED);  
-                CheckMenuItem(menu,IDM_OPTIONSOUNDVOL4,MF_UNCHECKED);
+                menu::checkOption(IDM_OPTIONSOUNDVOL1);       
              break;         
              case IDM_OPTIONSOUNDVOL2:
                 options->sound_volume = VOLUME_2X;
-                CheckMenuItem(menu,IDM_OPTIONSOUNDVOL2,MF_CHECKED);                                                           
-
-                CheckMenuItem(menu,IDM_OPTIONSOUNDVOL1,MF_UNCHECKED);  
-                CheckMenuItem(menu,IDM_OPTIONSOUNDVOL3,MF_UNCHECKED);  
-                CheckMenuItem(menu,IDM_OPTIONSOUNDVOL4,MF_UNCHECKED);                
+                menu::checkOption(IDM_OPTIONSOUNDVOL2);                 
              break;       
              case IDM_OPTIONSOUNDVOL3:
                 options->sound_volume = VOLUME_3X;
-                CheckMenuItem(menu,IDM_OPTIONSOUNDVOL3,MF_CHECKED);
-
-                CheckMenuItem(menu,IDM_OPTIONSOUNDVOL1,MF_UNCHECKED);  
-                CheckMenuItem(menu,IDM_OPTIONSOUNDVOL2,MF_UNCHECKED);  
-                CheckMenuItem(menu,IDM_OPTIONSOUNDVOL4,MF_UNCHECKED);                                                                           
+                menu::checkOption(IDM_OPTIONSOUNDVOL3);                                                                             
              break;       
              case IDM_OPTIONSOUNDVOL4:
                 options->sound_volume = VOLUME_4X;
-                CheckMenuItem(menu,IDM_OPTIONSOUNDVOL4,MF_CHECKED); 
-
-                CheckMenuItem(menu,IDM_OPTIONSOUNDVOL1,MF_UNCHECKED);  
-                CheckMenuItem(menu,IDM_OPTIONSOUNDVOL2,MF_UNCHECKED);  
-                CheckMenuItem(menu,IDM_OPTIONSOUNDVOL3,MF_UNCHECKED);                                                                          
+                menu::checkOption(IDM_OPTIONSOUNDVOL4);                                                                     
              break;                                                                                                                                              
              case IDM_HELPABOUT:
                   char about_str[200];
@@ -2238,15 +1875,14 @@ LRESULT CALLBACK WindowProcedure(HWND hwnd, UINT message, WPARAM wParam, LPARAM 
                   GB1->save_state();
             break;
             case VK_F3:
-               CheckMenuItem(menu,IDM_CPUSTATESLOT0 + GB1_state_slot,MF_UNCHECKED);
-               
+
                if(++GB1_state_slot > 9)
                   GB1_state_slot = 0;
                sprintf(dx_message,"%s %d",str_table[STATE_SLOT],GB1_state_slot);
                message_time = 60;
                message_GB = GB1;
                
-               CheckMenuItem(menu,IDM_CPUSTATESLOT0 + GB1_state_slot,MF_CHECKED);
+               menu::checkOption(IDM_CPUSTATESLOT0 + GB1_state_slot);
             break;
             case VK_F4:
                if(GB1->romloaded)
@@ -2255,14 +1891,14 @@ LRESULT CALLBACK WindowProcedure(HWND hwnd, UINT message, WPARAM wParam, LPARAM 
             case VK_F5:
                 if(video_enable&VID_EN_BG)
                 {
-                   CheckMenuItem(menu,IDM_OPTIONVIDEOENBG,MF_UNCHECKED);
+                   menu::uncheckOption(IDM_OPTIONVIDEOENBG);
                    video_enable &= ~VID_EN_BG;
                    sprintf(dx_message,"%s","BG off");
                    message_time = 40;
                    message_GB = GB1;
                 } else
                 {
-                   CheckMenuItem(menu,IDM_OPTIONVIDEOENBG,MF_CHECKED);
+                   menu::checkOption(IDM_OPTIONVIDEOENBG);
                    video_enable |= VID_EN_BG;                
                    sprintf(dx_message,"%s","BG on");
                    message_time = 40;
@@ -2272,14 +1908,14 @@ LRESULT CALLBACK WindowProcedure(HWND hwnd, UINT message, WPARAM wParam, LPARAM 
             case VK_F6:
                 if(video_enable&VID_EN_WIN)
                 {
-                   CheckMenuItem(menu,IDM_OPTIONVIDEOENWIN,MF_UNCHECKED);
+                   menu::uncheckOption(IDM_OPTIONVIDEOENWIN);
                    video_enable &= ~VID_EN_WIN;
                    sprintf(dx_message,"%s","WIN off");
                    message_time = 40;
                    message_GB = GB1;
                 } else
                 {
-                   CheckMenuItem(menu,IDM_OPTIONVIDEOENWIN,MF_CHECKED);
+                   menu::checkOption(IDM_OPTIONVIDEOENWIN);
                    video_enable |= VID_EN_WIN;                
                    sprintf(dx_message,"%s","WIN on");
                    message_time = 40;
@@ -2289,14 +1925,14 @@ LRESULT CALLBACK WindowProcedure(HWND hwnd, UINT message, WPARAM wParam, LPARAM 
             case VK_F7:
                 if(video_enable&VID_EN_SPRITE)
                 {
-                   CheckMenuItem(menu,IDM_OPTIONVIDEOENSPRITE,MF_UNCHECKED);
+                   menu::uncheckOption(IDM_OPTIONVIDEOENSPRITE);
                    video_enable &= ~VID_EN_SPRITE;
                    sprintf(dx_message,"%s","Sprites off");
                    message_time = 40;
                    message_GB = GB1;
                 } else
                 {
-                   CheckMenuItem(menu,IDM_OPTIONVIDEOENSPRITE,MF_CHECKED);
+                   menu::checkOption(IDM_OPTIONVIDEOENSPRITE);
                    video_enable |= VID_EN_SPRITE;                
                    sprintf(dx_message,"%s","Sprites on");
                    message_time = 40;
@@ -2363,14 +1999,14 @@ LRESULT CALLBACK WindowProcedure(HWND hwnd, UINT message, WPARAM wParam, LPARAM 
                
                if(menupause)
                {
-                  CheckMenuItem(menu,IDM_CPUPAUSE,MF_UNCHECKED);
+                  menu::uncheckOption(IDM_CPUPAUSE);
                   if(GB1->romloaded)
                      FSOUND_SetMute(FSOUND_ALL,FALSE);
                }
                else
                {
                   FSOUND_SetMute(FSOUND_ALL,TRUE);
-                  CheckMenuItem(menu,IDM_CPUPAUSE,MF_CHECKED); 
+                  menu::checkOption(IDM_CPUPAUSE); 
                }
                menupause = !menupause;
                paused = !paused;
