@@ -1819,23 +1819,36 @@ void keyAction(int key)
             }              
         break;
         case VK_F12: {
+            
+			gb_system* screenshotGb = GB1;
+			if (control_pressed && GB2) {
+			    screenshotGb = GB2;
+			}
+			
+			if (!screenshotGb->romloaded) {
+			    break;
+			}
         	
         	wchar_t img_filename[275];
-			wcscpy(img_filename,GB->rom_filename);  // get the unicode filename
+			wcscpy(img_filename,screenshotGb->rom_filename);  // get the unicode filename
 			char img_filename_mb[275]; 
-			wcstombs(img_filename_mb,img_filename,275); // but then oh well, look what happened
+
+			size_t res = wcstombs(img_filename_mb,img_filename,275); // but then oh well, look what happened
 			// due to a limitation of png++ i cba to work around right now
-			
+		
 			// now figure out the first available filename
 			char final_filename[275];
 			int fileno = 1;
 			bool fileok = false;
 			while ( fileok == false ) {
 				char tmp_filename[275];
-				strcpy(tmp_filename,img_filename_mb);
-				char fileext[10];
-				sprintf(fileext," %04d.png",fileno);
-		        strcat(tmp_filename,fileext);
+
+				if (res == -1) { // -1 = could not convert, so take the internal name instead
+    			    sprintf(tmp_filename,"[%s]_%04d.png",GB1->rom->name,fileno);
+    			} else {
+    			    sprintf(tmp_filename,"%s_%04d.png",img_filename_mb,fileno);
+    			}
+
 		        ifstream ifile(tmp_filename);
 				if ((bool)ifile) {
 					fileno++;
@@ -1844,9 +1857,14 @@ void keyAction(int key)
 					strcpy(final_filename,tmp_filename);
 				}
 			}
+			
+			// show a msg
+            sprintf(dx_message,"%s","Screenshot");
+            message_time = 40;
+            message_GB = screenshotGb;
 
 			// and then screenshot this thing
-        	screenshotPng(final_filename);
+        	screenshotPng(final_filename,screenshotGb);
         	break;
         	
         }

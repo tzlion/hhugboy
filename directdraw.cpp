@@ -284,7 +284,7 @@ int filter_height = 1;
 int border_filter_width = 1;
 int border_filter_height = 1;
 
-void screenshotPng(char* filename) 
+void screenshotPng(char* filename, gb_system* gameboy) 
 {
 	int height=144;
 	int width=160;
@@ -293,7 +293,7 @@ void screenshotPng(char* filename)
 	
 	if(dx_bitcount == 16) {
 		
-		WORD* source = (WORD*)GB->gfx_buffer;
+		WORD* source = (WORD*)gameboy->gfx_buffer;
 		WORD* init = source;
 		for(register int y = 0;y < height;y++)
 		{ 
@@ -307,7 +307,7 @@ void screenshotPng(char* filename)
 		
 	} else {
 
-		DWORD* source = (DWORD*)GB->gfx_buffer;
+		DWORD* source = (DWORD*)gameboy->gfx_buffer;
 		DWORD* init = source;
 		for(register int y = 0;y < height;y++)
 		{ 

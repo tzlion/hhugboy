@@ -79,7 +79,7 @@ void draw_screen_mix32();
 void draw_screen16();
 void draw_screen32();
 
-void screenshotPng(char* filename);
+void screenshotPng(char* filename, gb_system* gameboy);
 void screenshotHtml(char* filename);
 
 #ifdef ALLOW_DEBUG
