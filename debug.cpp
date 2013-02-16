@@ -21,10 +21,14 @@
 */
 #include "debug.h"
 
+#define UNICODE
+#define WIN32_LEAN_AND_MEAN
 
 #include <windows.h>
 #include <stdio.h>
 #include <string>
+
+#include <stdlib.h>
 
 #include "config.h"
 
@@ -32,8 +36,16 @@ using namespace std;
 
 void debug_print(const char* message)
 {
-   MessageBox(NULL, message , emu_title, 0);
+    wchar_t wmessage[1000];
+    mbstowcs(wmessage,message,1000);
+    MessageBox(NULL, wmessage , w_emu_title, 0);
 }
+
+void debug_print(const wchar_t* message)
+{
+   MessageBox(NULL, message , w_emu_title, 0);
+}
+
 
 
 void debug_log(const string message)

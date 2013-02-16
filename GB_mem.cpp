@@ -294,11 +294,7 @@ bool gb_system::write_save()
 
 
    GetCurrentDirectory(PROGRAM_PATH_SIZE,old_directory);
-
-	wchar_t saveDirW[PROGRAM_PATH_SIZE];
-	mbstowcs(saveDirW,options->save_directory.c_str(),PROGRAM_PATH_SIZE);
-
-   SetCurrentDirectory(saveDirW);
+   SetCurrentDirectory(options->save_directory.c_str());
    
    wchar_t save_filename[275]; 
    wcscpy(save_filename,rom_filename);
@@ -395,16 +391,14 @@ bool gb_system::load_save(bool loading_GB1_save_to_GB2)
    wchar_t old_directory[PROGRAM_PATH_SIZE];
 
    GetCurrentDirectory(PROGRAM_PATH_SIZE,old_directory);
-   
-   	wchar_t saveDirW[PROGRAM_PATH_SIZE];
-	mbstowcs(saveDirW,options->save_directory.c_str(),PROGRAM_PATH_SIZE);
+
 	
-   if (!SetCurrentDirectory(saveDirW)) {
-   		CreateDirectory(saveDirW,NULL);
-   		SetCurrentDirectory(saveDirW);
+   if (!SetCurrentDirectory(options->save_directory.c_str())) {
+   		CreateDirectory(options->save_directory.c_str(),NULL);
+   		SetCurrentDirectory(options->save_directory.c_str());
    }
 
-   SetCurrentDirectory(saveDirW);
+   SetCurrentDirectory(options->save_directory.c_str());
      
    wchar_t save_filename[275];
    wcscpy(save_filename,rom_filename);

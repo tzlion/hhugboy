@@ -24,6 +24,7 @@
 #define DIRECTINPUT_H
 
 #define WIN32_LEAN_AND_MEAN
+#define UNICODE 
 
 #include <windows.h>
 
@@ -43,7 +44,7 @@ void Kill_DI_change();
 
 int check_change_keys(int, int);
 extern int soft_reset;
-extern const char* key_names[256];
+extern const wchar_t* key_names[256];
 int check_change_joypad(int index);
 
 extern int autofire_delay[4][4];

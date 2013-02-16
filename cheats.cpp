@@ -29,7 +29,7 @@
 int number_of_cheats = 0;
 gg_cheats cheat[MAXGGCHEATS];
 
-char gg_cheat_values[23] = "0123456789ABCDEFabcdef";
+wchar_t gg_cheat_values[23] = L"0123456789ABCDEFabcdef";
 
 int rol_l(int number,int count) // roll left
 {
@@ -49,9 +49,9 @@ int rol_l(int number,int count) // roll left
 // checks if cheat_str is valid cheat
 // and adds it to cheats
 ////////////////////////////////////////
-bool add_cheat(char* cheat_str)
+bool add_cheat(wchar_t* cheat_str)
 {
-   int len = strlen(cheat_str);
+   int len = wcslen(cheat_str);
       
    if((len != 11) && (len != 7))
       return false;
@@ -60,7 +60,7 @@ bool add_cheat(char* cheat_str)
    {
       for(int j=0;j<11;++j)
          if(j != 3 && j != 7)
-            if(strchr(gg_cheat_values,cheat_str[j]) == NULL)
+            if(wcschr(gg_cheat_values,cheat_str[j]) == NULL)
                return false;
    
       if((cheat_str[3] != '-') || (cheat_str[7] != '-'))
@@ -71,7 +71,7 @@ bool add_cheat(char* cheat_str)
          
       cheat[number_of_cheats].long_code = 1;
 
-      strcpy(cheat[number_of_cheats].str,cheat_str);
+      wcscpy(cheat[number_of_cheats].str,cheat_str);
       
       int nums[3];
       char parser_str[4];
@@ -98,7 +98,7 @@ bool add_cheat(char* cheat_str)
    {
       for(int j=0;j<7;++j)
          if(j != 3)
-            if(strchr(gg_cheat_values,cheat_str[j]) == NULL)
+            if(wcschr(gg_cheat_values,cheat_str[j]) == NULL)
                return false;
    
       if(cheat_str[3] != '-')
@@ -109,7 +109,7 @@ bool add_cheat(char* cheat_str)
       
       cheat[number_of_cheats].long_code = 0;
       
-      strcpy(cheat[number_of_cheats].str,cheat_str);
+      wcscpy(cheat[number_of_cheats].str,cheat_str);
       
       int nums[2];
       char parser_str[4];

@@ -19,6 +19,8 @@
    along with this program; if not, write to the Free Software Foundation, Inc.,
    51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
+#define UNICODE
+
 #include <windows.h>
 #include <stdio.h>
 
@@ -81,7 +83,7 @@ bool DoFileOpen(HWND hwnd,int gb_number)
 
    if(GetOpenFileNameW(&ofn))
    {
-      char temp[PROGRAM_PATH_SIZE];
+      wchar_t temp[PROGRAM_PATH_SIZE];
 
       GetCurrentDirectory(PROGRAM_PATH_SIZE,temp);
 
@@ -116,7 +118,7 @@ BOOL CALLBACK FolderProc(HWND hwndDlg, UINT message, WPARAM wParam, LPARAM lPara
             switch (LOWORD(wParam)) 
             { 
                 case IDOK:
-                    char temp[PROGRAM_PATH_SIZE];
+                    wchar_t temp[PROGRAM_PATH_SIZE];
 
                     GetDlgItemText(hwndDlg, ID_F_SAVE, temp,PROGRAM_PATH_SIZE);
                     options->save_directory = temp;
@@ -156,7 +158,7 @@ BOOL CALLBACK ChtProc(HWND hwndDlg, UINT message, WPARAM wParam, LPARAM lParam)
                 case ID_CHT_ADDBTN:
                    if(number_of_cheats < MAXGGCHEATS)
                    {
-                      char cheat_str[20];
+                      wchar_t cheat_str[20];
                       GetDlgItemText(hwndDlg, ID_CHT_ADD, cheat_str,20); 
 
                       if(add_cheat(cheat_str))
@@ -380,8 +382,8 @@ VOID CALLBACK TJoyProc(HWND hwnd,UINT uMsg,UINT idEvent,DWORD dwTime)
    if(!changed)
       return;
 
-   char buffer[10];
-   sprintf(buffer,"%d",options->joystick_config[change_index]);
+   wchar_t buffer[10];
+   wsprintf(buffer,L"%d",options->joystick_config[change_index]);
    SetDlgItemText(hwnd, ID_CTRLJOY_A+change_index, buffer); 
 } 
 
@@ -395,8 +397,8 @@ BOOL CALLBACK JoyCtrlProc(HWND hwndDlg, UINT message, WPARAM wParam, LPARAM lPar
        {         
           HWND hwndx = GetDlgItem(hwndDlg, ID_CTRLJOY_A+i);
           SendMessage(hwndx, EM_SETREADONLY, TRUE,0L);
-          char buffer[10];
-          sprintf(buffer,"%d",options->joystick_config[i]);
+          wchar_t buffer[10];
+          wsprintf(buffer,L"%d",options->joystick_config[i]);
           SetDlgItemText(hwndDlg, ID_CTRLJOY_A+i, buffer); 
        }  
        change_index = 0;

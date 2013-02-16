@@ -29,6 +29,7 @@
 #include "mainloop.h"
 
 #define WIN32_LEAN_AND_MEAN
+#define UNICODE 
 
 #include <windows.h>
 #include <winbase.h>
@@ -146,7 +147,7 @@ bool init_gb2()
 bool gb_system::save_state()
 {
    
-   char old_directory[PROGRAM_PATH_SIZE]; // this needs unicode too
+   wchar_t old_directory[PROGRAM_PATH_SIZE]; // this needs unicode too
    GetCurrentDirectory(PROGRAM_PATH_SIZE,old_directory);
    if (!SetCurrentDirectory(options->state_directory.c_str())) {
    		CreateDirectory(options->state_directory.c_str(),NULL);
@@ -410,7 +411,7 @@ bool gb_system::save_state()
 
 bool gb_system::load_state()
 {
-   char old_directory[PROGRAM_PATH_SIZE];
+   wchar_t old_directory[PROGRAM_PATH_SIZE];
    GetCurrentDirectory(PROGRAM_PATH_SIZE,old_directory);
    SetCurrentDirectory(options->state_directory.c_str());
    

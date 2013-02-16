@@ -40,10 +40,10 @@ public:
     program_configuration();
     ~program_configuration();
 
-    std::string program_directory;
-    std::string save_directory;
-    std::string state_directory;
-    std::string rom_directory;
+    std::wstring program_directory;
+    std::wstring save_directory;
+    std::wstring state_directory;
+    std::wstring rom_directory;
 
     bool halt_on_unknown_opcode;
     bool reduce_cpu_usage;

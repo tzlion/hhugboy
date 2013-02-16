@@ -243,11 +243,9 @@ int WINAPI WinMain(HINSTANCE hThisInstance,HINSTANCE hPrevInstance, LPSTR  lpszA
    //Get program directory
    wchar_t buffer[PROGRAM_PATH_SIZE];
    GetModuleFileName(NULL,buffer,PROGRAM_PATH_SIZE);
-   
-	char buffer2[PROGRAM_PATH_SIZE];
-	wcstombs(buffer2,buffer,PROGRAM_PATH_SIZE);
+
 	
-   options->program_directory = buffer2;
+   options->program_directory = buffer;
    size_t found = options->program_directory.rfind('\\'); // Cut program name
    if(found != string::npos)
    {

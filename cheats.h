@@ -29,7 +29,7 @@ const int MAXGGCHEATS = 10;
 
 struct gg_cheats
 {
-   char str[12];
+   wchar_t str[12];
    byte new_value;
    byte old_value;
    unsigned short address;
@@ -39,10 +39,10 @@ struct gg_cheats
 extern gg_cheats cheat[];
 extern int number_of_cheats;
 
-extern char gg_cheat_values[23];
+extern wchar_t gg_cheat_values[23];
 
 int rol_l(int number,int count);
-bool add_cheat(char* cheat_str);
+bool add_cheat(wchar_t* cheat_str);
 void remove_cheat(int index);
 
 #endif

@@ -20,6 +20,9 @@
    51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
 
+#define UNICODE
+#define WIN32_LEAN_AND_MEAN
+
 #include <windows.h>
 #include <stdio.h>
 
@@ -375,10 +378,10 @@ void init_menu_options()
    
 }
 
-void read_comment_line(ifstream& in)
+void read_comment_line(wifstream& in)
 {
-    string commentline;
-    char c;
+    wstring commentline;
+    wchar_t c;
 
     in.get(c);
 
@@ -388,13 +391,13 @@ void read_comment_line(ifstream& in)
 }
 
 
-ifstream& operator>>(ifstream& in, program_configuration& config)
+wifstream& operator>>(wifstream& in, program_configuration& config)
 {
-    string commentline;
+    wstring commentline;
 
     getline(in, commentline);
 
-    if(commentline == "#Rom directory:")
+    if(commentline == L"#Rom directory:")
     {
         cout << "Old config file format, using defaults.";
         return in;
@@ -542,7 +545,7 @@ ifstream& operator>>(ifstream& in, program_configuration& config)
    return in;
 }
 
-ostream& operator<<(ostream& out, const program_configuration& config)
+wostream& operator<<(wostream& out, const program_configuration& config)
 {
     out << "#Rom Directory:\n";
     out << config.rom_directory << "\n\n";
@@ -707,13 +710,13 @@ bool read_config_file()
 {
    SetCurrentDirectory(options->program_directory.c_str());
 
-   options->save_directory = options->program_directory + "\\save";
+   options->save_directory = options->program_directory + L"\\save";
 
-   options->state_directory = options->program_directory + "\\state";
+   options->state_directory = options->program_directory + L"\\state";
 
    options->rom_directory = options->program_directory;
 
-   ifstream configfile("hhugboy.cfg", ifstream::in);
+   wifstream configfile("hhugboy.cfg", ifstream::in);
    if(configfile.fail())
    {
        cout << "Config file load failed, using defaults.";
@@ -736,7 +739,7 @@ bool write_config_file()
 {
     SetCurrentDirectory(options->program_directory.c_str());
 
-    ofstream configfile("hhugboy.cfg");
+    wofstream configfile("hhugboy.cfg");
     if(configfile.fail())
     {
       debug_print(str_table[ERROR_CFG_FILE]);
