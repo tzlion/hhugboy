@@ -1,6 +1,10 @@
 #ifndef MENU_H
 #define MENU_H
 
+#include "options.h"
+
+#define ID_MENU 501
+
 // Menu group definitions (ie check one of this group and the rest will uncheck)
 
 #define IDM_GROUP_STATE1        0x1000
@@ -28,11 +32,11 @@
 #define IDM_FILEOPEN2         0x02
 #define IDM_FILECLOSE2        0x03
 #define IDM_CPURESET2         0x04
-#define IDM_CPUGBA2           IDM_GROUP_GB2 | 0x00
-#define IDM_CPUGBC2           IDM_GROUP_GB2 | 0x01
-#define IDM_CPUGB2            IDM_GROUP_GB2 | 0x02
-#define IDM_CPUGBP2           IDM_GROUP_GB2 | 0x03
-#define IDM_CPUAUTO2          IDM_GROUP_GB2 | 0x04
+#define IDM_CPUGBA2           IDM_GROUP_GB2 | SYS_GBA
+#define IDM_CPUGBC2           IDM_GROUP_GB2 | SYS_GBC
+#define IDM_CPUGB2            IDM_GROUP_GB2 | SYS_GB
+#define IDM_CPUGBP2           IDM_GROUP_GB2 | SYS_GBP
+#define IDM_CPUAUTO2          IDM_GROUP_GB2 | SYS_AUTO
 #define IDM_FILEOPENSAMEASGB1 0x05
 #define IDM_LOADGB1SAVE       0x06
 #define IDM_CPU2STATELOAD     0x07
@@ -58,17 +62,18 @@
 #define IDM_CPUSOFTRESET    0x0f
 #define IDM_CPUSOFTRESET2   0x10
 #define IDM_CPUPAUSE        0x11
-#define IDM_CPUGBA          IDM_GROUP_GB1 | 0x00
-#define IDM_CPUGBC          IDM_GROUP_GB1 | 0x01
-#define IDM_CPUSGB          IDM_GROUP_GB1 | 0x02
-#define IDM_CPUSGB2         IDM_GROUP_GB1 | 0x03
-#define IDM_CPUGB           IDM_GROUP_GB1 | 0x04
-#define IDM_CPUGBP          IDM_GROUP_GB1 | 0x05
-#define IDM_CPUAUTO         IDM_GROUP_GB1 | 0x06
+#define IDM_CPUGBA          IDM_GROUP_GB1 | SYS_GBA
+#define IDM_CPUGBC          IDM_GROUP_GB1 | SYS_GBC
+#define IDM_CPUSGB          IDM_GROUP_GB1 | SYS_SGB
+#define IDM_CPUSGB2         IDM_GROUP_GB1 | SYS_SGB2
+#define IDM_CPUGB           IDM_GROUP_GB1 | SYS_GB
+#define IDM_CPUGBP          IDM_GROUP_GB1 | SYS_GBP
+#define IDM_CPUAUTO         IDM_GROUP_GB1 | SYS_AUTO
 #define IDM_CPUGBCSGB       IDM_GROUP_GBCSGB | 0x00
 #define IDM_CPUGBCSGBI      IDM_GROUP_GBCSGB | 0x01
 #define IDM_CPUSTATELOAD    0x12
 #define IDM_CPUSTATESAVE    0x13
+
 #define IDM_CPUSTATESLOT0   IDM_GROUP_STATE1 | 0x00
 #define IDM_CPUSTATESLOT1   IDM_GROUP_STATE1 | 0x01
 #define IDM_CPUSTATESLOT2   IDM_GROUP_STATE1 | 0x02
@@ -79,6 +84,7 @@
 #define IDM_CPUSTATESLOT7   IDM_GROUP_STATE1 | 0x07
 #define IDM_CPUSTATESLOT8   IDM_GROUP_STATE1 | 0x08
 #define IDM_CPUSTATESLOT9   IDM_GROUP_STATE1 | 0x09
+// stuff like state slots should always have sequential numbering
 
 #define IDM_CPUSPFS9        0x14
 #define IDM_CPUSPSNDOFF     0x15
@@ -191,12 +197,15 @@
 class menu
 {
 	public:
-		static HMENU menuBar;
-		static void checkOption(int option);
-		static void uncheckOption(int option);
+		void checkOption(int option);
+		void uncheckOption(int option);
+		void init(HINSTANCE instance);
+		HMENU getMenu();
+		menu(HINSTANCE instance);
 		menu();
 		
-	protected:
+	private:
+		HMENU menuBar;
 	    
 };
 

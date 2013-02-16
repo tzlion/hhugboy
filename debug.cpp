@@ -20,11 +20,13 @@
    51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
 #include "debug.h"
-#include "config.h"
+
 
 #include <windows.h>
 #include <stdio.h>
 #include <string>
+
+#include "config.h"
 
 using namespace std;
 
@@ -32,6 +34,7 @@ void debug_print(const char* message)
 {
    MessageBox(NULL, message , emu_title, 0);
 }
+
 
 void debug_log(const string message)
 {

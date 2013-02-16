@@ -1,13 +1,21 @@
 #include "menu.h"
 
-HMENU menu::menuBar = NULL;
 
 // constructor
-menu::menu()
+menu::menu(HINSTANCE instance)
 {
-
+	menuBar = LoadMenu(instance, MAKEINTRESOURCE(ID_MENU));
 }
 
+menu::menu()
+{
+	menuBar = NULL;
+}
+
+void menu::init(HINSTANCE instance)
+{
+	menuBar = LoadMenu(instance, MAKEINTRESOURCE(ID_MENU));
+}
 
 void menu::checkOption(int option)
 {	
@@ -16,7 +24,6 @@ void menu::checkOption(int option)
     int group = option & 0xFF00;
     
     int curItem = group;
-    
     
     if (group > 0) {
         // this isnt ideal, we are just unchecking 16 items in the group
@@ -32,4 +39,9 @@ void menu::checkOption(int option)
 void menu::uncheckOption(int option) 
 {
     CheckMenuItem(menuBar,option,MF_UNCHECKED);
+}
+
+HMENU menu::getMenu()
+{
+	return menuBar;
 }

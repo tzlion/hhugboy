@@ -24,6 +24,8 @@
 
 #include "types.h"
 
+#include "options.h"
+
 #define PUSH(n) (writememory(--SP.W,(n)));
 #define POP(n) ((n) = readmemory(SP.W++));
 
@@ -112,13 +114,7 @@ extern int HFLAG;
 extern int ZFLAG;
 extern int NFLAG;
 */
-#define SYS_AUTO 0
-#define SYS_GB   1
-#define SYS_GBP  2
-#define SYS_GBA  3
-#define SYS_GBC  4
-#define SYS_SGB  5
-#define SYS_SGB2 6
+
 
 bool init_gb2();
 

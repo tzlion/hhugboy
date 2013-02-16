@@ -19,7 +19,7 @@
    along with this program; if not, write to the Free Software Foundation, Inc.,
    51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
-#define ID_MENU 501
+
 #define ID_ICON 601
 
 #define ID_F_DIALOG 701
@@ -68,6 +68,8 @@
 #define ID_CTRLJOY_AUTO_A 795
 #define ID_CTRLJOY_AUTO_B 796
 
+#include "menu.h"
+
 extern bool paused;
 extern bool menupause; 
 extern int sizen_w;
@@ -75,6 +77,8 @@ extern int sizen_h;
 
 extern int timer_id;
 extern HWND hwndCtrl;    
+
+extern menu emuMenu;
 
 extern int current_controller;
 
