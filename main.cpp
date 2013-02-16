@@ -638,16 +638,12 @@ void menuAction(int menuOption)
                  {
                     if(sgb_mode)
                     {
-                       RECT winRect;
-                       GetWindowRect(hwnd,&winRect);      
-                       MoveWindow(hwnd,winRect.left,winRect.top,256*options->video_size+sizen_w,224*options->video_size+sizen_h,TRUE);
+                        setWinSize(256,224);
         
                        draw_border();
                     } else
                     {
-                       RECT winRect;
-                       GetWindowRect(hwnd,&winRect);      
-                       MoveWindow(hwnd,winRect.left,winRect.top,160*options->video_size+sizen_w,144*options->video_size+sizen_h,TRUE);
+                       setWinSize(160,144);
                     }
                  }
         
