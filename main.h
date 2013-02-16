@@ -82,6 +82,9 @@ extern menu emuMenu;
 
 extern int current_controller;
 
+void menuAction(int menuOption);
+void keyAction(int key);
+
 void setWinSize(int width, int height);
 
 

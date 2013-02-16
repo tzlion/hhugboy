@@ -5,3 +5,13 @@ devcpp/*.cfg
 *.layout
 devcpp/*.res
 *.st0
+*.sv2
+*.st1
+*.st2
+*.st3
+*.st4
+*.st5
+*.st6
+*.st7
+*.st8
+*.st9
