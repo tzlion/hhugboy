@@ -2380,9 +2380,9 @@
       default:
         if(options->halt_on_unknown_opcode)
         {
-           char buffer[100];
+           wchar_t buffer[100];
 
-           sprintf(buffer,"%s PC:%x, %s:%x bank %x",str_table[ERROR_UNK_OPCODE],PC.W,str_table[ERROR_OPCODE],opcode,gb_system::MBClo);
+           wsprintf(buffer,L"%s PC:%x, %s:%x bank %x",str_table[ERROR_UNK_OPCODE],PC.W,str_table[ERROR_OPCODE],opcode,gb_system::MBClo);
            debug_print(buffer);  
 
            emulating = false;
