@@ -47,6 +47,7 @@ using namespace std;
 #include "sound.h"
 
 #include "strings.h"
+
 // Directories ------------------------------------------
 /*char program_directory[ROM_PATH_SIZE];
 char save_directory[SAVE_PATH_SIZE];
@@ -378,10 +379,10 @@ void init_menu_options()
    
 }
 
-void read_comment_line(wifstream& in)
+void read_comment_line(ifstream& in)
 {
-    wstring commentline;
-    wchar_t c;
+    string commentline;
+    char c;
 
     in.get(c);
 
@@ -390,32 +391,37 @@ void read_comment_line(wifstream& in)
     getline(in, commentline); // comment line
 }
 
+void getlinew(ifstream& in,wstring& dest){
+    string tmpstr;
+    getline(in,tmpstr);
+    dest = (wchar_t*)tmpstr.c_str();
+}
 
-wifstream& operator>>(wifstream& in, program_configuration& config)
+ifstream& operator>>(ifstream& in, program_configuration& config)
 {
-    wstring commentline;
+    string commentline;
 
     getline(in, commentline);
 
-    if(commentline == L"#Rom directory:")
+    if(commentline == "#Rom directory:")
     {
         cout << "Old config file format, using defaults.";
         return in;
     }
 
-    getline(in,config.rom_directory);
+    getlinew(in,config.rom_directory);
 
     getline(in, commentline); // empty line
 
     getline(in, commentline); // comment line
 
-    getline(in,config.save_directory);
+    getlinew(in,config.save_directory);
 
     getline(in, commentline); // empty line
 
     getline(in, commentline); // comment line
 
-    getline(in,config.state_directory);  
+    getlinew(in,config.state_directory);
 
     getline(in, commentline); // empty line
 
@@ -545,16 +551,22 @@ wifstream& operator>>(wifstream& in, program_configuration& config)
    return in;
 }
 
-wostream& operator<<(wostream& out, const program_configuration& config)
+ostream& operator<<(ostream& out, const program_configuration& config)
 {
     out << "#Rom Directory:\n";
-    out << config.rom_directory << "\n\n";
+    //out << config.rom_directory << "\n\n";
+    out.write ((char*)config.rom_directory.c_str(), wcslen(config.rom_directory.c_str())*2);
+    out << "\n\n";
 
     out << "#Save Directory:\n";
-    out << config.save_directory << "\n\n";
+    //out << config.save_directory << "\n\n";
+    out.write ((char*)config.save_directory.c_str(), wcslen(config.save_directory.c_str())*2);
+    out << "\n\n";
 
     out << "#Save State Directory:\n";
-    out << config.state_directory << "\n\n";
+    //out << config.state_directory << "\n\n";
+    out.write ((char*)config.state_directory.c_str(), wcslen(config.state_directory.c_str())*2);
+    out << "\n\n";
 
     out << "#Halt on unknown opcode:\n";
     out << config.halt_on_unknown_opcode << "\n\n";
@@ -716,7 +728,7 @@ bool read_config_file()
 
    options->rom_directory = options->program_directory;
 
-   wifstream configfile("hhugboy.cfg", ifstream::in);
+   ifstream configfile("hhugboy.cfg", ifstream::in);
    if(configfile.fail())
    {
        cout << "Config file load failed, using defaults.";
@@ -739,7 +751,8 @@ bool write_config_file()
 {
     SetCurrentDirectory(options->program_directory.c_str());
 
-    wofstream configfile("hhugboy.cfg");
+    ofstream configfile("hhugboy.cfg", std::ios_base::binary); 
+
     if(configfile.fail())
     {
       debug_print(str_table[ERROR_CFG_FILE]);
@@ -748,7 +761,7 @@ bool write_config_file()
     }
 
     configfile << *options;
-    
+
     configfile.close();
 
     return true;

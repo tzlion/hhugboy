@@ -22,11 +22,15 @@
 #ifndef CONFIG_H
 #define CONFIG_H
 
+#include "types.h"
+
 const int PROGRAM_PATH_SIZE = 1400;
 
 bool read_config_file();
 
 bool write_config_file();
+
+void getlinew(ifstream&, string);
 
 #include "options.h"
 
