@@ -1159,8 +1159,8 @@ void draw_screen_generic32(DWORD* buffer)
       --GB->rumble_counter;
       if(!(GB->rumble_counter%2))
       {
-         target_blt_rect.left-=2;
-         target_blt_rect.right-=2;
+         target_blt_rect.left-=VISUAL_RUMBLE_STRENGTH;
+         target_blt_rect.right-=VISUAL_RUMBLE_STRENGTH;
          change_rect = 1;
       } else change_rect = 0;
    } else change_rect = 0;
@@ -1189,8 +1189,8 @@ void draw_screen_generic32(DWORD* buffer)
 
    if(change_rect)
    {
-     target_blt_rect.left += 2;
-     target_blt_rect.right += 2;
+     target_blt_rect.left += VISUAL_RUMBLE_STRENGTH;
+     target_blt_rect.right += VISUAL_RUMBLE_STRENGTH;
    }
 }
 
@@ -1281,8 +1281,8 @@ void draw_screen_generic16(WORD* buffer)
       --GB->rumble_counter;
       if(!(GB->rumble_counter%2))
       {
-         target_blt_rect.left-=2;
-         target_blt_rect.right-=2;
+         target_blt_rect.left-=VISUAL_RUMBLE_STRENGTH;
+         target_blt_rect.right-=VISUAL_RUMBLE_STRENGTH;
          change_rect = 1;
       } else change_rect = 0;
    } else change_rect = 0;
@@ -1311,8 +1311,8 @@ void draw_screen_generic16(WORD* buffer)
 
    if(change_rect)
    {
-     target_blt_rect.left+=2;
-     target_blt_rect.right+=2;
+     target_blt_rect.left+=VISUAL_RUMBLE_STRENGTH;
+     target_blt_rect.right+=VISUAL_RUMBLE_STRENGTH;
    }   
 }
 

@@ -33,6 +33,8 @@
 #define RGB16(red,green,blue) ( (WORD)(((red)<<11)|((green)<<5)|(blue)) )
 #define GBC_RGB(red,green,blue) ( (WORD)(((blue)<<10)|((green)<<5)|(red)) )
 
+#define VISUAL_RUMBLE_STRENGTH 5
+
 extern int filter_width;
 extern int filter_height;
 

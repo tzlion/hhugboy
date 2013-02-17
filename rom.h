@@ -31,7 +31,7 @@ enum { ROM, MBC1, MBC2, MMM01, MBC3, MBC4, MBC5, MBC7, Camera, TAMA5, HuC3, HuC1
 struct GBrom
 {
    char name[15];
-   unsigned short newlic;
+   char newlic[2];
    byte lic;
    byte carttype;
    int ROMsize;

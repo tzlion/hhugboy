@@ -133,18 +133,18 @@ int romsize(int number)
 void PrintROMinfo()
 {
    wchar_t text[500];
-   
-   wchar_t nl[2]; // get the new licensee as a string
-   nl[0] = (0xFF00 & GB1->rom->newlic) / 0x100;
-   nl[1] = (0x00FF & GB1->rom->newlic);
-   wstring nlstring = nl;
-   nlstring.resize(2); // this again!
+
+   wchar_t nl[3]; // get the new licensee
+   nl[0] = GB1->rom->newlic[0];
+   nl[1] = GB1->rom->newlic[1];
+   nl[2] = 0x0000;
+   // I have no idea why but if you make nl[2] its not terminated or anything and you get garbage data after it
 
    wchar_t newname[16];
    mbstowcs(newname,GB1->rom->name,16);
 
    //sprintf(text, "Rom name: \t%s\nGBC feature: \t%s\nNew Licensee: \t%X\nSGB feature: \t%s\nCardridge Type: \t%X\nROM Size: \t%d KBytes\nRAM Size: \t%d KBytes\nCountry: \t\t%X ,%s\nLicensee: \t%X - %s\nVersion: \t\t%X\nComplement check: %X - %s\nChecksum: \t%X", rom->name, rom->CGB==1?"yes":rom->CGB==2?"GBC only":"no", rom->newlic, rom->SGB?"yes":"no", rom->carttype,romsize(rom->ROMsize),ramsize[rom->RAMsize], rom->destcode, rom->destcode==0?"Japan":"non-Japan",rom->lic,lic_names[rom->lic],rom->version,rom->complement,rom->complementok?"(ok)":"(wrong)",rom->checksum);
-   wsprintf(text, str_table[ROM_INFO], newname, GB1->rom->CGB==1?str_table[STR_YES]:GB1->rom->CGB==2?str_table[GBC_ONLY]:str_table[STR_NO], nlstring.c_str(), GB1->rom->SGB?str_table[STR_YES]:str_table[STR_NO], GB1->rom->carttype,romsize(GB1->rom->ROMsize),ramsize[GB1->rom->RAMsize], GB1->rom->destcode, GB1->rom->destcode==0?str_table[STR_JAPAN]:str_table[STR_NON_JAPAN],GB1->rom->lic,lic_names[GB1->rom->lic],GB1->rom->version,GB1->rom->complement,GB1->rom->complementok?str_table[CHECK_OK]:str_table[CHECK_WRONG],GB1->rom->checksum);
+   wsprintf(text, str_table[ROM_INFO], newname, GB1->rom->CGB==1?str_table[STR_YES]:GB1->rom->CGB==2?str_table[GBC_ONLY]:str_table[STR_NO], nl, GB1->rom->SGB?str_table[STR_YES]:str_table[STR_NO], GB1->rom->carttype,romsize(GB1->rom->ROMsize),ramsize[GB1->rom->RAMsize], GB1->rom->destcode, GB1->rom->destcode==0?str_table[STR_JAPAN]:str_table[STR_NON_JAPAN],GB1->rom->lic,lic_names[GB1->rom->lic],GB1->rom->version,GB1->rom->complement,GB1->rom->complementok?str_table[CHECK_OK]:str_table[CHECK_WRONG],GB1->rom->checksum);
    debug_print(text);
 }
 

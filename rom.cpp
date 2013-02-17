@@ -287,8 +287,9 @@ int gb_system::process_rom_info(byte *rominfo,byte *logo1, byte *logo2)
       rom->CGB = 0;
    // modes changed when reset
           
-   ++addr; rom->newlic = (rominfo[addr]<<8);
-   ++addr; rom->newlic |= rominfo[addr];
+   ++addr; rom->newlic[0] = rominfo[addr];
+   ++addr; rom->newlic[1] = rominfo[addr];
+   
    ++addr; 
    if(rominfo[addr] == 0x03) 
       rom->SGB = 1; 
@@ -371,6 +372,13 @@ int gb_system::process_rom_info(byte *rominfo,byte *logo1, byte *logo2)
    		rom->RAMsize=03; // assumption for now
    		rom->carttype=0x1B; // same
    }
+   
+   // Rumble force for Makon games
+   if(!strcmp(rom->newlic,"MK")||!strcmp(rom->newlic,"GC"))
+   {
+      rom->rumble = 1;
+   }     
+   
       
    if(!strcmp(rom->name,"GB SMART CARD"))
    {
