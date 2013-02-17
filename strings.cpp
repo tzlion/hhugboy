@@ -38,10 +38,10 @@ wchar_t* str_table[40] =
  L"hhugboy v%s\nbased on GEST 1.1.1 by TM\nmodified by taizou",
  L"Current slot:",
  L"Not a GB rom!",
- L"Save to slot", // shouldn't be very long
+ L"Save slot", // shouldn't be very long
  L"failed!",
  L"OK!",
- L"Load from slot", // shouldn't be very long // that's what he said
+ L"Load slot", // shouldn't be very long // that's what he said
  L"Unknown ROM size! (Really a Game Boy ROM?)",
  L"Cannot open file!",
  L"Finding file from zip failed!",

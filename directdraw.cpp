@@ -964,7 +964,8 @@ void gbTextOut() {
       {
          SelectObject(aDC,afont);
          SetBkMode(aDC, TRANSPARENT);
-         SetTextColor(aDC,RGB(255,255,255));
+         SetTextColor(aDC,RGB(255,0,128));
+        
          
          TextOut(aDC,3*filter_width,3*filter_height,dx_message,wcslen(dx_message));
          TextOut(aDC,1*filter_width,1*filter_width,dx_message,wcslen(dx_message));
@@ -976,7 +977,7 @@ void gbTextOut() {
          TextOut(aDC,2*filter_width,3*filter_width,dx_message,wcslen(dx_message));
          TextOut(aDC,2*filter_width,1*filter_width,dx_message,wcslen(dx_message));
          
-         SetTextColor(aDC,RGB(255,0,128));
+          SetTextColor(aDC,RGB(255,255,255));
          TextOut(aDC,2*filter_width,2*filter_width,dx_message,wcslen(dx_message));
          BSurface->ReleaseDC(aDC);
       }
