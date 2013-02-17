@@ -57,7 +57,7 @@ char* str_table[40] =
  "Unidentified ROM type!",
  "GB roms",
  "All files",
- "Rom name: \t%s\nGBC feature: \t%s\nNew Licensee: \t%X\nSGB feature: \t%s\nCartridge Type: \t%X\nROM Size: \t%d KBytes\nRAM Size: \t%d KBytes\nCountry: \t\t%X ,%s\nLicensee: \t%X - %s\nVersion: \t\t%X\nComplement check: %X - %s\nChecksum: \t%X",
+ "ROM name: \t%s\nGBC feature: \t%s\nNew licensee: \t%s\nSGB feature: \t%s\nCartridge type: \t%X\nROM size: \t\t%d KBytes\nRAM size: \t\t%d KBytes\nCountry: \t\t%X (%s)\nOld licensee: \t%X (%s)\nVersion: \t\t%X\nComplement check:\t%X %s\nChecksum: \t%X",
  "yes",
  "no",
  "GBC only",
