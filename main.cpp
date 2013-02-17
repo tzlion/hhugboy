@@ -67,7 +67,7 @@ gb_system* GB = NULL;
 gb_system* GB1 = NULL;
 gb_system* GB2 = NULL;
 
-const wchar_t* prg_version = L"1.0";
+const wchar_t* prg_version = L"1.0beta";
 
 // Windows stuff ----------------------------------------
 HWND hwnd = NULL;           
@@ -1786,7 +1786,7 @@ void keyAction(int key)
 
            if(++GB1_state_slot > 9)
               GB1_state_slot = 0;
-           sprintf(dx_message,"%s %d",str_table[STATE_SLOT],GB1_state_slot);
+           wsprintf(dx_message,L"%s %d",str_table[STATE_SLOT],GB1_state_slot);
            message_time = 60;
            message_GB = GB1;
            
@@ -1801,14 +1801,14 @@ void keyAction(int key)
             {
                emuMenu.uncheckOption(IDM_OPTIONVIDEOENBG);
                video_enable &= ~VID_EN_BG;
-               sprintf(dx_message,"%s","BG off");
+               wsprintf(dx_message,L"%s",L"BG off");
                message_time = 40;
                message_GB = GB1;
             } else
             {
                emuMenu.checkOption(IDM_OPTIONVIDEOENBG);
                video_enable |= VID_EN_BG;                
-               sprintf(dx_message,"%s","BG on");
+               wsprintf(dx_message,L"%s",L"BG on");
                message_time = 40;
                message_GB = GB1;
             }              
@@ -1818,14 +1818,14 @@ void keyAction(int key)
             {
                emuMenu.uncheckOption(IDM_OPTIONVIDEOENWIN);
                video_enable &= ~VID_EN_WIN;
-               sprintf(dx_message,"%s","WIN off");
+               wsprintf(dx_message,L"%s",L"WIN off");
                message_time = 40;
                message_GB = GB1;
             } else
             {
                emuMenu.checkOption(IDM_OPTIONVIDEOENWIN);
                video_enable |= VID_EN_WIN;                
-               sprintf(dx_message,"%s","WIN on");
+               wsprintf(dx_message,L"%s",L"WIN on");
                message_time = 40;
                message_GB = GB1;
             }              
@@ -1835,14 +1835,14 @@ void keyAction(int key)
             {
                emuMenu.uncheckOption(IDM_OPTIONVIDEOENSPRITE);
                video_enable &= ~VID_EN_SPRITE;
-               sprintf(dx_message,"%s","Sprites off");
+               wsprintf(dx_message,L"%s",L"Sprites off");
                message_time = 40;
                message_GB = GB1;
             } else
             {
                emuMenu.checkOption(IDM_OPTIONVIDEOENSPRITE);
                video_enable |= VID_EN_SPRITE;                
-               sprintf(dx_message,"%s","Sprites on");
+               wsprintf(dx_message,L"%s",L"Sprites on");
                message_time = 40;
                message_GB = GB1;
             }              
@@ -1888,7 +1888,7 @@ void keyAction(int key)
 			}
 			
 			// show a msg
-            sprintf(dx_message,"%s","Screenshot");
+            wsprintf(dx_message,L"%s",L"Screenshot");
             message_time = 40;
             message_GB = screenshotGb;
 

@@ -36,7 +36,7 @@
 #include <stdlib.h>
 #include <stdio.h>
 
-extern char dx_message[60];
+extern wchar_t dx_message[60];
 extern int message_time;
 extern gb_system* message_GB;
 int GB1_state_slot = 0;
@@ -177,7 +177,7 @@ bool gb_system::save_state()
    FILE* statefile = _wfopen(save_filename,L"wb");
    if(!statefile) 
    {       
-      sprintf(dx_message,"%s %d %s",str_table[SAVE_TO_SLOT],save_state_slot,str_table[SAVE_FAILED]);
+      wsprintf(dx_message,L"%s %d %s",str_table[SAVE_TO_SLOT],save_state_slot,str_table[SAVE_FAILED]);
       message_time = 60;
       SetCurrentDirectory(old_directory);
       return false; 
@@ -401,7 +401,7 @@ bool gb_system::save_state()
     
    fclose(statefile);
    
-   sprintf(dx_message,"%s %d %s",str_table[SAVE_TO_SLOT],save_state_slot,str_table[SAVE_OK]);
+   wsprintf(dx_message,L"%s %d %s",str_table[SAVE_TO_SLOT],save_state_slot,str_table[SAVE_OK]);
    message_time = 60;
    
    SetCurrentDirectory(old_directory);
@@ -438,7 +438,7 @@ bool gb_system::load_state()
    FILE* statefile = _wfopen(save_filename,L"rb");
    if(!statefile) 
    { 
-      sprintf(dx_message,"%s %d %s",str_table[LOAD_FROM_SLOT],save_state_slot,str_table[SAVE_FAILED]);
+      wsprintf(dx_message,L"%s %d %s",str_table[LOAD_FROM_SLOT],save_state_slot,str_table[SAVE_FAILED]);
       message_time = 60;
       SetCurrentDirectory(old_directory);
       return false; 
@@ -694,7 +694,7 @@ bool gb_system::load_state()
    flags |= HFLAG<<12;
    flags |= ZFLAG<<14;*/
    
-   sprintf(dx_message,"%s %d %s",str_table[LOAD_FROM_SLOT],save_state_slot,str_table[SAVE_OK]);
+   wsprintf(dx_message,L"%s %d %s",str_table[LOAD_FROM_SLOT],save_state_slot,str_table[SAVE_OK]);
    message_time = 60;
    fclose(statefile);
    

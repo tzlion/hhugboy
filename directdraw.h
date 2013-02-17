@@ -52,7 +52,7 @@ bool change_filter();
 
 extern RECT target_blt_rect;
 
-extern char dx_message[60];
+extern wchar_t dx_message[60];
 extern int message_time;
 extern gb_system* message_GB;
 
@@ -72,6 +72,8 @@ extern int dx_bitcount;
 void Kill_DD();
 
 bool Init_DD();
+
+void gbTextOut();
 
 extern void (*draw_screen)();
 void draw_screen_mix16();

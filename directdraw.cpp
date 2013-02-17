@@ -21,6 +21,8 @@
    along with this program; if not, write to the Free Software Foundation, Inc.,
    51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
+#define UNICODE
+
 #include <stdio.h>
 #include <ddraw.h>
 
@@ -66,7 +68,7 @@ IDirectDrawClipper* DDClip = NULL;
 
 RECT target_blt_rect;
 
-char dx_message[60];
+wchar_t dx_message[60];
 int message_time = 0;
 gb_system* message_GB = NULL;
 
@@ -770,6 +772,10 @@ bool change_filter()
    }    
    if(GB1->romloaded && sgb_mode)
       draw_border();  
+      
+    //afont = CreateFont(12*filter_height,6*filter_width,2,2,FW_BOLD,FALSE,FALSE,FALSE,ANSI_CHARSET,OUT_DEFAULT_PRECIS,CLIP_DEFAULT_PRECIS,ANTIALIASED_QUALITY,DEFAULT_PITCH|FF_SWISS,NULL);   
+    afont = CreateFont(8*filter_height,0,0,0,FW_NORMAL,FALSE,FALSE,FALSE,ANSI_CHARSET,OUT_DEFAULT_PRECIS,CLIP_DEFAULT_PRECIS,NONANTIALIASED_QUALITY,DEFAULT_PITCH|FF_SWISS,L"PCPaint Bold Small");   
+      
    return true;
 }
 
@@ -941,10 +947,40 @@ bool Init_DD()
      
      lPitch >>= 2;
   }
-
-  afont = CreateFont(12,6,2,2,FW_BOLD,FALSE,FALSE,FALSE,ANSI_CHARSET,OUT_DEFAULT_PRECIS,CLIP_DEFAULT_PRECIS,PROOF_QUALITY,DEFAULT_PITCH|FF_ROMAN,NULL);
+  
+  SetCurrentDirectory(options->program_directory.c_str());
+  AddFontResource(L"PCPaintBoldSmall.ttf");
 
   return true;
+}
+
+
+void gbTextOut() {
+    if(message_time && GB == message_GB)
+   {
+      --message_time;
+      HDC aDC;
+      if(BSurface->GetDC(&aDC)==DD_OK)
+      {
+         SelectObject(aDC,afont);
+         SetBkMode(aDC, TRANSPARENT);
+         SetTextColor(aDC,RGB(255,255,255));
+         
+         TextOut(aDC,3*filter_width,3*filter_height,dx_message,wcslen(dx_message));
+         TextOut(aDC,1*filter_width,1*filter_width,dx_message,wcslen(dx_message));
+         TextOut(aDC,1*filter_width,3*filter_width,dx_message,wcslen(dx_message));
+         TextOut(aDC,3*filter_width,1*filter_width,dx_message,wcslen(dx_message));
+         
+         TextOut(aDC,3*filter_width,2*filter_height,dx_message,wcslen(dx_message));
+         TextOut(aDC,1*filter_width,2*filter_width,dx_message,wcslen(dx_message));
+         TextOut(aDC,2*filter_width,3*filter_width,dx_message,wcslen(dx_message));
+         TextOut(aDC,2*filter_width,1*filter_width,dx_message,wcslen(dx_message));
+         
+         SetTextColor(aDC,RGB(255,0,128));
+         TextOut(aDC,2*filter_width,2*filter_width,dx_message,wcslen(dx_message));
+         BSurface->ReleaseDC(aDC);
+      }
+   }
 }
 
 void (*draw_screen)();
@@ -1128,19 +1164,7 @@ void draw_screen_generic32(DWORD* buffer)
       } else change_rect = 0;
    } else change_rect = 0;
    
-   if(message_time && GB == message_GB)
-   {
-      --message_time;
-      HDC aDC;
-      if(BSurface->GetDC(&aDC)==DD_OK)
-      {
-         SelectObject(aDC,afont);
-         SetBkMode(aDC, TRANSPARENT);
-         SetTextColor(aDC,RGB(255,0,0));
-         TextOut(aDC,0,0,dx_message,strlen(dx_message));
-         BSurface->ReleaseDC(aDC);
-      }
-   }
+    gbTextOut();
    
    int screen_real_width = target_blt_rect.right - target_blt_rect.left;
 
@@ -1262,19 +1286,7 @@ void draw_screen_generic16(WORD* buffer)
       } else change_rect = 0;
    } else change_rect = 0;
    
-   if(message_time && GB == message_GB)
-   {
-      --message_time;
-      HDC aDC;
-      if(BSurface->GetDC(&aDC)==DD_OK)
-      {
-         SelectObject(aDC,afont);
-         SetBkMode(aDC, TRANSPARENT);
-         SetTextColor(aDC,RGB(255,0,0));
-         TextOut(aDC,0,0,dx_message,strlen(dx_message));
-         BSurface->ReleaseDC(aDC);
-      }
-   }
+    gbTextOut();
    
    int screen_real_width = target_blt_rect.right - target_blt_rect.left;
 
