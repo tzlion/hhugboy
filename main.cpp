@@ -618,6 +618,16 @@ void menuAction(int menuOption)
 {
     switch( menuOption ) {
             
+         case IDM_RECENTROM0:
+         case IDM_RECENTROM1:
+         case IDM_RECENTROM2:
+         case IDM_RECENTROM3:
+         case IDM_RECENTROM4:
+         case IDM_RECENTROM5:
+         case IDM_RECENTROM6:
+         case IDM_RECENTROM7:
+         case IDM_RECENTROM8:
+         case IDM_RECENTROM9:
          case IDM_FILEOPEN:
          {                  
               bool romwasloaded = GB1->romloaded;
@@ -625,8 +635,17 @@ void menuAction(int menuOption)
               if(GB1->romloaded && !GB1->write_save())
                  debug_print(str_table[ERROR_SAVE_FILE_WRITE]);
               
-              if(!DoFileOpen(hwnd,1)) 
-                 debug_print(str_table[ERROR_ROM_LOAD]);
+              if ( menuOption == IDM_FILEOPEN ) {
+                 if(!DoFileOpen(hwnd,1))
+                    debug_print(str_table[ERROR_ROM_LOAD]);
+              } else { // its a Recent ROM 
+                    gb1_loaded_file_name = options->recent_rom_names[menuOption - IDM_RECENTROM0];
+                    if (!GB1->load_rom(options->recent_rom_names[menuOption - IDM_RECENTROM0].c_str())) {
+                        debug_print(str_table[ERROR_ROM_LOAD]);
+                    }
+              }
+              
+
                                 
               if(GB1->romloaded)
               {            

@@ -704,12 +704,7 @@ bool gb_system::loadrom_zip(const wchar_t* filename)
 
 bool gb_system::load_rom(const wchar_t* filename)
 {    
-    // this really is a bad place for this
-    for (int x=9;x>0;x--){
-        options->recent_rom_names[x] = options->recent_rom_names[x-1];
-    }
-    options->recent_rom_names[0] = filename;
-    init_menu_options();
+
     
     //for(int x=0;x<10;x++) {
     //    emuMenu.setText(IDM_RECENTROM0+x,(wchar_t*)options->recent_rom_names[x].c_str());
@@ -836,7 +831,28 @@ bool gb_system::load_rom(const wchar_t* filename)
 
    romloaded = true;
    fclose(romfile);
-     
+
+    // this really is a bad place for this
+    if ( options->recent_rom_names[0] == filename ) {
+        // well thats just fine
+    } else {
+        int filepos=66;
+        for (int x=9;x>0;x--){
+            if ( options->recent_rom_names[x] == filename ) {
+                filepos = x;
+                break;
+            }
+        }
+        for (int x=9;x>0;x--){
+            if (x > filepos)
+                options->recent_rom_names[x] = options->recent_rom_names[x];
+            else
+                options->recent_rom_names[x] = options->recent_rom_names[x-1];
+        }
+        options->recent_rom_names[0] = filename;
+        init_menu_options();
+    }
+
    return true;
 }
 
