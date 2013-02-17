@@ -355,6 +355,7 @@ void check_system_keys()
             FSOUND_StopSound(channel_n);
       }
       speedup = 1;
+      
    }
    else
    {      

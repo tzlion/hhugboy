@@ -352,7 +352,7 @@ void init_menu_options()
    }
    if(options->video_mix_frames == MIX_FRAMES_ON)
    {
-      emuMenu.uncheckOption(IDM_OPTIONVIDEOMIXON);
+      emuMenu.checkOption(IDM_OPTIONVIDEOMIXON);
 
       if(dx_bitcount == 16)
          draw_screen = draw_screen_mix16;
@@ -368,7 +368,7 @@ void init_menu_options()
          draw_screen = draw_screen_mix32; 
    } else
    {
-      emuMenu.uncheckOption(IDM_OPTIONVIDEOMIXOFF);
+      emuMenu.checkOption(IDM_OPTIONVIDEOMIXOFF);
 
       if(dx_bitcount == 16)
          draw_screen = draw_screen16;

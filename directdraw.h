@@ -78,6 +78,8 @@ void draw_screen_mix16();
 void draw_screen_mix32();
 void draw_screen16();
 void draw_screen32();
+void draw_screen_generic16(WORD* buffer);
+void draw_screen_generic32(DWORD* buffer);
 
 void screenshotPng(char* filename, gb_system* gameboy);
 void screenshotHtml(char* filename);

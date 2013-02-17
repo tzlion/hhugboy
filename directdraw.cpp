@@ -1049,69 +1049,13 @@ void draw_border16()
    }
 }
 
+// draw the screen without mixing frames
 void draw_screen32()
 {  
-   DDSURFACEDESC2 ddsd;
-   ZeroMemory(&ddsd,sizeof(ddsd));
-   ddsd.dwSize = sizeof(DDSURFACEDESC2);
-   BSurface->Lock(NULL,&ddsd,DDLOCK_WRITEONLY|DDLOCK_SURFACEMEMORYPTR,NULL);
-      
-   filter_f_32((DWORD*)ddsd.lpSurface,(DWORD*)GB->gfx_buffer,160,144,lPitch);
-  
-   BSurface->Unlock(NULL);   
-      
-   if(options->video_visual_rumble && GB->rumble_counter)
-   {
-      --GB->rumble_counter;
-      if(!(GB->rumble_counter%2))
-      {
-         target_blt_rect.left-=2;
-         target_blt_rect.right-=2;
-         change_rect = 1;
-      } else change_rect = 0;
-   } else change_rect = 0;
-   
-   if(message_time && GB == message_GB)
-   {
-      --message_time;
-      HDC aDC;
-      if(BSurface->GetDC(&aDC)==DD_OK)
-      {
-         SelectObject(aDC,afont);
-         SetBkMode(aDC, TRANSPARENT);
-         SetTextColor(aDC,RGB(255,0,0));
-         TextOut(aDC,0,0,dx_message,strlen(dx_message));
-         BSurface->ReleaseDC(aDC);
-      }
-   }
-
-   int screen_real_width = target_blt_rect.right - target_blt_rect.left;
-
-   if(multiple_gb && GB == GB2)
-   {
-       target_blt_rect.left += screen_real_width;
-       target_blt_rect.right += screen_real_width;
-   }
-
-   if(DDSurface->Blt(&target_blt_rect,BSurface,NULL,0,NULL) == DDERR_SURFACELOST)
-   {
-      DDSurface->Restore();
-      BSurface->Restore();
-   }
-
-   if(multiple_gb && GB == GB2)
-   {
-      target_blt_rect.left -= screen_real_width;
-      target_blt_rect.right -= screen_real_width;
-   } 
-   
-   if(change_rect)
-   {
-     target_blt_rect.left += 2;
-     target_blt_rect.right += 2;
-   }
+   draw_screen_generic32((DWORD*)GB->gfx_buffer);
 }
 
+// draw the screen mixing frames
 void draw_screen_mix32()
 {   
    DWORD* current = (DWORD*)GB->gfx_buffer;
@@ -1158,13 +1102,18 @@ void draw_screen_mix32()
       GB->gfx_buffer_old = temp;
    }
 
-   DDSURFACEDESC2 ddsd;
+    draw_screen_generic32((DWORD*)dx_buffer_mix);
+}
+
+void draw_screen_generic32(DWORD* buffer)
+{
+       DDSURFACEDESC2 ddsd;
 
    ZeroMemory(&ddsd,sizeof(ddsd));
    ddsd.dwSize = sizeof(DDSURFACEDESC2);
    BSurface->Lock(NULL,&ddsd,DDLOCK_WRITEONLY|DDLOCK_SURFACEMEMORYPTR,NULL);
 
-   filter_f_32((DWORD*)ddsd.lpSurface,(DWORD*)dx_buffer_mix,160,144,lPitch);
+   filter_f_32((DWORD*)ddsd.lpSurface,buffer,160,144,lPitch);
 
    BSurface->Unlock(NULL);   
 
@@ -1221,68 +1170,8 @@ void draw_screen_mix32()
 }
 
 void draw_screen16()
-{
-   DDSURFACEDESC2 ddsd;
-   
-   ZeroMemory(&ddsd,sizeof(ddsd));
-   ddsd.dwSize = sizeof(DDSURFACEDESC2);
-   BSurface->Lock(NULL,&ddsd,DDLOCK_WRITEONLY|DDLOCK_SURFACEMEMORYPTR,NULL);
-      
-   filter_f_16((WORD*)ddsd.lpSurface,(WORD*)GB->gfx_buffer,160,144,lPitch);
-   
-   BSurface->Unlock(NULL);   
-         
-   if(options->video_visual_rumble && GB->rumble_counter)
-   {
-      --GB->rumble_counter;
-      if(!(GB->rumble_counter%2))
-      {
-         target_blt_rect.left-=2;
-         target_blt_rect.right-=2;
-         change_rect = 1;
-      } else change_rect = 0;
-   } else change_rect = 0;
-
-   if(message_time && GB == message_GB)
-   {
-      --message_time;
-      HDC aDC;
-      if(BSurface->GetDC(&aDC)==DD_OK)
-      {
-         SelectObject(aDC,afont);
-         SetBkMode(aDC, TRANSPARENT);
-         SetTextColor(aDC,RGB(255,0,0));
-         TextOut(aDC,0,0,dx_message,strlen(dx_message));
-
-         BSurface->ReleaseDC(aDC);
-      }
-   }
-
-   int screen_real_width = target_blt_rect.right - target_blt_rect.left;
-
-   if(multiple_gb && GB == GB2)
-   {
-       target_blt_rect.left += screen_real_width;
-       target_blt_rect.right += screen_real_width;
-   }
-
-   if(DDSurface->Blt(&target_blt_rect,BSurface,NULL,0,NULL) == DDERR_SURFACELOST)
-   {
-      DDSurface->Restore();
-      BSurface->Restore();
-   }
-
-   if(multiple_gb && GB == GB2)
-   {
-      target_blt_rect.left -= screen_real_width;
-      target_blt_rect.right -= screen_real_width;
-   } 
-
-   if(change_rect)
-   {
-     target_blt_rect.left += 2;
-     target_blt_rect.right += 2;
-   }
+{  
+   draw_screen_generic16((WORD*)GB->gfx_buffer);
 }
 
 void draw_screen_mix16()
@@ -1347,13 +1236,18 @@ void draw_screen_mix16()
       GB->gfx_buffer_old = temp;
    }
    
+    draw_screen_generic16((WORD*)dx_buffer_mix);
+}
+
+void draw_screen_generic16(WORD* buffer)
+{
    DDSURFACEDESC2 ddsd;
 
    ZeroMemory(&ddsd,sizeof(ddsd));
    ddsd.dwSize = sizeof(DDSURFACEDESC2);
    BSurface->Lock(NULL,&ddsd,DDLOCK_WRITEONLY|DDLOCK_SURFACEMEMORYPTR,NULL);
           
-   filter_f_16((WORD*)ddsd.lpSurface,(WORD*)dx_buffer_mix,160,144,lPitch);
+   filter_f_16((WORD*)ddsd.lpSurface,buffer,160,144,lPitch);
    
    BSurface->Unlock(NULL);   
               
