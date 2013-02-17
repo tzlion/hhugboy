@@ -61,7 +61,7 @@ bool DoFileOpen(HWND hwnd,int gb_number)
    ofn.lStructSize = sizeof(ofn);
    ofn.hwndOwner = hwnd;
    
-   char ctrl_str[150];
+   /*char ctrl_str[150];
    char* cptr = ctrl_str;
 
    cptr = stpncpy(cptr,str_table[GB_ROMS],strlen(str_table[GB_ROMS]));
@@ -71,7 +71,7 @@ bool DoFileOpen(HWND hwnd,int gb_number)
    
    wchar_t w_ctrl_str[150];
    mbstowcs(w_ctrl_str,ctrl_str,150);
-   //ofn.lpstrFilter =  w_ctrl_str; // removed for now, just to get it working..
+   //ofn.lpstrFilter =  w_ctrl_str; */ //removed for now, just to get it working..
    ofn.lpstrFilter =  L"GB roms (*.gb,*.gbc,*.sgb,*.zip)\0*.gb;*.gbc;*.sgb;*.zip\0All files (*.*)\0*.*\0\0";
    ofn.lpstrFile = szFileName;
    ofn.nMaxFile = MAX_PATH;

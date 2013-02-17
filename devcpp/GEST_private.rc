@@ -11,8 +11,8 @@ A ICON MOVEABLE PURE LOADONCALL DISCARDABLE "hhugboy.ico"
 // TO CHANGE VERSION INFORMATION, EDIT PROJECT OPTIONS...
 //
 1 VERSIONINFO
-FILEVERSION 1,0,0,597
-PRODUCTVERSION 1,0,0,597
+FILEVERSION 1,0,0,625
+PRODUCTVERSION 1,0,0,625
 FILETYPE VFT_APP
 {
   BLOCK "StringFileInfo"
@@ -20,14 +20,14 @@ FILETYPE VFT_APP
     BLOCK "080904E4"
     {
       VALUE "CompanyName", "hhug.me"
-      VALUE "FileVersion", "1.0.0.597"
+      VALUE "FileVersion", "1.0.0.625"
       VALUE "FileDescription", "hhugboy GB emulator"
       VALUE "InternalName", ""
       VALUE "LegalCopyright", "taizou 2013"
       VALUE "LegalTrademarks", ""
       VALUE "OriginalFilename", "hhugboy.exe"
       VALUE "ProductName", "hhugboy"
-      VALUE "ProductVersion", "1.0.0.597"
+      VALUE "ProductVersion", "1.0.0.625"
     }
   }
   BLOCK "VarFileInfo"

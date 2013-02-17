@@ -24,7 +24,6 @@
 
 #include <string>
 
-extern char emu_title[];
 extern wchar_t w_emu_title[];
 
 void debug_print(const char* message);

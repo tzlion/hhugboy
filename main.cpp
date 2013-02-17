@@ -67,7 +67,7 @@ gb_system* GB = NULL;
 gb_system* GB1 = NULL;
 gb_system* GB2 = NULL;
 
-const char* prg_version = "1.0";
+const wchar_t* prg_version = L"1.0";
 
 // Windows stuff ----------------------------------------
 HWND hwnd = NULL;           
@@ -78,7 +78,6 @@ HINSTANCE hinst;
 LRESULT CALLBACK WindowProcedure (HWND, UINT, WPARAM, LPARAM);
 
 wchar_t w_szClassName[] = L"GESTclass";
-char emu_title[] = "hhugboy";
 wchar_t w_emu_title[] = L"hhugboy";
 
 char title_text[ROM_FILENAME_SIZE + 8];
@@ -133,13 +132,19 @@ int romsize(int number)
 
 void PrintROMinfo()
 {
-   char text[500];
-   string nlstring; // get the new licensee as a string
-   nlstring[0] = (0xFF00 & GB1->rom->newlic) / 0x100;
-   nlstring[1] = (0x00FF & GB1->rom->newlic);
+   wchar_t text[500];
+   
+   wchar_t nl[2]; // get the new licensee as a string
+   nl[0] = (0xFF00 & GB1->rom->newlic) / 0x100;
+   nl[1] = (0x00FF & GB1->rom->newlic);
+   wstring nlstring = nl;
+   nlstring.resize(2); // this again!
+
+   wchar_t newname[16];
+   mbstowcs(newname,GB1->rom->name,16);
 
    //sprintf(text, "Rom name: \t%s\nGBC feature: \t%s\nNew Licensee: \t%X\nSGB feature: \t%s\nCardridge Type: \t%X\nROM Size: \t%d KBytes\nRAM Size: \t%d KBytes\nCountry: \t\t%X ,%s\nLicensee: \t%X - %s\nVersion: \t\t%X\nComplement check: %X - %s\nChecksum: \t%X", rom->name, rom->CGB==1?"yes":rom->CGB==2?"GBC only":"no", rom->newlic, rom->SGB?"yes":"no", rom->carttype,romsize(rom->ROMsize),ramsize[rom->RAMsize], rom->destcode, rom->destcode==0?"Japan":"non-Japan",rom->lic,lic_names[rom->lic],rom->version,rom->complement,rom->complementok?"(ok)":"(wrong)",rom->checksum);
-   sprintf(text, str_table[ROM_INFO], GB1->rom->name, GB1->rom->CGB==1?str_table[STR_YES]:GB1->rom->CGB==2?str_table[GBC_ONLY]:str_table[STR_NO], nlstring.c_str(), GB1->rom->SGB?str_table[STR_YES]:str_table[STR_NO], GB1->rom->carttype,romsize(GB1->rom->ROMsize),ramsize[GB1->rom->RAMsize], GB1->rom->destcode, GB1->rom->destcode==0?str_table[STR_JAPAN]:str_table[STR_NON_JAPAN],GB1->rom->lic,lic_names[GB1->rom->lic],GB1->rom->version,GB1->rom->complement,GB1->rom->complementok?str_table[CHECK_OK]:str_table[CHECK_WRONG],GB1->rom->checksum);
+   wsprintf(text, str_table[ROM_INFO], newname, GB1->rom->CGB==1?str_table[STR_YES]:GB1->rom->CGB==2?str_table[GBC_ONLY]:str_table[STR_NO], nlstring.c_str(), GB1->rom->SGB?str_table[STR_YES]:str_table[STR_NO], GB1->rom->carttype,romsize(GB1->rom->ROMsize),ramsize[GB1->rom->RAMsize], GB1->rom->destcode, GB1->rom->destcode==0?str_table[STR_JAPAN]:str_table[STR_NON_JAPAN],GB1->rom->lic,lic_names[GB1->rom->lic],GB1->rom->version,GB1->rom->complement,GB1->rom->complementok?str_table[CHECK_OK]:str_table[CHECK_WRONG],GB1->rom->checksum);
    debug_print(text);
 }
 
@@ -1755,9 +1760,9 @@ void menuAction(int menuOption)
             emuMenu.checkOption(IDM_OPTIONSOUNDVOL4);                                                                     
          break;                                                                                                                                              
          case IDM_HELPABOUT:
-              char about_str[200];
-              sprintf(about_str,str_table[ABOUT_STR],prg_version);
-              MessageBoxA(NULL, about_str, emu_title, 0);
+              wchar_t about_str[200];
+              wsprintf(about_str,str_table[ABOUT_STR],prg_version);
+              MessageBoxW(NULL, about_str, w_emu_title, 0);
          break;
         
         }
