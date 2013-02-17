@@ -150,7 +150,8 @@ void init_menu_options()
    } 
 
     for(int x=0;x<10;x++) {
-        emuMenu.setText(IDM_RECENTROM0+x,(wchar_t*)options->recent_rom_names[x].c_str());
+        if (options->recent_rom_names[x] != L"") 
+            emuMenu.setText(IDM_RECENTROM0+x,(wchar_t*)options->recent_rom_names[x].c_str());
     }
 	
 	

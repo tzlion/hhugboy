@@ -639,6 +639,9 @@ void menuAction(int menuOption)
                  if(!DoFileOpen(hwnd,1))
                     debug_print(str_table[ERROR_ROM_LOAD]);
               } else { // its a Recent ROM 
+                    if (options->recent_rom_names[menuOption - IDM_RECENTROM0] == L"")
+                        break;
+              
                     gb1_loaded_file_name = options->recent_rom_names[menuOption - IDM_RECENTROM0];
                     if (!GB1->load_rom(options->recent_rom_names[menuOption - IDM_RECENTROM0].c_str())) {
                         debug_print(str_table[ERROR_ROM_LOAD]);

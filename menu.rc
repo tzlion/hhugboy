@@ -205,16 +205,16 @@ BEGIN
 		MENUITEM "&Load ROM...", IDM_FILEOPEN
 		POPUP "Load &Recent"
 		BEGIN
-           MENUITEM "-",IDM_RECENTROM0
-           MENUITEM "-",IDM_RECENTROM1
-           MENUITEM "-",IDM_RECENTROM2
-           MENUITEM "-",IDM_RECENTROM3
-           MENUITEM "-",IDM_RECENTROM4
-           MENUITEM "-",IDM_RECENTROM5
-           MENUITEM "-",IDM_RECENTROM6
-           MENUITEM "-",IDM_RECENTROM7
-           MENUITEM "-",IDM_RECENTROM8
-           MENUITEM "-",IDM_RECENTROM9
+           MENUITEM "(Your recently played ROMs will appear here!)",IDM_RECENTROM0
+           MENUITEM " - ",IDM_RECENTROM1
+           MENUITEM " - ",IDM_RECENTROM2
+           MENUITEM " - ",IDM_RECENTROM3
+           MENUITEM " - ",IDM_RECENTROM4
+           MENUITEM " - ",IDM_RECENTROM5
+           MENUITEM " - ",IDM_RECENTROM6
+           MENUITEM " - ",IDM_RECENTROM7
+           MENUITEM " - ",IDM_RECENTROM8
+           MENUITEM " - ",IDM_RECENTROM9
 		END
 		MENUITEM "&Close ROM", IDM_FILECLOSE
 		MENUITEM "&ROM Info...", IDM_ROMINFO
