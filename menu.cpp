@@ -17,6 +17,10 @@ void menu::init(HINSTANCE instance)
 	menuBar = LoadMenu(instance, MAKEINTRESOURCE(ID_MENU));
 }
 
+void menu::setText(int option, wchar_t* text) {
+    ModifyMenuW(menuBar,option,NULL,option,text);
+}
+
 void menu::checkOption(int option)
 {	
     // check one option in a group but uncheck the rest

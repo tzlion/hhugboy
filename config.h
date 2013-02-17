@@ -30,13 +30,17 @@ bool read_config_file();
 
 bool write_config_file();
 
-void getlinew(ifstream&, string);
+void init_menu_options();
 
 #include "options.h"
 
 
 #include <string>
 #include <fstream>
+
+using namespace std;
+
+void getlinew(ifstream&, string);
 
 class program_configuration
 {
@@ -48,6 +52,8 @@ public:
     std::wstring save_directory;
     std::wstring state_directory;
     std::wstring rom_directory;
+    
+    std::wstring recent_rom_names[10];
 
     bool halt_on_unknown_opcode;
     bool reduce_cpu_usage;

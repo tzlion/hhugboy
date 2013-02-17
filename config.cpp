@@ -149,6 +149,9 @@ void init_menu_options()
       break;
    } 
 
+    for(int x=0;x<10;x++) {
+        emuMenu.setText(IDM_RECENTROM0+x,(wchar_t*)options->recent_rom_names[x].c_str());
+    }
 	
 	
    if(options->GBC_SGB_border == GBC_WITH_SGB_BORDER)
@@ -395,6 +398,7 @@ void getlinew(ifstream& in,wstring& dest){
     string tmpstr;
     getline(in,tmpstr);
     dest = (wchar_t*)tmpstr.c_str();
+    dest.resize(tmpstr.size()/2); // sometimes dest would end up 2 chars bigger than it should be and idfk why
 }
 
 ifstream& operator>>(ifstream& in, program_configuration& config)
@@ -425,6 +429,14 @@ ifstream& operator>>(ifstream& in, program_configuration& config)
 
     getline(in, commentline); // empty line
 
+    getline(in, commentline); // comment line
+    
+    for(int x=0;x<10;x++) {
+        getlinew(in, config.recent_rom_names[x] );
+    }
+    
+    getline(in, commentline); // empty line
+    
     getline(in, commentline); // comment line
 
     in >> config.halt_on_unknown_opcode;
@@ -553,20 +565,27 @@ ifstream& operator>>(ifstream& in, program_configuration& config)
 
 ostream& operator<<(ostream& out, const program_configuration& config)
 {
-    out << "#Rom Directory:\n";
+    out << "#ROM Directory:\n";
     //out << config.rom_directory << "\n\n";
-    out.write ((char*)config.rom_directory.c_str(), wcslen(config.rom_directory.c_str())*2);
+    out.write ((char*)config.rom_directory.c_str(), config.rom_directory.size()*2);
     out << "\n\n";
 
     out << "#Save Directory:\n";
     //out << config.save_directory << "\n\n";
-    out.write ((char*)config.save_directory.c_str(), wcslen(config.save_directory.c_str())*2);
+    out.write ((char*)config.save_directory.c_str(), config.save_directory.size()*2);
     out << "\n\n";
 
     out << "#Save State Directory:\n";
     //out << config.state_directory << "\n\n";
-    out.write ((char*)config.state_directory.c_str(), wcslen(config.state_directory.c_str())*2);
+    out.write ((char*)config.state_directory.c_str(), config.state_directory.size()*2);
     out << "\n\n";
+
+    out << "#Recent ROMs:\n";
+    for(int x=0;x<10;x++) {
+        out.write ((char*)config.recent_rom_names[x].c_str(), config.recent_rom_names[x].size()*2);
+        out << "\n";
+    }
+    out << "\n";
 
     out << "#Halt on unknown opcode:\n";
     out << config.halt_on_unknown_opcode << "\n\n";

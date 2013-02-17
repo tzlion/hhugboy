@@ -29,6 +29,17 @@
 
 #define IDM_FILEOPEN          0x01
 
+#define IDM_RECENTROM0     0x30
+#define IDM_RECENTROM1     0x31
+#define IDM_RECENTROM2     0x32
+#define IDM_RECENTROM3     0x33
+#define IDM_RECENTROM4     0x34
+#define IDM_RECENTROM5     0x35
+#define IDM_RECENTROM6     0x36
+#define IDM_RECENTROM7     0x37
+#define IDM_RECENTROM8     0x38
+#define IDM_RECENTROM9     0x39
+
 #define IDM_FILEOPEN2         0x02
 #define IDM_FILECLOSE2        0x03
 #define IDM_CPURESET2         0x04
@@ -199,6 +210,7 @@ class menu
 	public:
 		void checkOption(int option);
 		void uncheckOption(int option);
+		void setText(int option, wchar_t* newText);
 		void init(HINSTANCE instance);
 		HMENU getMenu();
 		menu(HINSTANCE instance);

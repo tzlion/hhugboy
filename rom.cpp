@@ -704,6 +704,18 @@ bool gb_system::loadrom_zip(const wchar_t* filename)
 
 bool gb_system::load_rom(const wchar_t* filename)
 {    
+    // this really is a bad place for this
+    for (int x=9;x>0;x--){
+        options->recent_rom_names[x] = options->recent_rom_names[x-1];
+    }
+    options->recent_rom_names[0] = filename;
+    init_menu_options();
+    
+    //for(int x=0;x<10;x++) {
+    //    emuMenu.setText(IDM_RECENTROM0+x,(wchar_t*)options->recent_rom_names[x].c_str());
+    //}
+
+
    // todo: Reinstate later... 
    if(wcsstr(filename,L".zip") || wcsstr(filename,L".ZIP"))
       return loadrom_zip(filename);
