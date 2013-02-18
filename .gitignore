@@ -1,7 +1,8 @@
+obj/*
 *.o
 *.sav
-devcpp/*.exe
-devcpp/*.cfg
+bin/*.exe
+bin/*.cfg
 *.layout
 devcpp/*.res
 *.st0
@@ -15,3 +16,5 @@ devcpp/*.res
 *.st7
 *.st8
 *.st9
+
+

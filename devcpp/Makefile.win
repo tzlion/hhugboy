@@ -4,13 +4,13 @@
 CPP      = g++.exe
 CC       = gcc.exe
 WINDRES  = windres.exe
-RES      = GEST_private.res
-OBJ      = ../strings.o ../cheats.o ../config.o ../cpu.o ../debug.o ../devices.o ../dialogs.o ../directdraw.o ../directinput.o ../GB.o ../GB_gfx.o ../GB_ioregs.o ../GB_MBC.o ../GB_mem.o ../GB_sound.o ../main.o ../mainloop.o ../render.o ../rom.o ../scale2x.o ../scale3x.o ../SGB.o ../zlib/unzip.o ../menu.o $(RES)
-LINKOBJ  = ../strings.o ../cheats.o ../config.o ../cpu.o ../debug.o ../devices.o ../dialogs.o ../directdraw.o ../directinput.o ../GB.o ../GB_gfx.o ../GB_ioregs.o ../GB_MBC.o ../GB_mem.o ../GB_sound.o ../main.o ../mainloop.o ../render.o ../rom.o ../scale2x.o ../scale3x.o ../SGB.o ../zlib/unzip.o ../menu.o $(RES)
+RES      = ../obj/GEST_private.res
+OBJ      = ../obj/strings.o ../obj/cheats.o ../obj/config.o ../obj/cpu.o ../obj/debug.o ../obj/devices.o ../obj/dialogs.o ../obj/directdraw.o ../obj/directinput.o ../obj/GB.o ../obj/GB_gfx.o ../obj/GB_ioregs.o ../obj/GB_MBC.o ../obj/GB_mem.o ../obj/GB_sound.o ../obj/main.o ../obj/mainloop.o ../obj/render.o ../obj/rom.o ../obj/scale2x.o ../obj/scale3x.o ../obj/SGB.o ../obj/unzip.o ../obj/menu.o $(RES)
+LINKOBJ  = ../obj/strings.o ../obj/cheats.o ../obj/config.o ../obj/cpu.o ../obj/debug.o ../obj/devices.o ../obj/dialogs.o ../obj/directdraw.o ../obj/directinput.o ../obj/GB.o ../obj/GB_gfx.o ../obj/GB_ioregs.o ../obj/GB_MBC.o ../obj/GB_mem.o ../obj/GB_sound.o ../obj/main.o ../obj/mainloop.o ../obj/render.o ../obj/rom.o ../obj/scale2x.o ../obj/scale3x.o ../obj/SGB.o ../obj/unzip.o ../obj/menu.o $(RES)
 LIBS     = -L"C:/Program Files (x86)/Dev-Cpp/MinGW64/x86_64-w64-mingw32/lib32" -static-libgcc -L"C:/Program Files (x86)/Microsoft DirectX SDK (August 2009)/Lib/x86" -mwindows ../libs/libdxguid.a ../libs/libddraw.a ../libs/libdinput.a ../libs/libdinput8.a ../libs/libfmod.a ../libs/libz.a ../libs/libwinmm.a ../libs/libpng12.dll.a  -m32 -mwindows -s
 INCS     = -I"C:/Program Files (x86)/Dev-Cpp/MinGW64/x86_64-w64-mingw32/include" -I"C:/Program Files (x86)/Microsoft DirectX SDK (August 2009)/Include" -I"C:/png/png++-0.2.5/png++-0.2.5" -I"../libpng12/" -I"../zlib/"
 CXXINCS  = -I"C:/Program Files (x86)/Dev-Cpp/MinGW64/x86_64-w64-mingw32/include" -I"C:/Program Files (x86)/Microsoft DirectX SDK (August 2009)/Include" -I"C:/png/png++-0.2.5/png++-0.2.5" -I"../libpng12/" -I"../zlib/"
-BIN      = hhugboy.exe
+BIN      = ../bin/hhugboy.exe
 CXXFLAGS = $(CXXINCS)  -m32 -w -Wextra -mwindows
 CFLAGS   = $(INCS)  -m32 -w -Wextra -mwindows
 RM       = rm -f
@@ -26,77 +26,77 @@ clean: clean-custom
 $(BIN): $(OBJ)
 	$(CPP) $(LINKOBJ) -o $(BIN) $(LIBS)
 
-../strings.o: ../strings.cpp
-	$(CPP) -c ../strings.cpp -o ../strings.o $(CXXFLAGS)
+../obj/strings.o: ../strings.cpp
+	$(CPP) -c ../strings.cpp -o ../obj/strings.o $(CXXFLAGS)
 
-../cheats.o: ../cheats.cpp
-	$(CPP) -c ../cheats.cpp -o ../cheats.o $(CXXFLAGS)
+../obj/cheats.o: ../cheats.cpp
+	$(CPP) -c ../cheats.cpp -o ../obj/cheats.o $(CXXFLAGS)
 
-../config.o: ../config.cpp
-	$(CPP) -c ../config.cpp -o ../config.o $(CXXFLAGS)
+../obj/config.o: ../config.cpp
+	$(CPP) -c ../config.cpp -o ../obj/config.o $(CXXFLAGS)
 
-../cpu.o: ../cpu.cpp
-	$(CPP) -c ../cpu.cpp -o ../cpu.o $(CXXFLAGS)
+../obj/cpu.o: ../cpu.cpp
+	$(CPP) -c ../cpu.cpp -o ../obj/cpu.o $(CXXFLAGS)
 
-../debug.o: ../debug.cpp
-	$(CPP) -c ../debug.cpp -o ../debug.o $(CXXFLAGS)
+../obj/debug.o: ../debug.cpp
+	$(CPP) -c ../debug.cpp -o ../obj/debug.o $(CXXFLAGS)
 
-../devices.o: ../devices.cpp
-	$(CPP) -c ../devices.cpp -o ../devices.o $(CXXFLAGS)
+../obj/devices.o: ../devices.cpp
+	$(CPP) -c ../devices.cpp -o ../obj/devices.o $(CXXFLAGS)
 
-../dialogs.o: ../dialogs.cpp
-	$(CPP) -c ../dialogs.cpp -o ../dialogs.o $(CXXFLAGS)
+../obj/dialogs.o: ../dialogs.cpp
+	$(CPP) -c ../dialogs.cpp -o ../obj/dialogs.o $(CXXFLAGS)
 
-../directdraw.o: ../directdraw.cpp
-	$(CPP) -c ../directdraw.cpp -o ../directdraw.o $(CXXFLAGS)
+../obj/directdraw.o: ../directdraw.cpp
+	$(CPP) -c ../directdraw.cpp -o ../obj/directdraw.o $(CXXFLAGS)
 
-../directinput.o: ../directinput.cpp
-	$(CPP) -c ../directinput.cpp -o ../directinput.o $(CXXFLAGS)
+../obj/directinput.o: ../directinput.cpp
+	$(CPP) -c ../directinput.cpp -o ../obj/directinput.o $(CXXFLAGS)
 
-../GB.o: ../GB.cpp
-	$(CPP) -c ../GB.cpp -o ../GB.o $(CXXFLAGS)
+../obj/GB.o: ../GB.cpp
+	$(CPP) -c ../GB.cpp -o ../obj/GB.o $(CXXFLAGS)
 
-../GB_gfx.o: ../GB_gfx.cpp
-	$(CPP) -c ../GB_gfx.cpp -o ../GB_gfx.o $(CXXFLAGS)
+../obj/GB_gfx.o: ../GB_gfx.cpp
+	$(CPP) -c ../GB_gfx.cpp -o ../obj/GB_gfx.o $(CXXFLAGS)
 
-../GB_ioregs.o: ../GB_ioregs.cpp
-	$(CPP) -c ../GB_ioregs.cpp -o ../GB_ioregs.o $(CXXFLAGS)
+../obj/GB_ioregs.o: ../GB_ioregs.cpp
+	$(CPP) -c ../GB_ioregs.cpp -o ../obj/GB_ioregs.o $(CXXFLAGS)
 
-../GB_MBC.o: ../GB_MBC.cpp
-	$(CPP) -c ../GB_MBC.cpp -o ../GB_MBC.o $(CXXFLAGS)
+../obj/GB_MBC.o: ../GB_MBC.cpp
+	$(CPP) -c ../GB_MBC.cpp -o ../obj/GB_MBC.o $(CXXFLAGS)
 
-../GB_mem.o: ../GB_mem.cpp
-	$(CPP) -c ../GB_mem.cpp -o ../GB_mem.o $(CXXFLAGS)
+../obj/GB_mem.o: ../GB_mem.cpp
+	$(CPP) -c ../GB_mem.cpp -o ../obj/GB_mem.o $(CXXFLAGS)
 
-../GB_sound.o: ../GB_sound.cpp
-	$(CPP) -c ../GB_sound.cpp -o ../GB_sound.o $(CXXFLAGS)
+../obj/GB_sound.o: ../GB_sound.cpp
+	$(CPP) -c ../GB_sound.cpp -o ../obj/GB_sound.o $(CXXFLAGS)
 
-../main.o: ../main.cpp
-	$(CPP) -c ../main.cpp -o ../main.o $(CXXFLAGS)
+../obj/main.o: ../main.cpp
+	$(CPP) -c ../main.cpp -o ../obj/main.o $(CXXFLAGS)
 
-../mainloop.o: ../mainloop.cpp
-	$(CPP) -c ../mainloop.cpp -o ../mainloop.o $(CXXFLAGS)
+../obj/mainloop.o: ../mainloop.cpp
+	$(CPP) -c ../mainloop.cpp -o ../obj/mainloop.o $(CXXFLAGS)
 
-../render.o: ../render.cpp
-	$(CPP) -c ../render.cpp -o ../render.o $(CXXFLAGS)
+../obj/render.o: ../render.cpp
+	$(CPP) -c ../render.cpp -o ../obj/render.o $(CXXFLAGS)
 
-../rom.o: ../rom.cpp
-	$(CPP) -c ../rom.cpp -o ../rom.o $(CXXFLAGS)
+../obj/rom.o: ../rom.cpp
+	$(CPP) -c ../rom.cpp -o ../obj/rom.o $(CXXFLAGS)
 
-../scale2x.o: ../scale2x.cpp
-	$(CPP) -c ../scale2x.cpp -o ../scale2x.o $(CXXFLAGS)
+../obj/scale2x.o: ../scale2x.cpp
+	$(CPP) -c ../scale2x.cpp -o ../obj/scale2x.o $(CXXFLAGS)
 
-../scale3x.o: ../scale3x.cpp
-	$(CPP) -c ../scale3x.cpp -o ../scale3x.o $(CXXFLAGS)
+../obj/scale3x.o: ../scale3x.cpp
+	$(CPP) -c ../scale3x.cpp -o ../obj/scale3x.o $(CXXFLAGS)
 
-../SGB.o: ../SGB.cpp
-	$(CPP) -c ../SGB.cpp -o ../SGB.o $(CXXFLAGS)
+../obj/SGB.o: ../SGB.cpp
+	$(CPP) -c ../SGB.cpp -o ../obj/SGB.o $(CXXFLAGS)
 
-../zlib/unzip.o: ../zlib/unzip.c
-	$(CPP) -c ../zlib/unzip.c -o ../zlib/unzip.o $(CXXFLAGS)
+../obj/unzip.o: ../zlib/unzip.c
+	$(CPP) -c ../zlib/unzip.c -o ../obj/unzip.o $(CXXFLAGS)
 
-../menu.o: ../menu.cpp
-	$(CPP) -c ../menu.cpp -o ../menu.o $(CXXFLAGS)
+../obj/menu.o: ../menu.cpp
+	$(CPP) -c ../menu.cpp -o ../obj/menu.o $(CXXFLAGS)
 
-GEST_private.res: GEST_private.rc ../menu.rc 
-	$(WINDRES) -i GEST_private.rc -F pe-i386 --input-format=rc -o GEST_private.res -O coff 
+../obj/GEST_private.res: GEST_private.rc ../menu.rc 
+	$(WINDRES) -i GEST_private.rc -F pe-i386 --input-format=rc -o ../obj/GEST_private.res -O coff 
