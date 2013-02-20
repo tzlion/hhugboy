@@ -25,6 +25,8 @@
 
 #include "types.h"
 
+#include "GB.h"
+
 extern byte tile_signed_trans[256];
 extern byte invert_table[256];
 
@@ -33,6 +35,9 @@ extern unsigned short line_buffer[160];
 const int VID_EN_BG = 1;
 const int VID_EN_WIN = 2;
 const int VID_EN_SPRITE = 4;
+
+void screenshotPng(char* filename, gb_system* gameboy);
+void screenshotHtml(char* filename);
 
 extern int video_enable;
 

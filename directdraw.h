@@ -85,9 +85,6 @@ void draw_screen32();
 void draw_screen_generic16(WORD* buffer);
 void draw_screen_generic32(DWORD* buffer);
 
-void screenshotPng(char* filename, gb_system* gameboy);
-void screenshotHtml(char* filename);
-
 #ifdef ALLOW_DEBUG
 void draw_debug_screen();
 #endif

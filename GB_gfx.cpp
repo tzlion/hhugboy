@@ -30,6 +30,8 @@
 #include "GB.h"
 #include "config.h"
 
+#include <png.hpp>
+
 unsigned short line_buffer[160];
 
 int video_enable = VID_EN_BG|VID_EN_WIN|VID_EN_SPRITE;
@@ -89,6 +91,99 @@ byte tile_signed_trans[256] =
   0x60,0x61,0x62,0x63,0x64,0x65,0x66,0x67,0x68,0x69,0x6a,0x6b,0x6c,0x6d,0x6e,0x6f,
   0x70,0x71,0x72,0x73,0x74,0x75,0x76,0x77,0x78,0x79,0x7a,0x7b,0x7c,0x7d,0x7e,0x7f
 };
+
+void screenshotPng(char* filename, gb_system* gameboy) 
+{
+	int height=144;
+	int width=160;
+	
+	png::image< png::rgb_pixel > image(width,height);
+	
+	if(gb_system::gfx_bit_count == 16) {
+		
+		WORD* source = (WORD*)gameboy->gfx_buffer;
+		WORD* init = source;
+		for(register int y = 0;y < height;y++)
+		{ 
+			source = init + y*width;
+			for(int x = 0;x < width; x++)
+			{
+				WORD px = *source++;
+				image[y][x] = png::rgb_pixel((0xFF0000&px)/0x10000,(0x00FF00&px)/0x100,(0x0000FF&px));
+			}
+		}
+		
+	} else {
+
+		DWORD* source = (DWORD*)gameboy->gfx_buffer;
+		DWORD* init = source;
+		for(register int y = 0;y < height;y++)
+		{ 
+			source = init + y*width;
+			for(int x = 0;x < width; x++)
+			{   
+			    DWORD px = *source++;
+				image[y][x] = png::rgb_pixel((0xFF0000&px)/0x10000,(0x00FF00&px)/0x100,(0x0000FF&px));
+				//image[y][x] = png::rgb_pixel(x,y,px); // purple gradient
+			}
+		}
+
+	}
+
+	image.write(filename);
+}
+
+// this is what you might call a novelty
+// not enabled at the moment
+void screenshotHtml(char* filename) 
+{
+	ofstream myfile;
+	myfile.open (filename);
+	
+	int height=144;
+	int width=160;
+	
+	if(gb_system::gfx_bit_count == 16) {
+		
+		WORD* source = (WORD*)GB->gfx_buffer;
+		WORD* init = source;
+		for(register int y = 0;y < height;y++)
+		{ 
+			myfile << "<div style='line-height:2px;height:2px;'>";
+			source = init + y*width;
+			for(int x = 0;x < width; x++)
+			{
+				WORD px = *source++;
+				char col[500];
+				sprintf(col,"<span style='background-color:#%06X;display:inline-block;line-height:2px;width:2px;height:2px;'></span>",px);
+				myfile << col;
+			}
+			myfile << "</div>";
+		}
+		
+	} else {
+
+		DWORD* source = (DWORD*)GB->gfx_buffer;
+		DWORD* init = source;
+		for(register int y = 0;y < height;y++)
+		{ 
+			myfile << "<div style='line-height:2px;height:2px;'>";
+			source = init + y*width;
+			for(int x = 0;x < width; x++)
+			{
+				DWORD px = *source++;
+				char col[500];
+				sprintf(col,"<span style='background-color:#%06X;display:inline-block;line-height:2px;width:2px;height:2px;'></span>",px);
+				myfile << col;
+			}
+			myfile << "</div>";
+		}
+
+	}
+	
+	myfile.close();
+}
+
 
 // for GB and SGB
 void gb_system::draw_line_tile_DMG()

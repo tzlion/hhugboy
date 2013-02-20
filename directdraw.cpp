@@ -29,8 +29,6 @@
 #include <iostream>
 #include <fstream>
 
-#include <png.hpp>
-
 #include <stdio.h>
 #include <stdlib.h>
 #include <stdint.h>
@@ -286,97 +284,6 @@ int filter_height = 1;
 int border_filter_width = 1;
 int border_filter_height = 1;
 
-void screenshotPng(char* filename, gb_system* gameboy) 
-{
-	int height=144;
-	int width=160;
-	
-	png::image< png::rgb_pixel > image(width,height);
-	
-	if(dx_bitcount == 16) {
-		
-		WORD* source = (WORD*)gameboy->gfx_buffer;
-		WORD* init = source;
-		for(register int y = 0;y < height;y++)
-		{ 
-			source = init + y*width;
-			for(int x = 0;x < width; x++)
-			{
-				WORD px = *source++;
-				image[y][x] = png::rgb_pixel((0xFF0000&px)/0x10000,(0x00FF00&px)/0x100,(0x0000FF&px));
-			}
-		}
-		
-	} else {
-
-		DWORD* source = (DWORD*)gameboy->gfx_buffer;
-		DWORD* init = source;
-		for(register int y = 0;y < height;y++)
-		{ 
-			source = init + y*width;
-			for(int x = 0;x < width; x++)
-			{   
-			    DWORD px = *source++;
-				image[y][x] = png::rgb_pixel((0xFF0000&px)/0x10000,(0x00FF00&px)/0x100,(0x0000FF&px));
-				//image[y][x] = png::rgb_pixel(x,y,px); // purple gradient
-			}
-		}
-
-	}
-
-	image.write(filename);
-}
-
-// this is what you might call a novelty
-// not enabled at the moment
-void screenshotHtml(char* filename) 
-{
-	ofstream myfile;
-	myfile.open (filename);
-	
-	int height=144;
-	int width=160;
-	
-	if(dx_bitcount == 16) {
-		
-		WORD* source = (WORD*)GB->gfx_buffer;
-		WORD* init = source;
-		for(register int y = 0;y < height;y++)
-		{ 
-			myfile << "<div style='line-height:2px;height:2px;'>";
-			source = init + y*width;
-			for(int x = 0;x < width; x++)
-			{
-				WORD px = *source++;
-				char col[500];
-				sprintf(col,"<span style='background-color:#%06X;display:inline-block;line-height:2px;width:2px;height:2px;'></span>",px);
-				myfile << col;
-			}
-			myfile << "</div>";
-		}
-		
-	} else {
-
-		DWORD* source = (DWORD*)GB->gfx_buffer;
-		DWORD* init = source;
-		for(register int y = 0;y < height;y++)
-		{ 
-			myfile << "<div style='line-height:2px;height:2px;'>";
-			source = init + y*width;
-			for(int x = 0;x < width; x++)
-			{
-				DWORD px = *source++;
-				char col[500];
-				sprintf(col,"<span style='background-color:#%06X;display:inline-block;line-height:2px;width:2px;height:2px;'></span>",px);
-				myfile << col;
-			}
-			myfile << "</div>";
-		}
-
-	}
-	
-	myfile.close();
-}
 
 void filter_none_32(DWORD *pointer,DWORD *source,int width,int height,int pitch)
 {
