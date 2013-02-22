@@ -31,6 +31,7 @@
 #include "GB.h"
 #include "options.h"
 
+#include <ddraw.h>
 
 #include <string>
 
@@ -52,7 +53,6 @@ bool change_filter();
 extern RECT target_blt_rect;
 
 extern int lPitch;
-extern int dx_bitcount;
 
 #define SafeRelease(x) if(x) { x->Release(), x=NULL; }
 
@@ -84,6 +84,8 @@ class DirectDraw {
         
         void showMessage(wstring message, int duration, gb_system* targetGb);
         
+        int getBitCount();
+        
         // when this works properly the below can be made private
         int borderFilterHeight;
         int borderFilterWidth;
@@ -96,7 +98,17 @@ class DirectDraw {
         int messageDuration;
         gb_system* messageGb;
         
+		IDirectDraw7* dd;
+		IDirectDrawSurface7* ddSurface;
+		IDirectDrawSurface7* bSurface;
+		IDirectDrawSurface7* borderSurface;
+		IDirectDrawClipper* ddClip;
+		
+		int bitCount;
+    	
+        
     private:
+
         int getFilterDimension(videofiltertype type);
 };
 

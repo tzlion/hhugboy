@@ -1349,7 +1349,7 @@ void menuAction(int menuOption)
             emuMenu.checkOption(IDM_OPTIONVIDEOMIXOFF);
         
             options->video_mix_frames = MIX_FRAMES_OFF;
-            if(dx_bitcount == 16)
+            if(renderer.getBitCount() == 16)
                draw_screen = draw_screen16;
             else
                draw_screen = draw_screen32;
@@ -1359,7 +1359,7 @@ void menuAction(int menuOption)
             emuMenu.checkOption(IDM_OPTIONVIDEOMIXON);
         
             options->video_mix_frames = MIX_FRAMES_ON;
-            if(dx_bitcount == 16)
+            if(renderer.getBitCount() == 16)
                draw_screen = draw_screen_mix16;
             else
                draw_screen = draw_screen_mix32;
@@ -1369,7 +1369,7 @@ void menuAction(int menuOption)
             emuMenu.checkOption(IDM_OPTIONVIDEOMIXMORE);
         
             options->video_mix_frames = MIX_FRAMES_MORE;
-            if(dx_bitcount == 16)
+            if(renderer.getBitCount() == 16)
                draw_screen = draw_screen_mix16;
             else
                draw_screen = draw_screen_mix32;
