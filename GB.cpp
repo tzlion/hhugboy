@@ -33,6 +33,7 @@
 #include "config.h"
 #include "sound.h"
 #include "devices.h"
+#include "main.h"
 
 int gb_system::gfx_bit_count = 16;
 
@@ -435,11 +436,11 @@ void gb_system::reset(bool change_mode)
    //resize the window
    if(!old_sgb_mode && sgb_mode)
    {
-      resize_window(256,224);
+      setWinSize(256,224);
    } else 
    if(old_sgb_mode && !sgb_mode)
    {
-      resize_window(160,144);                   
+      setWinSize(160,144);                   
    }
 
    button_pressed[B_LEFT]=button_pressed[B_RIGHT]=button_pressed[B_DOWN]=button_pressed[B_UP]=1;

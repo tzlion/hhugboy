@@ -710,7 +710,7 @@ void menuAction(int menuOption)
               }
               init_gb2();
         
-              resize_window(2*160,144);
+              setWinSize(2*160,144);
                  
               POINT pt;
               GetClientRect(hwnd,&target_blt_rect);
@@ -755,7 +755,7 @@ void menuAction(int menuOption)
              {
                  init_gb2();
                  
-                 resize_window(2*160,144);
+                 setWinSize(2*160,144);
         
                  POINT pt;
                  GetClientRect(hwnd,&target_blt_rect);
@@ -1741,9 +1741,10 @@ void keyAction(int key)
 
            if(++GB1_state_slot > 9)
               GB1_state_slot = 0;
+              
+           wchar_t dx_message[50];
            wsprintf(dx_message,L"%s %d",str_table[STATE_SLOT],GB1_state_slot);
-           message_time = 60;
-           message_GB = GB1;
+           renderer.showMessage(dx_message,60,GB1);
            
            emuMenu.checkOption(IDM_CPUSTATESLOT0 + GB1_state_slot);
         break;
@@ -1756,16 +1757,16 @@ void keyAction(int key)
             {
                emuMenu.uncheckOption(IDM_OPTIONVIDEOENBG);
                video_enable &= ~VID_EN_BG;
+               wchar_t dx_message[50];
                wsprintf(dx_message,L"%s",L"BG off");
-               message_time = 40;
-               message_GB = GB1;
+               renderer.showMessage(dx_message,40,GB1);
             } else
             {
                emuMenu.checkOption(IDM_OPTIONVIDEOENBG);
-               video_enable |= VID_EN_BG;                
+               video_enable |= VID_EN_BG;             
+               wchar_t dx_message[50];   
                wsprintf(dx_message,L"%s",L"BG on");
-               message_time = 40;
-               message_GB = GB1;
+               renderer.showMessage(dx_message,40,GB1);
             }              
         break;
         case VK_F6:
@@ -1773,16 +1774,16 @@ void keyAction(int key)
             {
                emuMenu.uncheckOption(IDM_OPTIONVIDEOENWIN);
                video_enable &= ~VID_EN_WIN;
+               wchar_t dx_message[50];
                wsprintf(dx_message,L"%s",L"WIN off");
-               message_time = 40;
-               message_GB = GB1;
+               renderer.showMessage(dx_message,40,GB1);
             } else
             {
                emuMenu.checkOption(IDM_OPTIONVIDEOENWIN);
-               video_enable |= VID_EN_WIN;                
+               video_enable |= VID_EN_WIN;       
+               wchar_t dx_message[50];         
                wsprintf(dx_message,L"%s",L"WIN on");
-               message_time = 40;
-               message_GB = GB1;
+               renderer.showMessage(dx_message,40,GB1);
             }              
         break;
         case VK_F7:
@@ -1790,16 +1791,16 @@ void keyAction(int key)
             {
                emuMenu.uncheckOption(IDM_OPTIONVIDEOENSPRITE);
                video_enable &= ~VID_EN_SPRITE;
+               wchar_t dx_message[50];
                wsprintf(dx_message,L"%s",L"Sprites off");
-               message_time = 40;
-               message_GB = GB1;
+               renderer.showMessage(dx_message,40,GB1);
             } else
             {
                emuMenu.checkOption(IDM_OPTIONVIDEOENSPRITE);
-               video_enable |= VID_EN_SPRITE;                
+               video_enable |= VID_EN_SPRITE;    
+               wchar_t dx_message[50];            
                wsprintf(dx_message,L"%s",L"Sprites on");
-               message_time = 40;
-               message_GB = GB1;
+               renderer.showMessage(dx_message,40,GB1);
             }              
         break;
         case VK_F12: {
@@ -1843,9 +1844,9 @@ void keyAction(int key)
 			}
 			
 			// show a msg
+			wchar_t dx_message[50];
             wsprintf(dx_message,L"%s",L"Screenshot");
-            message_time = 40;
-            message_GB = screenshotGb;
+            renderer.showMessage(dx_message,40,screenshotGb);
 
 			// and then screenshot this thing
         	screenshotPng(final_filename,screenshotGb);

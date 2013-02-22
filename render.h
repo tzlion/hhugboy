@@ -41,8 +41,6 @@ void copy_line32(unsigned long* target, unsigned long* src, int count);
 
 extern void (*draw_screen)();
 
-extern void resize_window(int width, int height);
-
 extern DWORD* gfx_pal32;
 extern WORD* gfx_pal16;
 

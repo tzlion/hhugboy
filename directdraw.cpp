@@ -33,6 +33,7 @@
 #include <stdlib.h>
 #include <stdint.h>
 
+#include <string>
 
 using namespace std;
 
@@ -66,10 +67,6 @@ IDirectDrawClipper* DDClip = NULL;
 
 RECT target_blt_rect;
 
-wchar_t dx_message[60];
-int message_time = 0;
-gb_system* message_GB = NULL;
-
 void draw_screen16();
 void draw_screen32();
 void draw_border32();
@@ -91,14 +88,6 @@ static int ffs(UINT mask)
   }
   
   return 0;
-}
-
-extern int sizen_w;
-extern int sizen_h;
-
-void resize_window(int width, int height)
-{
-	setWinSize(width,height);
 }
 
 DWORD* gfx_pal32 = NULL;
@@ -802,9 +791,9 @@ bool Init_DD()
 
 
 void gbTextOut() {
-    if(message_time && GB == message_GB)
+    if(renderer.messageDuration && GB == renderer.messageGb)
    {
-      --message_time;
+      --renderer.messageDuration;
       HDC aDC;
       if(BSurface->GetDC(&aDC)==DD_OK)
       {
@@ -813,18 +802,18 @@ void gbTextOut() {
          SetTextColor(aDC,RGB(255,0,128));
         
          
-         TextOut(aDC,3*renderer.gameboyFilterWidth,3*renderer.gameboyFilterHeight,dx_message,wcslen(dx_message));
-         TextOut(aDC,1*renderer.gameboyFilterWidth,1*renderer.gameboyFilterWidth,dx_message,wcslen(dx_message));
-         TextOut(aDC,1*renderer.gameboyFilterWidth,3*renderer.gameboyFilterWidth,dx_message,wcslen(dx_message));
-         TextOut(aDC,3*renderer.gameboyFilterWidth,1*renderer.gameboyFilterWidth,dx_message,wcslen(dx_message));
+         TextOut(aDC,3*renderer.gameboyFilterWidth,3*renderer.gameboyFilterHeight,renderer.messageText.c_str(),renderer.messageText.length());
+         TextOut(aDC,1*renderer.gameboyFilterWidth,1*renderer.gameboyFilterWidth,renderer.messageText.c_str(),renderer.messageText.length());
+         TextOut(aDC,1*renderer.gameboyFilterWidth,3*renderer.gameboyFilterWidth,renderer.messageText.c_str(),renderer.messageText.length());
+         TextOut(aDC,3*renderer.gameboyFilterWidth,1*renderer.gameboyFilterWidth,renderer.messageText.c_str(),renderer.messageText.length());
          
-         TextOut(aDC,3*renderer.gameboyFilterWidth,2*renderer.gameboyFilterHeight,dx_message,wcslen(dx_message));
-         TextOut(aDC,1*renderer.gameboyFilterWidth,2*renderer.gameboyFilterWidth,dx_message,wcslen(dx_message));
-         TextOut(aDC,2*renderer.gameboyFilterWidth,3*renderer.gameboyFilterWidth,dx_message,wcslen(dx_message));
-         TextOut(aDC,2*renderer.gameboyFilterWidth,1*renderer.gameboyFilterWidth,dx_message,wcslen(dx_message));
+         TextOut(aDC,3*renderer.gameboyFilterWidth,2*renderer.gameboyFilterHeight,renderer.messageText.c_str(),renderer.messageText.length());
+         TextOut(aDC,1*renderer.gameboyFilterWidth,2*renderer.gameboyFilterWidth,renderer.messageText.c_str(),renderer.messageText.length());
+         TextOut(aDC,2*renderer.gameboyFilterWidth,3*renderer.gameboyFilterWidth,renderer.messageText.c_str(),renderer.messageText.length());
+         TextOut(aDC,2*renderer.gameboyFilterWidth,1*renderer.gameboyFilterWidth,renderer.messageText.c_str(),renderer.messageText.length());
          
           SetTextColor(aDC,RGB(255,255,255));
-         TextOut(aDC,2*renderer.gameboyFilterWidth,2*renderer.gameboyFilterWidth,dx_message,wcslen(dx_message));
+         TextOut(aDC,2*renderer.gameboyFilterWidth,2*renderer.gameboyFilterWidth,renderer.messageText.c_str(),renderer.messageText.length());
          BSurface->ReleaseDC(aDC);
       }
    }
@@ -1210,6 +1199,13 @@ DirectDraw::DirectDraw()
    //debug_print("Emu Center HX DirectDraw ON");
    borderFilterWidth = borderFilterHeight = gameboyFilterWidth = gameboyFilterHeight = 1;
    borderFilterType = gameboyFilterType = VIDEO_FILTER_NONE;
+}
+
+void DirectDraw::showMessage(wstring message, int duration, gb_system* targetGb)
+{
+    messageText = message;
+    messageDuration = duration;
+    messageGb = targetGb;
 }
 
 // get the filter width/height for the selected filter type (currently always the same)

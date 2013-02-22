@@ -28,6 +28,8 @@
 #include "GB.h"
 #include "mainloop.h"
 
+#include "main.h"
+
 #define WIN32_LEAN_AND_MEAN
 #define UNICODE 
 
@@ -36,9 +38,6 @@
 #include <stdlib.h>
 #include <stdio.h>
 
-extern wchar_t dx_message[60];
-extern int message_time;
-extern gb_system* message_GB;
 int GB1_state_slot = 0;
 int GB2_state_slot = 0;
 
@@ -162,13 +161,11 @@ bool gb_system::save_state()
 
    if(this == GB1)
    {
-      message_GB = GB1;
       save_state_slot =  GB1_state_slot;
       swprintf(file_ext,L".st%d",GB1_state_slot);
       wcscat(save_filename,file_ext);
    } else
    {
-      message_GB = GB2;
       save_state_slot = GB2_state_slot;
       swprintf(file_ext,L".s2%d",GB2_state_slot);
       wcscat(save_filename,file_ext);
@@ -177,8 +174,9 @@ bool gb_system::save_state()
    FILE* statefile = _wfopen(save_filename,L"wb");
    if(!statefile) 
    {       
+      wchar_t dx_message[100];
       wsprintf(dx_message,L"%s %d %s",str_table[SAVE_TO_SLOT],save_state_slot,str_table[SAVE_FAILED]);
-      message_time = 60;
+      renderer.showMessage(dx_message,60,this);
       SetCurrentDirectory(old_directory);
       return false; 
    }
@@ -401,8 +399,9 @@ bool gb_system::save_state()
     
    fclose(statefile);
    
+   wchar_t dx_message[50];
    wsprintf(dx_message,L"%s %d %s",str_table[SAVE_TO_SLOT],save_state_slot,str_table[SAVE_OK]);
-   message_time = 60;
+   renderer.showMessage(dx_message,60,this);
    
    SetCurrentDirectory(old_directory);
    
@@ -423,13 +422,11 @@ bool gb_system::load_state()
 
    if(this == GB1)
    {
-      message_GB = GB1;
       save_state_slot =  GB1_state_slot;
       swprintf(file_ext,L".st%d",GB1_state_slot);
       wcscat(save_filename,file_ext);
    } else
    {
-      message_GB = GB2;
       save_state_slot = GB2_state_slot;
       swprintf(file_ext,L".s2%d",GB2_state_slot);
       wcscat(save_filename,file_ext);
@@ -438,8 +435,10 @@ bool gb_system::load_state()
    FILE* statefile = _wfopen(save_filename,L"rb");
    if(!statefile) 
    { 
+       wchar_t dx_message[50];
       wsprintf(dx_message,L"%s %d %s",str_table[LOAD_FROM_SLOT],save_state_slot,str_table[SAVE_FAILED]);
-      message_time = 60;
+      renderer.showMessage(dx_message,60,this);
+   
       SetCurrentDirectory(old_directory);
       return false; 
    }
@@ -694,8 +693,9 @@ bool gb_system::load_state()
    flags |= HFLAG<<12;
    flags |= ZFLAG<<14;*/
    
+   wchar_t dx_message[50];
    wsprintf(dx_message,L"%s %d %s",str_table[LOAD_FROM_SLOT],save_state_slot,str_table[SAVE_OK]);
-   message_time = 60;
+   renderer.showMessage(dx_message,60,this);
    fclose(statefile);
    
    SetCurrentDirectory(old_directory);

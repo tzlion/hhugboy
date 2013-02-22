@@ -25,10 +25,16 @@
 #include "types.h"
 
 #define WIN32_LEAN_AND_MEAN
+#define UNICODE
 
 #include <windows.h>
 #include "GB.h"
 #include "options.h"
+
+
+#include <string>
+
+using namespace std;
 
 #define VISUAL_RUMBLE_STRENGTH 5
 
@@ -44,12 +50,6 @@ extern void (*draw_border)();
 bool change_filter();
 
 extern RECT target_blt_rect;
-
-extern wchar_t dx_message[60];
-extern int message_time;
-extern gb_system* message_GB;
-
-
 
 extern int lPitch;
 extern int dx_bitcount;
@@ -82,6 +82,8 @@ class DirectDraw {
         void setBorderFilter(videofiltertype type);
         void setGameboyFilter(videofiltertype type);
         
+        void showMessage(wstring message, int duration, gb_system* targetGb);
+        
         // when this works properly the below can be made private
         int borderFilterHeight;
         int borderFilterWidth;
@@ -89,6 +91,10 @@ class DirectDraw {
         int gameboyFilterWidth;
         videofiltertype borderFilterType;
         videofiltertype gameboyFilterType;
+        
+        wstring messageText;
+        int messageDuration;
+        gb_system* messageGb;
         
     private:
         int getFilterDimension(videofiltertype type);
