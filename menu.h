@@ -27,6 +27,56 @@
 
 #define ID_MENU 501
 
+#define ID_ICON 601
+
+#define ID_F_DIALOG 701
+#define ID_F_SAVE 702
+#define ID_F_STATE 703
+
+#define ID_CHT_DIALOG 711
+#define ID_CHT_CHEATS 712
+#define ID_CHT_ADD    713
+#define ID_CHT_ADDBTN 714
+#define ID_CHT_RMVBTN 715
+
+#define ID_CTRL_DIALOG 720
+#define ID_CTRL_A      721
+#define ID_CTRL_B      722
+#define ID_CTRL_START  723
+#define ID_CTRL_SELECT 724
+#define ID_CTRL_AUTO_A 725
+#define ID_CTRL_AUTO_B 726
+#define ID_CTRL_AUTO_START 727
+#define ID_CTRL_AUTO_SELECT 728
+#define ID_CTRL_UP     729
+#define ID_CTRL_DOWN   730
+#define ID_CTRL_LEFT   731
+#define ID_CTRL_RIGHT  732
+#define ID_CTRL_L      733
+#define ID_CTRL_R      734
+#define ID_CTRL_SPEEDUP 735
+
+#define ID_SENSOR_LEFT   736
+#define ID_SENSOR_RIGHT  737
+#define ID_SENSOR_UP     738
+#define ID_SENSOR_DOWN   739
+
+#define ID_CTRL_CLEAR  742
+
+#define ID_CTRLMULTI_DIALOG 750
+
+#define ID_SENSOR_DIALOG 745
+
+#define ID_CTRLJOY_DIALOG 790
+#define ID_CTRLJOY_A      791
+#define ID_CTRLJOY_B      792
+#define ID_CTRLJOY_START  793
+#define ID_CTRLJOY_SELECT 794
+#define ID_CTRLJOY_AUTO_A 795
+#define ID_CTRLJOY_AUTO_B 796
+
+
+
 // Menu group definitions (ie check one of this group and the rest will uncheck)
 
 #define IDM_GROUP_STATE1        0x1000

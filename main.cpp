@@ -86,6 +86,7 @@ wchar_t w_title_text[ROM_FILENAME_SIZE + 16];
 int timer_id = 0;
 int sizen_w,sizen_h; // Size needed for menu,borders,etc.
 
+DirectDraw renderer;
 
 
 // Options ----------------------------------------------
@@ -203,6 +204,8 @@ int WINAPI WinMain(HINSTANCE hThisInstance,HINSTANCE hPrevInstance, LPSTR  lpszA
       return 0;
    
    emuMenu.init(hThisInstance);
+   
+
 
    hwnd = CreateWindowEx(0,w_szClassName,w_emu_title,WS_SIZEBOX|WS_OVERLAPPEDWINDOW,150,150,2*160,2*144,HWND_DESKTOP,emuMenu.getMenu(),hThisInstance,NULL);
    
@@ -1236,73 +1239,49 @@ void menuAction(int menuOption)
          case IDM_VIDEOFILTERNONE:
             if(options->video_filter != VIDEO_FILTER_NONE)
             {
-               emuMenu.checkOption(IDM_VIDEOFILTERNONE);                                           
-                                                 
+               emuMenu.checkOption(IDM_VIDEOFILTERNONE);                                                          
                options->video_filter = VIDEO_FILTER_NONE;
-               filter_width = 1;
-               filter_height = 1;
-               
-               change_filter();
+               renderer.setGameboyFilter(VIDEO_FILTER_NONE);
             }
          break;
          case IDM_VIDEOFILTERSOFT2X:
             if(options->video_filter != VIDEO_FILTER_SOFT2X)
             {
-               emuMenu.checkOption(IDM_VIDEOFILTERSOFT2X);                            
-                                                 
+               emuMenu.checkOption(IDM_VIDEOFILTERSOFT2X);                                                       
                options->video_filter = VIDEO_FILTER_SOFT2X;
-               filter_width=2;
-               filter_height=2;
-               
-               change_filter();
+               renderer.setGameboyFilter(VIDEO_FILTER_SOFT2X);
             }
          break;     
          case IDM_VIDEOFILTERSOFTXX:
             if(options->video_filter != VIDEO_FILTER_SOFTXX)
             {
-               emuMenu.checkOption(IDM_VIDEOFILTERSOFTXX);                                      
-                                                 
+               emuMenu.checkOption(IDM_VIDEOFILTERSOFTXX);                                                           
                options->video_filter = VIDEO_FILTER_SOFTXX;
-               filter_width=8;
-               filter_height=8;
-               
-               change_filter();
+               renderer.setGameboyFilter(VIDEO_FILTER_SOFTXX);
             }
          break;   
          case IDM_VIDEOFILTERSCALE2X:
             if(options->video_filter != VIDEO_FILTER_SCALE2X)
             {
                emuMenu.checkOption(IDM_VIDEOFILTERSCALE2X);                                   
-               
                options->video_filter = VIDEO_FILTER_SCALE2X;
-               filter_width=2;
-               filter_height=2;
-               
-               change_filter();
+               renderer.setGameboyFilter(VIDEO_FILTER_SCALE2X);
             }
          break;      
          case IDM_VIDEOFILTERSCALE3X:
             if(options->video_filter != VIDEO_FILTER_SCALE3X)
             {
                emuMenu.checkOption(IDM_VIDEOFILTERSCALE3X);                                     
-               
                options->video_filter = VIDEO_FILTER_SCALE3X;
-               filter_width=3;
-               filter_height=3;
-               
-               change_filter();
+               renderer.setGameboyFilter(VIDEO_FILTER_SCALE3X);
             }
          break;              
          case IDM_VIDEOFILTERBLUR:
             if(options->video_filter != VIDEO_FILTER_BLUR)
             {
-               emuMenu.checkOption(IDM_VIDEOFILTERBLUR);       
-                              
+               emuMenu.checkOption(IDM_VIDEOFILTERBLUR);                    
                options->video_filter = VIDEO_FILTER_BLUR;
-               filter_width=2;
-               filter_height=2;
-               
-               change_filter();
+               renderer.setGameboyFilter(VIDEO_FILTER_BLUR);
             }
          break;                
          case IDM_VIDEOFILTERUSEMMX:
@@ -1320,73 +1299,49 @@ void menuAction(int menuOption)
          case IDM_VIDEOFILTERBORDERNONE:
             if(options->video_SGBborder_filter != VIDEO_FILTER_NONE)
             {
-               emuMenu.checkOption(IDM_VIDEOFILTERBORDERNONE);                                                     
-                                                 
+               emuMenu.checkOption(IDM_VIDEOFILTERBORDERNONE);                                                                                
                options->video_SGBborder_filter = VIDEO_FILTER_NONE;
-               border_filter_width=1;
-               border_filter_height=1;
-               
-               change_filter();
+               renderer.setBorderFilter(VIDEO_FILTER_NONE);
             }
          break;
          case IDM_VIDEOFILTERBORDERSOFT2X:
             if(options->video_SGBborder_filter != VIDEO_FILTER_SOFT2X)
             {
-               emuMenu.checkOption(IDM_VIDEOFILTERBORDERSOFT2X);                                  
-                                                 
+               emuMenu.checkOption(IDM_VIDEOFILTERBORDERSOFT2X);                                                
                options->video_SGBborder_filter = VIDEO_FILTER_SOFT2X;
-               border_filter_width=2;
-               border_filter_height=2;
-               
-               change_filter();
+               renderer.setBorderFilter(VIDEO_FILTER_SOFT2X);
             }
          break;     
          case IDM_VIDEOFILTERBORDERSOFTXX:
             if(options->video_SGBborder_filter != VIDEO_FILTER_SOFTXX)
             {
-               emuMenu.checkOption(IDM_VIDEOFILTERBORDERSOFTXX);                                
-                                                 
+               emuMenu.checkOption(IDM_VIDEOFILTERBORDERSOFTXX);                                                         
                options->video_SGBborder_filter = VIDEO_FILTER_SOFTXX;
-               border_filter_width=8;
-               border_filter_height=8;
-               
-               change_filter();
+               renderer.setBorderFilter(VIDEO_FILTER_SOFTXX);
             }
          break;   
          case IDM_VIDEOFILTERBORDERSCALE2X:
             if(options->video_SGBborder_filter != VIDEO_FILTER_SCALE2X)
             {
                emuMenu.checkOption(IDM_VIDEOFILTERBORDERSCALE2X);                                   
-               
                options->video_SGBborder_filter = VIDEO_FILTER_SCALE2X;
-               border_filter_width=2;
-               border_filter_height=2;
-               
-               change_filter();
+               renderer.setBorderFilter(VIDEO_FILTER_SCALE2X);
             }
          break;     
          case IDM_VIDEOFILTERBORDERSCALE3X:
             if(options->video_SGBborder_filter != VIDEO_FILTER_SCALE3X)
             {
                emuMenu.checkOption(IDM_VIDEOFILTERBORDERSCALE3X);                                   
-               
                options->video_SGBborder_filter = VIDEO_FILTER_SCALE3X;
-               border_filter_width = 3;
-               border_filter_height = 3;
-               
-               change_filter();
+               renderer.setBorderFilter(VIDEO_FILTER_SCALE3X);
             }
          break;                 
          case IDM_VIDEOFILTERBORDERBLUR:
             if(options->video_SGBborder_filter != VIDEO_FILTER_BLUR)
             {
-               emuMenu.checkOption(IDM_VIDEOFILTERBORDERBLUR);   
-                              
+               emuMenu.checkOption(IDM_VIDEOFILTERBORDERBLUR);           
                options->video_SGBborder_filter = VIDEO_FILTER_BLUR;
-               border_filter_width=2;
-               border_filter_height=2;
-               
-               change_filter();
+               renderer.setBorderFilter(VIDEO_FILTER_BLUR);
             }
          break;                
         

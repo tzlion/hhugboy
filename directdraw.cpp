@@ -222,10 +222,6 @@ void (*filter_f_32)(DWORD *target,DWORD *src,int width,int height,int pitch) = N
 void (*filter_f_16)(WORD *target,WORD *src,int width,int height,int pitch) = NULL;
 void (*border_filter_f_32)(DWORD *target,DWORD *src,int width,int height,int pitch) = NULL;
 void (*border_filter_f_16)(WORD *target,WORD *src,int width,int height,int pitch) = NULL;
-int filter_width = 1;
-int filter_height = 1;
-int border_filter_width = 1;
-int border_filter_height = 1;
 
 
 void filter_none_32(DWORD *pointer,DWORD *source,int width,int height,int pitch)
@@ -243,14 +239,14 @@ void softwarexx_16(WORD *pointer,WORD *source,int width,int height,int pitch)
    register WORD *target;
    WORD* init = source;
    
-	// filter_height indicates scale 
-   for(register int y = 0;y < height*filter_height;y++)
+	// renderer.gameboyFilterHeight indicates scale 
+   for(register int y = 0;y < height*renderer.gameboyFilterHeight;y++)
    { 
       target = pointer + y*pitch;
-      source = init + (y/filter_height)*width;
+      source = init + (y/renderer.gameboyFilterHeight)*width;
       for(int x = 0;x < width; x++)
       {
-      	 for (int s = 0; s < filter_height - 1; s++) {
+      	 for (int s = 0; s < renderer.gameboyFilterHeight - 1; s++) {
       	 	*target++ = *source;
       	 }
          *target++ = *source++;
@@ -263,14 +259,14 @@ void softwarexx_32(DWORD *pointer,DWORD *source,int width,int height,int pitch)
    register DWORD *target;
    DWORD* init = source;
 
-	// filter_height indicates scale 
-   for(register int y = 0;y < height*filter_height;y++)
+	// renderer.gameboyFilterHeight indicates scale 
+   for(register int y = 0;y < height*renderer.gameboyFilterHeight;y++)
    { 
       target = pointer + y*pitch;
-      source = init + (y/filter_height)*width;
+      source = init + (y/renderer.gameboyFilterHeight)*width;
       for(int x = 0;x < width; x++)
       {
-      	 for (int s = 0; s < filter_height - 1; s++) {
+      	 for (int s = 0; s < renderer.gameboyFilterHeight - 1; s++) {
       	 	*target++ = *source;
       	 }
          *target++ = *source++;
@@ -313,7 +309,7 @@ void blur_32(DWORD *pointer,DWORD *source,int width,int height,int pitch)
    *target++ = (((*(source+width)) + ((*source)<<1) + *(source-1))>>2);
    *source++;     
       
-   for(register int y=2;y<(height*filter_height)-2;y+=2) 
+   for(register int y=2;y<(height*renderer.gameboyFilterHeight)-2;y+=2) 
    { 
       target = pointer+y*pitch;
       source = init+(y>>1)*width;
@@ -350,7 +346,7 @@ void blur_32(DWORD *pointer,DWORD *source,int width,int height,int pitch)
       *source++;           
    } 
 
-   target = pointer+(height*filter_height-2)*pitch;
+   target = pointer+(height*renderer.gameboyFilterHeight-2)*pitch;
    source = init+(height-1)*width; 
 
    *target++ = (((*(source-width)) + ((*source)<<1) + *(source+1))>>2);
@@ -366,7 +362,7 @@ void blur_32(DWORD *pointer,DWORD *source,int width,int height,int pitch)
    *target++ = (((*(source-width)) + ((*source)<<1) + *(source-1))>>2);
    *source++;       
       
-   target = pointer+(height*filter_height-1)*pitch;
+   target = pointer+(height*renderer.gameboyFilterHeight-1)*pitch;
    source = init+(height-1)*width;   
 
    *target++ = (((*(source-width)) + ((*source)<<1) + *(source+1))>>2);
@@ -418,7 +414,7 @@ void blur_16(WORD *pointer,WORD *source,int width,int height,int pitch)
    *target++ = (((((*(source+width))&mask)>>1)&mask)>>1) + ((((*source)&mask)&mask)>>1) + (((((*(source-1))&mask)>>1)&mask)>>1);
    *source++;     
       
-   for(register int y=2;y<(height*filter_height)-2;y+=2) 
+   for(register int y=2;y<(height*renderer.gameboyFilterHeight)-2;y+=2) 
    { 
       target = pointer+y*pitch;
       source = init+(y>>1)*width;
@@ -453,7 +449,7 @@ void blur_16(WORD *pointer,WORD *source,int width,int height,int pitch)
       *source++;           
    } 
 
-   target = pointer+(height*filter_height-2)*pitch;
+   target = pointer+(height*renderer.gameboyFilterHeight-2)*pitch;
    source = init+(height-1)*width; 
 
    *target++ = (((((*(source-width))&mask)>>1)&mask)>>1) + ((((*source)&mask)&mask)>>1) + (((((*(source+1))&mask)>>1)&mask)>>1);
@@ -470,7 +466,7 @@ void blur_16(WORD *pointer,WORD *source,int width,int height,int pitch)
    *source++;               
     
       
-   target = pointer+(height*filter_height-1)*pitch;
+   target = pointer+(height*renderer.gameboyFilterHeight-1)*pitch;
    source = init+(height-1)*width;   
 
    *target++ = (((((*(source-width))&mask)>>1)&mask)>>1) + ((((*source)&mask)&mask)>>1) + (((((*(source+1))&mask)>>1)&mask)>>1);
@@ -499,9 +495,9 @@ bool change_filter()
    ddsd.dwSize = sizeof(DDSURFACEDESC2);
    ddsd.dwFlags = DDSD_CAPS|DDSD_WIDTH|DDSD_HEIGHT;
    ddsd.ddsCaps.dwCaps = DDSCAPS_OFFSCREENPLAIN|DDSCAPS_VIDEOMEMORY;//DDSCAPS_SYSTEMMEMORY;
-   ddsd.dwWidth = 160*filter_width;
-   ddsd.dwHeight = 144*filter_height;
-   
+   ddsd.dwWidth = 160*renderer.gameboyFilterWidth;
+   ddsd.dwHeight = 144*renderer.gameboyFilterHeight;
+
    ddrval = DD->CreateSurface(&ddsd,&BSurface,NULL);
    if(ddrval != DD_OK) 
    {
@@ -511,8 +507,8 @@ bool change_filter()
       return false;
    }
 
-   ddsd.dwWidth = 256*border_filter_width;
-   ddsd.dwHeight = 224*border_filter_height;
+   ddsd.dwWidth = 256*renderer.borderFilterWidth;
+   ddsd.dwHeight = 224*renderer.borderFilterHeight;
    ddrval = DD->CreateSurface(&ddsd,&Border_surface,NULL);
    if(ddrval != DD_OK) 
    {
@@ -534,7 +530,7 @@ bool change_filter()
    {
       lPitch >>= 1;  
        
-      switch(options->video_filter)
+      switch(renderer.gameboyFilterType)
       {
       case VIDEO_FILTER_SOFT2X:
       case VIDEO_FILTER_SOFTXX:
@@ -579,7 +575,7 @@ bool change_filter()
    {
       lPitch >>= 2;
 
-      switch(options->video_filter)
+      switch(renderer.gameboyFilterType)
       {
       case VIDEO_FILTER_SOFT2X:
       case VIDEO_FILTER_SOFTXX:
@@ -599,7 +595,7 @@ bool change_filter()
          filter_f_32 = filter_none_32;
       break;
       }
-      switch(options->video_SGBborder_filter)
+      switch(renderer.borderFilterType)
       {
       case VIDEO_FILTER_SOFT2X:
       case VIDEO_FILTER_SOFTXX:
@@ -623,8 +619,8 @@ bool change_filter()
    if(GB1->romloaded && sgb_mode)
       draw_border();  
       
-    //afont = CreateFont(12*filter_height,6*filter_width,2,2,FW_BOLD,FALSE,FALSE,FALSE,ANSI_CHARSET,OUT_DEFAULT_PRECIS,CLIP_DEFAULT_PRECIS,ANTIALIASED_QUALITY,DEFAULT_PITCH|FF_SWISS,NULL);   
-    afont = CreateFont(8*filter_height,0,0,0,FW_NORMAL,FALSE,FALSE,FALSE,ANSI_CHARSET,OUT_DEFAULT_PRECIS,CLIP_DEFAULT_PRECIS,NONANTIALIASED_QUALITY,DEFAULT_PITCH|FF_SWISS,L"PCPaint Bold Small");   
+    //afont = CreateFont(12*renderer.gameboyFilterHeight,6*renderer.gameboyFilterWidth,2,2,FW_BOLD,FALSE,FALSE,FALSE,ANSI_CHARSET,OUT_DEFAULT_PRECIS,CLIP_DEFAULT_PRECIS,ANTIALIASED_QUALITY,DEFAULT_PITCH|FF_SWISS,NULL);   
+    afont = CreateFont(8*renderer.gameboyFilterHeight,0,0,0,FW_NORMAL,FALSE,FALSE,FALSE,ANSI_CHARSET,OUT_DEFAULT_PRECIS,CLIP_DEFAULT_PRECIS,NONANTIALIASED_QUALITY,DEFAULT_PITCH|FF_SWISS,L"PCPaint Bold Small");   
       
    return true;
 }
@@ -817,18 +813,18 @@ void gbTextOut() {
          SetTextColor(aDC,RGB(255,0,128));
         
          
-         TextOut(aDC,3*filter_width,3*filter_height,dx_message,wcslen(dx_message));
-         TextOut(aDC,1*filter_width,1*filter_width,dx_message,wcslen(dx_message));
-         TextOut(aDC,1*filter_width,3*filter_width,dx_message,wcslen(dx_message));
-         TextOut(aDC,3*filter_width,1*filter_width,dx_message,wcslen(dx_message));
+         TextOut(aDC,3*renderer.gameboyFilterWidth,3*renderer.gameboyFilterHeight,dx_message,wcslen(dx_message));
+         TextOut(aDC,1*renderer.gameboyFilterWidth,1*renderer.gameboyFilterWidth,dx_message,wcslen(dx_message));
+         TextOut(aDC,1*renderer.gameboyFilterWidth,3*renderer.gameboyFilterWidth,dx_message,wcslen(dx_message));
+         TextOut(aDC,3*renderer.gameboyFilterWidth,1*renderer.gameboyFilterWidth,dx_message,wcslen(dx_message));
          
-         TextOut(aDC,3*filter_width,2*filter_height,dx_message,wcslen(dx_message));
-         TextOut(aDC,1*filter_width,2*filter_width,dx_message,wcslen(dx_message));
-         TextOut(aDC,2*filter_width,3*filter_width,dx_message,wcslen(dx_message));
-         TextOut(aDC,2*filter_width,1*filter_width,dx_message,wcslen(dx_message));
+         TextOut(aDC,3*renderer.gameboyFilterWidth,2*renderer.gameboyFilterHeight,dx_message,wcslen(dx_message));
+         TextOut(aDC,1*renderer.gameboyFilterWidth,2*renderer.gameboyFilterWidth,dx_message,wcslen(dx_message));
+         TextOut(aDC,2*renderer.gameboyFilterWidth,3*renderer.gameboyFilterWidth,dx_message,wcslen(dx_message));
+         TextOut(aDC,2*renderer.gameboyFilterWidth,1*renderer.gameboyFilterWidth,dx_message,wcslen(dx_message));
          
           SetTextColor(aDC,RGB(255,255,255));
-         TextOut(aDC,2*filter_width,2*filter_width,dx_message,wcslen(dx_message));
+         TextOut(aDC,2*renderer.gameboyFilterWidth,2*renderer.gameboyFilterWidth,dx_message,wcslen(dx_message));
          BSurface->ReleaseDC(aDC);
       }
    }
@@ -862,13 +858,13 @@ void draw_border32()
    Border_surface->Lock(NULL,&ddsd,DDLOCK_WRITEONLY|DDLOCK_SURFACEMEMORYPTR,NULL);
    border_lPitch = ddsd.lPitch>>2;
 
-   int temp_w = filter_width;
-   int temp_h = filter_height;   
-   filter_width = border_filter_width;
-   filter_height = border_filter_height;   
+   int temp_w = renderer.gameboyFilterWidth;
+   int temp_h = renderer.gameboyFilterHeight;   
+   renderer.gameboyFilterWidth = renderer.borderFilterWidth;
+   renderer.gameboyFilterHeight = renderer.borderFilterHeight;   
    border_filter_f_32((DWORD*)ddsd.lpSurface,(DWORD*)dx_border_buffer_render,256,224,border_lPitch);
-   filter_width = temp_w;
-   filter_height = temp_h;
+   renderer.gameboyFilterWidth = temp_w;
+   renderer.gameboyFilterHeight = temp_h;
       
    Border_surface->Unlock(NULL);   
    
@@ -911,13 +907,13 @@ void draw_border16()
    Border_surface->Lock(NULL,&ddsd,DDLOCK_WRITEONLY|DDLOCK_SURFACEMEMORYPTR,NULL);
    border_lPitch = ddsd.lPitch>>1;
 
-   int temp_w = filter_width;
-   int temp_h = filter_height;   
-   filter_width = border_filter_width;
-   filter_height = border_filter_height;   
+   int temp_w = renderer.gameboyFilterWidth;
+   int temp_h = renderer.gameboyFilterHeight;   
+   renderer.gameboyFilterWidth = renderer.borderFilterWidth;
+   renderer.gameboyFilterHeight = renderer.borderFilterHeight;   
    border_filter_f_16((WORD*)ddsd.lpSurface,(WORD*)dx_border_buffer_render,256,224,border_lPitch);
-   filter_width = temp_w;
-   filter_height = temp_h;   
+   renderer.gameboyFilterWidth = temp_w;
+   renderer.gameboyFilterHeight = temp_h;   
    
    Border_surface->Unlock(NULL);   
    
@@ -1207,3 +1203,44 @@ void draw_debug_screen()
    }
 }
 #endif
+
+
+DirectDraw::DirectDraw()
+{
+   //debug_print("Emu Center HX DirectDraw ON");
+   borderFilterWidth = borderFilterHeight = gameboyFilterWidth = gameboyFilterHeight = 1;
+   borderFilterType = gameboyFilterType = VIDEO_FILTER_NONE;
+}
+
+// get the filter width/height for the selected filter type (currently always the same)
+int DirectDraw::getFilterDimension(videofiltertype type)
+{
+    switch (type) {
+        case VIDEO_FILTER_SOFTXX:
+            return 8;
+        case VIDEO_FILTER_SCALE2X:
+        case VIDEO_FILTER_SOFT2X:
+        case VIDEO_FILTER_BLUR:
+            return 2;
+        case VIDEO_FILTER_SCALE3X:
+            return 3;
+        case VIDEO_FILTER_NONE:
+        default:
+            return 1;
+    }
+}
+
+void DirectDraw::setBorderFilter(videofiltertype type) 
+{
+    borderFilterWidth = borderFilterHeight = getFilterDimension(type);
+    borderFilterType = type;
+    change_filter();
+}
+
+void DirectDraw::setGameboyFilter(videofiltertype type) 
+{
+    gameboyFilterWidth = gameboyFilterHeight = getFilterDimension(type);
+    gameboyFilterType = type;
+    change_filter();
+}
+

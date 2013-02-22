@@ -23,7 +23,7 @@
 // default English language
 
 #include <windows.h>
-#include "main.h"
+
 #include "menu.h"
 
 ID_ICON ICON MOVEABLE DISCARDABLE "hhugboy.ico"

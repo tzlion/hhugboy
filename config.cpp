@@ -33,6 +33,7 @@
 #include <fstream>
 
 using namespace std;
+#include "directdraw.h"
 
 #include "rom.h"
 #include "debug.h"
@@ -43,7 +44,7 @@ using namespace std;
 
 
 #include "mainloop.h"
-#include "directdraw.h"
+
 #include "sound.h"
 
 #include "strings.h"
@@ -200,42 +201,29 @@ void init_menu_options()
    switch(options->video_SGBborder_filter)
    {
       case VIDEO_FILTER_SOFT2X:
-         emuMenu.checkOption(IDM_VIDEOFILTERBORDERSOFT2X);  
-         
-         border_filter_width = 2;
-         border_filter_height = 2;
+         renderer.setBorderFilter(VIDEO_FILTER_SOFT2X);
       break;   
       case VIDEO_FILTER_SOFTXX:
          emuMenu.checkOption(IDM_VIDEOFILTERBORDERSOFTXX);  
-         
-         border_filter_width = 8;
-         border_filter_height = 8;
+         renderer.setBorderFilter(VIDEO_FILTER_SOFTXX);
       break;  
       case VIDEO_FILTER_SCALE2X:
          emuMenu.checkOption(IDM_VIDEOFILTERBORDERSCALE2X);  
-         
-         border_filter_width = 2;
-         border_filter_height = 2;
+         renderer.setBorderFilter(VIDEO_FILTER_SCALE2X);
       break;    
       case VIDEO_FILTER_SCALE3X:
          emuMenu.checkOption(IDM_VIDEOFILTERBORDERSCALE3X);  
-         
-         border_filter_width = 3;
-         border_filter_height = 3;
+         renderer.setBorderFilter(VIDEO_FILTER_SCALE3X);
       break;          
  /*     case VIDEO_FILTER_BLUR:
          emuMenu.checkOption(IDM_VIDEOFILTERBORDERBLUR);  
-         
-         border_filter_width = 2;
-         border_filter_height = 2;
+         renderer.setBorderFilter(VIDEO_FILTER_BLUR);
       break;     */
       case VIDEO_FILTER_NONE:
       default:
          options->video_SGBborder_filter = VIDEO_FILTER_NONE;
-         
          emuMenu.checkOption(IDM_VIDEOFILTERBORDERNONE);
-         border_filter_width = 1;
-         border_filter_height = 1;         
+         renderer.setBorderFilter(VIDEO_FILTER_NONE);
       break; 
    }
  
@@ -243,54 +231,29 @@ void init_menu_options()
    {
       case VIDEO_FILTER_SOFT2X:
          emuMenu.checkOption(IDM_VIDEOFILTERSOFT2X);  
-         
-         filter_width = 2;
-         filter_height = 2;
-                   
-         change_filter(); 
+         renderer.setGameboyFilter(VIDEO_FILTER_SOFT2X);
       break;  
       case VIDEO_FILTER_SOFTXX:
          emuMenu.checkOption(IDM_VIDEOFILTERSOFTXX);  
-         
-         filter_width = 8;
-         filter_height = 8;
-                   
-         change_filter(); 
+         renderer.setGameboyFilter(VIDEO_FILTER_SOFTXX);
       break;  
       case VIDEO_FILTER_SCALE2X:
          emuMenu.checkOption(IDM_VIDEOFILTERSCALE2X);  
-         
-         filter_width = 2;
-         filter_height = 2;
-                   
-         change_filter(); 
+         renderer.setGameboyFilter(VIDEO_FILTER_SCALE2X);
       break;    
       case VIDEO_FILTER_SCALE3X:
          emuMenu.checkOption(IDM_VIDEOFILTERSCALE3X);  
-         
-         filter_width = 3;
-         filter_height = 3;
-                   
-         change_filter(); 
+         renderer.setGameboyFilter(VIDEO_FILTER_SCALE3X);
       break;          
    /*   case VIDEO_FILTER_BLUR:
          emuMenu.checkOption(IDM_VIDEOFILTERBLUR);  
-         
-         filter_width = 2;
-         filter_height = 2;
-                   
-         change_filter(); 
+         renderer.setGameboyFilter(VIDEO_FILTER_BLUR);
       break;      */
       case VIDEO_FILTER_NONE:
       default:
          options->video_filter = VIDEO_FILTER_NONE;
-         
          emuMenu.checkOption(IDM_VIDEOFILTERNONE);
-
-         filter_width = 1;
-         filter_height = 1;        
-         
-         change_filter(); 
+         renderer.setGameboyFilter(VIDEO_FILTER_NONE);
       break;  
    }
 

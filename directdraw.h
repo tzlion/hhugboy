@@ -28,14 +28,9 @@
 
 #include <windows.h>
 #include "GB.h"
+#include "options.h"
 
 #define VISUAL_RUMBLE_STRENGTH 5
-
-extern int filter_width;
-extern int filter_height;
-
-extern int border_filter_width;
-extern int border_filter_height;
 
 extern HWND hwnd;
 
@@ -78,5 +73,25 @@ void draw_screen_generic32(DWORD* buffer);
 #ifdef ALLOW_DEBUG
 void draw_debug_screen();
 #endif
+
+class DirectDraw {
+    
+    public:
+        
+        DirectDraw();
+        void setBorderFilter(videofiltertype type);
+        void setGameboyFilter(videofiltertype type);
+        
+        // when this works properly the below can be made private
+        int borderFilterHeight;
+        int borderFilterWidth;
+        int gameboyFilterHeight;
+        int gameboyFilterWidth;
+        videofiltertype borderFilterType;
+        videofiltertype gameboyFilterType;
+        
+    private:
+        int getFilterDimension(videofiltertype type);
+};
 
 #endif

@@ -34,7 +34,6 @@ void init_menu_options();
 
 #include "options.h"
 
-
 #include <string>
 #include <fstream>
 
