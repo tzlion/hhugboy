@@ -41,4 +41,18 @@ void screenshotHtml(char* filename);
 
 extern int video_enable;
 
+
+//31-63-31 565
+#define RGB16(red,green,blue) ( (WORD)(((red)<<11)|((green)<<5)|(blue)) )
+#define GBC_RGB(red,green,blue) ( (WORD)(((blue)<<10)|((green)<<5)|(red)) )
+
+
+extern const unsigned short GBC_DMGBG_palettes[12][4];
+extern const unsigned short GBC_DMGOBJ0_palettes[12][4];
+extern const unsigned short GBC_DMGOBJ1_palettes[12][4];
+
+extern const unsigned short LCD_palette_brown[4];
+extern const unsigned short LCD_palette_green[4];
+extern const unsigned short GB_palette_gray[4];
+
 #endif

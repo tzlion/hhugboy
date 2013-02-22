@@ -29,10 +29,6 @@
 #include <windows.h>
 #include "GB.h"
 
-//31-63-31 565
-#define RGB16(red,green,blue) ( (WORD)(((red)<<11)|((green)<<5)|(blue)) )
-#define GBC_RGB(red,green,blue) ( (WORD)(((blue)<<10)|((green)<<5)|(red)) )
-
 #define VISUAL_RUMBLE_STRENGTH 5
 
 extern int filter_width;
@@ -58,13 +54,7 @@ extern wchar_t dx_message[60];
 extern int message_time;
 extern gb_system* message_GB;
 
-extern const unsigned short GBC_DMGBG_palettes[12][4];
-extern const unsigned short GBC_DMGOBJ0_palettes[12][4];
-extern const unsigned short GBC_DMGOBJ1_palettes[12][4];
 
-extern const unsigned short LCD_palette_brown[4];
-extern const unsigned short LCD_palette_green[4];
-extern const unsigned short GB_palette_gray[4];
 
 extern int lPitch;
 extern int dx_bitcount;

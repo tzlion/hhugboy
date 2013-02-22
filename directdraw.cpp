@@ -104,63 +104,6 @@ void resize_window(int width, int height)
 DWORD* gfx_pal32 = NULL;
 WORD* gfx_pal16 = NULL;
 
-const unsigned short LCD_palette_brown[4] =
- { GBC_RGB(30,31,25),GBC_RGB(20,21,15),GBC_RGB(10,11,5),GBC_RGB(0,0,0) }; 
-
-const unsigned short LCD_palette_green[4] =
- { GBC_RGB(26,31,24),GBC_RGB(16,21,14),GBC_RGB(6,11,4),GBC_RGB(2,3,1) }; 
-
-const unsigned short GB_palette_gray[4] =
- { GBC_RGB(27,28,27),GBC_RGB(17,18,17),GBC_RGB(7,8,7),GBC_RGB(2,2,2) }; 
-
-const unsigned short GBC_DMGBG_palettes[12][4] =
-{
- { GBC_RGB(31,31,31),GBC_RGB(20,20,20),GBC_RGB(10,10,10),GBC_RGB(0,0,0) }, // Gray
- { GBC_RGB(31,31,31),GBC_RGB(18,23,18),GBC_RGB(1,16,15),GBC_RGB(0,0,0) }, // Green & blue
- { GBC_RGB(31,31,31),GBC_RGB(26,18,11),GBC_RGB(15,5,5),GBC_RGB(0,0,0) }, // Brown
- { GBC_RGB(31,31,31),GBC_RGB(26,16,15),GBC_RGB(16,7,7),GBC_RGB(0,0,0) }, // Red
- { GBC_RGB(31,31,31),GBC_RGB(24,19,15),GBC_RGB(12,10,8),GBC_RGB(8,4,4) }, // Dark Brown
- { GBC_RGB(31,31,31),GBC_RGB(14,24,20),GBC_RGB(0,14,15),GBC_RGB(0,0,0) }, // Blue 
- { GBC_RGB(31,31,31),GBC_RGB(16,19,17),GBC_RGB(8,12,8),GBC_RGB(0,0,0) }, // Light Green 
- { GBC_RGB(31,31,31),GBC_RGB(26,16,16),GBC_RGB(13,19,22),GBC_RGB(0,0,0) }, // Yellow, Red, Blue 
- { GBC_RGB(31,31,31),GBC_RGB(31,23,15),GBC_RGB(31,8,6),GBC_RGB(0,0,0) }, // Yellow & Red 
- { GBC_RGB(31,31,31),GBC_RGB(31,19,10),GBC_RGB(14,10,5),GBC_RGB(0,0,0) }, // Yellow
- { GBC_RGB(31,31,31),GBC_RGB(16,24,16),GBC_RGB(26,10,10),GBC_RGB(0,0,0) }, // Green & red
- { GBC_RGB(2,0,0),GBC_RGB(3,17,17),GBC_RGB(30,22,22),GBC_RGB(31,31,31) } // Reverse  
-};                         
-
-const unsigned short GBC_DMGOBJ0_palettes[12][4] =
-{
- { GBC_RGB(31,31,31),GBC_RGB(20,20,20),GBC_RGB(10,10,10),GBC_RGB(0,0,0) }, // Gray
- { GBC_RGB(31,31,31),GBC_RGB(24,14,14),GBC_RGB(16,7,7),GBC_RGB(0,0,0) }, // Red 
- { GBC_RGB(31,31,31),GBC_RGB(25,18,13),GBC_RGB(13,7,7),GBC_RGB(0,0,0) }, // Brown
- { GBC_RGB(31,31,31),GBC_RGB(19,26,19),GBC_RGB(9,17,9),GBC_RGB(0,0,0) }, // Green
- { GBC_RGB(31,31,31),GBC_RGB(28,18,15),GBC_RGB(21,7,7),GBC_RGB(0,0,0) }, // Brown
- { GBC_RGB(31,31,31),GBC_RGB(24,14,14),GBC_RGB(16,7,7),GBC_RGB(0,0,0) }, // Red 
- { GBC_RGB(31,31,31),GBC_RGB(24,14,14),GBC_RGB(16,7,7),GBC_RGB(0,0,0) }, // Red 
- { GBC_RGB(31,31,31),GBC_RGB(26,16,15),GBC_RGB(13,19,22),GBC_RGB(0,0,0) }, // Yellow, Red, Blue
- { GBC_RGB(31,31,31),GBC_RGB(31,23,15),GBC_RGB(31,8,6),GBC_RGB(0,0,0) }, // Yellow & Red 
- { GBC_RGB(31,31,31),GBC_RGB(11,25,29),GBC_RGB(0,13,16),GBC_RGB(0,0,0) }, // Blue 
- { GBC_RGB(31,31,31),GBC_RGB(16,24,16),GBC_RGB(26,10,10),GBC_RGB(0,0,0) }, // Green & red
- { GBC_RGB(2,0,0),GBC_RGB(3,17,17),GBC_RGB(30,22,22),GBC_RGB(31,31,31) } // Reverse 
-};
-
-const unsigned short GBC_DMGOBJ1_palettes[12][4] =
-{
- { GBC_RGB(31,31,31),GBC_RGB(20,20,20),GBC_RGB(10,10,10),GBC_RGB(0,0,0) }, // Gray
- { GBC_RGB(31,31,31),GBC_RGB(24,14,14),GBC_RGB(16,7,7),GBC_RGB(0,0,0) }, // Red 
- { GBC_RGB(31,31,31),GBC_RGB(25,18,13),GBC_RGB(13,7,7),GBC_RGB(0,0,0) }, // Brown
- { GBC_RGB(31,31,31),GBC_RGB(15,20,23),GBC_RGB(0,11,12),GBC_RGB(0,0,0) }, // Blue
- { GBC_RGB(31,31,31),GBC_RGB(28,18,15),GBC_RGB(19,9,9),GBC_RGB(0,0,0) }, // Brown
- { GBC_RGB(31,31,31),GBC_RGB(19,26,19),GBC_RGB(9,17,9),GBC_RGB(0,0,0) }, // Green
- { GBC_RGB(31,31,31),GBC_RGB(24,14,14),GBC_RGB(16,7,7),GBC_RGB(0,0,0) }, // Red 
- { GBC_RGB(31,31,31),GBC_RGB(26,16,15),GBC_RGB(13,19,22),GBC_RGB(0,0,0) }, // Yellow, Red, Blue
- { GBC_RGB(31,31,31),GBC_RGB(31,23,15),GBC_RGB(31,8,6),GBC_RGB(0,0,0) }, // Yellow & Red 
- { GBC_RGB(31,31,31),GBC_RGB(18,27,21),GBC_RGB(4,11,14),GBC_RGB(0,0,0) }, // Green 
- { GBC_RGB(31,31,31),GBC_RGB(16,24,16),GBC_RGB(26,10,10),GBC_RGB(0,0,0) }, // Green & red
- { GBC_RGB(2,0,0),GBC_RGB(3,17,17),GBC_RGB(30,22,22),GBC_RGB(31,31,31) } // Reverse 
-};
-
 int lPitch = 160; // should be 160
 int border_lPitch;
 int dx_bitcount;
