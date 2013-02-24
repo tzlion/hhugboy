@@ -45,13 +45,6 @@ extern int ramsize[6];
 extern int sensorX;
 extern int sensorY;
 
-//extern HWND hwnd;
-//extern int win_size;
-//extern int sizen_w;
-//extern int sizen_h;
-//extern RECT target_blt_rect;
-
-//#include <time.h>
 #include "strings.h"
 #include "rom.h"
 #include "config.h"

@@ -86,8 +86,7 @@ wchar_t w_title_text[ROM_FILENAME_SIZE + 16];
 int timer_id = 0;
 int sizen_w,sizen_h; // Size needed for menu,borders,etc.
 
-DirectDraw renderer;
-
+DirectDraw renderer(&hwnd);
 
 // Options ----------------------------------------------
 bool paused = false;
@@ -231,6 +230,10 @@ int WINAPI WinMain(HINSTANCE hThisInstance,HINSTANCE hPrevInstance, LPSTR  lpszA
       debug_print(str_table[ERROR_DDRAW]); 
       PostMessage(hwnd, WM_QUIT, 0, 0L);  
    }
+   gb_system::gfx_bit_count = renderer.getBitCount();
+   GB->init_gfx();
+   
+   initPalettes();
         
    LARGE_INTEGER cur_time;
    LARGE_INTEGER now_time;
@@ -466,64 +469,27 @@ LRESULT CALLBACK WindowProcedure(HWND hwnd, UINT message, WPARAM wParam, LPARAM 
            if(GB1->romloaded && !paused)   
               FSOUND_SetMute(FSOUND_ALL,FALSE); 
 
-           POINT pt;
-           GetClientRect(hwnd,&target_blt_rect);
-           pt.x=pt.y=0;
-           ClientToScreen(hwnd,&pt);
-           OffsetRect(&target_blt_rect,pt.x,pt.y);
-
-           if(multiple_gb)
-           {
-               int width = target_blt_rect.right - target_blt_rect.left;
-               
-               target_blt_rect.right = target_blt_rect.left + width / 2;
-           }
-
-           if(sgb_mode || (options->GBC_SGB_border != OFF && border_uploaded))
-           {
-              double width = ((double)(target_blt_rect.right-target_blt_rect.left)/256.0);
-              double height = ((double)(target_blt_rect.bottom-target_blt_rect.top)/224.0);
-
-              target_blt_rect.left += (long)round(48.0*width); 
-              target_blt_rect.right = target_blt_rect.left + (long)round(160.0*width); 
-              target_blt_rect.top += (long)round(40.0*height);
-              target_blt_rect.bottom = target_blt_rect.top + (long)round(144.0*height);
-
+           renderer.handleWindowResize(); 
+           
+           if(sgb_mode || (options->GBC_SGB_border != OFF && border_uploaded)) {
               draw_border();
               if(sgb_mask == 1) draw_screen();
-           }                     
+           }      
+           
            if(!GB1->romloaded || paused)
               draw_screen();           
         }
         break;
         case WM_SIZE:
         {
-           POINT pt;
-           GetClientRect(hwnd,&target_blt_rect);
-           pt.x=pt.y=0;
-           ClientToScreen(hwnd,&pt);
-           OffsetRect(&target_blt_rect,pt.x,pt.y);
-
-           if(multiple_gb)
-           {
-               int width = target_blt_rect.right - target_blt_rect.left;
-
-               target_blt_rect.right = target_blt_rect.left + width / 2;
-           }
+            
+           renderer.handleWindowResize();  
            
-           if(sgb_mode || (options->GBC_SGB_border != OFF && border_uploaded))
-           {
-              double width = ((double)(target_blt_rect.right-target_blt_rect.left)/256.0);
-              double height = ((double)(target_blt_rect.bottom-target_blt_rect.top)/224.0);
-
-              target_blt_rect.left += (long)round(48.0*width); 
-              target_blt_rect.right = target_blt_rect.left + (long)round(160.0*width); 
-              target_blt_rect.top += (long)round(40.0*height);
-              target_blt_rect.bottom = target_blt_rect.top + (long)round(144.0*height);
-              
+           if(sgb_mode || (options->GBC_SGB_border != OFF && border_uploaded)) {
               draw_border();
               if(sgb_mask == 1) draw_screen();
-           }       
+           }    
+           
            if(!GB1->romloaded || paused)
               draw_screen();           
         }
@@ -712,13 +678,8 @@ void menuAction(int menuOption)
         
               setWinSize(2*160,144);
                  
-              POINT pt;
-              GetClientRect(hwnd,&target_blt_rect);
-              pt.x=pt.y=0;
-              ClientToScreen(hwnd,&pt);
-              OffsetRect(&target_blt_rect,pt.x,pt.y);
-              target_blt_rect.right -= 160*options->video_size;
-              
+              renderer.setRect(true);
+                 
               bool romwasloaded = GB2->romloaded;
               
               if(GB2->romloaded && !GB2->write_save())
@@ -757,12 +718,7 @@ void menuAction(int menuOption)
                  
                  setWinSize(2*160,144);
         
-                 POINT pt;
-                 GetClientRect(hwnd,&target_blt_rect);
-                 pt.x=pt.y=0;
-                 ClientToScreen(hwnd,&pt);
-                 OffsetRect(&target_blt_rect,pt.x,pt.y);
-                 target_blt_rect.right-=160*options->video_size;
+                 renderer.setRect(true);
         
                  if(GB2->romloaded && !GB2->write_save())
                     debug_print(str_table[ERROR_SAVE_FILE_WRITE]);
@@ -850,11 +806,8 @@ void menuAction(int menuOption)
               multiple_gb = 0;
               GB = GB1;
               
-              POINT pt;
-              GetClientRect(hwnd,&target_blt_rect);
-              pt.x=pt.y=0;
-              ClientToScreen(hwnd,&pt);
-              OffsetRect(&target_blt_rect,pt.x,pt.y);       
+              renderer.setRect(false);   
+              
          break;             
          
          case IDM_ROMINFO:

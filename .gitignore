@@ -16,5 +16,5 @@ devcpp/*.res
 *.st7
 *.st8
 *.st9
-
+bin/*.png
 

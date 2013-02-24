@@ -39,20 +39,16 @@ using namespace std;
 
 #define VISUAL_RUMBLE_STRENGTH 5
 
-extern HWND hwnd;
-
 extern DWORD* gfx_pal32;
 extern WORD* gfx_pal16;
 
 void mix_gbc_colors();
 
+bool initPalettes();
+
 extern void (*draw_border)();
 
 bool change_filter();
-
-extern RECT target_blt_rect;
-
-extern int lPitch;
 
 #define SafeRelease(x) if(x) { x->Release(), x=NULL; }
 
@@ -78,13 +74,16 @@ class DirectDraw {
     
     public:
         
-        DirectDraw();
+        DirectDraw(HWND* inHwnd);
         void setBorderFilter(videofiltertype type);
         void setGameboyFilter(videofiltertype type);
         
         void showMessage(wstring message, int duration, gb_system* targetGb);
         
         int getBitCount();
+        
+        void handleWindowResize();
+        void setRect(bool gb2open);
         
         // when this works properly the below can be made private
         int borderFilterHeight;
@@ -106,6 +105,11 @@ class DirectDraw {
 		
 		int bitCount;
     	
+        HWND* hwnd;
+        RECT targetBltRect;
+        
+        int lPitch;
+        int borderLPitch;
         
     private:
 

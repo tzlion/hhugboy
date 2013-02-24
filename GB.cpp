@@ -285,6 +285,8 @@ bool gb_system::init_gfx()
    gfx_buffer_older = gfx_buffer3;
    gfx_buffer_oldest = gfx_buffer4;
       
+   fill_gfx_buffers(0UL); 
+   
    return true;
 }
 
