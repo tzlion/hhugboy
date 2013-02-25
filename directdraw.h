@@ -44,6 +44,7 @@ extern WORD* gfx_pal16;
 
 void mix_gbc_colors();
 
+void initPaletteShifts();
 bool initPalettes();
 
 extern void (*draw_border)();
@@ -51,10 +52,6 @@ extern void (*draw_border)();
 bool change_filter();
 
 #define SafeRelease(x) if(x) { x->Release(), x=NULL; }
-
-void Kill_DD();
-
-bool Init_DD();
 
 void gbTextOut();
 
@@ -75,6 +72,12 @@ class DirectDraw {
     public:
         
         DirectDraw(HWND* inHwnd);
+        ~DirectDraw();
+        
+        void setDrawMode(bool mix);
+        
+        bool init();
+        
         void setBorderFilter(videofiltertype type);
         void setGameboyFilter(videofiltertype type);
         
@@ -86,6 +89,12 @@ class DirectDraw {
         void setRect(bool gb2open);
         
         // when this works properly the below can be made private
+        
+        void gbTextOut();
+
+		int bitCount;
+        int rs,gs,bs;
+        
         int borderFilterHeight;
         int borderFilterWidth;
         int gameboyFilterHeight;
@@ -93,26 +102,32 @@ class DirectDraw {
         videofiltertype borderFilterType;
         videofiltertype gameboyFilterType;
         
-        wstring messageText;
-        int messageDuration;
-        gb_system* messageGb;
-        
 		IDirectDraw7* dd;
 		IDirectDrawSurface7* ddSurface;
 		IDirectDrawSurface7* bSurface;
-		IDirectDrawSurface7* borderSurface;
-		IDirectDrawClipper* ddClip;
-		
-		int bitCount;
-    	
-        HWND* hwnd;
-        RECT targetBltRect;
+		IDirectDrawSurface7* borderSurface;       
         
         int lPitch;
         int borderLPitch;
         
+        HFONT afont;
+        
+        RECT targetBltRect;
+        
+        HWND* hwnd;
+        
     private:
+        
+        static int ffs(UINT mask);
+        
+        void initPaletteShifts();
 
+        wstring messageText;
+        int messageDuration;
+        gb_system* messageGb;
+        
+		IDirectDrawClipper* ddClip;
+		
         int getFilterDimension(videofiltertype type);
 };
 

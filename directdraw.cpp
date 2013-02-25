@@ -63,26 +63,27 @@ void draw_screen32();
 void draw_border32();
 void draw_border16();
 
-HFONT afont;
-
-int bs,gs,rs;
-
-static int ffs(UINT mask)
-{
-  int m = 0;
-  if(mask) 
-  {
-    while (!(mask & (1 << m)))
-      m++;
-    
-    return m;
-  }
-  
-  return 0;
-}
-
 DWORD* gfx_pal32 = NULL;
 WORD* gfx_pal16 = NULL;
+
+bool initPalettes()
+{
+    
+    if(renderer.bitCount  == 16) {
+        gfx_pal16 = new WORD[0x10000];
+    } else {
+        gfx_pal32 = new DWORD[0x10000];
+    }
+    
+    mix_gbc_colors();
+  
+    if(!gfx_pal32 && !gfx_pal16) {
+        debug_print(str_table[ERROR_MEMORY]); 
+        return false;
+    }
+    
+    return true;
+}
 
 
 void mix_gbc_colors()
@@ -108,9 +109,9 @@ void mix_gbc_colors()
            int green = ((green_init*12+blue_init+red_init)/14);
            int blue = ((blue_init*12+red_init+green_init)/14);
            if(renderer.bitCount == 16)
-              gfx_pal16[i] = (red<<rs) | (green<<gs) | (blue<<bs);              
+              gfx_pal16[i] = (red<<renderer.rs) | (green<<renderer.gs) | (blue<<renderer.bs);              
            else
-              gfx_pal32[i] = (red<<rs) | (green<<gs) | (blue<<bs);
+              gfx_pal32[i] = (red<<renderer.rs) | (green<<renderer.gs) | (blue<<renderer.bs);
         }
      }     
      else
@@ -132,9 +133,9 @@ void mix_gbc_colors()
            int green = ((green_init*10+blue_init*2+red_init*2)/14);
            int blue = ((blue_init*10+red_init*2+green_init*2)/14);
            if(renderer.bitCount == 16)
-              gfx_pal16[i] = (red<<rs) | (green<<gs) | (blue<<bs);
+              gfx_pal16[i] = (red<<renderer.rs) | (green<<renderer.gs) | (blue<<renderer.bs);
            else        
-              gfx_pal32[i] = (red<<rs) | (green<<gs) | (blue<<bs);
+              gfx_pal32[i] = (red<<renderer.rs) | (green<<renderer.gs) | (blue<<renderer.bs);
         }
      }
   } else
@@ -142,57 +143,15 @@ void mix_gbc_colors()
      if(renderer.bitCount == 16)
      {
         for(int i=0;i<0x10000;++i)
-           gfx_pal16[i] = ((i & 0x1F) << rs) | (((i & 0x3E0) >> 5) << gs) | (((i & 0x7C00) >> 10) << bs);
+           gfx_pal16[i] = ((i & 0x1F) << renderer.rs) | (((i & 0x3E0) >> 5) << renderer.gs) | (((i & 0x7C00) >> 10) << renderer.bs);
      } else
      {
         for(int i=0;i<0x10000;++i)
-           gfx_pal32[i] = ((i & 0x1F) << rs) | (((i & 0x3E0) >> 5) << gs) | (((i & 0x7C00) >> 10) << bs);
+            gfx_pal32[i] = ((i & 0x1F) << renderer.rs) | (((i & 0x3E0) >> 5) << renderer.gs) | (((i & 0x7C00) >> 10) << renderer.bs);
+           //gfx_pal32[i] = (((i & 0x1F) << rs) | (((i & 0x3E0) >> 5) << gs) | (((i & 0x7C00) >> 10) << bs)) ^ 0xFFFFFFFF; = negative
+           //gfx_pal32[i] = ((i & 0x1F) << rs) | (((i & 0x3E0) >> 5) << gs) | (((i & 0x7C00) >> 10) << bs) ^ 0xFFFFFFFF; = super yellow ridiculousness. i actually quite enjoy this
      }  
   }
-}
-
-void Kill_DD()
-{
-   if(gfx_pal32 != NULL) 
-   { 
-      delete [] gfx_pal32; 
-      gfx_pal32 = NULL; 
-   }
-   if(gfx_pal16 != NULL) 
-   { 
-      delete [] gfx_pal16; 
-      gfx_pal16 = NULL; 
-   }
-   if(dx_buffer_mix != NULL) 
-   { 
-      if(renderer.bitCount==16)
-      {
-         delete [] (WORD*)dx_buffer_mix;
-      } else
-      {
-         delete [] (DWORD*)dx_buffer_mix;
-      }
-      dx_buffer_mix = NULL; 
-   }         
-   if(dx_border_buffer_render != NULL) 
-   { 
-      if(renderer.bitCount==16)
-      {
-         delete [] (WORD*)dx_border_buffer_render;
-      } else
-      {
-         delete [] (DWORD*)dx_border_buffer_render;
-      }
-      dx_border_buffer_render = NULL; 
-   }   
-      
-   SafeRelease(renderer.bSurface);
-   SafeRelease(renderer.borderSurface);
-   SafeRelease(renderer.ddSurface);
-   SafeRelease(renderer.ddClip);
-   SafeRelease(renderer.dd);
-   
-   DeleteObject(afont);
 }
 
 void (*filter_f_32)(DWORD *target,DWORD *src,int width,int height,int pitch) = NULL;
@@ -479,8 +438,6 @@ bool change_filter()
    if(ddrval != DD_OK) 
    {
       debug_print("DirectDraw Createsurface failed!"); 
-   
-      Kill_DD();
       return false;
    }
 
@@ -490,8 +447,6 @@ bool change_filter()
    if(ddrval != DD_OK) 
    {
       debug_print("DirectDraw Createsurface failed!"); 
-   
-      Kill_DD();
       return false;
    } 
    
@@ -597,215 +552,12 @@ bool change_filter()
       draw_border();  
       
     //afont = CreateFont(12*renderer.gameboyFilterHeight,6*renderer.gameboyFilterWidth,2,2,FW_BOLD,FALSE,FALSE,FALSE,ANSI_CHARSET,OUT_DEFAULT_PRECIS,CLIP_DEFAULT_PRECIS,ANTIALIASED_QUALITY,DEFAULT_PITCH|FF_SWISS,NULL);   
-    afont = CreateFont(8*renderer.gameboyFilterHeight,0,0,0,FW_NORMAL,FALSE,FALSE,FALSE,ANSI_CHARSET,OUT_DEFAULT_PRECIS,CLIP_DEFAULT_PRECIS,NONANTIALIASED_QUALITY,DEFAULT_PITCH|FF_SWISS,L"PCPaint Bold Small");   
+    renderer.afont = CreateFont(8*renderer.gameboyFilterHeight,0,0,0,FW_NORMAL,FALSE,FALSE,FALSE,ANSI_CHARSET,OUT_DEFAULT_PRECIS,CLIP_DEFAULT_PRECIS,NONANTIALIASED_QUALITY,DEFAULT_PITCH|FF_SWISS,L"PCPaint Bold Small");   
       
    return true;
 }
 
-bool initPalettes()
-{
-    DDPIXELFORMAT px;
-    
-    px.dwSize = sizeof(px);
-    
-    renderer.bSurface->GetPixelFormat(&px);
-    
-    rs = ffs(px.dwRBitMask);
-    gs = ffs(px.dwGBitMask);
-    bs = ffs(px.dwBBitMask);
-    
-    RGB_BIT_MASK = 0x421;
-    
-    if((px.dwFlags&DDPF_RGB) != 0 && px.dwRBitMask == 0xF800 && px.dwGBitMask == 0x07E0 && px.dwBBitMask == 0x001F) {
-        gs++;
-        RGB_BIT_MASK = 0x821;
-    } else if((px.dwFlags&DDPF_RGB) != 0 && px.dwRBitMask == 0x001F && px.dwGBitMask == 0x07E0 && px.dwBBitMask == 0xF800) {
-        gs++;
-        RGB_BIT_MASK = 0x821;
-    } else  {
-        // 32-bit or 24-bit
-        if(renderer.bitCount == 32 || renderer.bitCount == 24) {
-            rs += 3;
-            gs += 3;
-            bs += 3;
-        }
-    }
-    
-    if(renderer.bitCount  == 16) {
-        gfx_pal16 = new WORD[0x10000];
-        for(int i=0;i<0x10000;++i)
-            gfx_pal16[i] = ((i & 0x1F) << rs) | (((i & 0x3E0) >> 5) << gs) | (((i & 0x7C00) >> 10) << bs);
-    } else {
-        gfx_pal32 = new DWORD[0x10000];
-        for(int i=0;i<0x10000;++i)
-            gfx_pal32[i] = ((i & 0x1F) << rs) | (((i & 0x3E0) >> 5) << gs) | (((i & 0x7C00) >> 10) << bs);
-    }
-  
-    if(!gfx_pal32 && !gfx_pal16) {
-        debug_print(str_table[ERROR_MEMORY]); 
-        return false;
-    }
-    
-    return true;
-}
 
-bool Init_DD()
-{
-   HRESULT ddrval;
-   DDSURFACEDESC2 ddsd;
-   //DDSCAPS2 ddscaps;
-      
-   ddrval = DirectDrawCreateEx(NULL, (void**)&renderer.dd, IID_IDirectDraw7, NULL); 
-   if(ddrval!=DD_OK)
-   {
-      debug_print("DirectDraw Create failed!"); 
-   
-      return false;
-   }
-   ddrval = renderer.dd->SetCooperativeLevel(*renderer.hwnd, DDSCL_NORMAL);
-   if(ddrval!=DD_OK)
-   {
-      debug_print("DirectDraw: SetCooperativelevel failed!"); 
-
-      Kill_DD();
-      return false;
-   }
-   
-   ddrval = renderer.dd->CreateClipper(0,&renderer.ddClip,NULL);
-   if(ddrval!=DD_OK)
-   {
-      debug_print("DirectDraw: CreateClipper failed!"); 
-   
-      Kill_DD();
-      return false;
-   }
-   renderer.ddClip->SetHWnd(0,*renderer.hwnd);
-   
-   ZeroMemory(&ddsd,sizeof(ddsd));
-   ddsd.dwSize = sizeof(DDSURFACEDESC2);
-   ddsd.dwFlags = DDSD_CAPS;
-   ddsd.ddsCaps.dwCaps = DDSCAPS_PRIMARYSURFACE;
-   ddrval = renderer.dd->CreateSurface(&ddsd,&renderer.ddSurface,NULL);
-   if(ddrval != DD_OK) 
-   {
-      debug_print("DirectDraw: Create main surface failed!"); 
-
-      Kill_DD();
-      return false;
-   }
-   
-   renderer.ddSurface->SetClipper(renderer.ddClip);
-   
-   ZeroMemory(&ddsd,sizeof(ddsd));
-   ddsd.dwSize = sizeof(DDSURFACEDESC2);
-   ddsd.dwFlags = DDSD_CAPS|DDSD_WIDTH|DDSD_HEIGHT;
-   ddsd.ddsCaps.dwCaps = DDSCAPS_OFFSCREENPLAIN|DDSCAPS_VIDEOMEMORY;//DDSCAPS_SYSTEMMEMORY;
-   ddsd.dwWidth = 160;
-   ddsd.dwHeight = 144;
-   
-   ddrval = renderer.dd->CreateSurface(&ddsd,&renderer.bSurface,NULL);
-   if(ddrval != DD_OK) 
-   {
-      debug_print("DirectDraw: Create gb surface failed!"); 
-   
-      Kill_DD();
-      return false;
-   }
-   ddsd.dwWidth = 256;
-   ddsd.dwHeight = 224;   
-   ddrval = renderer.dd->CreateSurface(&ddsd,&renderer.borderSurface,NULL);
-   if(ddrval != DD_OK) 
-   {
-      debug_print("DirectDraw: Create border surface failed!"); 
-
-      Kill_DD();
-      return false;
-   }   
-   
-   // empty the new surface
-   DDBLTFX clrblt;
-   ZeroMemory(&clrblt,sizeof(DDBLTFX));
-   clrblt.dwSize=sizeof(DDBLTFX);
-   clrblt.dwFillColor = RGB(0,0,0);
-   renderer.bSurface->Blt(NULL,NULL,NULL,DDBLT_COLORFILL,&clrblt);
-   renderer.borderSurface->Blt(NULL,NULL,NULL,DDBLT_COLORFILL,&clrblt);
-
-   ZeroMemory(&ddsd,sizeof(ddsd));
-   ddsd.dwSize = sizeof(DDSURFACEDESC2);
-   ddsd.dwFlags = DDSD_PIXELFORMAT;
-   renderer.bSurface->Lock(NULL,&ddsd,DDLOCK_WAIT|DDLOCK_SURFACEMEMORYPTR,NULL);
-   
-   renderer.bitCount = ddsd.ddpfPixelFormat.dwRGBBitCount; 
-   renderer.lPitch = ddsd.lPitch;
-   
-   renderer.bSurface->Unlock(NULL);
-   
-  if (!initPalettes()) return false;
-  
-  if(renderer.bitCount  == 16)
-  {
-     dx_buffer_mix = new WORD[140*166];     
-     dx_border_buffer_render = new WORD[256*224];
-     
-     draw_screen = draw_screen16;
-     draw_border = draw_border16;
-     filter_f_16 = filter_none_16;
-     
-     renderer.lPitch >>= 1;
-  } else
-  {
-     dx_buffer_mix = new DWORD[140*166];  
-     dx_border_buffer_render = new DWORD[256*224];
-
-     draw_screen = draw_screen32; 
-     draw_border = draw_border32;
-     filter_f_32 = filter_none_32;     
-     
-     renderer.lPitch >>= 2;
-  }
-  
-    if(!dx_buffer_mix || !dx_border_buffer_render)
-    {
-        debug_print(str_table[ERROR_MEMORY]); 
-        return false;
-    }
-    
-  
-  SetCurrentDirectory(options->program_directory.c_str());
-  AddFontResource(L"PCPaintBoldSmall.ttf");
-
-  return true;
-}
-
-
-void gbTextOut() {
-    if(renderer.messageDuration && GB == renderer.messageGb)
-   {
-      --renderer.messageDuration;
-      HDC aDC;
-      if(renderer.bSurface->GetDC(&aDC)==DD_OK)
-      {
-         SelectObject(aDC,afont);
-         SetBkMode(aDC, TRANSPARENT);
-         SetTextColor(aDC,RGB(255,0,128));
-        
-         
-         TextOut(aDC,3*renderer.gameboyFilterWidth,3*renderer.gameboyFilterHeight,renderer.messageText.c_str(),renderer.messageText.length());
-         TextOut(aDC,1*renderer.gameboyFilterWidth,1*renderer.gameboyFilterWidth,renderer.messageText.c_str(),renderer.messageText.length());
-         TextOut(aDC,1*renderer.gameboyFilterWidth,3*renderer.gameboyFilterWidth,renderer.messageText.c_str(),renderer.messageText.length());
-         TextOut(aDC,3*renderer.gameboyFilterWidth,1*renderer.gameboyFilterWidth,renderer.messageText.c_str(),renderer.messageText.length());
-         
-         TextOut(aDC,3*renderer.gameboyFilterWidth,2*renderer.gameboyFilterHeight,renderer.messageText.c_str(),renderer.messageText.length());
-         TextOut(aDC,1*renderer.gameboyFilterWidth,2*renderer.gameboyFilterWidth,renderer.messageText.c_str(),renderer.messageText.length());
-         TextOut(aDC,2*renderer.gameboyFilterWidth,3*renderer.gameboyFilterWidth,renderer.messageText.c_str(),renderer.messageText.length());
-         TextOut(aDC,2*renderer.gameboyFilterWidth,1*renderer.gameboyFilterWidth,renderer.messageText.c_str(),renderer.messageText.length());
-         
-          SetTextColor(aDC,RGB(255,255,255));
-         TextOut(aDC,2*renderer.gameboyFilterWidth,2*renderer.gameboyFilterWidth,renderer.messageText.c_str(),renderer.messageText.length());
-         renderer.bSurface->ReleaseDC(aDC);
-      }
-   }
-}
 
 void (*draw_screen)();
 
@@ -988,7 +740,7 @@ void draw_screen_generic32(DWORD* buffer)
       } else change_rect = 0;
    } else change_rect = 0;
    
-    gbTextOut();
+    renderer.gbTextOut();
    
    int screen_real_width = renderer.targetBltRect.right - renderer.targetBltRect.left;
 
@@ -1110,7 +862,7 @@ void draw_screen_generic16(WORD* buffer)
       } else change_rect = 0;
    } else change_rect = 0;
    
-    gbTextOut();
+    renderer.gbTextOut();
    
    int screen_real_width = renderer.targetBltRect.right - renderer.targetBltRect.left;
 
@@ -1192,11 +944,246 @@ DirectDraw::DirectDraw(HWND* inHwnd)
    lPitch = 160;
 }
 
+DirectDraw::~DirectDraw()
+{
+    if(gfx_pal32 != NULL) { 
+        delete [] gfx_pal32; 
+        gfx_pal32 = NULL; 
+    }
+    if(gfx_pal16 != NULL) { 
+        delete [] gfx_pal16; 
+        gfx_pal16 = NULL; 
+    }
+    if(dx_buffer_mix != NULL) { 
+        if(bitCount==16) {
+            delete [] (WORD*)dx_buffer_mix;
+        } else {
+            delete [] (DWORD*)dx_buffer_mix;
+        }
+        dx_buffer_mix = NULL; 
+    }         
+    if(dx_border_buffer_render != NULL) { 
+        if(bitCount==16) {
+            delete [] (WORD*)dx_border_buffer_render;
+        } else {
+            delete [] (DWORD*)dx_border_buffer_render;
+        }
+        dx_border_buffer_render = NULL; 
+    }   
+      
+    SafeRelease(bSurface);
+    SafeRelease(borderSurface);
+    SafeRelease(ddSurface);
+    SafeRelease(ddClip);
+    SafeRelease(dd);
+    
+    DeleteObject(afont);
+}
+
+void DirectDraw::setDrawMode(bool mix) 
+{
+	if (!mix) {
+		if(bitCount==16) {
+			draw_screen = draw_screen16;
+		} else {
+			draw_screen = draw_screen32;
+		}
+	} else {
+		if(bitCount==16) {
+			draw_screen = draw_screen_mix16;
+		} else {
+			draw_screen = draw_screen_mix32;
+		}
+	}
+	
+}
+
+bool DirectDraw::init()
+{
+    HRESULT ddrval;
+    DDSURFACEDESC2 ddsd;
+    //DDSCAPS2 ddscaps;
+    
+    ddrval = DirectDrawCreateEx(NULL, (void**)&dd, IID_IDirectDraw7, NULL); 
+    if(ddrval!=DD_OK)
+    {
+        debug_print("DirectDraw Create failed!"); 
+        return false;
+    }
+    ddrval = dd->SetCooperativeLevel(*hwnd, DDSCL_NORMAL);
+    if(ddrval!=DD_OK)
+    {
+        debug_print("DirectDraw: SetCooperativelevel failed!"); 
+        return false;
+    }
+    
+    ddrval = dd->CreateClipper(0,&ddClip,NULL);
+    if(ddrval!=DD_OK)
+    {
+        debug_print("DirectDraw: CreateClipper failed!"); 
+        return false;
+    }
+    ddClip->SetHWnd(0,*hwnd);
+    
+    ZeroMemory(&ddsd,sizeof(ddsd));
+    ddsd.dwSize = sizeof(DDSURFACEDESC2);
+    ddsd.dwFlags = DDSD_CAPS;
+    ddsd.ddsCaps.dwCaps = DDSCAPS_PRIMARYSURFACE;
+    ddrval = dd->CreateSurface(&ddsd,&ddSurface,NULL);
+    if(ddrval != DD_OK) 
+    {
+        debug_print("DirectDraw: Create main surface failed!"); 
+        return false;
+    }
+    
+    renderer.ddSurface->SetClipper(renderer.ddClip);
+    
+    ZeroMemory(&ddsd,sizeof(ddsd));
+    ddsd.dwSize = sizeof(DDSURFACEDESC2);
+    ddsd.dwFlags = DDSD_CAPS|DDSD_WIDTH|DDSD_HEIGHT;
+    ddsd.ddsCaps.dwCaps = DDSCAPS_OFFSCREENPLAIN|DDSCAPS_VIDEOMEMORY;//DDSCAPS_SYSTEMMEMORY;
+    ddsd.dwWidth = 160;
+    ddsd.dwHeight = 144;
+    
+    ddrval = dd->CreateSurface(&ddsd,&bSurface,NULL);
+    if(ddrval != DD_OK) 
+    {
+        debug_print("DirectDraw: Create gb surface failed!"); 
+        return false;
+    }
+    ddsd.dwWidth = 256;
+    ddsd.dwHeight = 224;   
+    ddrval = dd->CreateSurface(&ddsd,&borderSurface,NULL);
+    if(ddrval != DD_OK) 
+    {
+        debug_print("DirectDraw: Create border surface failed!"); 
+        return false;
+    }   
+    
+    // empty the new surface
+    DDBLTFX clrblt;
+    ZeroMemory(&clrblt,sizeof(DDBLTFX));
+    clrblt.dwSize=sizeof(DDBLTFX);
+    clrblt.dwFillColor = RGB(0,0,0);
+    bSurface->Blt(NULL,NULL,NULL,DDBLT_COLORFILL,&clrblt);
+    borderSurface->Blt(NULL,NULL,NULL,DDBLT_COLORFILL,&clrblt);
+    
+    ZeroMemory(&ddsd,sizeof(ddsd));
+    ddsd.dwSize = sizeof(DDSURFACEDESC2);
+    ddsd.dwFlags = DDSD_PIXELFORMAT;
+    bSurface->Lock(NULL,&ddsd,DDLOCK_WAIT|DDLOCK_SURFACEMEMORYPTR,NULL);
+    
+    bitCount = ddsd.ddpfPixelFormat.dwRGBBitCount; 
+    lPitch = ddsd.lPitch;
+    
+    bSurface->Unlock(NULL);
+    
+    initPaletteShifts();
+    
+    if (!initPalettes()) return false;
+    
+	setDrawMode(false);
+    
+    if(bitCount  == 16) {
+        dx_buffer_mix = new WORD[140*166];     
+        dx_border_buffer_render = new WORD[256*224];
+        
+        draw_border = draw_border16;
+        filter_f_16 = filter_none_16;
+        
+        lPitch >>= 1;
+    } else {
+        dx_buffer_mix = new DWORD[140*166];  
+        dx_border_buffer_render = new DWORD[256*224];
+        
+        draw_border = draw_border32;
+        filter_f_32 = filter_none_32;     
+        
+        lPitch >>= 2;
+    }
+    
+    if(!dx_buffer_mix || !dx_border_buffer_render) {
+        debug_print(str_table[ERROR_MEMORY]); 
+        return false;
+    }
+    
+    SetCurrentDirectory(options->program_directory.c_str());
+    AddFontResource(L"PCPaintBoldSmall.ttf");
+    
+    return true;
+}
+
+void DirectDraw::initPaletteShifts()
+{
+    DDPIXELFORMAT px;
+    
+    px.dwSize = sizeof(px);
+    
+    bSurface->GetPixelFormat(&px);
+    
+    rs = ffs(px.dwRBitMask);
+    gs = ffs(px.dwGBitMask);
+    bs = ffs(px.dwBBitMask);
+    
+    RGB_BIT_MASK = 0x421;
+    
+    if((px.dwFlags&DDPF_RGB) != 0 && px.dwRBitMask == 0xF800 && px.dwGBitMask == 0x07E0 && px.dwBBitMask == 0x001F) {
+        gs++;
+        RGB_BIT_MASK = 0x821;
+    } else if((px.dwFlags&DDPF_RGB) != 0 && px.dwRBitMask == 0x001F && px.dwGBitMask == 0x07E0 && px.dwBBitMask == 0xF800) {
+        gs++;
+        RGB_BIT_MASK = 0x821;
+    } else if(bitCount == 32 || renderer.bitCount == 24) {// 32-bit or 24-bit
+        rs += 3;
+        gs += 3;
+        bs += 3;
+    }
+}
+
+int DirectDraw::ffs(UINT mask)
+{
+    int m = 0;
+    if(mask) {
+        while (!(mask & (1 << m)))
+            m++;
+        return m;
+    }
+    return 0;
+}
+
 void DirectDraw::showMessage(wstring message, int duration, gb_system* targetGb)
 {
     messageText = message;
     messageDuration = duration;
     messageGb = targetGb;
+}
+
+void DirectDraw::gbTextOut()
+{ // note use of GB here
+    if(messageDuration && GB == messageGb) {
+        --messageDuration;
+        HDC aDC;
+        if(bSurface->GetDC(&aDC)==DD_OK) {
+            SelectObject(aDC,afont);
+            SetBkMode(aDC, TRANSPARENT);
+            SetTextColor(aDC,RGB(255,0,128));
+
+            TextOut(aDC,3*gameboyFilterWidth,3*gameboyFilterHeight,messageText.c_str(),messageText.length());
+            TextOut(aDC,1*gameboyFilterWidth,1*gameboyFilterWidth,messageText.c_str(),messageText.length());
+            TextOut(aDC,1*gameboyFilterWidth,3*gameboyFilterWidth,messageText.c_str(),messageText.length());
+            TextOut(aDC,3*gameboyFilterWidth,1*gameboyFilterWidth,messageText.c_str(),messageText.length());
+            
+            TextOut(aDC,3*gameboyFilterWidth,2*gameboyFilterHeight,messageText.c_str(),messageText.length());
+            TextOut(aDC,1*gameboyFilterWidth,2*gameboyFilterWidth,messageText.c_str(),messageText.length());
+            TextOut(aDC,2*gameboyFilterWidth,3*gameboyFilterWidth,messageText.c_str(),messageText.length());
+            TextOut(aDC,2*gameboyFilterWidth,1*gameboyFilterWidth,messageText.c_str(),messageText.length());
+            
+            SetTextColor(aDC,RGB(255,255,255));
+            TextOut(aDC,2*gameboyFilterWidth,2*gameboyFilterWidth,messageText.c_str(),messageText.length());
+            renderer.bSurface->ReleaseDC(aDC);
+        }
+    }
+
 }
 
 // get the filter width/height for the selected filter type (currently always the same)

@@ -317,26 +317,17 @@ void init_menu_options()
    {
       emuMenu.checkOption(IDM_OPTIONVIDEOMIXON);
 
-      if(renderer.getBitCount() == 16)
-         draw_screen = draw_screen_mix16;
-      else
-         draw_screen = draw_screen_mix32;             	              
+	  renderer.setDrawMode(true);
+         	              
    } else if(options->video_mix_frames == MIX_FRAMES_MORE)
    {
       emuMenu.checkOption(IDM_OPTIONVIDEOMIXMORE);
-
-      if(renderer.getBitCount() == 16)
-         draw_screen = draw_screen_mix16;
-      else
-         draw_screen = draw_screen_mix32; 
+	  renderer.setDrawMode(true);
    } else
    {
       emuMenu.checkOption(IDM_OPTIONVIDEOMIXOFF);
 
-      if(renderer.getBitCount() == 16)
-         draw_screen = draw_screen16;
-      else
-         draw_screen = draw_screen32;             	                           
+	  renderer.setDrawMode(false);           	                           
    }
 
    if(options->video_size <= 0 || options->video_size > 4)

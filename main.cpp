@@ -170,8 +170,6 @@ void cleanup()
                   
    sgb_end();
    
-   Kill_DD(); 
-   
    Kill_DI();  
    
    FSOUND_Close();
@@ -225,15 +223,13 @@ int WINAPI WinMain(HINSTANCE hThisInstance,HINSTANCE hPrevInstance, LPSTR  lpszA
 
    GB = GB1;
    
-   if(!Init_DD()) 
+   if(!renderer.init()) 
    { 
       debug_print(str_table[ERROR_DDRAW]); 
       PostMessage(hwnd, WM_QUIT, 0, 0L);  
    }
    gb_system::gfx_bit_count = renderer.getBitCount();
    GB->init_gfx();
-   
-   initPalettes();
         
    LARGE_INTEGER cur_time;
    LARGE_INTEGER now_time;
@@ -1302,30 +1298,21 @@ void menuAction(int menuOption)
             emuMenu.checkOption(IDM_OPTIONVIDEOMIXOFF);
         
             options->video_mix_frames = MIX_FRAMES_OFF;
-            if(renderer.getBitCount() == 16)
-               draw_screen = draw_screen16;
-            else
-               draw_screen = draw_screen32;
+	  	    renderer.setDrawMode(false);
          break;
         
          case IDM_OPTIONVIDEOMIXON:
             emuMenu.checkOption(IDM_OPTIONVIDEOMIXON);
         
             options->video_mix_frames = MIX_FRAMES_ON;
-            if(renderer.getBitCount() == 16)
-               draw_screen = draw_screen_mix16;
-            else
-               draw_screen = draw_screen_mix32;
+	        renderer.setDrawMode(true);
          break;
         
          case IDM_OPTIONVIDEOMIXMORE:
             emuMenu.checkOption(IDM_OPTIONVIDEOMIXMORE);
         
             options->video_mix_frames = MIX_FRAMES_MORE;
-            if(renderer.getBitCount() == 16)
-               draw_screen = draw_screen_mix16;
-            else
-               draw_screen = draw_screen_mix32;
+	        renderer.setDrawMode(true);
          break;
          
          case IDM_OPTIONVIDEOFSAUTO:
