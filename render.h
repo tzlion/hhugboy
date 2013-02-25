@@ -29,8 +29,6 @@ void fill_gfx_buffers(unsigned long val);
 
 void LCDoff_fill_gfx_buffer(unsigned long val);
 
-extern void (*draw_border)();
-
 void fill_line16(unsigned short* adr, unsigned long val, int count);
 
 void fill_line32(unsigned long* adr, unsigned long val, int count);
@@ -38,8 +36,6 @@ void fill_line32(unsigned long* adr, unsigned long val, int count);
 void copy_line16(unsigned short* target, unsigned short* src, int count);
 
 void copy_line32(unsigned long* target, unsigned long* src, int count);
-
-extern void (*draw_screen)();
 
 extern DWORD* gfx_pal32;
 extern WORD* gfx_pal16;

@@ -49,7 +49,6 @@ extern int sensorY;
 #include "rom.h"
 #include "config.h"
 
-extern void (*draw_border)();
 /*
 byte A;
 byte F; 
@@ -629,7 +628,7 @@ bool gb_system::load_state()
       fread(sgb_borderchar,sizeof(byte),32*256,statefile);
       fread(sgb_border_buffer,sizeof(unsigned short),256*224,statefile);     
       
-      draw_border(); 
+      renderer.drawBorder(); 
    }
      
    if(rom->bankType == TAMA5)

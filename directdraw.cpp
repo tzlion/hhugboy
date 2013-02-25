@@ -549,19 +549,13 @@ bool change_filter()
       }       
    }    
    if(GB1->romloaded && sgb_mode)
-      draw_border();  
+      renderer.drawBorder();  
       
     //afont = CreateFont(12*renderer.gameboyFilterHeight,6*renderer.gameboyFilterWidth,2,2,FW_BOLD,FALSE,FALSE,FALSE,ANSI_CHARSET,OUT_DEFAULT_PRECIS,CLIP_DEFAULT_PRECIS,ANTIALIASED_QUALITY,DEFAULT_PITCH|FF_SWISS,NULL);   
     renderer.afont = CreateFont(8*renderer.gameboyFilterHeight,0,0,0,FW_NORMAL,FALSE,FALSE,FALSE,ANSI_CHARSET,OUT_DEFAULT_PRECIS,CLIP_DEFAULT_PRECIS,NONANTIALIASED_QUALITY,DEFAULT_PITCH|FF_SWISS,L"PCPaint Bold Small");   
       
    return true;
 }
-
-
-
-void (*draw_screen)();
-
-void (*draw_border)();
 
 void draw_border32()
 {
@@ -984,15 +978,15 @@ void DirectDraw::setDrawMode(bool mix)
 {
 	if (!mix) {
 		if(bitCount==16) {
-			draw_screen = draw_screen16;
+			drawScreen = draw_screen16;
 		} else {
-			draw_screen = draw_screen32;
+			drawScreen = draw_screen32;
 		}
 	} else {
 		if(bitCount==16) {
-			draw_screen = draw_screen_mix16;
+			drawScreen = draw_screen_mix16;
 		} else {
-			draw_screen = draw_screen_mix32;
+			drawScreen = draw_screen_mix32;
 		}
 	}
 	
@@ -1088,7 +1082,7 @@ bool DirectDraw::init()
         dx_buffer_mix = new WORD[140*166];     
         dx_border_buffer_render = new WORD[256*224];
         
-        draw_border = draw_border16;
+        drawBorder = draw_border16;
         filter_f_16 = filter_none_16;
         
         lPitch >>= 1;
@@ -1096,7 +1090,7 @@ bool DirectDraw::init()
         dx_buffer_mix = new DWORD[140*166];  
         dx_border_buffer_render = new DWORD[256*224];
         
-        draw_border = draw_border32;
+        drawBorder = draw_border32;
         filter_f_32 = filter_none_32;     
         
         lPitch >>= 2;
@@ -1243,8 +1237,8 @@ void DirectDraw::handleWindowResize()
         targetBltRect.top += (long)round(40.0*height);
         targetBltRect.bottom = targetBltRect.top + (long)round(144.0*height);
         
-        draw_border();
-        if(sgb_mask == 1) draw_screen();
+        renderer.drawBorder();
+        if(sgb_mask == 1) renderer.drawScreen();
     }    
 }
 

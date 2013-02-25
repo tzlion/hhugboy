@@ -488,7 +488,7 @@ void gb_system::reset(bool change_mode)
    if(sgb_mode)
       sgb_reset();
 
-   if(sgb_mode) draw_border();
+   if(sgb_mode) renderer.drawBorder();
 }
 
 void gb_system::cpu_reset()

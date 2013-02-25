@@ -47,15 +47,12 @@ void mix_gbc_colors();
 void initPaletteShifts();
 bool initPalettes();
 
-extern void (*draw_border)();
-
 bool change_filter();
 
 #define SafeRelease(x) if(x) { x->Release(), x=NULL; }
 
 void gbTextOut();
 
-extern void (*draw_screen)();
 void draw_screen_mix16();
 void draw_screen_mix32();
 void draw_screen16();
@@ -70,6 +67,9 @@ void draw_debug_screen();
 class DirectDraw {
     
     public:
+        
+        void (*drawBorder)();
+		void (*drawScreen)();
         
         DirectDraw(HWND* inHwnd);
         ~DirectDraw();

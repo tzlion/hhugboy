@@ -31,6 +31,7 @@
 #include "GB.h"
 #include "mainloop.h"
 #include "config.h"
+#include "main.h"
 
 #include "strings.h"
 
@@ -154,7 +155,7 @@ void sgb_render_border()
          sgb_draw_border_tile(x*8,y*8,tile,attr);
       }
    }
-   draw_border();
+   renderer.drawBorder();
 }
 
 bool sgb_init()
@@ -618,7 +619,7 @@ void sgb_chr_trn()
   {
     col0_used = 0;
     sgb_render_border();
-    if(sgb_mask == 1) draw_screen();
+    if(sgb_mask == 1) renderer.drawScreen();
     border_uploaded = 1;
     
     sgb_CGB_support = 0;
@@ -661,7 +662,7 @@ void sgb_pct_trn()
   {
     col0_used = 0;
     sgb_render_border();
-    if(sgb_mask == 1) draw_screen();
+    if(sgb_mask == 1) renderer.drawScreen();
     border_uploaded = 1;
 
     sgb_CGB_support = 0;
@@ -817,13 +818,13 @@ void sgb_execute_command()
                   copy_line32((unsigned long*)GB->gfx_buffer,(unsigned long*)GB->gfx_buffer_old,160*144);
                }
 
-               draw_screen();
+               renderer.drawScreen();
             }
          break;
          case 2:
             fill_gfx_buffers(0UL);   
 
-            draw_screen();
+            renderer.drawScreen();
          break;
          case 3:          
             unsigned short c = sgb_palette[0];
@@ -832,7 +833,7 @@ void sgb_execute_command()
             else
                fill_gfx_buffers(gfx_pal32[c]);               
 
-            draw_screen();          
+            renderer.drawScreen();          
          break;
       }
    }
