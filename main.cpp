@@ -455,7 +455,7 @@ LRESULT CALLBACK WindowProcedure(HWND hwnd, UINT message, WPARAM wParam, LPARAM 
            if(GB1->romloaded && !paused)
               FSOUND_SetMute(FSOUND_ALL,FALSE);  
            if(sgb_mode || (options->GBC_SGB_border != OFF && border_uploaded))
-              renderer.drawBorder();
+               (renderer.*renderer.drawBorder)();
         break;
         case WM_ENTERSIZEMOVE:
            FSOUND_SetMute(FSOUND_ALL,TRUE); 
@@ -468,12 +468,12 @@ LRESULT CALLBACK WindowProcedure(HWND hwnd, UINT message, WPARAM wParam, LPARAM 
            renderer.handleWindowResize(); 
            
            if(sgb_mode || (options->GBC_SGB_border != OFF && border_uploaded)) {
-              renderer.drawBorder();
-              if(sgb_mask == 1) renderer.drawScreen();
+               (renderer.*renderer.drawBorder)();
+              if(sgb_mask == 1) (renderer.*renderer.drawScreen)();
            }      
            
            if(!GB1->romloaded || paused)
-              renderer.drawScreen();           
+             (renderer.*renderer.drawScreen)(); // Totally not a fan of this syntax
         }
         break;
         case WM_SIZE:
@@ -482,20 +482,20 @@ LRESULT CALLBACK WindowProcedure(HWND hwnd, UINT message, WPARAM wParam, LPARAM 
            renderer.handleWindowResize();  
            
            if(sgb_mode || (options->GBC_SGB_border != OFF && border_uploaded)) {
-              renderer.drawBorder();
-              if(sgb_mask == 1) renderer.drawScreen();
+              (renderer.*renderer.drawBorder)();   
+              if(sgb_mask == 1) (renderer.*renderer.drawScreen)();
            }    
            
            if(!GB1->romloaded || paused)
-              renderer.drawScreen();           
+              (renderer.*renderer.drawScreen)();
         }
         break;
         case WM_ACTIVATE:  
            if(GB1->romloaded && (sgb_mode || (options->GBC_SGB_border != OFF && border_uploaded)))
-              renderer.drawBorder();
+              (renderer.*renderer.drawBorder)();
            
            if(!GB1->romloaded || paused)
-              renderer.drawScreen();
+              (renderer.*renderer.drawScreen)();
            
            control_pressed = 0;
 
@@ -634,7 +634,7 @@ void menuAction(int menuOption)
                     {
                         setWinSize(256,224);
         
-                       renderer.drawBorder();
+                       (renderer.*renderer.drawBorder)();
                     } else
                     {
                        setWinSize(160,144);
@@ -761,7 +761,7 @@ void menuAction(int menuOption)
                  memset(GB1->gfx_buffer,0,sizeof(DWORD)*160*144);
                  memset(GB1->gfx_buffer_old,0,sizeof(DWORD)*160*144);
               }
-              renderer.drawScreen();                
+              (renderer.*renderer.drawScreen)();                
          break;
         
          case IDM_LOADGB1SAVE:
@@ -1079,7 +1079,7 @@ void menuAction(int menuOption)
               else
               {
         		 setWinSize(256,224);
-                 renderer.drawBorder();
+                 (renderer.*renderer.drawBorder)();
               }
         
               if(multiple_gb)
@@ -1095,7 +1095,7 @@ void menuAction(int menuOption)
               else
               {
         		 setWinSize(256,224);
-                 renderer.drawBorder();
+                 (renderer.*renderer.drawBorder)();
               }
         
               if(multiple_gb)
@@ -1111,7 +1111,7 @@ void menuAction(int menuOption)
               else
               {
         		 setWinSize(256,224);
-                 renderer.drawBorder();
+                 (renderer.*renderer.drawBorder)();
               }
         
               if(multiple_gb)
@@ -1128,7 +1128,7 @@ void menuAction(int menuOption)
               else
               {
         		 setWinSize(256,224);
-                 renderer.drawBorder();
+                 (renderer.*renderer.drawBorder)();
               }
         
               if(multiple_gb)

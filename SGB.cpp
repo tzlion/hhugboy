@@ -155,7 +155,7 @@ void sgb_render_border()
          sgb_draw_border_tile(x*8,y*8,tile,attr);
       }
    }
-   renderer.drawBorder();
+   (renderer.*renderer.drawBorder)();
 }
 
 bool sgb_init()
@@ -619,7 +619,7 @@ void sgb_chr_trn()
   {
     col0_used = 0;
     sgb_render_border();
-    if(sgb_mask == 1) renderer.drawScreen();
+    if(sgb_mask == 1) (renderer.*renderer.drawScreen)();
     border_uploaded = 1;
     
     sgb_CGB_support = 0;
@@ -662,7 +662,7 @@ void sgb_pct_trn()
   {
     col0_used = 0;
     sgb_render_border();
-    if(sgb_mask == 1) renderer.drawScreen();
+    if(sgb_mask == 1) (renderer.*renderer.drawScreen)();
     border_uploaded = 1;
 
     sgb_CGB_support = 0;
@@ -818,13 +818,13 @@ void sgb_execute_command()
                   copy_line32((unsigned long*)GB->gfx_buffer,(unsigned long*)GB->gfx_buffer_old,160*144);
                }
 
-               renderer.drawScreen();
+               (renderer.*renderer.drawScreen)();
             }
          break;
          case 2:
             fill_gfx_buffers(0UL);   
 
-            renderer.drawScreen();
+            (renderer.*renderer.drawScreen)();
          break;
          case 3:          
             unsigned short c = sgb_palette[0];
@@ -833,7 +833,7 @@ void sgb_execute_command()
             else
                fill_gfx_buffers(gfx_pal32[c]);               
 
-            renderer.drawScreen();          
+            (renderer.*renderer.drawScreen)();        
          break;
       }
    }

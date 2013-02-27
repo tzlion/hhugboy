@@ -52,19 +52,14 @@ using namespace std;
 
 int RGB_BIT_MASK = 0;
 
-int change_rect = 0;
-
 void* dx_buffer_mix = NULL;
 
 void *dx_border_buffer_render;
 
-void draw_screen16();
-void draw_screen32();
-void draw_border32();
-void draw_border16();
-
 DWORD* gfx_pal32 = NULL;
 WORD* gfx_pal16 = NULL;
+
+void (DirectDraw::*drawScreen)() = NULL; 
 
 bool initPalettes()
 {
@@ -417,473 +412,11 @@ void blur_16(WORD *pointer,WORD *source,int width,int height,int pitch)
    *target++ = (((((*(source-width))&mask)>>1)&mask)>>1) + ((((*source)&mask)&mask)>>1) + (((((*(source-1))&mask)>>1)&mask)>>1);
    *target++ = (((((*(source-width))&mask)>>1)&mask)>>1) + ((((*source)&mask)&mask)>>1) + (((((*(source-1))&mask)>>1)&mask)>>1);
    //*source++;                    
-}*/
-
-bool change_filter()
-{
-   HRESULT ddrval;
-   DDSURFACEDESC2 ddsd;
-   
-   SafeRelease(renderer.bSurface);
-   SafeRelease(renderer.borderSurface);
-   
-   ZeroMemory(&ddsd,sizeof(ddsd));
-   ddsd.dwSize = sizeof(DDSURFACEDESC2);
-   ddsd.dwFlags = DDSD_CAPS|DDSD_WIDTH|DDSD_HEIGHT;
-   ddsd.ddsCaps.dwCaps = DDSCAPS_OFFSCREENPLAIN|DDSCAPS_VIDEOMEMORY;//DDSCAPS_SYSTEMMEMORY;
-   ddsd.dwWidth = 160*renderer.gameboyFilterWidth;
-   ddsd.dwHeight = 144*renderer.gameboyFilterHeight;
-
-   ddrval = renderer.dd->CreateSurface(&ddsd,&renderer.bSurface,NULL);
-   if(ddrval != DD_OK) 
-   {
-      debug_print("DirectDraw Createsurface failed!"); 
-      return false;
-   }
-
-   ddsd.dwWidth = 256*renderer.borderFilterWidth;
-   ddsd.dwHeight = 224*renderer.borderFilterHeight;
-   ddrval = renderer.dd->CreateSurface(&ddsd,&renderer.borderSurface,NULL);
-   if(ddrval != DD_OK) 
-   {
-      debug_print("DirectDraw Createsurface failed!"); 
-      return false;
-   } 
-   
-   ZeroMemory(&ddsd,sizeof(ddsd));
-   ddsd.dwSize = sizeof(DDSURFACEDESC2);
-   renderer.bSurface->Lock(NULL,&ddsd,DDLOCK_WAIT|DDLOCK_SURFACEMEMORYPTR,NULL);
-   
-   renderer.lPitch = ddsd.lPitch;
-
-   renderer.bSurface->Unlock(NULL);
-   
-   if(renderer.bitCount==16)
-   {
-      renderer.lPitch >>= 1;  
-       
-      switch(renderer.gameboyFilterType)
-      {
-      case VIDEO_FILTER_SOFT2X:
-      case VIDEO_FILTER_SOFTXX:
-         filter_f_16 = softwarexx_16;      
-      break;
-      case VIDEO_FILTER_SCALE2X:
-         filter_f_16 = Scale2x16;      
-      break;   
-      case VIDEO_FILTER_SCALE3X:
-         filter_f_16 = Scale3x16;      
-      break;           
-  /*    case VIDEO_FILTER_BLUR:
-         filter_f_16 = blur_16;    
-      break;     */
-      case VIDEO_FILTER_NONE:
-      default:
-         filter_f_16 = filter_none_16;
-      break;
-      }   
-      switch(options->video_SGBborder_filter)
-      {
-      case VIDEO_FILTER_SOFT2X:
-      case VIDEO_FILTER_SOFTXX:
-         border_filter_f_16 = softwarexx_16;      
-      break;
-      case VIDEO_FILTER_SCALE2X:
-         border_filter_f_16 = Scale2x16;      
-      break;  
-      case VIDEO_FILTER_SCALE3X:
-         border_filter_f_16 = Scale3x16;      
-      break;            
-   /*   case VIDEO_FILTER_BLUR:
-         border_filter_f_16 = blur_16;    
-      break;       */
-      case VIDEO_FILTER_NONE:
-      default:
-         border_filter_f_16 = filter_none_16;
-      break;
-      }         
-   }
-   else
-   {
-      renderer.lPitch >>= 2;
-
-      switch(renderer.gameboyFilterType)
-      {
-      case VIDEO_FILTER_SOFT2X:
-      case VIDEO_FILTER_SOFTXX:
-         filter_f_32 = softwarexx_32;      
-      break;
-      case VIDEO_FILTER_SCALE2X:
-         filter_f_32 = Scale2x32;      
-      break;      
-      case VIDEO_FILTER_SCALE3X:
-         filter_f_32 = Scale3x32;      
-      break;          
-  /*    case VIDEO_FILTER_BLUR:
-         filter_f_32 = blur_32;    
-      break;  */
-      case VIDEO_FILTER_NONE:
-      default:
-         filter_f_32 = filter_none_32;
-      break;
-      }
-      switch(renderer.borderFilterType)
-      {
-      case VIDEO_FILTER_SOFT2X:
-      case VIDEO_FILTER_SOFTXX:
-         border_filter_f_32 = softwarexx_32;      
-      break;
-      case VIDEO_FILTER_SCALE2X:
-         border_filter_f_32 = Scale2x32;      
-      break;     
-      case VIDEO_FILTER_SCALE3X:
-         border_filter_f_32 = Scale3x32;      
-      break;         
-   /*   case VIDEO_FILTER_BLUR:
-         border_filter_f_32 = blur_32;    
-      break;    */
-      case VIDEO_FILTER_NONE:
-      default:
-         border_filter_f_32 = filter_none_32;
-      break;
-      }       
-   }    
-   if(GB1->romloaded && sgb_mode)
-      renderer.drawBorder();  
-      
-    //afont = CreateFont(12*renderer.gameboyFilterHeight,6*renderer.gameboyFilterWidth,2,2,FW_BOLD,FALSE,FALSE,FALSE,ANSI_CHARSET,OUT_DEFAULT_PRECIS,CLIP_DEFAULT_PRECIS,ANTIALIASED_QUALITY,DEFAULT_PITCH|FF_SWISS,NULL);   
-    renderer.afont = CreateFont(8*renderer.gameboyFilterHeight,0,0,0,FW_NORMAL,FALSE,FALSE,FALSE,ANSI_CHARSET,OUT_DEFAULT_PRECIS,CLIP_DEFAULT_PRECIS,NONANTIALIASED_QUALITY,DEFAULT_PITCH|FF_SWISS,L"PCPaint Bold Small");   
-      
-   return true;
 }
+*/
 
-void draw_border32()
-{
-   unsigned short* source = sgb_border_buffer;
-   DWORD* target = (DWORD*)dx_border_buffer_render;
-   
-   for(register int y=0;y<256*224;y+=8) 
-   { 
-      *target++ = *(gfx_pal32+*source++);
-      *target++ = *(gfx_pal32+*source++);
-      *target++ = *(gfx_pal32+*source++);
-      *target++ = *(gfx_pal32+*source++);
-      *target++ = *(gfx_pal32+*source++);
-      *target++ = *(gfx_pal32+*source++);
-      *target++ = *(gfx_pal32+*source++);
-      *target++ = *(gfx_pal32+*source++);                                                                                                                                                   
-   } 
-   
-   DDSURFACEDESC2 ddsd;
 
-   ZeroMemory(&ddsd,sizeof(ddsd));
-   ddsd.dwSize = sizeof(DDSURFACEDESC2);
-   renderer.borderSurface->Lock(NULL,&ddsd,DDLOCK_WRITEONLY|DDLOCK_SURFACEMEMORYPTR,NULL);
-   renderer.borderLPitch = ddsd.lPitch>>2;
 
-   int temp_w = renderer.gameboyFilterWidth;
-   int temp_h = renderer.gameboyFilterHeight;   
-   renderer.gameboyFilterWidth = renderer.borderFilterWidth;
-   renderer.gameboyFilterHeight = renderer.borderFilterHeight;   
-   border_filter_f_32((DWORD*)ddsd.lpSurface,(DWORD*)dx_border_buffer_render,256,224,renderer.borderLPitch);
-   renderer.gameboyFilterWidth = temp_w;
-   renderer.gameboyFilterHeight = temp_h;
-      
-   renderer.borderSurface->Unlock(NULL);   
-   
-   POINT pt;
-   RECT rect;
-
-   GetClientRect(*renderer.hwnd,&rect);
-   pt.x=pt.y=0;
-   ClientToScreen(*renderer.hwnd,&pt);
-   OffsetRect(&rect,pt.x,pt.y);
-
-   if(renderer.ddSurface->Blt(&rect,renderer.borderSurface,NULL,0,NULL) == DDERR_SURFACELOST)
-   {
-      renderer.ddSurface->Restore();
-      renderer.borderSurface->Restore();
-   }
-}
-
-void draw_border16()
-{
-   WORD* target = (WORD*)dx_border_buffer_render;
-   unsigned short* source = sgb_border_buffer;
-      
-   for(register int y=0;y<256*224;y+=8) 
-   { 
-      *target++ = *(gfx_pal16+*source++);
-      *target++ = *(gfx_pal16+*source++);
-      *target++ = *(gfx_pal16+*source++);
-      *target++ = *(gfx_pal16+*source++);
-      *target++ = *(gfx_pal16+*source++);
-      *target++ = *(gfx_pal16+*source++);
-      *target++ = *(gfx_pal16+*source++);
-      *target++ = *(gfx_pal16+*source++);                                                                                                                                                   
-   } 
-   
-   DDSURFACEDESC2 ddsd;
-
-   ZeroMemory(&ddsd,sizeof(ddsd));
-   ddsd.dwSize = sizeof(DDSURFACEDESC2);
-   renderer.borderSurface->Lock(NULL,&ddsd,DDLOCK_WRITEONLY|DDLOCK_SURFACEMEMORYPTR,NULL);
-   renderer.borderLPitch = ddsd.lPitch>>1;
-
-   int temp_w = renderer.gameboyFilterWidth;
-   int temp_h = renderer.gameboyFilterHeight;   
-   renderer.gameboyFilterWidth = renderer.borderFilterWidth;
-   renderer.gameboyFilterHeight = renderer.borderFilterHeight;   
-   border_filter_f_16((WORD*)ddsd.lpSurface,(WORD*)dx_border_buffer_render,256,224,renderer.borderLPitch);
-   renderer.gameboyFilterWidth = temp_w;
-   renderer.gameboyFilterHeight = temp_h;   
-   
-   renderer.borderSurface->Unlock(NULL);   
-   
-   POINT pt;
-   RECT rect;
-   
-   GetClientRect(*renderer.hwnd,&rect);
-   pt.x=pt.y=0;
-   ClientToScreen(*renderer.hwnd,&pt);
-   OffsetRect(&rect,pt.x,pt.y);
-   
-   if(renderer.ddSurface->Blt(&rect,renderer.borderSurface,NULL,0,NULL) == DDERR_SURFACELOST)
-   {
-      renderer.ddSurface->Restore();
-      renderer.borderSurface->Restore();
-   }
-}
-
-// draw the screen without mixing frames
-void draw_screen32()
-{  
-   draw_screen_generic32((DWORD*)GB->gfx_buffer);
-}
-
-// draw the screen mixing frames
-void draw_screen_mix32()
-{   
-   DWORD* current = (DWORD*)GB->gfx_buffer;
-   DWORD* old = (DWORD*)GB->gfx_buffer_old;
-   DWORD* older = (DWORD*)GB->gfx_buffer_older;
-   DWORD* oldest = (DWORD*)GB->gfx_buffer_oldest;
-
-   DWORD* target = (DWORD*)dx_buffer_mix;
-
-   DWORD mix_temp1 = 0;
-   DWORD mix_temp2 = 0;
-
-   if(options->video_mix_frames == MIX_FRAMES_MORE && !(GB->gbc_mode || sgb_mode))
-   {
-      for(int y = 0;y < 144*160;y++) // mix it
-      {
-         mix_temp1 = ((*current) + (*old)) >> 1;
-         mix_temp2 = ((*older) + (*oldest)) >> 1;
-
-         *target = ((mix_temp1*3 + mix_temp2) >> 2);
-         
-         ++target;
-         ++current;
-         ++old;
-         ++older;
-         ++oldest;
-      }
-
-      void* temp1 = GB->gfx_buffer;
-      void* temp2 = GB->gfx_buffer_older;
-      GB->gfx_buffer = GB->gfx_buffer_oldest;
-      GB->gfx_buffer_older = GB->gfx_buffer_old;
-      GB->gfx_buffer_old = temp1;
-      GB->gfx_buffer_oldest = temp2;
-   } else
-   {
-      for(int y = 0;y < 144*160;y++) // mix it
-      {
-        *target++ = ((*current++) + (*old++)) >> 1;
-      }
-
-      void* temp = GB->gfx_buffer;
-      GB->gfx_buffer = GB->gfx_buffer_old;
-      GB->gfx_buffer_old = temp;
-   }
-
-    draw_screen_generic32((DWORD*)dx_buffer_mix);
-}
-
-void draw_screen_generic32(DWORD* buffer)
-{
-       DDSURFACEDESC2 ddsd;
-
-   ZeroMemory(&ddsd,sizeof(ddsd));
-   ddsd.dwSize = sizeof(DDSURFACEDESC2);
-   renderer.bSurface->Lock(NULL,&ddsd,DDLOCK_WRITEONLY|DDLOCK_SURFACEMEMORYPTR,NULL);
-
-   filter_f_32((DWORD*)ddsd.lpSurface,buffer,160,144,renderer.lPitch);
-
-   renderer.bSurface->Unlock(NULL);   
-
-   if(options->video_visual_rumble && GB->rumble_counter)
-   {
-      --GB->rumble_counter;
-      if(!(GB->rumble_counter%2))
-      {
-         renderer.targetBltRect.left-=VISUAL_RUMBLE_STRENGTH;
-         renderer.targetBltRect.right-=VISUAL_RUMBLE_STRENGTH;
-         change_rect = 1;
-      } else change_rect = 0;
-   } else change_rect = 0;
-   
-    renderer.gbTextOut();
-   
-   int screen_real_width = renderer.targetBltRect.right - renderer.targetBltRect.left;
-
-   if(multiple_gb && GB == GB2)
-   {
-       renderer.targetBltRect.left += screen_real_width;
-       renderer.targetBltRect.right += screen_real_width;
-   }
-   
-   if(renderer.ddSurface->Blt(&renderer.targetBltRect,renderer.bSurface,NULL,0,NULL) == DDERR_SURFACELOST)
-   {
-      renderer.ddSurface->Restore();
-      renderer.bSurface->Restore();
-   }
-   
-   if(multiple_gb && GB == GB2)
-   {
-      renderer.targetBltRect.left -= screen_real_width;
-      renderer.targetBltRect.right -= screen_real_width;
-   } 
-
-   if(change_rect)
-   {
-     renderer.targetBltRect.left += VISUAL_RUMBLE_STRENGTH;
-     renderer.targetBltRect.right += VISUAL_RUMBLE_STRENGTH;
-   }
-}
-
-void draw_screen16()
-{  
-   draw_screen_generic16((WORD*)GB->gfx_buffer);
-}
-
-void draw_screen_mix16()
-{
-   WORD* current = (WORD*)GB->gfx_buffer;
-   WORD* old = (WORD*)GB->gfx_buffer_old;
-   WORD* older = (WORD*)GB->gfx_buffer_older;
-   WORD* oldest = (WORD*)GB->gfx_buffer_oldest;
-
-   WORD* target = (WORD*)dx_buffer_mix;
-
-   WORD mix_temp1 = 0;
-   WORD mix_temp2 = 0;
-   
-   WORD mask = ~RGB_BIT_MASK;
-   
- /*  for(register int y=0;y<144*160;y+=10) // mix it
-   { 
-      *target++ = (((*mix_source++)&mask)>>1)+(((*old++)&mask)>>1);
-      *target++ = (((*mix_source++)&mask)>>1)+(((*old++)&mask)>>1);
-      *target++ = (((*mix_source++)&mask)>>1)+(((*old++)&mask)>>1);
-      *target++ = (((*mix_source++)&mask)>>1)+(((*old++)&mask)>>1);
-      *target++ = (((*mix_source++)&mask)>>1)+(((*old++)&mask)>>1);
-      *target++ = (((*mix_source++)&mask)>>1)+(((*old++)&mask)>>1);
-      *target++ = (((*mix_source++)&mask)>>1)+(((*old++)&mask)>>1);
-      *target++ = (((*mix_source++)&mask)>>1)+(((*old++)&mask)>>1);
-      *target++ = (((*mix_source++)&mask)>>1)+(((*old++)&mask)>>1);
-      *target++ = (((*mix_source++)&mask)>>1)+(((*old++)&mask)>>1);
-   }*/
-
-   if(options->video_mix_frames == MIX_FRAMES_MORE && !(GB->gbc_mode || sgb_mode))
-   {
-      for(int y = 0;y < 144*160;y++) // mix it
-      {
-         mix_temp1 = ((*current&mask)>>1) + ((*old&mask)>>1);
-         mix_temp2 = ((*older&mask)>>1) + ((*oldest&mask)>>1);
-
-         *target++ = ((((mix_temp1&mask)>>1) + ((mix_temp1&mask)>>1)&mask)>>1) +
-                     ((((mix_temp1&mask)>>1) + ((mix_temp2&mask)>>1)&mask)>>1);
-
-         ++current;
-         ++old;
-         ++older;
-         ++oldest;
-      }
-
-      void* temp1 = GB->gfx_buffer;
-      void* temp2 = GB->gfx_buffer_older;
-      GB->gfx_buffer = GB->gfx_buffer_oldest;
-      GB->gfx_buffer_older = GB->gfx_buffer_old;
-      GB->gfx_buffer_old = temp1;
-      GB->gfx_buffer_oldest = temp2;
-   } else
-   {
-      for(int y = 0;y < 144*160;y++) // mix it
-      {
-        *target++ = (((*current++)&mask)>>1)+(((*old++)&mask)>>1);
-      }
-
-      void* temp = GB->gfx_buffer;
-      GB->gfx_buffer = GB->gfx_buffer_old;
-      GB->gfx_buffer_old = temp;
-   }
-   
-    draw_screen_generic16((WORD*)dx_buffer_mix);
-}
-
-void draw_screen_generic16(WORD* buffer)
-{
-   DDSURFACEDESC2 ddsd;
-
-   ZeroMemory(&ddsd,sizeof(ddsd));
-   ddsd.dwSize = sizeof(DDSURFACEDESC2);
-   renderer.bSurface->Lock(NULL,&ddsd,DDLOCK_WRITEONLY|DDLOCK_SURFACEMEMORYPTR,NULL);
-          
-   filter_f_16((WORD*)ddsd.lpSurface,buffer,160,144,renderer.lPitch);
-   
-   renderer.bSurface->Unlock(NULL);   
-              
-   if(options->video_visual_rumble && GB->rumble_counter)
-   {
-      --GB->rumble_counter;
-      if(!(GB->rumble_counter%2))
-      {
-         renderer.targetBltRect.left-=VISUAL_RUMBLE_STRENGTH;
-         renderer.targetBltRect.right-=VISUAL_RUMBLE_STRENGTH;
-         change_rect = 1;
-      } else change_rect = 0;
-   } else change_rect = 0;
-   
-    renderer.gbTextOut();
-   
-   int screen_real_width = renderer.targetBltRect.right - renderer.targetBltRect.left;
-
-   if(multiple_gb && GB == GB2)
-   {
-       renderer.targetBltRect.left += screen_real_width;
-       renderer.targetBltRect.right += screen_real_width;
-   }
-
-   if(renderer.ddSurface->Blt(&renderer.targetBltRect,renderer.bSurface,NULL,0,NULL) == DDERR_SURFACELOST)
-   {
-      renderer.ddSurface->Restore();
-      renderer.bSurface->Restore();
-   }
-
-   if(multiple_gb && GB == GB2)
-   {
-      renderer.targetBltRect.left -= screen_real_width;
-      renderer.targetBltRect.right -= screen_real_width;
-   } 
-
-   if(change_rect)
-   {
-     renderer.targetBltRect.left+=VISUAL_RUMBLE_STRENGTH;
-     renderer.targetBltRect.right+=VISUAL_RUMBLE_STRENGTH;
-   }   
-}
 
 #ifdef ALLOW_DEBUG
 void draw_debug_screen()
@@ -936,6 +469,7 @@ DirectDraw::DirectDraw(HWND* inHwnd)
    hwnd = inHwnd;
    RECT targetBltRect;
    lPitch = 160;
+   changeRect = 0;
 }
 
 DirectDraw::~DirectDraw()
@@ -978,15 +512,15 @@ void DirectDraw::setDrawMode(bool mix)
 {
 	if (!mix) {
 		if(bitCount==16) {
-			drawScreen = draw_screen16;
+			drawScreen = &DirectDraw::drawScreen16;
 		} else {
-			drawScreen = draw_screen32;
+			drawScreen = &DirectDraw::drawScreen32;
 		}
 	} else {
 		if(bitCount==16) {
-			drawScreen = draw_screen_mix16;
+			drawScreen = &DirectDraw::drawScreenMix16;
 		} else {
-			drawScreen = draw_screen_mix32;
+			drawScreen = &DirectDraw::drawScreenMix32;
 		}
 	}
 	
@@ -1082,7 +616,7 @@ bool DirectDraw::init()
         dx_buffer_mix = new WORD[140*166];     
         dx_border_buffer_render = new WORD[256*224];
         
-        drawBorder = draw_border16;
+        drawBorder = &DirectDraw::drawBorder16;
         filter_f_16 = filter_none_16;
         
         lPitch >>= 1;
@@ -1090,7 +624,7 @@ bool DirectDraw::init()
         dx_buffer_mix = new DWORD[140*166];  
         dx_border_buffer_render = new DWORD[256*224];
         
-        drawBorder = draw_border32;
+        drawBorder = &DirectDraw::drawBorder32;
         filter_f_32 = filter_none_32;     
         
         lPitch >>= 2;
@@ -1202,15 +736,145 @@ void DirectDraw::setBorderFilter(videofiltertype type)
 {
     borderFilterWidth = borderFilterHeight = getFilterDimension(type);
     borderFilterType = type;
-    change_filter();
+    changeFilters();
 }
 
 void DirectDraw::setGameboyFilter(videofiltertype type) 
 {
     gameboyFilterWidth = gameboyFilterHeight = getFilterDimension(type);
     gameboyFilterType = type;
-    change_filter();
+    changeFilters();
 }
+
+bool DirectDraw::changeFilters()
+{
+	HRESULT ddrval;
+	DDSURFACEDESC2 ddsd;
+	
+	SafeRelease(bSurface);
+	SafeRelease(borderSurface);
+	
+	ZeroMemory(&ddsd,sizeof(ddsd));
+	ddsd.dwSize = sizeof(DDSURFACEDESC2);
+	ddsd.dwFlags = DDSD_CAPS|DDSD_WIDTH|DDSD_HEIGHT;
+	ddsd.ddsCaps.dwCaps = DDSCAPS_OFFSCREENPLAIN|DDSCAPS_VIDEOMEMORY;//DDSCAPS_SYSTEMMEMORY;
+	ddsd.dwWidth = 160*gameboyFilterWidth;
+	ddsd.dwHeight = 144*gameboyFilterHeight;
+
+	ddrval = dd->CreateSurface(&ddsd,&bSurface,NULL);
+	if(ddrval != DD_OK) {
+		debug_print("DirectDraw Createsurface failed!"); 
+		return false;
+	}
+
+	ddsd.dwWidth = 256*borderFilterWidth;
+	ddsd.dwHeight = 224*borderFilterHeight;
+	ddrval = dd->CreateSurface(&ddsd,&borderSurface,NULL);
+	if(ddrval != DD_OK)  {
+		debug_print("DirectDraw Createsurface failed!"); 
+		return false;
+	} 
+	   
+	ZeroMemory(&ddsd,sizeof(ddsd));
+	ddsd.dwSize = sizeof(DDSURFACEDESC2);
+	bSurface->Lock(NULL,&ddsd,DDLOCK_WAIT|DDLOCK_SURFACEMEMORYPTR,NULL);
+   
+	lPitch = ddsd.lPitch;
+	
+	bSurface->Unlock(NULL);
+	
+	if(bitCount==16){
+		lPitch >>= 1;  
+       
+		switch(gameboyFilterType){
+			case VIDEO_FILTER_SOFT2X:
+			case VIDEO_FILTER_SOFTXX:
+				filter_f_16 = softwarexx_16;      
+				break;
+			case VIDEO_FILTER_SCALE2X:
+				filter_f_16 = Scale2x16;      
+				break;   
+			case VIDEO_FILTER_SCALE3X:
+				filter_f_16 = Scale3x16;      
+				break;           
+			/*    case VIDEO_FILTER_BLUR:
+			filter_f_16 = blur_16;    
+			break;     */
+			case VIDEO_FILTER_NONE:
+			default:
+				filter_f_16 = filter_none_16;
+				break;
+		}   
+		switch(borderFilterType) { 
+			case VIDEO_FILTER_SOFT2X:
+			case VIDEO_FILTER_SOFTXX:
+				border_filter_f_16 = softwarexx_16;      
+				break;
+			case VIDEO_FILTER_SCALE2X:
+				border_filter_f_16 = Scale2x16;      
+				break;  
+			case VIDEO_FILTER_SCALE3X:
+				border_filter_f_16 = Scale3x16;      
+				break;            
+			/*   case VIDEO_FILTER_BLUR:
+			border_filter_f_16 = blur_16;    
+			break;       */
+			case VIDEO_FILTER_NONE:
+			default:
+				border_filter_f_16 = filter_none_16;
+				break;
+		}         
+	}else{
+		lPitch >>= 2;
+		
+		switch(gameboyFilterType) {
+			case VIDEO_FILTER_SOFT2X:
+			case VIDEO_FILTER_SOFTXX:
+				filter_f_32 = softwarexx_32;      
+				break;
+			case VIDEO_FILTER_SCALE2X:
+				filter_f_32 = Scale2x32;      
+				break;      
+			case VIDEO_FILTER_SCALE3X:
+				filter_f_32 = Scale3x32;      
+				break;          
+			/*    case VIDEO_FILTER_BLUR:
+			filter_f_32 = blur_32;    
+			break;  */
+			case VIDEO_FILTER_NONE:
+			default:
+				filter_f_32 = filter_none_32;
+				break;
+		}
+		switch(borderFilterType) {
+			case VIDEO_FILTER_SOFT2X:
+			case VIDEO_FILTER_SOFTXX:
+				border_filter_f_32 = softwarexx_32;      
+				break;
+			case VIDEO_FILTER_SCALE2X:
+				border_filter_f_32 = Scale2x32;      
+				break;     
+			case VIDEO_FILTER_SCALE3X:
+				border_filter_f_32 = Scale3x32;      
+				break;         
+			/*   case VIDEO_FILTER_BLUR:
+			border_filter_f_32 = blur_32;    
+			break;    */
+			case VIDEO_FILTER_NONE:
+			default:
+				border_filter_f_32 = filter_none_32;
+				break;
+		}       
+   }    
+   if(GB1->romloaded && sgb_mode)
+		(this->*DirectDraw::drawBorder)();  // totally not sure about this either 
+	
+	//afont = CreateFont(12*renderer.gameboyFilterHeight,6*renderer.gameboyFilterWidth,2,2,FW_BOLD,FALSE,FALSE,FALSE,ANSI_CHARSET,OUT_DEFAULT_PRECIS,CLIP_DEFAULT_PRECIS,ANTIALIASED_QUALITY,DEFAULT_PITCH|FF_SWISS,NULL);   
+	afont = CreateFont(8*gameboyFilterHeight,0,0,0,FW_NORMAL,FALSE,FALSE,FALSE,ANSI_CHARSET,OUT_DEFAULT_PRECIS,CLIP_DEFAULT_PRECIS,NONANTIALIASED_QUALITY,DEFAULT_PITCH|FF_SWISS,L"PCPaint Bold Small");   
+
+	return true;
+}
+
 
 int DirectDraw::getBitCount()
 {
@@ -1237,8 +901,8 @@ void DirectDraw::handleWindowResize()
         targetBltRect.top += (long)round(40.0*height);
         targetBltRect.bottom = targetBltRect.top + (long)round(144.0*height);
         
-        renderer.drawBorder();
-        if(sgb_mask == 1) renderer.drawScreen();
+        (this->*DirectDraw::drawBorder)();  
+        if(sgb_mask == 1) (*this.*drawScreen)();
     }    
 }
 
@@ -1254,4 +918,310 @@ void DirectDraw::setRect(bool gb2open)
     if (gb2open) {
         targetBltRect.right-=160*options->video_size;
     }
+}
+
+// draw the screen without mixing frames
+void DirectDraw::drawScreen32()
+{  // should the buffer/s maybe be passed into these?
+   drawScreenGeneric32((DWORD*)GB->gfx_buffer);
+}
+
+// draw the screen mixing frames
+void DirectDraw::drawScreenMix32()
+{   
+	DWORD* current = (DWORD*)GB->gfx_buffer;
+	DWORD* old = (DWORD*)GB->gfx_buffer_old;
+	DWORD* older = (DWORD*)GB->gfx_buffer_older;
+	DWORD* oldest = (DWORD*)GB->gfx_buffer_oldest;
+	
+	DWORD* target = (DWORD*)dx_buffer_mix;
+	
+	DWORD mix_temp1 = 0;
+	DWORD mix_temp2 = 0;
+	
+	if(options->video_mix_frames == MIX_FRAMES_MORE && !(GB->gbc_mode || sgb_mode)) { // Options and modes and stuff ugh
+		for(int y = 0;y < 144*160;y++) {// mix it
+			mix_temp1 = ((*current) + (*old)) >> 1;
+			mix_temp2 = ((*older) + (*oldest)) >> 1;
+			
+			*target = ((mix_temp1*3 + mix_temp2) >> 2);
+			
+			++target;
+			++current;
+			++old;
+			++older;
+			++oldest;
+		}
+	
+		void* temp1 = GB->gfx_buffer;
+		void* temp2 = GB->gfx_buffer_older;
+		GB->gfx_buffer = GB->gfx_buffer_oldest;
+		GB->gfx_buffer_older = GB->gfx_buffer_old;
+		GB->gfx_buffer_old = temp1;
+		GB->gfx_buffer_oldest = temp2;
+	} else {
+		for(int y = 0;y < 144*160;y++) {// mix it
+			*target++ = ((*current++) + (*old++)) >> 1;
+		}
+		
+		void* temp = GB->gfx_buffer;
+		GB->gfx_buffer = GB->gfx_buffer_old;
+		GB->gfx_buffer_old = temp;
+	}
+
+    drawScreenGeneric32((DWORD*)dx_buffer_mix);
+}
+
+void DirectDraw::drawScreen16()
+{  
+   drawScreenGeneric16((WORD*)GB->gfx_buffer);
+}
+
+void DirectDraw::drawScreenMix16()
+{
+	WORD* current = (WORD*)GB->gfx_buffer;
+	WORD* old = (WORD*)GB->gfx_buffer_old;
+	WORD* older = (WORD*)GB->gfx_buffer_older;
+	WORD* oldest = (WORD*)GB->gfx_buffer_oldest;
+	
+	WORD* target = (WORD*)dx_buffer_mix;
+	
+	WORD mix_temp1 = 0;
+	WORD mix_temp2 = 0;
+	
+	WORD mask = ~RGB_BIT_MASK;
+   
+ /*  for(register int y=0;y<144*160;y+=10) // mix it
+   { 
+      *target++ = (((*mix_source++)&mask)>>1)+(((*old++)&mask)>>1);
+      *target++ = (((*mix_source++)&mask)>>1)+(((*old++)&mask)>>1);
+      *target++ = (((*mix_source++)&mask)>>1)+(((*old++)&mask)>>1);
+      *target++ = (((*mix_source++)&mask)>>1)+(((*old++)&mask)>>1);
+      *target++ = (((*mix_source++)&mask)>>1)+(((*old++)&mask)>>1);
+      *target++ = (((*mix_source++)&mask)>>1)+(((*old++)&mask)>>1);
+      *target++ = (((*mix_source++)&mask)>>1)+(((*old++)&mask)>>1);
+      *target++ = (((*mix_source++)&mask)>>1)+(((*old++)&mask)>>1);
+      *target++ = (((*mix_source++)&mask)>>1)+(((*old++)&mask)>>1);
+      *target++ = (((*mix_source++)&mask)>>1)+(((*old++)&mask)>>1);
+   }*/
+
+	if(options->video_mix_frames == MIX_FRAMES_MORE && !(GB->gbc_mode || sgb_mode)) {
+		for(int y = 0;y < 144*160;y++) {// mix it
+			
+			mix_temp1 = ((*current&mask)>>1) + ((*old&mask)>>1);
+			mix_temp2 = ((*older&mask)>>1) + ((*oldest&mask)>>1);
+			
+			*target++ = ((((mix_temp1&mask)>>1) + ((mix_temp1&mask)>>1)&mask)>>1) +
+			((((mix_temp1&mask)>>1) + ((mix_temp2&mask)>>1)&mask)>>1);
+			
+			++current;
+			++old;
+			++older;
+			++oldest;
+		}
+		
+		void* temp1 = GB->gfx_buffer;
+		void* temp2 = GB->gfx_buffer_older;
+		GB->gfx_buffer = GB->gfx_buffer_oldest;
+		GB->gfx_buffer_older = GB->gfx_buffer_old;
+		GB->gfx_buffer_old = temp1;
+		GB->gfx_buffer_oldest = temp2;
+	} else {
+		for(int y = 0;y < 144*160;y++){ // mix it
+			*target++ = (((*current++)&mask)>>1)+(((*old++)&mask)>>1);
+		}
+		
+		void* temp = GB->gfx_buffer;
+		GB->gfx_buffer = GB->gfx_buffer_old;
+		GB->gfx_buffer_old = temp;
+	}
+   
+	renderer.drawScreenGeneric16((WORD*)dx_buffer_mix);
+}
+
+
+void DirectDraw::drawScreenGeneric32(DWORD* buffer)
+{
+	DDSURFACEDESC2 ddsd;
+	
+	ZeroMemory(&ddsd,sizeof(ddsd));
+	ddsd.dwSize = sizeof(DDSURFACEDESC2);
+	renderer.bSurface->Lock(NULL,&ddsd,DDLOCK_WRITEONLY|DDLOCK_SURFACEMEMORYPTR,NULL);
+	
+	filter_f_32((DWORD*)ddsd.lpSurface,buffer,160,144,lPitch);
+	
+	renderer.bSurface->Unlock(NULL);   
+	// Options accessed in here
+	if(options->video_visual_rumble && GB->rumble_counter) {
+		--GB->rumble_counter;
+		if(!(GB->rumble_counter%2)) {
+			targetBltRect.left-=VISUAL_RUMBLE_STRENGTH;
+			targetBltRect.right-=VISUAL_RUMBLE_STRENGTH;
+			changeRect = 1;
+		} else changeRect = 0;
+	} else changeRect = 0;
+	renderer.gbTextOut();
+	
+	int screen_real_width = targetBltRect.right - targetBltRect.left;
+	// multiple_gb accessed
+	if(multiple_gb && GB == GB2) {
+		targetBltRect.left += screen_real_width;
+		targetBltRect.right += screen_real_width;
+	}
+	
+	if(ddSurface->Blt(&targetBltRect,bSurface,NULL,0,NULL) == DDERR_SURFACELOST)	{
+		ddSurface->Restore();
+		bSurface->Restore();
+	}
+	
+	if(multiple_gb && GB == GB2) {
+		targetBltRect.left -= screen_real_width;
+		targetBltRect.right -= screen_real_width;
+	} 
+	
+	if(changeRect){
+		targetBltRect.left += VISUAL_RUMBLE_STRENGTH;
+		targetBltRect.right += VISUAL_RUMBLE_STRENGTH;
+    }
+}
+
+
+void DirectDraw::drawScreenGeneric16(WORD* buffer)
+{
+	DDSURFACEDESC2 ddsd;
+	
+	ZeroMemory(&ddsd,sizeof(ddsd));
+	ddsd.dwSize = sizeof(DDSURFACEDESC2);
+	bSurface->Lock(NULL,&ddsd,DDLOCK_WRITEONLY|DDLOCK_SURFACEMEMORYPTR,NULL);
+	
+	filter_f_16((WORD*)ddsd.lpSurface,buffer,160,144,lPitch);
+	
+	bSurface->Unlock(NULL);   
+	
+	if(options->video_visual_rumble && GB->rumble_counter) {
+		--GB->rumble_counter;
+		if(!(GB->rumble_counter%2)){
+			targetBltRect.left-=VISUAL_RUMBLE_STRENGTH;
+			targetBltRect.right-=VISUAL_RUMBLE_STRENGTH;
+			changeRect = 1;
+		} else changeRect = 0;
+	} else changeRect = 0;
+	
+	renderer.gbTextOut();
+	
+	int screen_real_width = targetBltRect.right - targetBltRect.left;
+	
+	if(multiple_gb && GB == GB2) {
+		targetBltRect.left += screen_real_width;
+		targetBltRect.right += screen_real_width;
+	}
+	
+	if(ddSurface->Blt(&targetBltRect,bSurface,NULL,0,NULL) == DDERR_SURFACELOST) {
+		ddSurface->Restore();
+		bSurface->Restore();
+	}
+	
+	if(multiple_gb && GB == GB2) {
+		targetBltRect.left -= screen_real_width;
+		targetBltRect.right -= screen_real_width;
+	} 
+	
+	if(changeRect) {
+		targetBltRect.left+=VISUAL_RUMBLE_STRENGTH;
+		targetBltRect.right+=VISUAL_RUMBLE_STRENGTH;
+	}   
+}
+
+void DirectDraw::drawBorder32()
+{
+	unsigned short* source = sgb_border_buffer;
+	DWORD* target = (DWORD*)dx_border_buffer_render;
+	
+	for(register int y=0;y<256*224;y+=8) { 
+		*target++ = *(gfx_pal32+*source++); // gfx_pal32 used here <<<
+		*target++ = *(gfx_pal32+*source++);
+		*target++ = *(gfx_pal32+*source++);
+		*target++ = *(gfx_pal32+*source++);
+		*target++ = *(gfx_pal32+*source++);
+		*target++ = *(gfx_pal32+*source++);
+		*target++ = *(gfx_pal32+*source++);
+		*target++ = *(gfx_pal32+*source++);                                                                                                                                                   
+	} 
+	
+	DDSURFACEDESC2 ddsd;
+	
+	ZeroMemory(&ddsd,sizeof(ddsd));
+	ddsd.dwSize = sizeof(DDSURFACEDESC2);
+	borderSurface->Lock(NULL,&ddsd,DDLOCK_WRITEONLY|DDLOCK_SURFACEMEMORYPTR,NULL);
+	borderLPitch = ddsd.lPitch>>2;
+	
+	int temp_w = gameboyFilterWidth;
+	int temp_h = gameboyFilterHeight;   
+	gameboyFilterWidth = borderFilterWidth;
+	gameboyFilterHeight = borderFilterHeight;   
+	border_filter_f_32((DWORD*)ddsd.lpSurface,(DWORD*)dx_border_buffer_render,256,224,borderLPitch);
+	gameboyFilterWidth = temp_w;
+	gameboyFilterHeight = temp_h;
+	
+	borderSurface->Unlock(NULL);   
+	
+	POINT pt;
+	RECT rect;
+	
+	GetClientRect(*renderer.hwnd,&rect);
+	pt.x=pt.y=0;
+	ClientToScreen(*renderer.hwnd,&pt);
+	OffsetRect(&rect,pt.x,pt.y);
+	
+	if(ddSurface->Blt(&rect,borderSurface,NULL,0,NULL) == DDERR_SURFACELOST){
+	    ddSurface->Restore();
+		borderSurface->Restore();
+	}
+}
+
+void DirectDraw::drawBorder16()
+{
+	WORD* target = (WORD*)dx_border_buffer_render;
+	unsigned short* source = sgb_border_buffer;
+	
+	for(register int y=0;y<256*224;y+=8) { 
+		*target++ = *(gfx_pal16+*source++);
+		*target++ = *(gfx_pal16+*source++);
+		*target++ = *(gfx_pal16+*source++);
+		*target++ = *(gfx_pal16+*source++);
+		*target++ = *(gfx_pal16+*source++);
+		*target++ = *(gfx_pal16+*source++);
+		*target++ = *(gfx_pal16+*source++);
+		*target++ = *(gfx_pal16+*source++);                                                                                                                                                   
+	} 
+	
+	DDSURFACEDESC2 ddsd;
+	
+	ZeroMemory(&ddsd,sizeof(ddsd));
+	ddsd.dwSize = sizeof(DDSURFACEDESC2);
+	borderSurface->Lock(NULL,&ddsd,DDLOCK_WRITEONLY|DDLOCK_SURFACEMEMORYPTR,NULL);
+	borderLPitch = ddsd.lPitch>>1;
+	
+	int temp_w = gameboyFilterWidth;
+	int temp_h = gameboyFilterHeight;   
+	gameboyFilterWidth = borderFilterWidth;
+	gameboyFilterHeight = borderFilterHeight;   
+	border_filter_f_16((WORD*)ddsd.lpSurface,(WORD*)dx_border_buffer_render,256,224,borderLPitch);
+	gameboyFilterWidth = temp_w;
+	gameboyFilterHeight = temp_h;   
+	
+	borderSurface->Unlock(NULL);   
+	
+	POINT pt;
+	RECT rect;
+	
+	GetClientRect(*renderer.hwnd,&rect);
+	pt.x=pt.y=0;
+	ClientToScreen(*renderer.hwnd,&pt);
+	OffsetRect(&rect,pt.x,pt.y);
+	
+	if(ddSurface->Blt(&rect,borderSurface,NULL,0,NULL) == DDERR_SURFACELOST){
+		ddSurface->Restore();
+		borderSurface->Restore();
+	}
 }

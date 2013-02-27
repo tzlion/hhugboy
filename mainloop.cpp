@@ -211,7 +211,7 @@ void gb_system::mainloop()
                                                   
                int r_frame_skip = (speedup && options->speedup_skip_9frames ? 9 : options->video_frameskip);
                if(!skip_frame && !sgb_mask && !(frameskip_counter%(r_frame_skip+1)))              
-                  renderer.drawScreen();
+                  (renderer.*renderer.drawScreen)();
                   
                if(wy_set != -1)
                {
@@ -403,7 +403,7 @@ void gb_system::mainloop()
 
          if(!sgb_mask)
          {
-            renderer.drawScreen();
+            (renderer.*renderer.drawScreen)();
          }
       }
 
@@ -441,7 +441,7 @@ void gb_system::mainloop()
 
          if(!sgb_mask)
          {
-             renderer.drawScreen();
+             (renderer.*renderer.drawScreen)();
          }
       }
    }

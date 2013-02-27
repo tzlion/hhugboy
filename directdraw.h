@@ -47,18 +47,7 @@ void mix_gbc_colors();
 void initPaletteShifts();
 bool initPalettes();
 
-bool change_filter();
-
 #define SafeRelease(x) if(x) { x->Release(), x=NULL; }
-
-void gbTextOut();
-
-void draw_screen_mix16();
-void draw_screen_mix32();
-void draw_screen16();
-void draw_screen32();
-void draw_screen_generic16(WORD* buffer);
-void draw_screen_generic32(DWORD* buffer);
 
 #ifdef ALLOW_DEBUG
 void draw_debug_screen();
@@ -68,8 +57,8 @@ class DirectDraw {
     
     public:
         
-        void (*drawBorder)();
-		void (*drawScreen)();
+        void (DirectDraw::*drawBorder)();
+		void (DirectDraw::*drawScreen)();
         
         DirectDraw(HWND* inHwnd);
         ~DirectDraw();
@@ -89,8 +78,6 @@ class DirectDraw {
         void setRect(bool gb2open);
         
         // when this works properly the below can be made private
-        
-        void gbTextOut();
 
 		int bitCount;
         int rs,gs,bs;
@@ -101,6 +88,36 @@ class DirectDraw {
         int gameboyFilterWidth;
         videofiltertype borderFilterType;
         videofiltertype gameboyFilterType;
+
+    private:
+        
+        static int ffs(UINT mask);
+        
+        void initPaletteShifts();
+        
+        bool changeFilters();
+
+        wstring messageText;
+        int messageDuration;
+        gb_system* messageGb;
+        
+		IDirectDrawClipper* ddClip;
+		
+        int getFilterDimension(videofiltertype type);
+        
+        int changeRect;
+            
+		void drawScreenGeneric16(WORD* buffer);
+		void drawScreenGeneric32(DWORD* buffer);
+		void drawScreen16();
+		void drawScreen32();
+		void drawScreenMix16();
+		void drawScreenMix32();
+		
+		void drawBorder16();
+		void drawBorder32();
+		        
+        void gbTextOut();
         
 		IDirectDraw7* dd;
 		IDirectDrawSurface7* ddSurface;
@@ -116,19 +133,6 @@ class DirectDraw {
         
         HWND* hwnd;
         
-    private:
-        
-        static int ffs(UINT mask);
-        
-        void initPaletteShifts();
-
-        wstring messageText;
-        int messageDuration;
-        gb_system* messageGb;
-        
-		IDirectDrawClipper* ddClip;
-		
-        int getFilterDimension(videofiltertype type);
 };
 
 #endif
