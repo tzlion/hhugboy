@@ -52,10 +52,6 @@ using namespace std;
 
 int RGB_BIT_MASK = 0;
 
-void* dx_buffer_mix = NULL;
-
-void *dx_border_buffer_render;
-
 DWORD* gfx_pal32 = NULL;
 WORD* gfx_pal16 = NULL;
 
@@ -148,12 +144,6 @@ void mix_gbc_colors()
      }  
   }
 }
-
-void (*filter_f_32)(DWORD *target,DWORD *src,int width,int height,int pitch) = NULL;
-void (*filter_f_16)(WORD *target,WORD *src,int width,int height,int pitch) = NULL;
-void (*border_filter_f_32)(DWORD *target,DWORD *src,int width,int height,int pitch) = NULL;
-void (*border_filter_f_16)(WORD *target,WORD *src,int width,int height,int pitch) = NULL;
-
 
 void filter_none_32(DWORD *pointer,DWORD *source,int width,int height,int pitch)
 {
@@ -482,21 +472,21 @@ DirectDraw::~DirectDraw()
         delete [] gfx_pal16; 
         gfx_pal16 = NULL; 
     }
-    if(dx_buffer_mix != NULL) { 
+    if(dxBufferMix != NULL) { 
         if(bitCount==16) {
-            delete [] (WORD*)dx_buffer_mix;
+            delete [] (WORD*)dxBufferMix;
         } else {
-            delete [] (DWORD*)dx_buffer_mix;
+            delete [] (DWORD*)dxBufferMix;
         }
-        dx_buffer_mix = NULL; 
+        dxBufferMix = NULL; 
     }         
-    if(dx_border_buffer_render != NULL) { 
+    if(dxBorderBufferRender != NULL) { 
         if(bitCount==16) {
-            delete [] (WORD*)dx_border_buffer_render;
+            delete [] (WORD*)dxBorderBufferRender;
         } else {
-            delete [] (DWORD*)dx_border_buffer_render;
+            delete [] (DWORD*)dxBorderBufferRender;
         }
-        dx_border_buffer_render = NULL; 
+        dxBorderBufferRender = NULL; 
     }   
       
     SafeRelease(bSurface);
@@ -613,24 +603,24 @@ bool DirectDraw::init()
 	setDrawMode(false);
     
     if(bitCount  == 16) {
-        dx_buffer_mix = new WORD[140*166];     
-        dx_border_buffer_render = new WORD[256*224];
+        dxBufferMix = new WORD[140*166];     
+        dxBorderBufferRender = new WORD[256*224];
         
         drawBorder = &DirectDraw::drawBorder16;
-        filter_f_16 = filter_none_16;
+        gameboyFilter16 = &filter_none_16;
         
         lPitch >>= 1;
     } else {
-        dx_buffer_mix = new DWORD[140*166];  
-        dx_border_buffer_render = new DWORD[256*224];
+        dxBufferMix = new DWORD[140*166];  
+        dxBorderBufferRender = new DWORD[256*224];
         
         drawBorder = &DirectDraw::drawBorder32;
-        filter_f_32 = filter_none_32;     
+        gameboyFilter32 = &filter_none_32;     
         
         lPitch >>= 2;
     }
     
-    if(!dx_buffer_mix || !dx_border_buffer_render) {
+    if(!dxBufferMix || !dxBorderBufferRender) {
         debug_print(str_table[ERROR_MEMORY]); 
         return false;
     }
@@ -789,39 +779,39 @@ bool DirectDraw::changeFilters()
 		switch(gameboyFilterType){
 			case VIDEO_FILTER_SOFT2X:
 			case VIDEO_FILTER_SOFTXX:
-				filter_f_16 = softwarexx_16;      
+				gameboyFilter16 = softwarexx_16;      
 				break;
 			case VIDEO_FILTER_SCALE2X:
-				filter_f_16 = Scale2x16;      
+				gameboyFilter16 = Scale2x16;      
 				break;   
 			case VIDEO_FILTER_SCALE3X:
-				filter_f_16 = Scale3x16;      
+				gameboyFilter16 = Scale3x16;      
 				break;           
 			/*    case VIDEO_FILTER_BLUR:
-			filter_f_16 = blur_16;    
+			gameboyFilter16 = blur_16;    
 			break;     */
 			case VIDEO_FILTER_NONE:
 			default:
-				filter_f_16 = filter_none_16;
+				gameboyFilter16 = filter_none_16;
 				break;
 		}   
 		switch(borderFilterType) { 
 			case VIDEO_FILTER_SOFT2X:
 			case VIDEO_FILTER_SOFTXX:
-				border_filter_f_16 = softwarexx_16;      
+				borderFilter16 = softwarexx_16;      
 				break;
 			case VIDEO_FILTER_SCALE2X:
-				border_filter_f_16 = Scale2x16;      
+				borderFilter16 = Scale2x16;      
 				break;  
 			case VIDEO_FILTER_SCALE3X:
-				border_filter_f_16 = Scale3x16;      
+				borderFilter16 = Scale3x16;      
 				break;            
 			/*   case VIDEO_FILTER_BLUR:
-			border_filter_f_16 = blur_16;    
+			borderFilter16  = blur_16;    
 			break;       */
 			case VIDEO_FILTER_NONE:
 			default:
-				border_filter_f_16 = filter_none_16;
+				borderFilter16 = filter_none_16;
 				break;
 		}         
 	}else{
@@ -830,39 +820,39 @@ bool DirectDraw::changeFilters()
 		switch(gameboyFilterType) {
 			case VIDEO_FILTER_SOFT2X:
 			case VIDEO_FILTER_SOFTXX:
-				filter_f_32 = softwarexx_32;      
+				gameboyFilter32 = softwarexx_32;      
 				break;
 			case VIDEO_FILTER_SCALE2X:
-				filter_f_32 = Scale2x32;      
+				gameboyFilter32 = Scale2x32;      
 				break;      
 			case VIDEO_FILTER_SCALE3X:
-				filter_f_32 = Scale3x32;      
+				gameboyFilter32 = Scale3x32;      
 				break;          
 			/*    case VIDEO_FILTER_BLUR:
-			filter_f_32 = blur_32;    
+			gameboyFilter32 = blur_32;    
 			break;  */
 			case VIDEO_FILTER_NONE:
 			default:
-				filter_f_32 = filter_none_32;
+				gameboyFilter32 = filter_none_32;
 				break;
 		}
 		switch(borderFilterType) {
 			case VIDEO_FILTER_SOFT2X:
 			case VIDEO_FILTER_SOFTXX:
-				border_filter_f_32 = softwarexx_32;      
+				borderFilter32 = softwarexx_32;      
 				break;
 			case VIDEO_FILTER_SCALE2X:
-				border_filter_f_32 = Scale2x32;      
+				borderFilter32 = Scale2x32;      
 				break;     
 			case VIDEO_FILTER_SCALE3X:
-				border_filter_f_32 = Scale3x32;      
+				borderFilter32 = Scale3x32;      
 				break;         
 			/*   case VIDEO_FILTER_BLUR:
-			border_filter_f_32 = blur_32;    
+			borderFilter32 = blur_32;    
 			break;    */
 			case VIDEO_FILTER_NONE:
 			default:
-				border_filter_f_32 = filter_none_32;
+				borderFilter32 = filter_none_32;
 				break;
 		}       
    }    
@@ -934,7 +924,7 @@ void DirectDraw::drawScreenMix32()
 	DWORD* older = (DWORD*)GB->gfx_buffer_older;
 	DWORD* oldest = (DWORD*)GB->gfx_buffer_oldest;
 	
-	DWORD* target = (DWORD*)dx_buffer_mix;
+	DWORD* target = (DWORD*)dxBufferMix;
 	
 	DWORD mix_temp1 = 0;
 	DWORD mix_temp2 = 0;
@@ -969,7 +959,7 @@ void DirectDraw::drawScreenMix32()
 		GB->gfx_buffer_old = temp;
 	}
 
-    drawScreenGeneric32((DWORD*)dx_buffer_mix);
+    drawScreenGeneric32((DWORD*)dxBufferMix);
 }
 
 void DirectDraw::drawScreen16()
@@ -984,7 +974,7 @@ void DirectDraw::drawScreenMix16()
 	WORD* older = (WORD*)GB->gfx_buffer_older;
 	WORD* oldest = (WORD*)GB->gfx_buffer_oldest;
 	
-	WORD* target = (WORD*)dx_buffer_mix;
+	WORD* target = (WORD*)dxBufferMix;
 	
 	WORD mix_temp1 = 0;
 	WORD mix_temp2 = 0;
@@ -1036,7 +1026,7 @@ void DirectDraw::drawScreenMix16()
 		GB->gfx_buffer_old = temp;
 	}
    
-	renderer.drawScreenGeneric16((WORD*)dx_buffer_mix);
+	renderer.drawScreenGeneric16((WORD*)dxBufferMix);
 }
 
 
@@ -1048,7 +1038,7 @@ void DirectDraw::drawScreenGeneric32(DWORD* buffer)
 	ddsd.dwSize = sizeof(DDSURFACEDESC2);
 	renderer.bSurface->Lock(NULL,&ddsd,DDLOCK_WRITEONLY|DDLOCK_SURFACEMEMORYPTR,NULL);
 	
-	filter_f_32((DWORD*)ddsd.lpSurface,buffer,160,144,lPitch);
+	gameboyFilter32((DWORD*)ddsd.lpSurface,buffer,160,144,lPitch);
 	
 	renderer.bSurface->Unlock(NULL);   
 	// Options accessed in here
@@ -1094,7 +1084,7 @@ void DirectDraw::drawScreenGeneric16(WORD* buffer)
 	ddsd.dwSize = sizeof(DDSURFACEDESC2);
 	bSurface->Lock(NULL,&ddsd,DDLOCK_WRITEONLY|DDLOCK_SURFACEMEMORYPTR,NULL);
 	
-	filter_f_16((WORD*)ddsd.lpSurface,buffer,160,144,lPitch);
+	gameboyFilter16((WORD*)ddsd.lpSurface,buffer,160,144,lPitch);
 	
 	bSurface->Unlock(NULL);   
 	
@@ -1134,8 +1124,8 @@ void DirectDraw::drawScreenGeneric16(WORD* buffer)
 
 void DirectDraw::drawBorder32()
 {
-	unsigned short* source = sgb_border_buffer;
-	DWORD* target = (DWORD*)dx_border_buffer_render;
+	unsigned short* source = sgb_border_buffer; // sgb_border_buffer == ?
+	DWORD* target = (DWORD*)dxBorderBufferRender;
 	
 	for(register int y=0;y<256*224;y+=8) { 
 		*target++ = *(gfx_pal32+*source++); // gfx_pal32 used here <<<
@@ -1159,7 +1149,7 @@ void DirectDraw::drawBorder32()
 	int temp_h = gameboyFilterHeight;   
 	gameboyFilterWidth = borderFilterWidth;
 	gameboyFilterHeight = borderFilterHeight;   
-	border_filter_f_32((DWORD*)ddsd.lpSurface,(DWORD*)dx_border_buffer_render,256,224,borderLPitch);
+	borderFilter32((DWORD*)ddsd.lpSurface,(DWORD*)dxBorderBufferRender,256,224,borderLPitch);
 	gameboyFilterWidth = temp_w;
 	gameboyFilterHeight = temp_h;
 	
@@ -1181,7 +1171,7 @@ void DirectDraw::drawBorder32()
 
 void DirectDraw::drawBorder16()
 {
-	WORD* target = (WORD*)dx_border_buffer_render;
+	WORD* target = (WORD*)dxBorderBufferRender;
 	unsigned short* source = sgb_border_buffer;
 	
 	for(register int y=0;y<256*224;y+=8) { 
@@ -1206,7 +1196,7 @@ void DirectDraw::drawBorder16()
 	int temp_h = gameboyFilterHeight;   
 	gameboyFilterWidth = borderFilterWidth;
 	gameboyFilterHeight = borderFilterHeight;   
-	border_filter_f_16((WORD*)ddsd.lpSurface,(WORD*)dx_border_buffer_render,256,224,borderLPitch);
+	borderFilter16((WORD*)ddsd.lpSurface,(WORD*)dxBorderBufferRender,256,224,borderLPitch);
 	gameboyFilterWidth = temp_w;
 	gameboyFilterHeight = temp_h;   
 	

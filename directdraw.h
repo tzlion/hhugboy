@@ -59,6 +59,11 @@ class DirectDraw {
         
         void (DirectDraw::*drawBorder)();
 		void (DirectDraw::*drawScreen)();
+		
+		void (*borderFilter16)(WORD *target,WORD *src,int width,int height,int pitch);
+		void (*gameboyFilter16)(WORD *target,WORD *src,int width,int height,int pitch);
+		void (*borderFilter32)(DWORD *target,DWORD *src,int width,int height,int pitch);
+		void (*gameboyFilter32)(DWORD *target,DWORD *src,int width,int height,int pitch);
         
         DirectDraw(HWND* inHwnd);
         ~DirectDraw();
@@ -91,6 +96,9 @@ class DirectDraw {
 
     private:
         
+		void *dxBorderBufferRender;
+		void *dxBufferMix;
+
         static int ffs(UINT mask);
         
         void initPaletteShifts();
