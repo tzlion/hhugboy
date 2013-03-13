@@ -39,8 +39,9 @@ using namespace std;
 
 #include "directdraw.h"
 #include "GB.h"
-#include "scale2x.h"
-#include "scale3x.h"
+
+#include "filters.h"
+
 #include "cpu.h"
 #include "debug.h"
 #include "SGB.h"
@@ -54,8 +55,6 @@ int RGB_BIT_MASK = 0;
 
 DWORD* gfx_pal32 = NULL;
 WORD* gfx_pal16 = NULL;
-
-void (DirectDraw::*drawScreen)() = NULL; 
 
 bool initPalettes()
 {
@@ -144,311 +143,6 @@ void mix_gbc_colors()
      }  
   }
 }
-
-void filter_none_32(DWORD *pointer,DWORD *source,int width,int height,int pitch)
-{
-   copy_line32(pointer,source,width*height); 
-}
-
-void filter_none_16(WORD *pointer,WORD *source,int width,int height,int pitch)
-{
-   copy_line16(pointer,source,width*height);
-}
-
-void softwarexx_16(WORD *pointer,WORD *source,int width,int height,int pitch)
-{
-   register WORD *target;
-   WORD* init = source;
-   
-	// renderer.gameboyFilterHeight indicates scale 
-   for(register int y = 0;y < height*renderer.gameboyFilterHeight;y++)
-   { 
-      target = pointer + y*pitch;
-      source = init + (y/renderer.gameboyFilterHeight)*width;
-      for(int x = 0;x < width; x++)
-      {
-      	 for (int s = 0; s < renderer.gameboyFilterHeight - 1; s++) {
-      	 	*target++ = *source;
-      	 }
-         *target++ = *source++;
-      }
-  }
-}
-
-void softwarexx_32(DWORD *pointer,DWORD *source,int width,int height,int pitch)
-{
-   register DWORD *target;
-   DWORD* init = source;
-
-	// renderer.gameboyFilterHeight indicates scale 
-   for(register int y = 0;y < height*renderer.gameboyFilterHeight;y++)
-   { 
-      target = pointer + y*pitch;
-      source = init + (y/renderer.gameboyFilterHeight)*width;
-      for(int x = 0;x < width; x++)
-      {
-      	 for (int s = 0; s < renderer.gameboyFilterHeight - 1; s++) {
-      	 	*target++ = *source;
-      	 }
-         *target++ = *source++;
-      }
-  }
-}
-
-/*
-void blur_32(DWORD *pointer,DWORD *source,int width,int height,int pitch)
-{
-   register DWORD *target = pointer;
-   DWORD* init = source;
-
-   *target++ = (((*(source+width)) + ((*source)<<1) + *(source+1))>>2);
-   *target++ = (((*(source+width)) + ((*source)<<1) + *(source+1))>>2);
-   *source++;    
-   for(int x=1;x<width-1;x++)
-   {
-      *target++ = (((*(source+width)) + ((*source)<<1) + *(source-1))>>2);
-      *target++ = (((*(source+width)) + ((*source)<<1) + *(source+1))>>2);
-      *source++;                                    
-   } 
-   *target++ = (((*(source+width)) + ((*source)<<1) + *(source-1))>>2);
-   *target++ = (((*(source+width)) + ((*source)<<1) + *(source-1))>>2);
-   *source++;     
-      
-   target = pointer+pitch;      
-   source=init; 
-   
-   *target++ = (((*(source+width)) + ((*source)<<1) + *(source+1))>>2);
-   *target++ = (((*(source+width)) + ((*source)<<1) + *(source+1))>>2);
-   *source++;     
-   for(int x=1;x<width-1;x++)
-   {
-      *target++ = (((*(source+width)) + ((*source)<<1) + *(source-1))>>2);
-      *target++ = (((*(source+width)) + ((*source)<<1) + *(source+1))>>2);
-      *source++;                                    
-   } 
-   *target++ = (((*(source+width)) + ((*source)<<1) + *(source-1))>>2);
-   *target++ = (((*(source+width)) + ((*source)<<1) + *(source-1))>>2);
-   *source++;     
-      
-   for(register int y=2;y<(height*renderer.gameboyFilterHeight)-2;y+=2) 
-   { 
-      target = pointer+y*pitch;
-      source = init+(y>>1)*width;
-      
-      *target++ = (((*(source-width)) + ((*source)<<1) + *(source+1))>>2);
-      *target++ = (((*(source-width)) + ((*source)<<1) + *(source+1))>>2);
-      *source++;                  
-          
-      for(int x=1;x<width-1;x++)
-      {
-         *target++ = (((*(source-width)) + ((*source)<<1) + *(source-1))>>2);
-         *target++ = (((*(source-width)) + ((*source)<<1) + *(source+1))>>2);
-         *source++;                                    
-      } 
-      *target++ = (((*(source-width)) + ((*source)<<1) + *(source-1))>>2);
-      *target++ = (((*(source-width)) + ((*source)<<1) + *(source-1))>>2);
-      *source++;                     
-      
-      target = pointer+(y+1)*pitch;
-      source = init+(y>>1)*width;
-            
-      *target++ = (((*(source+width)) + ((*source)<<1) + *(source+1))>>2);
-      *target++ = (((*(source+width)) + ((*source)<<1) + *(source+1))>>2);
-      *source++;    
-          
-      for(int x=1;x<width-1;x++)
-      {
-         *target++ = (((*(source+width)) + ((*source)<<1) + *(source-1))>>2);
-         *target++ = (((*(source+width)) + ((*source)<<1) + *(source+1))>>2);
-         *source++;                                    
-      } 
-      *target++ = (((*(source+width)) + ((*source)<<1) + *(source-1))>>2);
-      *target++ = (((*(source+width)) + ((*source)<<1) + *(source-1))>>2);
-      *source++;           
-   } 
-
-   target = pointer+(height*renderer.gameboyFilterHeight-2)*pitch;
-   source = init+(height-1)*width; 
-
-   *target++ = (((*(source-width)) + ((*source)<<1) + *(source+1))>>2);
-   *target++ = (((*(source-width)) + ((*source)<<1) + *(source+1))>>2);
-   *source++;                 
-   for(int x=1;x<width-1;x++)
-   {
-      *target++ = (((*(source-width)) + ((*source)<<1) + *(source-1))>>2);
-      *target++ = (((*(source-width)) + ((*source)<<1) + *(source+1))>>2);
-      *source++;                                    
-   } 
-   *target++ = (((*(source-width)) + ((*source)<<1) + *(source-1))>>2);
-   *target++ = (((*(source-width)) + ((*source)<<1) + *(source-1))>>2);
-   *source++;       
-      
-   target = pointer+(height*renderer.gameboyFilterHeight-1)*pitch;
-   source = init+(height-1)*width;   
-
-   *target++ = (((*(source-width)) + ((*source)<<1) + *(source+1))>>2);
-   *target++ = (((*(source-width)) + ((*source)<<1) + *(source+1))>>2);
-   *source++;   
-   for(int x=1;x<width-1;x++)
-   {
-      *target++ = (((*(source-width)) + ((*source)<<1) + *(source-1))>>2);
-      *target++ = (((*(source-width)) + ((*source)<<1) + *(source+1))>>2);
-      *source++;                                    
-   } 
-   *target++ = (((*(source-width)) + ((*source)<<1) + *(source-1))>>2);
-   *target++ = (((*(source-width)) + ((*source)<<1) + *(source-1))>>2);
-   //*source++;         
-}
-
-void blur_16(WORD *pointer,WORD *source,int width,int height,int pitch)
-{
-   register WORD *target=pointer;
-   WORD* init = source;
-   int mask = ~RGB_BIT_MASK;
-
-   *target++ = (((((*(source+width))&mask)>>1)&mask)>>1) + ((((*source)&mask)&mask)>>1) + (((((*(source+1))&mask)>>1)&mask)>>1);
-   *target++ = (((((*(source+width))&mask)>>1)&mask)>>1) + ((((*source)&mask)&mask)>>1) + (((((*(source+1))&mask)>>1)&mask)>>1);
-   *source++; 
-   for(int x=1;x<width-1;x++)
-   {
-      *target++ = (((((*(source+width))&mask)>>1)&mask)>>1) + ((((*source)&mask)&mask)>>1) + (((((*(source-1))&mask)>>1)&mask)>>1);
-      *target++ = (((((*(source+width))&mask)>>1)&mask)>>1) + ((((*source)&mask)&mask)>>1) + (((((*(source+1))&mask)>>1)&mask)>>1);
-      *source++;                                    
-   } 
-   *target++ = (((((*(source+width))&mask)>>1)&mask)>>1) + ((((*source)&mask)&mask)>>1) + (((((*(source-1))&mask)>>1)&mask)>>1);
-   *target++ = (((((*(source+width))&mask)>>1)&mask)>>1) + ((((*source)&mask)&mask)>>1) + (((((*(source-1))&mask)>>1)&mask)>>1);
-   *source++;  
-      
-   target = pointer+pitch;      
-   source=init; 
-   
-   *target++ = (((((*(source+width))&mask)>>1)&mask)>>1) + ((((*source)&mask)&mask)>>1) + (((((*(source+1))&mask)>>1)&mask)>>1);
-   *target++ = (((((*(source+width))&mask)>>1)&mask)>>1) + ((((*source)&mask)&mask)>>1) + (((((*(source+1))&mask)>>1)&mask)>>1);
-   *source++; 
-   for(int x=1;x<width-1;x++)
-   {
-      *target++ = (((((*(source+width))&mask)>>1)&mask)>>1) + ((((*source)&mask)&mask)>>1) + (((((*(source-1))&mask)>>1)&mask)>>1);
-      *target++ = (((((*(source+width))&mask)>>1)&mask)>>1) + ((((*source)&mask)&mask)>>1) + (((((*(source+1))&mask)>>1)&mask)>>1);      
-      *source++;                                    
-   } 
-   *target++ = (((((*(source+width))&mask)>>1)&mask)>>1) + ((((*source)&mask)&mask)>>1) + (((((*(source-1))&mask)>>1)&mask)>>1);
-   *target++ = (((((*(source+width))&mask)>>1)&mask)>>1) + ((((*source)&mask)&mask)>>1) + (((((*(source-1))&mask)>>1)&mask)>>1);
-   *source++;     
-      
-   for(register int y=2;y<(height*renderer.gameboyFilterHeight)-2;y+=2) 
-   { 
-      target = pointer+y*pitch;
-      source = init+(y>>1)*width;
-      
-      *target++ = (((((*(source-width))&mask)>>1)&mask)>>1) + ((((*source)&mask)&mask)>>1) + (((((*(source+1))&mask)>>1)&mask)>>1);
-      *target++ = (((((*(source-width))&mask)>>1)&mask)>>1) + ((((*source)&mask)&mask)>>1) + (((((*(source+1))&mask)>>1)&mask)>>1);      
-      *source++;                  
-      for(int x=1;x<width-1;x++)
-      {
-         *target++ = (((((*(source-width))&mask)>>1)&mask)>>1) + ((((*source)&mask)&mask)>>1) + (((((*(source-1))&mask)>>1)&mask)>>1);
-         *target++ = (((((*(source-width))&mask)>>1)&mask)>>1) + ((((*source)&mask)&mask)>>1) + (((((*(source+1))&mask)>>1)&mask)>>1);
-         *source++;                                    
-      } 
-      *target++ = (((((*(source-width))&mask)>>1)&mask)>>1) + ((((*source)&mask)&mask)>>1) + (((((*(source-1))&mask)>>1)&mask)>>1);
-      *target++ = (((((*(source-width))&mask)>>1)&mask)>>1) + ((((*source)&mask)&mask)>>1) + (((((*(source-1))&mask)>>1)&mask)>>1);      
-      *source++;                     
-      
-      target = pointer+(y+1)*pitch;
-      source = init+(y>>1)*width;
-            
-      *target++ = (((((*(source+width))&mask)>>1)&mask)>>1) + ((((*source)&mask)&mask)>>1) + (((((*(source+1))&mask)>>1)&mask)>>1);
-      *target++ = (((((*(source+width))&mask)>>1)&mask)>>1) + ((((*source)&mask)&mask)>>1) + (((((*(source+1))&mask)>>1)&mask)>>1);      
-      *source++;     
-      for(int x=1;x<width-1;x++)
-      {
-         *target++ = (((((*(source+width))&mask)>>1)&mask)>>1) + ((((*source)&mask)&mask)>>1) + (((((*(source-1))&mask)>>1)&mask)>>1);
-         *target++ = (((((*(source+width))&mask)>>1)&mask)>>1) + ((((*source)&mask)&mask)>>1) + (((((*(source+1))&mask)>>1)&mask)>>1);
-         *source++;                                    
-      } 
-      *target++ = (((((*(source+width))&mask)>>1)&mask)>>1) + ((((*source)&mask)&mask)>>1) + (((((*(source-1))&mask)>>1)&mask)>>1);
-      *target++ = (((((*(source+width))&mask)>>1)&mask)>>1) + ((((*source)&mask)&mask)>>1) + (((((*(source-1))&mask)>>1)&mask)>>1);      
-      *source++;           
-   } 
-
-   target = pointer+(height*renderer.gameboyFilterHeight-2)*pitch;
-   source = init+(height-1)*width; 
-
-   *target++ = (((((*(source-width))&mask)>>1)&mask)>>1) + ((((*source)&mask)&mask)>>1) + (((((*(source+1))&mask)>>1)&mask)>>1);
-   *target++ = (((((*(source-width))&mask)>>1)&mask)>>1) + ((((*source)&mask)&mask)>>1) + (((((*(source+1))&mask)>>1)&mask)>>1);
-   *source++;               
-   for(int x=1;x<width-1;x++)
-   {
-      *target++ = (((((*(source-width))&mask)>>1)&mask)>>1) + ((((*source)&mask)&mask)>>1) + (((((*(source-1))&mask)>>1)&mask)>>1);
-      *target++ = (((((*(source-width))&mask)>>1)&mask)>>1) + ((((*source)&mask)&mask)>>1) + (((((*(source+1))&mask)>>1)&mask)>>1);
-      *source++;                                    
-   } 
-   *target++ = (((((*(source-width))&mask)>>1)&mask)>>1) + ((((*source)&mask)&mask)>>1) + (((((*(source-1))&mask)>>1)&mask)>>1);
-   *target++ = (((((*(source-width))&mask)>>1)&mask)>>1) + ((((*source)&mask)&mask)>>1) + (((((*(source-1))&mask)>>1)&mask)>>1);
-   *source++;               
-    
-      
-   target = pointer+(height*renderer.gameboyFilterHeight-1)*pitch;
-   source = init+(height-1)*width;   
-
-   *target++ = (((((*(source-width))&mask)>>1)&mask)>>1) + ((((*source)&mask)&mask)>>1) + (((((*(source+1))&mask)>>1)&mask)>>1);
-   *target++ = (((((*(source-width))&mask)>>1)&mask)>>1) + ((((*source)&mask)&mask)>>1) + (((((*(source+1))&mask)>>1)&mask)>>1);
-   *source++;               
-   for(int x=1;x<width-1;x++)
-   {
-      *target++ = (((((*(source-width))&mask)>>1)&mask)>>1) + ((((*source)&mask)&mask)>>1) + (((((*(source-1))&mask)>>1)&mask)>>1);
-      *target++ = (((((*(source-width))&mask)>>1)&mask)>>1) + ((((*source)&mask)&mask)>>1) + (((((*(source+1))&mask)>>1)&mask)>>1);
-      *source++;                                    
-   } 
-   *target++ = (((((*(source-width))&mask)>>1)&mask)>>1) + ((((*source)&mask)&mask)>>1) + (((((*(source-1))&mask)>>1)&mask)>>1);
-   *target++ = (((((*(source-width))&mask)>>1)&mask)>>1) + ((((*source)&mask)&mask)>>1) + (((((*(source-1))&mask)>>1)&mask)>>1);
-   //*source++;                    
-}
-*/
-
-
-
-
-#ifdef ALLOW_DEBUG
-void draw_debug_screen()
-{
-   DDBLTFX clrblt;
-   ZeroMemory(&clrblt,sizeof(DDBLTFX));
-   clrblt.dwSize=sizeof(DDBLTFX);
-   clrblt.dwFillColor=RGB(0,0,0);
-   BSurface->Blt(NULL,NULL,NULL,DDBLT_COLORFILL,&clrblt);
-
-   char chregs[60];
-   HDC aDC;
-
-   if(BSurface->GetDC(&aDC)==DD_OK)
-   {
-      SetBkColor(aDC, RGB(0,0,0));//TRANSPARENT);
-      SetTextColor(aDC,RGB(255,255,255));
-      sprintf(chregs,"A:  %X | BC: %X", A,BC.W);
-      TextOut(aDC,5,0,chregs,strlen(chregs));
-      sprintf(chregs,"DE: %X | HL: %X", DE.W,HL.W);
-      TextOut(aDC,5,20,chregs,strlen(chregs));
-      sprintf(chregs,"PC: %X | F: %X | SP: %X", PC.W,F,SP.W);
-      TextOut(aDC,5,40,chregs,strlen(chregs));
-      sprintf(chregs,"opcode: %X", opcode);
-      TextOut(aDC,5,60,chregs,strlen(chregs));
-                     
-      sprintf(chregs,"C: %X | H: %X | Z: %X | N: %X", CFLAG,HFLAG,ZFLAG,NFLAG);
-      TextOut(aDC,5,80,chregs,strlen(chregs));
-           
-      sprintf(chregs,"IME: %X",IME);
-      TextOut(aDC,5,100,chregs,strlen(chregs));
-
-      BSurface->ReleaseDC(aDC);
-   }
-        
-   if(DDSurface->Blt(&renderer.targetBltRect,BSurface,NULL,0,NULL) == DDERR_SURFACELOST)
-   {
-      DDSurface->Restore();
-      BSurface->Restore();
-   }
-}
-#endif
 
 
 DirectDraw::DirectDraw(HWND* inHwnd)
@@ -1215,3 +909,45 @@ void DirectDraw::drawBorder16()
 		borderSurface->Restore();
 	}
 }
+
+#ifdef ALLOW_DEBUG
+void DirectDraw::drawDebugScreen()
+{
+   DDBLTFX clrblt;
+   ZeroMemory(&clrblt,sizeof(DDBLTFX));
+   clrblt.dwSize=sizeof(DDBLTFX);
+   clrblt.dwFillColor=RGB(0,0,0);
+   BSurface->Blt(NULL,NULL,NULL,DDBLT_COLORFILL,&clrblt);
+
+   char chregs[60];
+   HDC aDC;
+
+   if(BSurface->GetDC(&aDC)==DD_OK)
+   {
+      SetBkColor(aDC, RGB(0,0,0));//TRANSPARENT);
+      SetTextColor(aDC,RGB(255,255,255));
+      sprintf(chregs,"A:  %X | BC: %X", A,BC.W);
+      TextOut(aDC,5,0,chregs,strlen(chregs));
+      sprintf(chregs,"DE: %X | HL: %X", DE.W,HL.W);
+      TextOut(aDC,5,20,chregs,strlen(chregs));
+      sprintf(chregs,"PC: %X | F: %X | SP: %X", PC.W,F,SP.W);
+      TextOut(aDC,5,40,chregs,strlen(chregs));
+      sprintf(chregs,"opcode: %X", opcode);
+      TextOut(aDC,5,60,chregs,strlen(chregs));
+                     
+      sprintf(chregs,"C: %X | H: %X | Z: %X | N: %X", CFLAG,HFLAG,ZFLAG,NFLAG);
+      TextOut(aDC,5,80,chregs,strlen(chregs));
+           
+      sprintf(chregs,"IME: %X",IME);
+      TextOut(aDC,5,100,chregs,strlen(chregs));
+
+      BSurface->ReleaseDC(aDC);
+   }
+        
+   if(DDSurface->Blt(&renderer.targetBltRect,BSurface,NULL,0,NULL) == DDERR_SURFACELOST)
+   {
+      DDSurface->Restore();
+      BSurface->Restore();
+   }
+}
+#endif

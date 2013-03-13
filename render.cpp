@@ -93,6 +93,27 @@ void copy_line16(unsigned short* target, unsigned short* src, int count)
 
 void copy_line32(unsigned long* target, unsigned long* src, int count)
 {
+	memcpy(target,src,count*sizeof(long));
+	return;
+	
+	// ^^ not speed tested yet
+
+	for(int x=0;x<count;x++) {
+		target[x] = src[x];
+	}
+
+
+	return;
+		
+	// Can we do some better performance tests here of ^ vs v because I mean ASM ffs. 
+	// Maybe Im doing this wrong but it seems like both cases are sub microsecond so who gives a fuck
+	
+	//http://www.devx.com/tips/Tip/13291
+	//http://stackoverflow.com/questions/3598859/c-copy-array
+	//http://www.theregister.co.uk/2009/05/15/microsoft_banishes_memcpy/  ~ recommends memcpy_s instead
+	//	
+	//
+	
    unsigned long dummy;
    __asm__ __volatile__
    (

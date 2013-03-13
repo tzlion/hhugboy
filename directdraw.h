@@ -49,10 +49,6 @@ bool initPalettes();
 
 #define SafeRelease(x) if(x) { x->Release(), x=NULL; }
 
-#ifdef ALLOW_DEBUG
-void draw_debug_screen();
-#endif
-
 class DirectDraw {
     
     public:
@@ -60,11 +56,9 @@ class DirectDraw {
         void (DirectDraw::*drawBorder)();
 		void (DirectDraw::*drawScreen)();
 		
-		void (*borderFilter16)(WORD *target,WORD *src,int width,int height,int pitch);
-		void (*gameboyFilter16)(WORD *target,WORD *src,int width,int height,int pitch);
-		void (*borderFilter32)(DWORD *target,DWORD *src,int width,int height,int pitch);
-		void (*gameboyFilter32)(DWORD *target,DWORD *src,int width,int height,int pitch);
-        
+#ifdef ALLOW_DEBUG
+		void drawDebugScreen();
+#endif
         DirectDraw(HWND* inHwnd);
         ~DirectDraw();
         
@@ -86,13 +80,7 @@ class DirectDraw {
 
 		int bitCount;
         int rs,gs,bs;
-        
-        int borderFilterHeight;
-        int borderFilterWidth;
-        int gameboyFilterHeight;
-        int gameboyFilterWidth;
-        videofiltertype borderFilterType;
-        videofiltertype gameboyFilterType;
+
 
     private:
         
@@ -131,6 +119,18 @@ class DirectDraw {
 		IDirectDrawSurface7* ddSurface;
 		IDirectDrawSurface7* bSurface;
 		IDirectDrawSurface7* borderSurface;       
+        
+        int borderFilterHeight;
+        int borderFilterWidth;
+        int gameboyFilterHeight;
+        int gameboyFilterWidth;
+        videofiltertype borderFilterType;
+        videofiltertype gameboyFilterType;
+        
+		void (*borderFilter16)(WORD *target,WORD *src,int width,int height,int pitch);
+		void (*gameboyFilter16)(WORD *target,WORD *src,int width,int height,int pitch);
+		void (*borderFilter32)(DWORD *target,DWORD *src,int width,int height,int pitch);
+		void (*gameboyFilter32)(DWORD *target,DWORD *src,int width,int height,int pitch);
         
         int lPitch;
         int borderLPitch;

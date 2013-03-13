@@ -337,7 +337,7 @@ int WINAPI WinMain(HINSTANCE hThisInstance,HINSTANCE hPrevInstance, LPSTR  lpszA
             mainloop();
             GB->frames = 0;
 
-            draw_debug_screen();
+            renderer.drawDebugScreen();
             continue;
          }
          #endif
@@ -1811,7 +1811,7 @@ void keyAction(int key)
               frames = 1;
               mainloop();
               frames = 0;
-              draw_debug_screen();
+              renderer.drawDebugScreen();
            }
         break;
         #endif
