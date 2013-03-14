@@ -148,12 +148,12 @@ void mix_gbc_colors()
 DirectDraw::DirectDraw(HWND* inHwnd)
 {
    //debug_print("Emu Center HX DirectDraw ON");
-   borderFilterWidth = borderFilterHeight = gameboyFilterWidth = gameboyFilterHeight = 1;
-   borderFilterType = gameboyFilterType = VIDEO_FILTER_NONE;
-   hwnd = inHwnd;
-   RECT targetBltRect;
-   lPitch = 160;
-   changeRect = 0;
+   this->borderFilterWidth = this->borderFilterHeight = this->gameboyFilterWidth = this->gameboyFilterHeight = 1;
+   this->borderFilterType = this->gameboyFilterType = VIDEO_FILTER_NONE;
+   this->hwnd = inHwnd;
+   //RECT this->targetBltRect;
+   this->lPitch = 160;
+   this->changeRect = 0;
 }
 
 DirectDraw::~DirectDraw()
@@ -166,45 +166,45 @@ DirectDraw::~DirectDraw()
         delete [] gfx_pal16; 
         gfx_pal16 = NULL; 
     }
-    if(dxBufferMix != NULL) { 
-        if(bitCount==16) {
-            delete [] (WORD*)dxBufferMix;
+    if(this->dxBufferMix != NULL) { 
+        if(this->bitCount==16) {
+            delete [] (WORD*)this->dxBufferMix;
         } else {
-            delete [] (DWORD*)dxBufferMix;
+            delete [] (DWORD*)this->dxBufferMix;
         }
-        dxBufferMix = NULL; 
+        this->dxBufferMix = NULL; 
     }         
-    if(dxBorderBufferRender != NULL) { 
-        if(bitCount==16) {
-            delete [] (WORD*)dxBorderBufferRender;
+    if(this->dxBorderBufferRender != NULL) { 
+        if(this->bitCount==16) {
+            delete [] (WORD*)this->dxBorderBufferRender;
         } else {
-            delete [] (DWORD*)dxBorderBufferRender;
+            delete [] (DWORD*)this->dxBorderBufferRender;
         }
-        dxBorderBufferRender = NULL; 
+        this->dxBorderBufferRender = NULL; 
     }   
       
-    SafeRelease(bSurface);
-    SafeRelease(borderSurface);
-    SafeRelease(ddSurface);
-    SafeRelease(ddClip);
-    SafeRelease(dd);
+    SafeRelease(this->bSurface);
+    SafeRelease(this->borderSurface);
+    SafeRelease(this->ddSurface);
+    SafeRelease(this->ddClip);
+    SafeRelease(this->dd);
     
-    DeleteObject(afont);
+    DeleteObject(this->afont);
 }
 
 void DirectDraw::setDrawMode(bool mix) 
 {
 	if (!mix) {
-		if(bitCount==16) {
-			drawScreen = &DirectDraw::drawScreen16;
+		if(this->bitCount==16) {
+			this->drawScreen = &DirectDraw::drawScreen16;
 		} else {
-			drawScreen = &DirectDraw::drawScreen32;
+			this->drawScreen = &DirectDraw::drawScreen32;
 		}
 	} else {
-		if(bitCount==16) {
-			drawScreen = &DirectDraw::drawScreenMix16;
+		if(this->bitCount==16) {
+			this->drawScreen = &DirectDraw::drawScreenMix16;
 		} else {
-			drawScreen = &DirectDraw::drawScreenMix32;
+			this->drawScreen = &DirectDraw::drawScreenMix32;
 		}
 	}
 	
@@ -216,39 +216,39 @@ bool DirectDraw::init()
     DDSURFACEDESC2 ddsd;
     //DDSCAPS2 ddscaps;
     
-    ddrval = DirectDrawCreateEx(NULL, (void**)&dd, IID_IDirectDraw7, NULL); 
+    ddrval = DirectDrawCreateEx(NULL, (void**)&(this->dd), IID_IDirectDraw7, NULL); 
     if(ddrval!=DD_OK)
     {
         debug_print("DirectDraw Create failed!"); 
         return false;
     }
-    ddrval = dd->SetCooperativeLevel(*hwnd, DDSCL_NORMAL);
+    ddrval = this->dd->SetCooperativeLevel(*hwnd, DDSCL_NORMAL);
     if(ddrval!=DD_OK)
     {
         debug_print("DirectDraw: SetCooperativelevel failed!"); 
         return false;
     }
     
-    ddrval = dd->CreateClipper(0,&ddClip,NULL);
+    ddrval = dd->CreateClipper(0,&(this->ddClip),NULL);
     if(ddrval!=DD_OK)
     {
         debug_print("DirectDraw: CreateClipper failed!"); 
         return false;
     }
-    ddClip->SetHWnd(0,*hwnd);
+    ddClip->SetHWnd(0,*(this->hwnd));
     
     ZeroMemory(&ddsd,sizeof(ddsd));
     ddsd.dwSize = sizeof(DDSURFACEDESC2);
     ddsd.dwFlags = DDSD_CAPS;
     ddsd.ddsCaps.dwCaps = DDSCAPS_PRIMARYSURFACE;
-    ddrval = dd->CreateSurface(&ddsd,&ddSurface,NULL);
+    ddrval = this->dd->CreateSurface(&ddsd,&(this->ddSurface),NULL);
     if(ddrval != DD_OK) 
     {
         debug_print("DirectDraw: Create main surface failed!"); 
         return false;
     }
     
-    renderer.ddSurface->SetClipper(renderer.ddClip);
+    this->ddSurface->SetClipper(this->ddClip);
     
     ZeroMemory(&ddsd,sizeof(ddsd));
     ddsd.dwSize = sizeof(DDSURFACEDESC2);
@@ -257,7 +257,7 @@ bool DirectDraw::init()
     ddsd.dwWidth = 160;
     ddsd.dwHeight = 144;
     
-    ddrval = dd->CreateSurface(&ddsd,&bSurface,NULL);
+    ddrval = this->dd->CreateSurface(&ddsd,&(this->bSurface),NULL);
     if(ddrval != DD_OK) 
     {
         debug_print("DirectDraw: Create gb surface failed!"); 
@@ -265,7 +265,7 @@ bool DirectDraw::init()
     }
     ddsd.dwWidth = 256;
     ddsd.dwHeight = 224;   
-    ddrval = dd->CreateSurface(&ddsd,&borderSurface,NULL);
+    ddrval = this->dd->CreateSurface(&ddsd,&(this->borderSurface),NULL);
     if(ddrval != DD_OK) 
     {
         debug_print("DirectDraw: Create border surface failed!"); 
@@ -277,49 +277,49 @@ bool DirectDraw::init()
     ZeroMemory(&clrblt,sizeof(DDBLTFX));
     clrblt.dwSize=sizeof(DDBLTFX);
     clrblt.dwFillColor = RGB(0,0,0);
-    bSurface->Blt(NULL,NULL,NULL,DDBLT_COLORFILL,&clrblt);
-    borderSurface->Blt(NULL,NULL,NULL,DDBLT_COLORFILL,&clrblt);
+    this->bSurface->Blt(NULL,NULL,NULL,DDBLT_COLORFILL,&clrblt);
+    this->borderSurface->Blt(NULL,NULL,NULL,DDBLT_COLORFILL,&clrblt);
     
     ZeroMemory(&ddsd,sizeof(ddsd));
     ddsd.dwSize = sizeof(DDSURFACEDESC2);
     ddsd.dwFlags = DDSD_PIXELFORMAT;
-    bSurface->Lock(NULL,&ddsd,DDLOCK_WAIT|DDLOCK_SURFACEMEMORYPTR,NULL);
+    this->bSurface->Lock(NULL,&ddsd,DDLOCK_WAIT|DDLOCK_SURFACEMEMORYPTR,NULL);
     
-    bitCount = ddsd.ddpfPixelFormat.dwRGBBitCount; 
-    lPitch = ddsd.lPitch;
+    this->bitCount = ddsd.ddpfPixelFormat.dwRGBBitCount; 
+    this->lPitch = ddsd.lPitch;
     
-    bSurface->Unlock(NULL);
+    this->bSurface->Unlock(NULL);
     
-    initPaletteShifts();
+    this->initPaletteShifts();
     
     if (!initPalettes()) return false;
     
-	setDrawMode(false);
+	this->setDrawMode(false);
     
-    if(bitCount  == 16) {
-        dxBufferMix = new WORD[140*166];     
-        dxBorderBufferRender = new WORD[256*224];
+    if(this->bitCount  == 16) {
+        this->dxBufferMix = new WORD[140*166];     
+        this->dxBorderBufferRender = new WORD[256*224];
         
-        drawBorder = &DirectDraw::drawBorder16;
-        gameboyFilter16 = &filter_none_16;
+        this->drawBorder = &DirectDraw::drawBorder16;
+        this->gameboyFilter16 = &filter_none_16;
         
-        lPitch >>= 1;
+        this->lPitch >>= 1;
     } else {
-        dxBufferMix = new DWORD[140*166];  
-        dxBorderBufferRender = new DWORD[256*224];
+        this->dxBufferMix = new DWORD[140*166];  
+        this->dxBorderBufferRender = new DWORD[256*224];
         
-        drawBorder = &DirectDraw::drawBorder32;
-        gameboyFilter32 = &filter_none_32;     
+        this->drawBorder = &DirectDraw::drawBorder32;
+        this->gameboyFilter32 = &filter_none_32;     
         
-        lPitch >>= 2;
+        this->lPitch >>= 2;
     }
     
-    if(!dxBufferMix || !dxBorderBufferRender) {
+    if(!this->dxBufferMix || !this->dxBorderBufferRender) {
         debug_print(str_table[ERROR_MEMORY]); 
         return false;
     }
     
-    SetCurrentDirectory(options->program_directory.c_str());
+    SetCurrentDirectory(options->program_directory.c_str()); // hmmmmmmm
     AddFontResource(L"PCPaintBoldSmall.ttf");
     
     return true;
@@ -331,24 +331,24 @@ void DirectDraw::initPaletteShifts()
     
     px.dwSize = sizeof(px);
     
-    bSurface->GetPixelFormat(&px);
+    this->bSurface->GetPixelFormat(&px);
     
-    rs = ffs(px.dwRBitMask);
-    gs = ffs(px.dwGBitMask);
-    bs = ffs(px.dwBBitMask);
+    this->rs = ffs(px.dwRBitMask);
+    this->gs = ffs(px.dwGBitMask);
+    this->bs = ffs(px.dwBBitMask);
     
     RGB_BIT_MASK = 0x421;
     
     if((px.dwFlags&DDPF_RGB) != 0 && px.dwRBitMask == 0xF800 && px.dwGBitMask == 0x07E0 && px.dwBBitMask == 0x001F) {
-        gs++;
+        this->gs++;
         RGB_BIT_MASK = 0x821;
     } else if((px.dwFlags&DDPF_RGB) != 0 && px.dwRBitMask == 0x001F && px.dwGBitMask == 0x07E0 && px.dwBBitMask == 0xF800) {
-        gs++;
+        this->gs++;
         RGB_BIT_MASK = 0x821;
-    } else if(bitCount == 32 || renderer.bitCount == 24) {// 32-bit or 24-bit
-        rs += 3;
-        gs += 3;
-        bs += 3;
+    } else if(this->bitCount == 32 || this->bitCount == 24) {// 32-bit or 24-bit
+        this->rs += 3;
+        this->gs += 3;
+        this->bs += 3;
     }
 }
 
@@ -365,34 +365,34 @@ int DirectDraw::ffs(UINT mask)
 
 void DirectDraw::showMessage(wstring message, int duration, gb_system* targetGb)
 {
-    messageText = message;
-    messageDuration = duration;
-    messageGb = targetGb;
+    this->messageText = message;
+    this->messageDuration = duration;
+    this->messageGb = targetGb;
 }
 
 void DirectDraw::gbTextOut()
 { // note use of GB here
-    if(messageDuration && GB == messageGb) {
-        --messageDuration;
+    if(this->messageDuration && GB == messageGb) {
+        --this->messageDuration;
         HDC aDC;
-        if(bSurface->GetDC(&aDC)==DD_OK) {
-            SelectObject(aDC,afont);
+        if(this->bSurface->GetDC(&aDC)==DD_OK) {
+            SelectObject(aDC,this->afont);
             SetBkMode(aDC, TRANSPARENT);
             SetTextColor(aDC,RGB(255,0,128));
 
-            TextOut(aDC,3*gameboyFilterWidth,3*gameboyFilterHeight,messageText.c_str(),messageText.length());
-            TextOut(aDC,1*gameboyFilterWidth,1*gameboyFilterWidth,messageText.c_str(),messageText.length());
-            TextOut(aDC,1*gameboyFilterWidth,3*gameboyFilterWidth,messageText.c_str(),messageText.length());
-            TextOut(aDC,3*gameboyFilterWidth,1*gameboyFilterWidth,messageText.c_str(),messageText.length());
+            TextOut(aDC,3*this->gameboyFilterWidth,3*this->gameboyFilterHeight,this->messageText.c_str(),this->messageText.length());
+            TextOut(aDC,1*this->gameboyFilterWidth,1*this->gameboyFilterHeight,this->messageText.c_str(),this->messageText.length());
+            TextOut(aDC,1*this->gameboyFilterWidth,3*this->gameboyFilterHeight,this->messageText.c_str(),this->messageText.length());
+            TextOut(aDC,3*this->gameboyFilterWidth,1*this->gameboyFilterHeight,this->messageText.c_str(),this->messageText.length());
             
-            TextOut(aDC,3*gameboyFilterWidth,2*gameboyFilterHeight,messageText.c_str(),messageText.length());
-            TextOut(aDC,1*gameboyFilterWidth,2*gameboyFilterWidth,messageText.c_str(),messageText.length());
-            TextOut(aDC,2*gameboyFilterWidth,3*gameboyFilterWidth,messageText.c_str(),messageText.length());
-            TextOut(aDC,2*gameboyFilterWidth,1*gameboyFilterWidth,messageText.c_str(),messageText.length());
+            TextOut(aDC,3*this->gameboyFilterWidth,2*this->gameboyFilterHeight,this->messageText.c_str(),this->messageText.length());
+            TextOut(aDC,1*this->gameboyFilterWidth,2*this->gameboyFilterHeight,this->messageText.c_str(),this->messageText.length());
+            TextOut(aDC,2*this->gameboyFilterWidth,3*this->gameboyFilterHeight,this->messageText.c_str(),this->messageText.length());
+            TextOut(aDC,2*this->gameboyFilterWidth,1*this->gameboyFilterHeight,this->messageText.c_str(),this->messageText.length());
             
             SetTextColor(aDC,RGB(255,255,255));
-            TextOut(aDC,2*gameboyFilterWidth,2*gameboyFilterWidth,messageText.c_str(),messageText.length());
-            renderer.bSurface->ReleaseDC(aDC);
+            TextOut(aDC,2*this->gameboyFilterWidth,2*this->gameboyFilterHeight,this->messageText.c_str(),this->messageText.length());
+            this->bSurface->ReleaseDC(aDC);
         }
     }
 
@@ -418,16 +418,16 @@ int DirectDraw::getFilterDimension(videofiltertype type)
 
 void DirectDraw::setBorderFilter(videofiltertype type) 
 {
-    borderFilterWidth = borderFilterHeight = getFilterDimension(type);
-    borderFilterType = type;
-    changeFilters();
+    this->borderFilterWidth = this->borderFilterHeight = this->getFilterDimension(type);
+    this->borderFilterType = type;
+    this->changeFilters();
 }
 
 void DirectDraw::setGameboyFilter(videofiltertype type) 
 {
-    gameboyFilterWidth = gameboyFilterHeight = getFilterDimension(type);
-    gameboyFilterType = type;
-    changeFilters();
+    this->gameboyFilterWidth = this->gameboyFilterHeight = this->getFilterDimension(type);
+    this->gameboyFilterType = type;
+    this->changeFilters();
 }
 
 bool DirectDraw::changeFilters()
@@ -435,25 +435,25 @@ bool DirectDraw::changeFilters()
 	HRESULT ddrval;
 	DDSURFACEDESC2 ddsd;
 	
-	SafeRelease(bSurface);
-	SafeRelease(borderSurface);
+	SafeRelease(this->bSurface);
+	SafeRelease(this->borderSurface);
 	
 	ZeroMemory(&ddsd,sizeof(ddsd));
 	ddsd.dwSize = sizeof(DDSURFACEDESC2);
 	ddsd.dwFlags = DDSD_CAPS|DDSD_WIDTH|DDSD_HEIGHT;
 	ddsd.ddsCaps.dwCaps = DDSCAPS_OFFSCREENPLAIN|DDSCAPS_VIDEOMEMORY;//DDSCAPS_SYSTEMMEMORY;
-	ddsd.dwWidth = 160*gameboyFilterWidth;
-	ddsd.dwHeight = 144*gameboyFilterHeight;
+	ddsd.dwWidth = 160*this->gameboyFilterWidth;
+	ddsd.dwHeight = 144*this->gameboyFilterHeight;
 
-	ddrval = dd->CreateSurface(&ddsd,&bSurface,NULL);
+	ddrval = this->dd->CreateSurface(&ddsd,&(this->bSurface),NULL);
 	if(ddrval != DD_OK) {
 		debug_print("DirectDraw Createsurface failed!"); 
 		return false;
 	}
 
-	ddsd.dwWidth = 256*borderFilterWidth;
-	ddsd.dwHeight = 224*borderFilterHeight;
-	ddrval = dd->CreateSurface(&ddsd,&borderSurface,NULL);
+	ddsd.dwWidth = 256*this->borderFilterWidth;
+	ddsd.dwHeight = 224*this->borderFilterHeight;
+	ddrval = this->dd->CreateSurface(&ddsd,&(this->borderSurface),NULL);
 	if(ddrval != DD_OK)  {
 		debug_print("DirectDraw Createsurface failed!"); 
 		return false;
@@ -461,92 +461,92 @@ bool DirectDraw::changeFilters()
 	   
 	ZeroMemory(&ddsd,sizeof(ddsd));
 	ddsd.dwSize = sizeof(DDSURFACEDESC2);
-	bSurface->Lock(NULL,&ddsd,DDLOCK_WAIT|DDLOCK_SURFACEMEMORYPTR,NULL);
+	this->bSurface->Lock(NULL,&ddsd,DDLOCK_WAIT|DDLOCK_SURFACEMEMORYPTR,NULL);
    
-	lPitch = ddsd.lPitch;
+	this->lPitch = ddsd.lPitch;
 	
-	bSurface->Unlock(NULL);
+	this->bSurface->Unlock(NULL);
 	
-	if(bitCount==16){
-		lPitch >>= 1;  
+	if(this->bitCount==16){
+		this->lPitch >>= 1;
        
-		switch(gameboyFilterType){
+		switch(this->gameboyFilterType){
 			case VIDEO_FILTER_SOFT2X:
 			case VIDEO_FILTER_SOFTXX:
-				gameboyFilter16 = softwarexx_16;      
+				this->gameboyFilter16 = softwarexx_16;      
 				break;
 			case VIDEO_FILTER_SCALE2X:
-				gameboyFilter16 = Scale2x16;      
+				this->gameboyFilter16 = Scale2x16;      
 				break;   
 			case VIDEO_FILTER_SCALE3X:
-				gameboyFilter16 = Scale3x16;      
+				this->gameboyFilter16 = Scale3x16;      
 				break;           
 			/*    case VIDEO_FILTER_BLUR:
 			gameboyFilter16 = blur_16;    
 			break;     */
 			case VIDEO_FILTER_NONE:
 			default:
-				gameboyFilter16 = filter_none_16;
+				this->gameboyFilter16 = filter_none_16;
 				break;
 		}   
-		switch(borderFilterType) { 
+		switch(this->borderFilterType) { 
 			case VIDEO_FILTER_SOFT2X:
 			case VIDEO_FILTER_SOFTXX:
-				borderFilter16 = softwarexx_16;      
+				this->borderFilter16 = softwarexx_16;      
 				break;
 			case VIDEO_FILTER_SCALE2X:
-				borderFilter16 = Scale2x16;      
+				this->borderFilter16 = Scale2x16;      
 				break;  
 			case VIDEO_FILTER_SCALE3X:
-				borderFilter16 = Scale3x16;      
+				this->borderFilter16 = Scale3x16;      
 				break;            
 			/*   case VIDEO_FILTER_BLUR:
 			borderFilter16  = blur_16;    
 			break;       */
 			case VIDEO_FILTER_NONE:
 			default:
-				borderFilter16 = filter_none_16;
+				this->borderFilter16 = filter_none_16;
 				break;
 		}         
 	}else{
-		lPitch >>= 2;
+		this->lPitch >>= 2;
 		
-		switch(gameboyFilterType) {
+		switch(this->gameboyFilterType) {
 			case VIDEO_FILTER_SOFT2X:
 			case VIDEO_FILTER_SOFTXX:
-				gameboyFilter32 = softwarexx_32;      
+				this->gameboyFilter32 = softwarexx_32;      
 				break;
 			case VIDEO_FILTER_SCALE2X:
-				gameboyFilter32 = Scale2x32;      
+				this->gameboyFilter32 = Scale2x32;      
 				break;      
 			case VIDEO_FILTER_SCALE3X:
-				gameboyFilter32 = Scale3x32;      
+				this->gameboyFilter32 = Scale3x32;      
 				break;          
 			/*    case VIDEO_FILTER_BLUR:
 			gameboyFilter32 = blur_32;    
 			break;  */
 			case VIDEO_FILTER_NONE:
 			default:
-				gameboyFilter32 = filter_none_32;
+				this->gameboyFilter32 = filter_none_32;
 				break;
 		}
-		switch(borderFilterType) {
+		switch(this->borderFilterType) {
 			case VIDEO_FILTER_SOFT2X:
 			case VIDEO_FILTER_SOFTXX:
-				borderFilter32 = softwarexx_32;      
+				this->borderFilter32 = softwarexx_32;      
 				break;
 			case VIDEO_FILTER_SCALE2X:
-				borderFilter32 = Scale2x32;      
+				this->borderFilter32 = Scale2x32;      
 				break;     
 			case VIDEO_FILTER_SCALE3X:
-				borderFilter32 = Scale3x32;      
+				this->borderFilter32 = Scale3x32;      
 				break;         
 			/*   case VIDEO_FILTER_BLUR:
 			borderFilter32 = blur_32;    
 			break;    */
 			case VIDEO_FILTER_NONE:
 			default:
-				borderFilter32 = filter_none_32;
+				this->borderFilter32 = filter_none_32;
 				break;
 		}       
    }    
@@ -554,7 +554,8 @@ bool DirectDraw::changeFilters()
 		(this->*DirectDraw::drawBorder)();  // totally not sure about this either 
 	
 	//afont = CreateFont(12*renderer.gameboyFilterHeight,6*renderer.gameboyFilterWidth,2,2,FW_BOLD,FALSE,FALSE,FALSE,ANSI_CHARSET,OUT_DEFAULT_PRECIS,CLIP_DEFAULT_PRECIS,ANTIALIASED_QUALITY,DEFAULT_PITCH|FF_SWISS,NULL);   
-	afont = CreateFont(8*gameboyFilterHeight,0,0,0,FW_NORMAL,FALSE,FALSE,FALSE,ANSI_CHARSET,OUT_DEFAULT_PRECIS,CLIP_DEFAULT_PRECIS,NONANTIALIASED_QUALITY,DEFAULT_PITCH|FF_SWISS,L"PCPaint Bold Small");   
+	this->afont = CreateFont(8*this->gameboyFilterHeight,0,0,0,FW_NORMAL,FALSE,FALSE,FALSE,ANSI_CHARSET,OUT_DEFAULT_PRECIS,
+                       CLIP_DEFAULT_PRECIS,NONANTIALIASED_QUALITY,DEFAULT_PITCH|FF_SWISS,L"PCPaint Bold Small");   
 
 	return true;
 }
@@ -562,28 +563,28 @@ bool DirectDraw::changeFilters()
 
 int DirectDraw::getBitCount()
 {
-	return bitCount;
+	return this->bitCount;
 }
 
 void DirectDraw::handleWindowResize()
 {
-    setRect(false);
+    this->setRect(false);
     
-    // where are we getting multiple_gb and sgb_mode from in this scope
+    // where are we getting multiple_gb and sgb_mode from in this scope .. Also border_uploaded
     
     if(multiple_gb) {
-        int width = targetBltRect.right - targetBltRect.left;
-        targetBltRect.right = targetBltRect.left + width / 2;
+        int width = this->targetBltRect.right - this->targetBltRect.left;
+        this->targetBltRect.right = this->targetBltRect.left + width / 2;
     }
     
     if(sgb_mode || (options->GBC_SGB_border != OFF && border_uploaded)) {
-        double width = ((double)(targetBltRect.right-targetBltRect.left)/256.0);
-        double height = ((double)(targetBltRect.bottom-targetBltRect.top)/224.0);
+        double width = ((double)(this->targetBltRect.right-this->targetBltRect.left)/256.0);
+        double height = ((double)(this->targetBltRect.bottom-this->targetBltRect.top)/224.0);
         
-        targetBltRect.left += (long)round(48.0*width); 
-        targetBltRect.right = targetBltRect.left + (long)round(160.0*width); 
-        targetBltRect.top += (long)round(40.0*height);
-        targetBltRect.bottom = targetBltRect.top + (long)round(144.0*height);
+        this->targetBltRect.left += (long)round(48.0*width); 
+        this->targetBltRect.right = this->targetBltRect.left + (long)round(160.0*width); 
+        this->targetBltRect.top += (long)round(40.0*height);
+        this->targetBltRect.bottom = this->targetBltRect.top + (long)round(144.0*height);
         
         (this->*DirectDraw::drawBorder)();  
         if(sgb_mask == 1) (*this.*drawScreen)();
@@ -595,19 +596,19 @@ void DirectDraw::handleWindowResize()
 void DirectDraw::setRect(bool gb2open)
 {
     POINT pt;
-    GetClientRect(*hwnd,&targetBltRect);
+    GetClientRect(*(this->hwnd),&(this->targetBltRect));
     pt.x=pt.y=0;
-    ClientToScreen(*hwnd,&pt);
-    OffsetRect(&targetBltRect,pt.x,pt.y);       
+    ClientToScreen(*(this->hwnd),&pt);
+    OffsetRect(&(this->targetBltRect),pt.x,pt.y);       
     if (gb2open) {
-        targetBltRect.right-=160*options->video_size;
+        this->targetBltRect.right-=160*options->video_size;
     }
 }
 
 // draw the screen without mixing frames
 void DirectDraw::drawScreen32()
 {  // should the buffer/s maybe be passed into these?
-   drawScreenGeneric32((DWORD*)GB->gfx_buffer);
+   this->drawScreenGeneric32((DWORD*)GB->gfx_buffer);
 }
 
 // draw the screen mixing frames
@@ -653,12 +654,12 @@ void DirectDraw::drawScreenMix32()
 		GB->gfx_buffer_old = temp;
 	}
 
-    drawScreenGeneric32((DWORD*)dxBufferMix);
+    this->drawScreenGeneric32((DWORD*)dxBufferMix);
 }
 
 void DirectDraw::drawScreen16()
 {  
-   drawScreenGeneric16((WORD*)GB->gfx_buffer);
+   this->drawScreenGeneric16((WORD*)GB->gfx_buffer);
 }
 
 void DirectDraw::drawScreenMix16()
@@ -720,7 +721,7 @@ void DirectDraw::drawScreenMix16()
 		GB->gfx_buffer_old = temp;
 	}
    
-	renderer.drawScreenGeneric16((WORD*)dxBufferMix);
+	this->drawScreenGeneric16((WORD*)dxBufferMix);
 }
 
 
@@ -732,40 +733,40 @@ void DirectDraw::drawScreenGeneric32(DWORD* buffer)
 	ddsd.dwSize = sizeof(DDSURFACEDESC2);
 	renderer.bSurface->Lock(NULL,&ddsd,DDLOCK_WRITEONLY|DDLOCK_SURFACEMEMORYPTR,NULL);
 	
-	gameboyFilter32((DWORD*)ddsd.lpSurface,buffer,160,144,lPitch);
+	this->gameboyFilter32((DWORD*)ddsd.lpSurface,buffer,160,144,this->lPitch);
 	
-	renderer.bSurface->Unlock(NULL);   
+	this->bSurface->Unlock(NULL);   
 	// Options accessed in here
 	if(options->video_visual_rumble && GB->rumble_counter) {
 		--GB->rumble_counter;
 		if(!(GB->rumble_counter%2)) {
-			targetBltRect.left-=VISUAL_RUMBLE_STRENGTH;
-			targetBltRect.right-=VISUAL_RUMBLE_STRENGTH;
-			changeRect = 1;
-		} else changeRect = 0;
-	} else changeRect = 0;
-	renderer.gbTextOut();
+			this->targetBltRect.left-=VISUAL_RUMBLE_STRENGTH;
+			this->targetBltRect.right-=VISUAL_RUMBLE_STRENGTH;
+			this->changeRect = 1;
+		} else this->changeRect = 0;
+	} else this->changeRect = 0;
+	this->gbTextOut();
 	
-	int screen_real_width = targetBltRect.right - targetBltRect.left;
+	int screen_real_width = this->targetBltRect.right - this->targetBltRect.left;
 	// multiple_gb accessed
 	if(multiple_gb && GB == GB2) {
-		targetBltRect.left += screen_real_width;
-		targetBltRect.right += screen_real_width;
+		this->targetBltRect.left += screen_real_width;
+		this->targetBltRect.right += screen_real_width;
 	}
 	
-	if(ddSurface->Blt(&targetBltRect,bSurface,NULL,0,NULL) == DDERR_SURFACELOST)	{
-		ddSurface->Restore();
-		bSurface->Restore();
+	if(this->ddSurface->Blt(&(this->targetBltRect),this->bSurface,NULL,0,NULL) == DDERR_SURFACELOST)	{
+		this->ddSurface->Restore();
+		this->bSurface->Restore();
 	}
 	
 	if(multiple_gb && GB == GB2) {
-		targetBltRect.left -= screen_real_width;
-		targetBltRect.right -= screen_real_width;
+		this->targetBltRect.left -= screen_real_width;
+		this->targetBltRect.right -= screen_real_width;
 	} 
 	
-	if(changeRect){
-		targetBltRect.left += VISUAL_RUMBLE_STRENGTH;
-		targetBltRect.right += VISUAL_RUMBLE_STRENGTH;
+	if(this->changeRect){
+		this->targetBltRect.left += VISUAL_RUMBLE_STRENGTH;
+		this->targetBltRect.right += VISUAL_RUMBLE_STRENGTH;
     }
 }
 
@@ -776,50 +777,50 @@ void DirectDraw::drawScreenGeneric16(WORD* buffer)
 	
 	ZeroMemory(&ddsd,sizeof(ddsd));
 	ddsd.dwSize = sizeof(DDSURFACEDESC2);
-	bSurface->Lock(NULL,&ddsd,DDLOCK_WRITEONLY|DDLOCK_SURFACEMEMORYPTR,NULL);
+	this->bSurface->Lock(NULL,&ddsd,DDLOCK_WRITEONLY|DDLOCK_SURFACEMEMORYPTR,NULL);
 	
-	gameboyFilter16((WORD*)ddsd.lpSurface,buffer,160,144,lPitch);
+	gameboyFilter16((WORD*)ddsd.lpSurface,buffer,160,144,this->lPitch);
 	
-	bSurface->Unlock(NULL);   
+	this->bSurface->Unlock(NULL);   
 	
 	if(options->video_visual_rumble && GB->rumble_counter) {
 		--GB->rumble_counter;
 		if(!(GB->rumble_counter%2)){
-			targetBltRect.left-=VISUAL_RUMBLE_STRENGTH;
-			targetBltRect.right-=VISUAL_RUMBLE_STRENGTH;
-			changeRect = 1;
-		} else changeRect = 0;
-	} else changeRect = 0;
+			this->targetBltRect.left-=VISUAL_RUMBLE_STRENGTH;
+			this->targetBltRect.right-=VISUAL_RUMBLE_STRENGTH;
+			this->changeRect = 1;
+		} else this->changeRect = 0;
+	} else this->changeRect = 0;
 	
-	renderer.gbTextOut();
+	this->gbTextOut();
 	
-	int screen_real_width = targetBltRect.right - targetBltRect.left;
-	
-	if(multiple_gb && GB == GB2) {
-		targetBltRect.left += screen_real_width;
-		targetBltRect.right += screen_real_width;
-	}
-	
-	if(ddSurface->Blt(&targetBltRect,bSurface,NULL,0,NULL) == DDERR_SURFACELOST) {
-		ddSurface->Restore();
-		bSurface->Restore();
-	}
+	int screen_real_width = this->targetBltRect.right - this->targetBltRect.left;
 	
 	if(multiple_gb && GB == GB2) {
-		targetBltRect.left -= screen_real_width;
-		targetBltRect.right -= screen_real_width;
+		this->targetBltRect.left += screen_real_width;
+		this->targetBltRect.right += screen_real_width;
+	}
+	
+	if(this->ddSurface->Blt(&(this->targetBltRect),this->bSurface,NULL,0,NULL) == DDERR_SURFACELOST) {
+		this->ddSurface->Restore();
+		this->bSurface->Restore();
+	}
+	
+	if(multiple_gb && GB == GB2) {
+		this->targetBltRect.left -= screen_real_width;
+		this->targetBltRect.right -= screen_real_width;
 	} 
 	
-	if(changeRect) {
-		targetBltRect.left+=VISUAL_RUMBLE_STRENGTH;
-		targetBltRect.right+=VISUAL_RUMBLE_STRENGTH;
+	if(this->changeRect) {
+		this->targetBltRect.left+=VISUAL_RUMBLE_STRENGTH;
+		this->targetBltRect.right+=VISUAL_RUMBLE_STRENGTH;
 	}   
 }
 
 void DirectDraw::drawBorder32()
 {
 	unsigned short* source = sgb_border_buffer; // sgb_border_buffer == ?
-	DWORD* target = (DWORD*)dxBorderBufferRender;
+	DWORD* target = (DWORD*)(this->dxBorderBufferRender);
 	
 	for(register int y=0;y<256*224;y+=8) { 
 		*target++ = *(gfx_pal32+*source++); // gfx_pal32 used here <<<
@@ -836,36 +837,36 @@ void DirectDraw::drawBorder32()
 	
 	ZeroMemory(&ddsd,sizeof(ddsd));
 	ddsd.dwSize = sizeof(DDSURFACEDESC2);
-	borderSurface->Lock(NULL,&ddsd,DDLOCK_WRITEONLY|DDLOCK_SURFACEMEMORYPTR,NULL);
-	borderLPitch = ddsd.lPitch>>2;
+	this->borderSurface->Lock(NULL,&ddsd,DDLOCK_WRITEONLY|DDLOCK_SURFACEMEMORYPTR,NULL);
+	this->borderLPitch = ddsd.lPitch>>2;
 	
 	int temp_w = gameboyFilterWidth;
 	int temp_h = gameboyFilterHeight;   
-	gameboyFilterWidth = borderFilterWidth;
-	gameboyFilterHeight = borderFilterHeight;   
-	borderFilter32((DWORD*)ddsd.lpSurface,(DWORD*)dxBorderBufferRender,256,224,borderLPitch);
-	gameboyFilterWidth = temp_w;
-	gameboyFilterHeight = temp_h;
+	this->gameboyFilterWidth = this->borderFilterWidth;
+	this->gameboyFilterHeight = this->borderFilterHeight;   
+	this->borderFilter32((DWORD*)ddsd.lpSurface,(DWORD*)(this->dxBorderBufferRender),256,224,this->borderLPitch);
+	this->gameboyFilterWidth = temp_w;
+	this->gameboyFilterHeight = temp_h;
 	
-	borderSurface->Unlock(NULL);   
+	this->borderSurface->Unlock(NULL);   
 	
 	POINT pt;
 	RECT rect;
 	
-	GetClientRect(*renderer.hwnd,&rect);
+	GetClientRect(*(this->hwnd),&rect);
 	pt.x=pt.y=0;
-	ClientToScreen(*renderer.hwnd,&pt);
+	ClientToScreen(*(this->hwnd),&pt);
 	OffsetRect(&rect,pt.x,pt.y);
 	
-	if(ddSurface->Blt(&rect,borderSurface,NULL,0,NULL) == DDERR_SURFACELOST){
-	    ddSurface->Restore();
-		borderSurface->Restore();
+	if(this->ddSurface->Blt(&rect,this->borderSurface,NULL,0,NULL) == DDERR_SURFACELOST){
+	    this->ddSurface->Restore();
+		this->borderSurface->Restore();
 	}
 }
 
 void DirectDraw::drawBorder16()
 {
-	WORD* target = (WORD*)dxBorderBufferRender;
+	WORD* target = (WORD*)(this->dxBorderBufferRender);
 	unsigned short* source = sgb_border_buffer;
 	
 	for(register int y=0;y<256*224;y+=8) { 
@@ -883,30 +884,30 @@ void DirectDraw::drawBorder16()
 	
 	ZeroMemory(&ddsd,sizeof(ddsd));
 	ddsd.dwSize = sizeof(DDSURFACEDESC2);
-	borderSurface->Lock(NULL,&ddsd,DDLOCK_WRITEONLY|DDLOCK_SURFACEMEMORYPTR,NULL);
-	borderLPitch = ddsd.lPitch>>1;
+	this->borderSurface->Lock(NULL,&ddsd,DDLOCK_WRITEONLY|DDLOCK_SURFACEMEMORYPTR,NULL);
+	this->borderLPitch = ddsd.lPitch>>1;
 	
-	int temp_w = gameboyFilterWidth;
-	int temp_h = gameboyFilterHeight;   
-	gameboyFilterWidth = borderFilterWidth;
-	gameboyFilterHeight = borderFilterHeight;   
-	borderFilter16((WORD*)ddsd.lpSurface,(WORD*)dxBorderBufferRender,256,224,borderLPitch);
-	gameboyFilterWidth = temp_w;
-	gameboyFilterHeight = temp_h;   
+	int temp_w = this->gameboyFilterWidth;
+	int temp_h = this->gameboyFilterHeight;   
+	this->gameboyFilterWidth = this->borderFilterWidth;
+	this->gameboyFilterHeight = this->borderFilterHeight;   
+	this->borderFilter16((WORD*)ddsd.lpSurface,(WORD*)(this->dxBorderBufferRender),256,224,this->borderLPitch);
+	this->gameboyFilterWidth = temp_w;
+	this->gameboyFilterHeight = temp_h;   
 	
-	borderSurface->Unlock(NULL);   
+	this->borderSurface->Unlock(NULL);   
 	
 	POINT pt;
 	RECT rect;
 	
-	GetClientRect(*renderer.hwnd,&rect);
+	GetClientRect(*(this->hwnd),&rect);
 	pt.x=pt.y=0;
-	ClientToScreen(*renderer.hwnd,&pt);
+	ClientToScreen(*(this->hwnd),&pt);
 	OffsetRect(&rect,pt.x,pt.y);
 	
-	if(ddSurface->Blt(&rect,borderSurface,NULL,0,NULL) == DDERR_SURFACELOST){
-		ddSurface->Restore();
-		borderSurface->Restore();
+	if(this->ddSurface->Blt(&rect,this->borderSurface,NULL,0,NULL) == DDERR_SURFACELOST){
+		this->ddSurface->Restore();
+		this->borderSurface->Restore();
 	}
 }
 
@@ -917,12 +918,12 @@ void DirectDraw::drawDebugScreen()
    ZeroMemory(&clrblt,sizeof(DDBLTFX));
    clrblt.dwSize=sizeof(DDBLTFX);
    clrblt.dwFillColor=RGB(0,0,0);
-   BSurface->Blt(NULL,NULL,NULL,DDBLT_COLORFILL,&clrblt);
+   this->BSurface->Blt(NULL,NULL,NULL,DDBLT_COLORFILL,&clrblt);
 
    char chregs[60];
    HDC aDC;
 
-   if(BSurface->GetDC(&aDC)==DD_OK)
+   if(this->BSurface->GetDC(&aDC)==DD_OK)
    {
       SetBkColor(aDC, RGB(0,0,0));//TRANSPARENT);
       SetTextColor(aDC,RGB(255,255,255));
@@ -941,13 +942,13 @@ void DirectDraw::drawDebugScreen()
       sprintf(chregs,"IME: %X",IME);
       TextOut(aDC,5,100,chregs,strlen(chregs));
 
-      BSurface->ReleaseDC(aDC);
+      this->BSurface->ReleaseDC(aDC);
    }
         
-   if(DDSurface->Blt(&renderer.targetBltRect,BSurface,NULL,0,NULL) == DDERR_SURFACELOST)
+   if(this->DDSurface->Blt(&(this->targetBltRect),this->BSurface,NULL,0,NULL) == DDERR_SURFACELOST)
    {
-      DDSurface->Restore();
-      BSurface->Restore();
+      this->DDSurface->Restore();
+      this->BSurface->Restore();
    }
 }
 #endif

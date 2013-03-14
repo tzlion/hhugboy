@@ -38,7 +38,7 @@ void softwarexx_16(WORD *pointer,WORD *source,int width,int height,int pitch)
    register WORD *target;
    WORD* init = source;
    
-	// (pitch/width) indicates scale 
+	// (pitch/width) indicates scale
    for(register int y = 0;y < height*(pitch/width);y++)
    { 
       target = pointer + y*pitch;
@@ -58,7 +58,7 @@ void softwarexx_32(DWORD *pointer,DWORD *source,int width,int height,int pitch)
    register DWORD *target;
    DWORD* init = source;
 
-	// (pitch/width) indicates scale 
+	// (pitch/width) indicates scale  .. this may not be accurate for 16bit! ugh
 	// you can also use renderer.gameboyFilterWidth and its maybe faster but
    for(register int y = 0;y < height*(pitch/width);y++)
    { 
