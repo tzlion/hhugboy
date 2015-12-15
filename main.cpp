@@ -1427,14 +1427,14 @@ void menuAction(int menuOption)
                emuMenu.uncheckOption(IDM_OPTIONVIDEOGBCCOLORS);
                options->video_GBCBGA_real_colors = false;
         
-               mix_gbc_colors();
+               renderer.mixGbcColours();
             } else
             {
                emuMenu.checkOption(IDM_OPTIONVIDEOGBCCOLORS);                
                options->video_GBCBGA_real_colors = true;
         
                if(GB1->romloaded && GB1->gbc_mode)
-                  mix_gbc_colors();
+                  renderer.mixGbcColours();
             }
          break;
          case IDM_OPTIONVIDEOVISUALRUMBLE:

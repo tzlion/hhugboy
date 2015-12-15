@@ -31,6 +31,8 @@
 #include "GB.h"
 #include "options.h"
 
+#include "Renderer.h"
+
 #include <ddraw.h>
 
 #include <string>
@@ -39,17 +41,10 @@ using namespace std;
 
 #define VISUAL_RUMBLE_STRENGTH 5
 
-extern DWORD* gfx_pal32;
-extern WORD* gfx_pal16;
-
-void mix_gbc_colors();
-
-void initPaletteShifts();
-bool initPalettes();
 
 #define SafeRelease(x) if(x) { x->Release(), x=NULL; }
 
-class DirectDraw {
+class DirectDraw: public Renderer {
     
     public:
         
@@ -77,10 +72,11 @@ class DirectDraw {
         void setRect(bool gb2open);
         
         // when this works properly the below can be made private
+        
+        DWORD* gfxPal32;
+        WORD* gfxPal16;
 
-		int bitCount;
-        int rs,gs,bs;
-
+        void mixGbcColours();
 
     private:
         
@@ -88,8 +84,6 @@ class DirectDraw {
 		void *dxBufferMix;
 
         static int ffs(UINT mask);
-        
-        void initPaletteShifts();
         
         bool changeFilters();
 
@@ -140,6 +134,13 @@ class DirectDraw {
         RECT targetBltRect;
         
         HWND* hwnd;
+        
+		int bitCount;
+		
+        int rs,gs,bs;
+    
+        void initPaletteShifts();
+        bool initPalettes();
         
 };
 

@@ -1,12 +1,12 @@
 # Project: hhugboy
-# Makefile created by Dev-C++ 5.3.0.3
+# Makefile created by Dev-C++ 5.3.0.4
 
 CPP      = g++.exe
 CC       = gcc.exe
 WINDRES  = windres.exe
 RES      = ../obj/GEST_private.res
-OBJ      = ../obj/strings.o ../obj/cheats.o ../obj/config.o ../obj/cpu.o ../obj/debug.o ../obj/devices.o ../obj/dialogs.o ../obj/directdraw.o ../obj/directinput.o ../obj/GB.o ../obj/GB_gfx.o ../obj/GB_ioregs.o ../obj/GB_MBC.o ../obj/GB_mem.o ../obj/GB_sound.o ../obj/main.o ../obj/mainloop.o ../obj/render.o ../obj/rom.o ../obj/scale2x.o ../obj/scale3x.o ../obj/SGB.o ../obj/unzip.o ../obj/menu.o ../obj/filters.o $(RES)
-LINKOBJ  = ../obj/strings.o ../obj/cheats.o ../obj/config.o ../obj/cpu.o ../obj/debug.o ../obj/devices.o ../obj/dialogs.o ../obj/directdraw.o ../obj/directinput.o ../obj/GB.o ../obj/GB_gfx.o ../obj/GB_ioregs.o ../obj/GB_MBC.o ../obj/GB_mem.o ../obj/GB_sound.o ../obj/main.o ../obj/mainloop.o ../obj/render.o ../obj/rom.o ../obj/scale2x.o ../obj/scale3x.o ../obj/SGB.o ../obj/unzip.o ../obj/menu.o ../obj/filters.o $(RES)
+OBJ      = ../obj/strings.o ../obj/cheats.o ../obj/config.o ../obj/cpu.o ../obj/debug.o ../obj/devices.o ../obj/dialogs.o ../obj/directdraw.o ../obj/directinput.o ../obj/GB.o ../obj/GB_gfx.o ../obj/GB_ioregs.o ../obj/GB_MBC.o ../obj/GB_mem.o ../obj/GB_sound.o ../obj/main.o ../obj/mainloop.o ../obj/render.o ../obj/rom.o ../obj/scale2x.o ../obj/scale3x.o ../obj/SGB.o ../obj/unzip.o ../obj/menu.o ../obj/filters.o ../obj/renderer.o $(RES)
+LINKOBJ  = ../obj/strings.o ../obj/cheats.o ../obj/config.o ../obj/cpu.o ../obj/debug.o ../obj/devices.o ../obj/dialogs.o ../obj/directdraw.o ../obj/directinput.o ../obj/GB.o ../obj/GB_gfx.o ../obj/GB_ioregs.o ../obj/GB_MBC.o ../obj/GB_mem.o ../obj/GB_sound.o ../obj/main.o ../obj/mainloop.o ../obj/render.o ../obj/rom.o ../obj/scale2x.o ../obj/scale3x.o ../obj/SGB.o ../obj/unzip.o ../obj/menu.o ../obj/filters.o ../obj/renderer.o $(RES)
 LIBS     = -L"C:/Program Files (x86)/Dev-Cpp/MinGW64/x86_64-w64-mingw32/lib32" -static-libgcc -L"C:/Program Files (x86)/Microsoft DirectX SDK (August 2009)/Lib/x86" -mwindows ../libs/libdxguid.a ../libs/libddraw.a ../libs/libdinput.a ../libs/libdinput8.a ../libs/libfmod.a ../libs/libz.a ../libs/libwinmm.a ../libs/libpng12.dll.a  -m32 -mwindows -s
 INCS     = -I"C:/Program Files (x86)/Dev-Cpp/MinGW64/x86_64-w64-mingw32/include" -I"C:/Program Files (x86)/Microsoft DirectX SDK (August 2009)/Include" -I"C:/png/png++-0.2.5/png++-0.2.5" -I"../libpng12/" -I"../zlib/"
 CXXINCS  = -I"C:/Program Files (x86)/Dev-Cpp/MinGW64/x86_64-w64-mingw32/include" -I"C:/Program Files (x86)/Microsoft DirectX SDK (August 2009)/Include" -I"C:/png/png++-0.2.5/png++-0.2.5" -I"../libpng12/" -I"../zlib/"
@@ -100,6 +100,9 @@ $(BIN): $(OBJ)
 
 ../obj/filters.o: ../filters.cpp
 	$(CPP) -c ../filters.cpp -o ../obj/filters.o $(CXXFLAGS)
+
+../obj/renderer.o: ../renderer.cpp
+	$(CPP) -c ../renderer.cpp -o ../obj/renderer.o $(CXXFLAGS)
 
 ../obj/GEST_private.res: GEST_private.rc ../menu.rc 
 	$(WINDRES) -i GEST_private.rc -F pe-i386 --input-format=rc -o ../obj/GEST_private.res -O coff 

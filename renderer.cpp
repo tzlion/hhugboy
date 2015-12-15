@@ -19,30 +19,8 @@
    along with this program; if not, write to the Free Software Foundation, Inc.,
    51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
-#ifndef RENDER_H
-#define RENDER_H
 
-typedef unsigned short WORD;
-typedef unsigned long DWORD;
+#include "renderer.h"
 
-void fill_gfx_buffers(unsigned long val);
 
-void LCDoff_fill_gfx_buffer(unsigned long val);
 
-void fill_line16(unsigned short* adr, unsigned long val, int count);
-
-void fill_line32(unsigned long* adr, unsigned long val, int count);
-
-void copy_line16(unsigned short* target, unsigned short* src, int count);
-
-void copy_line32(unsigned long* target, unsigned long* src, int count);
-
-extern const unsigned short GBC_DMGBG_palettes[12][4];
-extern const unsigned short GBC_DMGOBJ0_palettes[12][4];
-extern const unsigned short GBC_DMGOBJ1_palettes[12][4];
-
-extern const unsigned short LCD_palette_brown[4];
-extern const unsigned short LCD_palette_green[4];
-extern const unsigned short GB_palette_gray[4];
-
-#endif

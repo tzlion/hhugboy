@@ -53,21 +53,18 @@ using namespace std;
 
 int RGB_BIT_MASK = 0;
 
-DWORD* gfx_pal32 = NULL;
-WORD* gfx_pal16 = NULL;
-
-bool initPalettes()
+bool DirectDraw::initPalettes()
 {
     
-    if(renderer.bitCount  == 16) {
-        gfx_pal16 = new WORD[0x10000];
+    if(this->bitCount  == 16) {
+        this->gfxPal16 = new WORD[0x10000];
     } else {
-        gfx_pal32 = new DWORD[0x10000];
+        this->gfxPal32 = new DWORD[0x10000];
     }
     
-    mix_gbc_colors();
+    this->mixGbcColours();
   
-    if(!gfx_pal32 && !gfx_pal16) {
+    if(!this->gfxPal32 && !this->gfxPal16) {
         debug_print(str_table[ERROR_MEMORY]); 
         return false;
     }
@@ -76,9 +73,9 @@ bool initPalettes()
 }
 
 
-void mix_gbc_colors()
+void DirectDraw::mixGbcColours()
 {
-  if(GB1->gbc_mode && options->video_GBCBGA_real_colors)
+  if(GB1->gbc_mode && options->video_GBCBGA_real_colors) // << this
   {
      if(GB1->system_type == SYS_GBA)
      {
@@ -99,9 +96,9 @@ void mix_gbc_colors()
            int green = ((green_init*12+blue_init+red_init)/14);
            int blue = ((blue_init*12+red_init+green_init)/14);
            if(renderer.bitCount == 16)
-              gfx_pal16[i] = (red<<renderer.rs) | (green<<renderer.gs) | (blue<<renderer.bs);              
+              this->gfxPal16[i] = (red<<this->rs) | (green<<this->gs) | (blue<<this->bs);              
            else
-              gfx_pal32[i] = (red<<renderer.rs) | (green<<renderer.gs) | (blue<<renderer.bs);
+              this->gfxPal32[i] = (red<<this->rs) | (green<<this->gs) | (blue<<this->bs);
         }
      }     
      else
@@ -123,9 +120,9 @@ void mix_gbc_colors()
            int green = ((green_init*10+blue_init*2+red_init*2)/14);
            int blue = ((blue_init*10+red_init*2+green_init*2)/14);
            if(renderer.bitCount == 16)
-              gfx_pal16[i] = (red<<renderer.rs) | (green<<renderer.gs) | (blue<<renderer.bs);
+              this->gfxPal16[i] = (red<<this->rs) | (green<<this->gs) | (blue<<this->bs);
            else        
-              gfx_pal32[i] = (red<<renderer.rs) | (green<<renderer.gs) | (blue<<renderer.bs);
+              this->gfxPal32[i] = (red<<this->rs) | (green<<this->gs) | (blue<<this->bs);
         }
      }
   } else
@@ -133,11 +130,11 @@ void mix_gbc_colors()
      if(renderer.bitCount == 16)
      {
         for(int i=0;i<0x10000;++i)
-           gfx_pal16[i] = ((i & 0x1F) << renderer.rs) | (((i & 0x3E0) >> 5) << renderer.gs) | (((i & 0x7C00) >> 10) << renderer.bs);
+           this->gfxPal16[i] = ((i & 0x1F) << this->rs) | (((i & 0x3E0) >> 5) << this->gs) | (((i & 0x7C00) >> 10) << this->bs);
      } else
      {
         for(int i=0;i<0x10000;++i)
-            gfx_pal32[i] = ((i & 0x1F) << renderer.rs) | (((i & 0x3E0) >> 5) << renderer.gs) | (((i & 0x7C00) >> 10) << renderer.bs);
+            this->gfxPal32[i] = ((i & 0x1F) << this->rs) | (((i & 0x3E0) >> 5) << this->gs) | (((i & 0x7C00) >> 10) << this->bs);
            //gfx_pal32[i] = (((i & 0x1F) << rs) | (((i & 0x3E0) >> 5) << gs) | (((i & 0x7C00) >> 10) << bs)) ^ 0xFFFFFFFF; = negative
            //gfx_pal32[i] = ((i & 0x1F) << rs) | (((i & 0x3E0) >> 5) << gs) | (((i & 0x7C00) >> 10) << bs) ^ 0xFFFFFFFF; = super yellow ridiculousness. i actually quite enjoy this
      }  
@@ -158,13 +155,13 @@ DirectDraw::DirectDraw(HWND* inHwnd)
 
 DirectDraw::~DirectDraw()
 {
-    if(gfx_pal32 != NULL) { 
-        delete [] gfx_pal32; 
-        gfx_pal32 = NULL; 
+    if(this->gfxPal32 != NULL) { 
+        delete [] this->gfxPal32; 
+        this->gfxPal32 = NULL; 
     }
-    if(gfx_pal16 != NULL) { 
-        delete [] gfx_pal16; 
-        gfx_pal16 = NULL; 
+    if(this->gfxPal16 != NULL) { 
+        delete [] this->gfxPal16; 
+        this->gfxPal16 = NULL; 
     }
     if(this->dxBufferMix != NULL) { 
         if(this->bitCount==16) {
@@ -292,7 +289,7 @@ bool DirectDraw::init()
     
     this->initPaletteShifts();
     
-    if (!initPalettes()) return false;
+    if (!this->initPalettes()) return false;
     
 	this->setDrawMode(false);
     
@@ -823,14 +820,14 @@ void DirectDraw::drawBorder32()
 	DWORD* target = (DWORD*)(this->dxBorderBufferRender);
 	
 	for(register int y=0;y<256*224;y+=8) { 
-		*target++ = *(gfx_pal32+*source++); // gfx_pal32 used here <<<
-		*target++ = *(gfx_pal32+*source++);
-		*target++ = *(gfx_pal32+*source++);
-		*target++ = *(gfx_pal32+*source++);
-		*target++ = *(gfx_pal32+*source++);
-		*target++ = *(gfx_pal32+*source++);
-		*target++ = *(gfx_pal32+*source++);
-		*target++ = *(gfx_pal32+*source++);                                                                                                                                                   
+		*target++ = *(this->gfxPal32+*source++);
+		*target++ = *(this->gfxPal32+*source++);
+		*target++ = *(this->gfxPal32+*source++);
+		*target++ = *(this->gfxPal32+*source++);
+		*target++ = *(this->gfxPal32+*source++);
+		*target++ = *(this->gfxPal32+*source++);
+		*target++ = *(this->gfxPal32+*source++);
+		*target++ = *(this->gfxPal32+*source++);                                                                                                                                                   
 	} 
 	
 	DDSURFACEDESC2 ddsd;
@@ -870,14 +867,14 @@ void DirectDraw::drawBorder16()
 	unsigned short* source = sgb_border_buffer;
 	
 	for(register int y=0;y<256*224;y+=8) { 
-		*target++ = *(gfx_pal16+*source++);
-		*target++ = *(gfx_pal16+*source++);
-		*target++ = *(gfx_pal16+*source++);
-		*target++ = *(gfx_pal16+*source++);
-		*target++ = *(gfx_pal16+*source++);
-		*target++ = *(gfx_pal16+*source++);
-		*target++ = *(gfx_pal16+*source++);
-		*target++ = *(gfx_pal16+*source++);                                                                                                                                                   
+		*target++ = *(this->gfxPal16+*source++);
+		*target++ = *(this->gfxPal16+*source++);
+		*target++ = *(this->gfxPal16+*source++);
+		*target++ = *(this->gfxPal16+*source++);
+		*target++ = *(this->gfxPal16+*source++);
+		*target++ = *(this->gfxPal16+*source++);
+		*target++ = *(this->gfxPal16+*source++);
+		*target++ = *(this->gfxPal16+*source++);                                                                                                                                                   
 	} 
 	
 	DDSURFACEDESC2 ddsd;

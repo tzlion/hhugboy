@@ -1,7 +1,7 @@
 [Project]
 FileName=hhugboy.dev
 Name=hhugboy
-UnitCount=55
+UnitCount=57
 Type=0
 Ver=2
 ObjFiles=
@@ -534,18 +534,18 @@ BuildCmd=
 Major=1
 Minor=0
 Release=0
-Build=1266
+Build=1273
 LanguageID=2057
 CharsetID=1252
 CompanyName=hhug.me
-FileVersion=1.0.0.1266
+FileVersion=1.0.0.1273
 FileDescription=hhugboy GB emulator
 InternalName=
 LegalCopyright=taizou 2013
 LegalTrademarks=
 OriginalFilename=hhugboy.exe
 ProductName=hhugboy
-ProductVersion=1.0.0.1266
+ProductVersion=1.0.0.1273
 AutoIncBuildNr=1
 SyncProduct=1
 
@@ -593,6 +593,26 @@ BuildCmd=
 FileName=..\filters.h
 CompileCpp=1
 Folder=gfx
+Compile=1
+Link=1
+Priority=1000
+OverrideBuildCmd=0
+BuildCmd=
+
+[Unit56]
+FileName=..\renderer.h
+CompileCpp=1
+Folder=
+Compile=1
+Link=1
+Priority=1000
+OverrideBuildCmd=0
+BuildCmd=
+
+[Unit57]
+FileName=..\renderer.cpp
+CompileCpp=1
+Folder=
 Compile=1
 Link=1
 Priority=1000
