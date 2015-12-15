@@ -19,9 +19,11 @@
    along with this program; if not, write to the Free Software Foundation, Inc.,
    51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
+#define UNICODE
 
 #include <stdlib.h>
 #include <string.h>
+#include <windows.h>
 
 #include "cheats.h"
 
@@ -49,9 +51,44 @@ int rol_l(int number,int count) // roll left
 // checks if cheat_str is valid cheat
 // and adds it to cheats
 ////////////////////////////////////////
+int parseStringPart( wchar_t* string, int start, int length )
+{
+    // so heres some fun shit
+    // if you call this again with a length less than or equal to the length in the previous call
+    // then you get the extra part of the previous string appended onto it
+    // idk im too tired to deal with this fucking language right now
+    char parser_str[10];
+    for(int i=0;i<length;++i)
+        parser_str[i] = string[i+start]; 
+    return (int)strtol(parser_str, NULL, 16);
+}
+
 bool add_cheat(wchar_t* cheat_str)
 {
    int len = wcslen(cheat_str);
+   
+    // Simple cheat format addr=val
+    if ( len == 7 && cheat_str[4] == '=' ) {
+        // validate string - should be hex digits
+        for(int j=0;j<7;++j) {
+            if(j != 4 && wcschr(gg_cheat_values,cheat_str[j]) == NULL) {
+                return false;
+            }
+        }
+        // parse the string
+        int newval = parseStringPart( cheat_str, 5, 2 );
+        int addr = parseStringPart( cheat_str, 0, 4 );
+        // regenerate the cheat name from the parsed values - just in case it fucked up somehow
+        wchar_t dx_message[50];
+        wsprintf(dx_message,L"%04X=%02X",addr,newval);;
+        cheat_str = dx_message;
+        // populate the cheats list
+        cheat[number_of_cheats].address = addr;
+        cheat[number_of_cheats].new_value = newval;
+        wcscpy(cheat[number_of_cheats].str,cheat_str);
+        ++number_of_cheats;
+        return true;
+    }
       
    if((len != 11) && (len != 7))
       return false;

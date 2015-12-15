@@ -532,20 +532,20 @@ BuildCmd=
 
 [VersionInfo]
 Major=1
-Minor=0
+Minor=1
 Release=0
-Build=1273
+Build=1366
 LanguageID=2057
 CharsetID=1252
 CompanyName=hhug.me
-FileVersion=1.0.0.1273
+FileVersion=1.1.0.1366
 FileDescription=hhugboy GB emulator
 InternalName=
-LegalCopyright=taizou 2013
+LegalCopyright=taizou 2013-5
 LegalTrademarks=
 OriginalFilename=hhugboy.exe
 ProductName=hhugboy
-ProductVersion=1.0.0.1273
+ProductVersion=1.1.0.1366
 AutoIncBuildNr=1
 SyncProduct=1
 

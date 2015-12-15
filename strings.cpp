@@ -34,7 +34,7 @@ wchar_t* str_table[40] =
  L"Reading save file failed!",
  L"Writing save file failed!",
  L"Error loading rom!",
- L"GG cheat format: xxx-xxx-xxx or xxx-xxx",
+ L"Cheat format must be either:\nGame Genie xxx-xxx-xxx or xxx-xxx\nSimple xxxx=yy (xxxx=address yy=value)",
  L"hhugboy v%s\nbased on GEST 1.1.1 by TM\nmodified by taizou",
  L"Current slot:",
  L"Not a GB rom!",
