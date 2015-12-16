@@ -97,8 +97,8 @@ class DirectDraw: public Renderer {
         
         int changeRect;
             
-		void drawScreenGeneric16(WORD* buffer);
-		void drawScreenGeneric32(DWORD* buffer);
+		template<typename TYPE>
+		void drawScreenGeneric(TYPE* buffer);
 		void drawScreen16();
 		void drawScreen32();
 		void drawScreenMix16();
@@ -106,6 +106,9 @@ class DirectDraw: public Renderer {
 		
 		void drawBorder16();
 		void drawBorder32();
+		
+		void gameboyFilter(WORD *target,WORD *src,int width,int height,int pitch);
+		void gameboyFilter(DWORD *target,DWORD *src,int width,int height,int pitch);
 		        
         void gbTextOut();
         

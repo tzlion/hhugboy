@@ -511,7 +511,7 @@ bool DirectDraw::changeFilters()
 		switch(this->gameboyFilterType) {
 			case VIDEO_FILTER_SOFT2X:
 			case VIDEO_FILTER_SOFTXX:
-				this->gameboyFilter32 = softwarexx_tmp;      
+				this->gameboyFilter32 = softwarexx;      
 				break;
 			case VIDEO_FILTER_SCALE2X:
 				this->gameboyFilter32 = Scale2x;      
@@ -530,7 +530,7 @@ bool DirectDraw::changeFilters()
 		switch(this->borderFilterType) {
 			case VIDEO_FILTER_SOFT2X:
 			case VIDEO_FILTER_SOFTXX:
-				this->borderFilter32 = softwarexx_tmp;      
+				this->borderFilter32 = softwarexx;      
 				break;
 			case VIDEO_FILTER_SCALE2X:
 				this->borderFilter32 = Scale2x;      
@@ -603,9 +603,8 @@ void DirectDraw::setRect(bool gb2open)
 }
 
 // draw the screen without mixing frames
-void DirectDraw::drawScreen32()
-{  // should the buffer/s maybe be passed into these?
-   this->drawScreenGeneric32((DWORD*)GB->gfx_buffer);
+void DirectDraw::drawScreen32() {
+   this->drawScreenGeneric((DWORD*)GB->gfx_buffer);
 }
 
 // draw the screen mixing frames
@@ -651,12 +650,12 @@ void DirectDraw::drawScreenMix32()
 		GB->gfx_buffer_old = temp;
 	}
 
-    this->drawScreenGeneric32((DWORD*)dxBufferMix);
+    this->drawScreenGeneric((DWORD*)dxBufferMix);
 }
 
 void DirectDraw::drawScreen16()
 {  
-   this->drawScreenGeneric16((WORD*)GB->gfx_buffer);
+   this->drawScreenGeneric((WORD*)GB->gfx_buffer);
 }
 
 void DirectDraw::drawScreenMix16()
@@ -718,11 +717,21 @@ void DirectDraw::drawScreenMix16()
 		GB->gfx_buffer_old = temp;
 	}
    
-	this->drawScreenGeneric16((WORD*)dxBufferMix);
+	this->drawScreenGeneric((WORD*)dxBufferMix);
 }
 
+void DirectDraw::gameboyFilter(WORD *target,WORD *src,int width,int height,int pitch)
+{
+    this->gameboyFilter16(target,src,width,height,pitch);
+}
 
-void DirectDraw::drawScreenGeneric32(DWORD* buffer)
+void DirectDraw::gameboyFilter(DWORD *target,DWORD *src,int width,int height,int pitch)
+{
+    this->gameboyFilter32(target,src,width,height,pitch);
+}
+
+template<typename TYPE>
+void DirectDraw::drawScreenGeneric(TYPE* buffer)
 {
 	DDSURFACEDESC2 ddsd;
 	
@@ -730,7 +739,7 @@ void DirectDraw::drawScreenGeneric32(DWORD* buffer)
 	ddsd.dwSize = sizeof(DDSURFACEDESC2);
 	renderer.bSurface->Lock(NULL,&ddsd,DDLOCK_WRITEONLY|DDLOCK_SURFACEMEMORYPTR,NULL);
 	
-	this->gameboyFilter32((DWORD*)ddsd.lpSurface,buffer,160,144,this->lPitch);
+	this->gameboyFilter((TYPE*)ddsd.lpSurface,buffer,160,144,this->lPitch);
 	
 	this->bSurface->Unlock(NULL);   
 	// Options accessed in here
@@ -767,52 +776,6 @@ void DirectDraw::drawScreenGeneric32(DWORD* buffer)
     }
 }
 
-
-void DirectDraw::drawScreenGeneric16(WORD* buffer)
-{
-	DDSURFACEDESC2 ddsd;
-	
-	ZeroMemory(&ddsd,sizeof(ddsd));
-	ddsd.dwSize = sizeof(DDSURFACEDESC2);
-	this->bSurface->Lock(NULL,&ddsd,DDLOCK_WRITEONLY|DDLOCK_SURFACEMEMORYPTR,NULL);
-	
-	gameboyFilter16((WORD*)ddsd.lpSurface,buffer,160,144,this->lPitch);
-	
-	this->bSurface->Unlock(NULL);   
-	
-	if(options->video_visual_rumble && GB->rumble_counter) {
-		--GB->rumble_counter;
-		if(!(GB->rumble_counter%2)){
-			this->targetBltRect.left-=VISUAL_RUMBLE_STRENGTH;
-			this->targetBltRect.right-=VISUAL_RUMBLE_STRENGTH;
-			this->changeRect = 1;
-		} else this->changeRect = 0;
-	} else this->changeRect = 0;
-	
-	this->gbTextOut();
-	
-	int screen_real_width = this->targetBltRect.right - this->targetBltRect.left;
-	
-	if(multiple_gb && GB == GB2) {
-		this->targetBltRect.left += screen_real_width;
-		this->targetBltRect.right += screen_real_width;
-	}
-	
-	if(this->ddSurface->Blt(&(this->targetBltRect),this->bSurface,NULL,0,NULL) == DDERR_SURFACELOST) {
-		this->ddSurface->Restore();
-		this->bSurface->Restore();
-	}
-	
-	if(multiple_gb && GB == GB2) {
-		this->targetBltRect.left -= screen_real_width;
-		this->targetBltRect.right -= screen_real_width;
-	} 
-	
-	if(this->changeRect) {
-		this->targetBltRect.left+=VISUAL_RUMBLE_STRENGTH;
-		this->targetBltRect.right+=VISUAL_RUMBLE_STRENGTH;
-	}   
-}
 
 void DirectDraw::drawBorder32()
 {
