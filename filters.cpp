@@ -30,7 +30,17 @@ void filter_none_32(DWORD *pointer,DWORD *source,int width,int height,int pitch)
 
 void filter_none_16(WORD *pointer,WORD *source,int width,int height,int pitch)
 {
-   copy_line16(pointer,source,width*height);
+   // copy_line16(pointer,source,(width*height)); // fails due to pitch differences?
+   
+   for(register int y = 0;y < height;y++)
+   {
+      for(int x = 0;x < width; x++)
+      {        
+         *pointer++ = *source++;
+      }
+      pointer+=pitch-width;
+  }
+
 }
 
 void softwarexx_16(WORD *pointer,WORD *source,int width,int height,int pitch)
