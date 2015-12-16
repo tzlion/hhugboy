@@ -22,6 +22,8 @@
 #include "render.h"
 #include "GB.h"
 
+bool asmRendering = false;
+
 void fill_gfx_buffers(unsigned long val)
 {
    int count = 160*144;
@@ -56,57 +58,83 @@ void LCDoff_fill_gfx_buffer(unsigned long val)
 
 void fill_line16(unsigned short* adr, unsigned long val, int count)
 {
-   __asm__ __volatile__ 
-   (    
-      "cld\n"  
-      "rep\n"
-      "stosl\n"    
-      : "=c" (count), "=D" (val)  // dummy values, because register is corrupted
-      : "c" (count>>1), "a" (val), "D" (adr)
-      : "memory" );
+    if ( asmRendering ) {
+        __asm__ __volatile__ 
+        (    
+          "cld\n"  
+          "rep\n"
+          "stosl\n"    
+          : "=c" (count), "=D" (val)  // dummy values, because register is corrupted
+          : "c" (count>>1), "a" (val), "D" (adr)
+          : "memory" );
+    } else {
+        // is this ok?
+       for(int x=0;x<count;x++) {
+	       adr[x] = val;
+	   }
+    }
 }
 
 void fill_line32(unsigned long* adr, unsigned long val, int count)
 {            
-   __asm__ __volatile__ 
-   (       
-      "cld\n"  
-      "rep\n"
-      "stosl\n"    
-      : "=c" (count), "=D" (val)  // dummy values, because register is corrupted
-      : "c" (count), "a" (val), "D" (adr)
-      : "memory" );
+	if ( asmRendering ) {
+	   __asm__ __volatile__ 
+       (       
+          "cld\n"  
+          "rep\n"
+          "stosl\n"    
+          : "=c" (count), "=D" (val)  // dummy values, because register is corrupted
+          : "c" (count), "a" (val), "D" (adr)
+          : "memory" );
+	} else {
+    	for(int x=0;x<count;x++) {
+    		adr[x] = val;
+    	}
+	}
 }
 
 void copy_line16(unsigned short* target, unsigned short* src, int count)
 {
-   unsigned long dummy;
-   __asm__ __volatile__
-   (
-      "cld\n"
-      "rep\n"
-      "movsd\n"
-      : "=c" (count), "=D" (dummy), "=S" (dummy)  // dummy values, because register is corrupted
-      : "c" (count>>1), "S" (src), "D" (target)
-      : "memory" );
+    if ( asmRendering ) {
+       unsigned long dummy;
+       __asm__ __volatile__
+       (
+          "cld\n"
+          "rep\n"
+          "movsd\n"
+          : "=c" (count), "=D" (dummy), "=S" (dummy)  // dummy values, because register is corrupted
+          : "c" (count>>1), "S" (src), "D" (target)
+          : "memory" );
+    } else {
+        memcpy(target,src,count*sizeof(short));
+    }
 }
 
 void copy_line32(unsigned long* target, unsigned long* src, int count)
 {
-	memcpy(target,src,count*sizeof(long));
-	return;
-	
-	// ^^ not speed tested yet
+    if ( asmRendering ) {
+       unsigned long dummy;
+       __asm__ __volatile__
+       (
+          "cld\n"
+          "rep\n"
+          "movsd\n"
+          : "=c" (count), "=D" (dummy), "=S" (dummy)  // dummy values, because register is corrupted
+          : "c" (count), "S" (src), "D" (target)
+          : "memory" );
+    } else {
+        memcpy(target,src,count*sizeof(long));
+    	return;
+    	
+    	// ^^ not speed tested yet
+    
+    	for(int x=0;x<count;x++) {
+    		target[x] = src[x];
+    	}
+    }
 
-	for(int x=0;x<count;x++) {
-		target[x] = src[x];
-	}
-
-
-	return;
 		
-	// Can we do some better performance tests here of ^ vs v because I mean ASM ffs. 
-	// Maybe Im doing this wrong but it seems like both cases are sub microsecond so who gives a fuck
+	// Can we do some better performance tests here , it seems like both cases are sub microsecond so who gives a fuck
 	
 	//http://www.devx.com/tips/Tip/13291
 	//http://stackoverflow.com/questions/3598859/c-copy-array
@@ -114,14 +142,6 @@ void copy_line32(unsigned long* target, unsigned long* src, int count)
 	//	
 	//
 	
-   unsigned long dummy;
-   __asm__ __volatile__
-   (
-      "cld\n"
-      "rep\n"
-      "movsd\n"
-      : "=c" (count), "=D" (dummy), "=S" (dummy)  // dummy values, because register is corrupted
-      : "c" (count), "S" (src), "D" (target)
-      : "memory" );
+
 }
 
