@@ -23,12 +23,12 @@
 #include "filters.h"
 #include "render.h"
 
-void filter_none_32(DWORD *pointer,DWORD *source,int width,int height,int pitch)
+void filter_none(DWORD *pointer,DWORD *source,int width,int height,int pitch)
 {
    copy_line32(pointer,source,width*height); 
 }
 
-void filter_none_16(WORD *pointer,WORD *source,int width,int height,int pitch)
+void filter_none(WORD *pointer,WORD *source,int width,int height,int pitch)
 {
    // copy_line16(pointer,source,(width*height)); // fails due to pitch differences?
    
@@ -43,10 +43,11 @@ void filter_none_16(WORD *pointer,WORD *source,int width,int height,int pitch)
 
 }
 
-void softwarexx_16(WORD *pointer,WORD *source,int width,int height,int pitch)
+template<typename TYPE>
+void softwarexx_tmp(TYPE *pointer, TYPE *source, int width, int height, int pitch)
 {
-   register WORD *target;
-   WORD* init = source;
+   register TYPE *target;
+   TYPE* init = source;
    
 	// (pitch/width) indicates scale
    for(register int y = 0;y < height*(pitch/width);y++)
@@ -63,25 +64,14 @@ void softwarexx_16(WORD *pointer,WORD *source,int width,int height,int pitch)
   }
 }
 
-void softwarexx_32(DWORD *pointer,DWORD *source,int width,int height,int pitch)
+void softwarexx(WORD *pointer,WORD *source,int width,int height,int pitch)
 {
-   register DWORD *target;
-   DWORD* init = source;
+   softwarexx_tmp(pointer,source,width,height,pitch);
+}
 
-	// (pitch/width) indicates scale  .. this may not be accurate for 16bit! ugh
-	// you can also use renderer.gameboyFilterWidth and its maybe faster but
-   for(register int y = 0;y < height*(pitch/width);y++)
-   { 
-      target = pointer + y*pitch;
-      source = init + (y/(pitch/width))*width;
-      for(int x = 0;x < width; x++)
-      {
-      	 for (int s = 0; s < (pitch/width) - 1; s++) {
-      	 	*target++ = *source;
-      	 }
-         *target++ = *source++;
-      }
-  }
+void softwarexx(DWORD *pointer,DWORD *source,int width,int height,int pitch)
+{
+   softwarexx_tmp(pointer,source,width,height,pitch);
 }
 
 /*

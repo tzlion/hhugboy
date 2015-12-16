@@ -25,8 +25,8 @@
 typedef unsigned long DWORD;
 typedef unsigned short WORD;
 
-void Scale2x32(DWORD *dstPtr,DWORD *srcPtr,int width,int height,int pitch);
+void Scale2x(DWORD *dstPtr,DWORD *srcPtr,int width,int height,int pitch);
 
-void Scale2x16(WORD *dstPtr,WORD *srcPtr,int width,int height,int pitch);
+void Scale2x(WORD *dstPtr,WORD *srcPtr,int width,int height,int pitch);
 
 #endif

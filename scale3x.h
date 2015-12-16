@@ -32,8 +32,8 @@ typedef unsigned scale3x_uint32;
 typedef unsigned long DWORD;
 typedef unsigned short WORD;
 
-void Scale3x32(DWORD *dstPtr,DWORD *srcPtr,int width,int height,int pitch);
-void Scale3x16(WORD *dstPtr,WORD *srcPtr,int width,int height,int pitch);
+void Scale3x(DWORD *dstPtr,DWORD *srcPtr,int width,int height,int pitch);
+void Scale3x(WORD *dstPtr,WORD *srcPtr,int width,int height,int pitch);
 
 #endif
 

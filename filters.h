@@ -25,9 +25,11 @@
 #include "scale2x.h"
 #include "scale3x.h"
 
-void filter_none_32(DWORD *pointer,DWORD *source,int width,int height,int pitch);
-void filter_none_16(WORD *pointer,WORD *source,int width,int height,int pitch);
-void softwarexx_16(WORD *pointer,WORD *source,int width,int height,int pitch);
-void softwarexx_32(DWORD *pointer,DWORD *source,int width,int height,int pitch);
+void filter_none(DWORD *pointer,DWORD *source,int width,int height,int pitch);
+void filter_none(WORD *pointer,WORD *source,int width,int height,int pitch);
+template<typename TYPE>
+void softwarexx_tmp(TYPE *pointer,TYPE *source,int width,int height,int pitch);
+void softwarexx(WORD *pointer,WORD *source,int width,int height,int pitch);
+void softwarexx(DWORD *pointer,DWORD *source,int width,int height,int pitch);
 
 #endif

@@ -22,7 +22,7 @@
 #include "render.h"
 #include "GB.h"
 
-bool asmRendering = false;
+bool asmRendering = true;
 
 void fill_gfx_buffers(unsigned long val)
 {
@@ -68,7 +68,6 @@ void fill_line16(unsigned short* adr, unsigned long val, int count)
           : "c" (count>>1), "a" (val), "D" (adr)
           : "memory" );
     } else {
-        // is this ok?
        for(int x=0;x<count;x++) {
 	       adr[x] = val;
 	   }
@@ -125,22 +124,8 @@ void copy_line32(unsigned long* target, unsigned long* src, int count)
     } else {
         memcpy(target,src,count*sizeof(long));
     	return;
-    	
-    	// ^^ not speed tested yet
-    
-    	for(int x=0;x<count;x++) {
-    		target[x] = src[x];
-    	}
     }
 
-		
-	// Can we do some better performance tests here , it seems like both cases are sub microsecond so who gives a fuck
-	
-	//http://www.devx.com/tips/Tip/13291
-	//http://stackoverflow.com/questions/3598859/c-copy-array
-	//http://www.theregister.co.uk/2009/05/15/microsoft_banishes_memcpy/  ~ recommends memcpy_s instead
-	//	
-	//
 	
 
 }

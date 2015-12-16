@@ -298,7 +298,7 @@ bool DirectDraw::init()
         this->dxBorderBufferRender = new WORD[256*224];
         
         this->drawBorder = &DirectDraw::drawBorder16;
-        this->gameboyFilter16 = &filter_none_16;
+        this->gameboyFilter16 = &filter_none;
         
         this->lPitch >>= 1;
     } else {
@@ -306,7 +306,7 @@ bool DirectDraw::init()
         this->dxBorderBufferRender = new DWORD[256*224];
         
         this->drawBorder = &DirectDraw::drawBorder32;
-        this->gameboyFilter32 = &filter_none_32;     
+        this->gameboyFilter32 = &filter_none;     
         
         this->lPitch >>= 2;
     }
@@ -470,39 +470,39 @@ bool DirectDraw::changeFilters()
 		switch(this->gameboyFilterType){
 			case VIDEO_FILTER_SOFT2X:
 			case VIDEO_FILTER_SOFTXX:
-				this->gameboyFilter16 = softwarexx_16;      
+				this->gameboyFilter16 = softwarexx;      
 				break;
 			case VIDEO_FILTER_SCALE2X:
-				this->gameboyFilter16 = Scale2x16;      
+				this->gameboyFilter16 = Scale2x;      
 				break;   
 			case VIDEO_FILTER_SCALE3X:
-				this->gameboyFilter16 = Scale3x16;      
+				this->gameboyFilter16 = Scale3x;      
 				break;           
 			/*    case VIDEO_FILTER_BLUR:
 			gameboyFilter16 = blur_16;    
 			break;     */
 			case VIDEO_FILTER_NONE:
 			default:
-				this->gameboyFilter16 = filter_none_16;
+				this->gameboyFilter16 = filter_none;
 				break;
 		}   
 		switch(this->borderFilterType) { 
 			case VIDEO_FILTER_SOFT2X:
 			case VIDEO_FILTER_SOFTXX:
-				this->borderFilter16 = softwarexx_16;      
+				this->borderFilter16 = softwarexx;      
 				break;
 			case VIDEO_FILTER_SCALE2X:
-				this->borderFilter16 = Scale2x16;      
+				this->borderFilter16 = Scale2x;      
 				break;  
 			case VIDEO_FILTER_SCALE3X:
-				this->borderFilter16 = Scale3x16;      
+				this->borderFilter16 = Scale3x;      
 				break;            
 			/*   case VIDEO_FILTER_BLUR:
 			borderFilter16  = blur_16;    
 			break;       */
 			case VIDEO_FILTER_NONE:
 			default:
-				this->borderFilter16 = filter_none_16;
+				this->borderFilter16 = filter_none;
 				break;
 		}         
 	}else{
@@ -511,39 +511,39 @@ bool DirectDraw::changeFilters()
 		switch(this->gameboyFilterType) {
 			case VIDEO_FILTER_SOFT2X:
 			case VIDEO_FILTER_SOFTXX:
-				this->gameboyFilter32 = softwarexx_32;      
+				this->gameboyFilter32 = softwarexx_tmp;      
 				break;
 			case VIDEO_FILTER_SCALE2X:
-				this->gameboyFilter32 = Scale2x32;      
+				this->gameboyFilter32 = Scale2x;      
 				break;      
 			case VIDEO_FILTER_SCALE3X:
-				this->gameboyFilter32 = Scale3x32;      
+				this->gameboyFilter32 = Scale3x;      
 				break;          
 			/*    case VIDEO_FILTER_BLUR:
 			gameboyFilter32 = blur_32;    
 			break;  */
 			case VIDEO_FILTER_NONE:
 			default:
-				this->gameboyFilter32 = filter_none_32;
+				this->gameboyFilter32 = filter_none;
 				break;
 		}
 		switch(this->borderFilterType) {
 			case VIDEO_FILTER_SOFT2X:
 			case VIDEO_FILTER_SOFTXX:
-				this->borderFilter32 = softwarexx_32;      
+				this->borderFilter32 = softwarexx_tmp;      
 				break;
 			case VIDEO_FILTER_SCALE2X:
-				this->borderFilter32 = Scale2x32;      
+				this->borderFilter32 = Scale2x;      
 				break;     
 			case VIDEO_FILTER_SCALE3X:
-				this->borderFilter32 = Scale3x32;      
+				this->borderFilter32 = Scale3x;      
 				break;         
 			/*   case VIDEO_FILTER_BLUR:
 			borderFilter32 = blur_32;    
 			break;    */
 			case VIDEO_FILTER_NONE:
 			default:
-				this->borderFilter32 = filter_none_32;
+				this->borderFilter32 = filter_none;
 				break;
 		}       
    }    
