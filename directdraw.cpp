@@ -464,89 +464,52 @@ bool DirectDraw::changeFilters()
 	
 	this->bSurface->Unlock(NULL);
 	
-	if(this->bitCount==16){
-		this->lPitch >>= 1;
-       
-		switch(this->gameboyFilterType){
-			case VIDEO_FILTER_SOFT2X:
-			case VIDEO_FILTER_SOFTXX:
-				this->gameboyFilter16 = softwarexx;      
-				break;
-			case VIDEO_FILTER_SCALE2X:
-				this->gameboyFilter16 = Scale2x;      
-				break;   
-			case VIDEO_FILTER_SCALE3X:
-				this->gameboyFilter16 = Scale3x;      
-				break;           
-			/*    case VIDEO_FILTER_BLUR:
-			gameboyFilter16 = blur_16;    
-			break;     */
-			case VIDEO_FILTER_NONE:
-			default:
-				this->gameboyFilter16 = filter_none;
-				break;
-		}   
-		switch(this->borderFilterType) { 
-			case VIDEO_FILTER_SOFT2X:
-			case VIDEO_FILTER_SOFTXX:
-				this->borderFilter16 = softwarexx;      
-				break;
-			case VIDEO_FILTER_SCALE2X:
-				this->borderFilter16 = Scale2x;      
-				break;  
-			case VIDEO_FILTER_SCALE3X:
-				this->borderFilter16 = Scale3x;      
-				break;            
-			/*   case VIDEO_FILTER_BLUR:
-			borderFilter16  = blur_16;    
-			break;       */
-			case VIDEO_FILTER_NONE:
-			default:
-				this->borderFilter16 = filter_none;
-				break;
-		}         
-	}else{
-		this->lPitch >>= 2;
-		
-		switch(this->gameboyFilterType) {
-			case VIDEO_FILTER_SOFT2X:
-			case VIDEO_FILTER_SOFTXX:
-				this->gameboyFilter32 = softwarexx;      
-				break;
-			case VIDEO_FILTER_SCALE2X:
-				this->gameboyFilter32 = Scale2x;      
-				break;      
-			case VIDEO_FILTER_SCALE3X:
-				this->gameboyFilter32 = Scale3x;      
-				break;          
-			/*    case VIDEO_FILTER_BLUR:
-			gameboyFilter32 = blur_32;    
-			break;  */
-			case VIDEO_FILTER_NONE:
-			default:
-				this->gameboyFilter32 = filter_none;
-				break;
-		}
-		switch(this->borderFilterType) {
-			case VIDEO_FILTER_SOFT2X:
-			case VIDEO_FILTER_SOFTXX:
-				this->borderFilter32 = softwarexx;      
-				break;
-			case VIDEO_FILTER_SCALE2X:
-				this->borderFilter32 = Scale2x;      
-				break;     
-			case VIDEO_FILTER_SCALE3X:
-				this->borderFilter32 = Scale3x;      
-				break;         
-			/*   case VIDEO_FILTER_BLUR:
-			borderFilter32 = blur_32;    
-			break;    */
-			case VIDEO_FILTER_NONE:
-			default:
-				this->borderFilter32 = filter_none;
-				break;
-		}       
-   }    
+	int effectiveBitCount = this->bitCount == 16 ? 16 : 32;
+	
+	switch(this->gameboyFilterType){
+		case VIDEO_FILTER_SOFT2X:
+		case VIDEO_FILTER_SOFTXX:
+			this->gameboyFilter16 = softwarexx;      
+			this->gameboyFilter32 = softwarexx;      
+			break;
+		case VIDEO_FILTER_SCALE2X:
+			this->gameboyFilter16 = Scale2x;      
+			this->gameboyFilter32 = Scale2x;   
+			break;   
+		case VIDEO_FILTER_SCALE3X:
+			this->gameboyFilter16 = Scale3x;      
+			this->gameboyFilter32 = Scale3x;    
+			break;           
+		case VIDEO_FILTER_NONE:
+		default:
+			this->gameboyFilter16 = filter_none;
+			this->gameboyFilter32 = filter_none;
+			break;
+	}   
+	
+	switch(this->borderFilterType) { 
+		case VIDEO_FILTER_SOFT2X:
+		case VIDEO_FILTER_SOFTXX:
+			this->borderFilter16 = softwarexx;    
+            this->borderFilter32 = softwarexx;      
+			break;
+		case VIDEO_FILTER_SCALE2X:
+			this->borderFilter16 = Scale2x;   
+            this->borderFilter32 = Scale2x;       
+			break;  
+		case VIDEO_FILTER_SCALE3X:
+			this->borderFilter16 = Scale3x; 
+            this->borderFilter32 = Scale3x;      
+			break;            
+		case VIDEO_FILTER_NONE:
+		default:
+			this->borderFilter16 = filter_none;
+			this->borderFilter32 = filter_none;
+			break;
+	}    
+	
+	this->lPitch >>= ( effectiveBitCount / 16 );
+    
    if(GB1->romloaded && sgb_mode)
 		(this->*DirectDraw::drawBorder)();  // totally not sure about this either 
 	
@@ -672,23 +635,8 @@ void DirectDraw::drawScreenMix16()
 	
 	WORD mask = ~RGB_BIT_MASK;
    
- /*  for(register int y=0;y<144*160;y+=10) // mix it
-   { 
-      *target++ = (((*mix_source++)&mask)>>1)+(((*old++)&mask)>>1);
-      *target++ = (((*mix_source++)&mask)>>1)+(((*old++)&mask)>>1);
-      *target++ = (((*mix_source++)&mask)>>1)+(((*old++)&mask)>>1);
-      *target++ = (((*mix_source++)&mask)>>1)+(((*old++)&mask)>>1);
-      *target++ = (((*mix_source++)&mask)>>1)+(((*old++)&mask)>>1);
-      *target++ = (((*mix_source++)&mask)>>1)+(((*old++)&mask)>>1);
-      *target++ = (((*mix_source++)&mask)>>1)+(((*old++)&mask)>>1);
-      *target++ = (((*mix_source++)&mask)>>1)+(((*old++)&mask)>>1);
-      *target++ = (((*mix_source++)&mask)>>1)+(((*old++)&mask)>>1);
-      *target++ = (((*mix_source++)&mask)>>1)+(((*old++)&mask)>>1);
-   }*/
-
 	if(options->video_mix_frames == MIX_FRAMES_MORE && !(GB->gbc_mode || sgb_mode)) {
 		for(int y = 0;y < 144*160;y++) {// mix it
-			
 			mix_temp1 = ((*current&mask)>>1) + ((*old&mask)>>1);
 			mix_temp2 = ((*older&mask)>>1) + ((*oldest&mask)>>1);
 			
