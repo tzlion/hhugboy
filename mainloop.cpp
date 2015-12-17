@@ -388,16 +388,16 @@ void gb_system::mainloop()
             if(gbc_mode)
             {
                if(gfx_bit_count == 16)
-                  LCDoff_fill_gfx_buffer(renderer.gfxPal16[0x7fff]|(renderer.gfxPal16[0x7fff]<<16));
+                  LCDoff_fill_gfx_buffer(palette.gfxPal16[0x7fff]|(palette.gfxPal16[0x7fff]<<16));
                else
-                  LCDoff_fill_gfx_buffer(renderer.gfxPal32[0x7fff]);
+                  LCDoff_fill_gfx_buffer(palette.gfxPal32[0x7fff]);
             }
             else
             {
                if(gfx_bit_count == 16)
-                  LCDoff_fill_gfx_buffer(renderer.gfxPal16[GBC_BGP[0]]|(renderer.gfxPal16[GBC_BGP[0]]<<16));
+                  LCDoff_fill_gfx_buffer(palette.gfxPal16[GBC_BGP[0]]|(palette.gfxPal16[GBC_BGP[0]]<<16));
                else
-                  LCDoff_fill_gfx_buffer(renderer.gfxPal32[GBC_BGP[0]]);
+                  LCDoff_fill_gfx_buffer(palette.gfxPal32[GBC_BGP[0]]);
             }
          }
 
@@ -426,16 +426,16 @@ void gb_system::mainloop()
             if(gbc_mode)
             {
                if(gfx_bit_count == 16)
-                  LCDoff_fill_gfx_buffer(renderer.gfxPal16[0x7fff]|(renderer.gfxPal16[0x7fff]<<16));
+                  LCDoff_fill_gfx_buffer(palette.gfxPal16[0x7fff]|(palette.gfxPal16[0x7fff]<<16));
                else
-                  LCDoff_fill_gfx_buffer(renderer.gfxPal32[0x7fff]);
+                  LCDoff_fill_gfx_buffer(palette.gfxPal32[0x7fff]);
             }
             else
             {
                if(gfx_bit_count == 16)
-                  LCDoff_fill_gfx_buffer(renderer.gfxPal16[GBC_BGP[0]]|(renderer.gfxPal16[GBC_BGP[0]]<<16));
+                  LCDoff_fill_gfx_buffer(palette.gfxPal16[GBC_BGP[0]]|(palette.gfxPal16[GBC_BGP[0]]<<16));
                else
-                  LCDoff_fill_gfx_buffer(renderer.gfxPal32[GBC_BGP[0]]);
+                  LCDoff_fill_gfx_buffer(palette.gfxPal32[GBC_BGP[0]]);
             }
          }
 

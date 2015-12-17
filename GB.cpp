@@ -421,19 +421,19 @@ void gb_system::reset(bool change_mode)
    if(gbc_mode)
    {
       if(gfx_bit_count==16)
-         fill_gfx_buffers(renderer.gfxPal16[0x7fff]|(renderer.gfxPal16[0x7fff]<<16)); 
+         fill_gfx_buffers(palette.gfxPal16[0x7fff]|(palette.gfxPal16[0x7fff]<<16)); 
       else
-         fill_gfx_buffers(renderer.gfxPal32[0x7fff]);               
+         fill_gfx_buffers(palette.gfxPal32[0x7fff]);               
    } else   
    {
       if(gfx_bit_count==16)
-         fill_gfx_buffers(renderer.gfxPal16[GBC_BGP[0]]|(renderer.gfxPal16[GBC_BGP[0]]<<16)); 
+         fill_gfx_buffers(palette.gfxPal16[GBC_BGP[0]]|(palette.gfxPal16[GBC_BGP[0]]<<16)); 
       else
-         fill_gfx_buffers(renderer.gfxPal32[GBC_BGP[0]]);                 
+         fill_gfx_buffers(palette.gfxPal32[GBC_BGP[0]]);                 
    }
            
    if(options->video_GBCBGA_real_colors && ((old_gbc_mode^gbc_mode) || system_type == SYS_GBC || system_type == SYS_GBA || system_type == SYS_AUTO))
-      renderer.mixGbcColours();
+      palette.mixGbcColours();
    
    //resize the window
    if(!old_sgb_mode && sgb_mode)

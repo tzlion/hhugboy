@@ -32,6 +32,7 @@
 #include "options.h"
 
 #include "Renderer.h"
+#include "palette.h"
 
 #include <ddraw.h>
 
@@ -59,7 +60,7 @@ class DirectDraw: public Renderer {
         
         void setDrawMode(bool mix);
         
-        bool init();
+        bool init(Palette* palette);
         
         void setBorderFilter(videofiltertype type);
         void setGameboyFilter(videofiltertype type);
@@ -70,19 +71,13 @@ class DirectDraw: public Renderer {
         
         void handleWindowResize();
         void setRect(bool gb2open);
-        
-        // when this works properly the below can be made private
-        
-        DWORD* gfxPal32;
-        WORD* gfxPal16;
-
-        void mixGbcColours();
 
     private:
         
 		void *dxBorderBufferRender;
 		void *dxBufferMix;
 
+        void applyPaletteShifts();
         static int ffs(UINT mask);
         
         bool changeFilters();
@@ -140,10 +135,7 @@ class DirectDraw: public Renderer {
         
 		int bitCount;
 		
-        int rs,gs,bs;
-    
-        void initPaletteShifts();
-        bool initPalettes();
+		Palette* palette;
         
 };
 

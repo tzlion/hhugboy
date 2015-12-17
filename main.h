@@ -36,6 +36,7 @@ extern HWND hwndCtrl;
 extern menu emuMenu;
 
 extern DirectDraw renderer;
+extern Palette palette;
 
 extern int current_controller;
 

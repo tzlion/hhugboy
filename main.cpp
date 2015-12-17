@@ -88,6 +88,8 @@ int sizen_w,sizen_h; // Size needed for menu,borders,etc.
 
 DirectDraw renderer(&hwnd);
 
+Palette palette;
+
 // Options ----------------------------------------------
 bool paused = false;
 bool menupause = false;
@@ -222,8 +224,8 @@ int WINAPI WinMain(HINSTANCE hThisInstance,HINSTANCE hPrevInstance, LPSTR  lpszA
    }
 
    GB = GB1;
-   
-   if(!renderer.init()) 
+
+   if(!renderer.init(&palette)) 
    { 
       debug_print(str_table[ERROR_DDRAW]); 
       PostMessage(hwnd, WM_QUIT, 0, 0L);  
@@ -1427,14 +1429,14 @@ void menuAction(int menuOption)
                emuMenu.uncheckOption(IDM_OPTIONVIDEOGBCCOLORS);
                options->video_GBCBGA_real_colors = false;
         
-               renderer.mixGbcColours();
+               palette.mixGbcColours();
             } else
             {
                emuMenu.checkOption(IDM_OPTIONVIDEOGBCCOLORS);                
                options->video_GBCBGA_real_colors = true;
         
                if(GB1->romloaded && GB1->gbc_mode)
-                  renderer.mixGbcColours();
+                  palette.mixGbcColours();
             }
          break;
          case IDM_OPTIONVIDEOVISUALRUMBLE:

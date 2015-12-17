@@ -829,9 +829,9 @@ void sgb_execute_command()
          case 3:          
             unsigned short c = sgb_palette[0];
             if(GB->gfx_bit_count == 16)
-               fill_gfx_buffers(renderer.gfxPal16[c]|(renderer.gfxPal16[c]<<16));
+               fill_gfx_buffers(palette.gfxPal16[c]|(palette.gfxPal16[c]<<16));
             else
-               fill_gfx_buffers(renderer.gfxPal32[c]);               
+               fill_gfx_buffers(palette.gfxPal32[c]);               
 
             (renderer.*renderer.drawScreen)();        
          break;

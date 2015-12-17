@@ -317,9 +317,9 @@ void gb_system::draw_line_tile_DMG()
                c = GBC_BGP[c]; // get GB palette B&W or LCD           
 
             if(gfx_bit_count == 16)
-               ((WORD*)gfx_buffer)[x+((y<<7)+(y<<5))] = renderer.gfxPal16[c];
+               ((WORD*)gfx_buffer)[x+((y<<7)+(y<<5))] = palette.gfxPal16[c];
             else
-               ((DWORD*)gfx_buffer)[x+((y<<7)+(y<<5))] = renderer.gfxPal32[c];
+               ((DWORD*)gfx_buffer)[x+((y<<7)+(y<<5))] = palette.gfxPal32[c];
   
             ++x;
             if(x >= 160)
@@ -344,9 +344,9 @@ void gb_system::draw_line_tile_DMG()
 
       unsigned short c = (sgb_mode?sgb_palette[BGP[0]]:GBC_BGP[BGP[0]]);
       if(gfx_bit_count == 16)
-         fill_line16(((WORD*)gfx_buffer)+((y<<7)+(y<<5)),renderer.gfxPal16[c]|(renderer.gfxPal16[c]<<16),160);
+         fill_line16(((WORD*)gfx_buffer)+((y<<7)+(y<<5)),palette.gfxPal16[c]|(palette.gfxPal16[c]<<16),160);
       else
-         fill_line32(((DWORD*)gfx_buffer)+((y<<7)+(y<<5)),renderer.gfxPal32[c],160);
+         fill_line32(((DWORD*)gfx_buffer)+((y<<7)+(y<<5)),palette.gfxPal32[c],160);
                     
       if(video_enable&VID_EN_BG) 
          return;   
@@ -424,9 +424,9 @@ void gb_system::draw_line_tile_DMG()
                      c = GBC_BGP[c]; // get GB palette B&W or LCD 
                                  
                   if(gfx_bit_count == 16)
-                     ((WORD*)gfx_buffer)[x+((y<<7)+(y<<5))] = renderer.gfxPal16[c];
+                     ((WORD*)gfx_buffer)[x+((y<<7)+(y<<5))] = palette.gfxPal16[c];
                   else
-                     ((DWORD*)gfx_buffer)[x+((y<<7)+(y<<5))] = renderer.gfxPal32[c];
+                     ((DWORD*)gfx_buffer)[x+((y<<7)+(y<<5))] = palette.gfxPal32[c];
                 
                   ++x;
                   if(x >= 160)
@@ -519,9 +519,9 @@ void gb_system::draw_line_tile_GBC()
                c = c + (attrs & 7)*4;
                
             if(gfx_bit_count == 16)
-               ((WORD*)gfx_buffer)[x+((y<<7)+(y<<5))] = renderer.gfxPal16[GBC_BGP[c]];
+               ((WORD*)gfx_buffer)[x+((y<<7)+(y<<5))] = palette.gfxPal16[GBC_BGP[c]];
             else
-               ((DWORD*)gfx_buffer)[x+((y<<7)+(y<<5))] = renderer.gfxPal32[GBC_BGP[c]];
+               ((DWORD*)gfx_buffer)[x+((y<<7)+(y<<5))] = palette.gfxPal32[GBC_BGP[c]];
 
             ++x;
             if(x >= 160)
@@ -548,9 +548,9 @@ void gb_system::draw_line_tile_GBC()
   
       unsigned short c = (rom->CGB?GBC_BGP[0]:GBC_BGP[BGP[0]]);
       if(gfx_bit_count == 16)
-         fill_line16(((WORD*)gfx_buffer)+((y<<7)+(y<<5)),renderer.gfxPal16[c]|(renderer.gfxPal16[c]<<16),160);
+         fill_line16(((WORD*)gfx_buffer)+((y<<7)+(y<<5)),palette.gfxPal16[c]|(palette.gfxPal16[c]<<16),160);
       else
-         fill_line32(((DWORD*)gfx_buffer)+((y<<7)+(y<<5)),renderer.gfxPal32[c],160);     
+         fill_line32(((DWORD*)gfx_buffer)+((y<<7)+(y<<5)),palette.gfxPal32[c],160);     
   
       if(video_enable&VID_EN_BG) 
          return;   
@@ -629,9 +629,9 @@ void gb_system::draw_line_tile_GBC()
                      c = c + (attrs & 7) * 4;
               
                   if(gfx_bit_count == 16)
-                     ((WORD*)gfx_buffer)[x+((y<<7)+(y<<5))] = renderer.gfxPal16[GBC_BGP[c]];
+                     ((WORD*)gfx_buffer)[x+((y<<7)+(y<<5))] = palette.gfxPal16[GBC_BGP[c]];
                   else
-                     ((DWORD*)gfx_buffer)[x+((y<<7)+(y<<5))] = renderer.gfxPal32[GBC_BGP[c]];
+                     ((DWORD*)gfx_buffer)[x+((y<<7)+(y<<5))] = palette.gfxPal32[GBC_BGP[c]];
               
                   ++x;
                   if(x >= 160)
@@ -790,9 +790,9 @@ void gb_system::draw_sprite_tile(int tile, int x,int y,int t, int flags,int size
             c = GBC_OBP[c]; // get GB palette B&W or LCD
       }
       if(gfx_bit_count == 16)
-         ((WORD*)gfx_buffer)[xxx+((y<<7)+(y<<5))] = renderer.gfxPal16[c];
+         ((WORD*)gfx_buffer)[xxx+((y<<7)+(y<<5))] = palette.gfxPal16[c];
       else
-         ((DWORD*)gfx_buffer)[xxx+((y<<7)+(y<<5))] = renderer.gfxPal32[c];
+         ((DWORD*)gfx_buffer)[xxx+((y<<7)+(y<<5))] = palette.gfxPal32[c];
    }
 }
 
