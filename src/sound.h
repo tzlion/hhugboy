@@ -24,7 +24,7 @@
 
 #include "types.h"
 #include "debug.h"
-#include "./fmod/fmod.h"
+#include "fmod/fmod.h"
 
 #define NR10 0xff10
 #define NR11 0xff11

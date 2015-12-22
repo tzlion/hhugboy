@@ -648,3 +648,19 @@
 1450818094 source:d:\x2015\fuji\gb emu\new\version.rc
 	<windows.h>
 
+1450286706 source:d:\x2015\fuji\gb emu\new\src\cheats.cpp
+	<stdlib.h>
+	<string.h>
+	<windows.h>
+	"cheats.h"
+
+1361194020 d:\x2015\fuji\gb emu\new\src\cheats.h
+	"types.h"
+	"debug.h"
+
+1360844916 d:\x2015\fuji\gb emu\new\src\types.h
+	<time.h>
+
+1361541440 d:\x2015\fuji\gb emu\new\src\debug.h
+	<string>
+
