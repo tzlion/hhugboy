@@ -723,7 +723,7 @@ bool gb_system::load_rom(const wchar_t* filename)
    if(wcsstr(filename,L".zip") || wcsstr(filename,L".ZIP"))
       return loadrom_zip(filename);
         
-   struct stat file_stat;
+   struct _stat file_stat;
 
    memset(rom_filename,0,ROM_FILENAME_SIZE);
    byte rominfo[30];
@@ -765,7 +765,7 @@ bool gb_system::load_rom(const wchar_t* filename)
    
    int file_size = 0;
    
-   if(wstat(filename,&file_stat) == 0)
+   if(_wstat(filename,&file_stat) == 0)
    {
       file_size = file_stat.st_size;
       

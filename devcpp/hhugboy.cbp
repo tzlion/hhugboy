@@ -1,0 +1,107 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes" ?>
+<CodeBlocks_project_file>
+	<FileVersion major="1" minor="6" />
+	<Project>
+		<Option title="hhugboy" />
+		<Option pch_mode="2" />
+		<Option compiler="gcc" />
+		<Build>
+			<Target title="default">
+				<Option output="../bin/hhugboy" prefix_auto="1" extension_auto="1" />
+				<Option object_output="../obj" />
+				<Option type="0" />
+				<Option compiler="gcc" />
+			</Target>
+		</Build>
+		<Compiler>
+			<Add option="-m32" />
+			<Add directory='&quot;C:/Program Files (x86)/Microsoft DirectX SDK (August 2009)/Include&quot;' />
+			<Add directory="C:/png/png++-0.2.5/png++-0.2.5" />
+			<Add directory="../libpng12/" />
+			<Add directory="../zlib/" />
+		</Compiler>
+		<Linker>
+			<Add option="-m32" />
+			<Add option="../libs/libdxguid.a" />
+			<Add option="../libs/libddraw.a" />
+			<Add option="../libs/libdinput.a" />
+			<Add option="../libs/libdinput8.a" />
+			<Add option="../libs/libfmod.a" />
+			<Add option="../libs/libz.a" />
+			<Add option="../libs/libwinmm.a" />
+			<Add option="../libs/libpng12.dll.a" />
+			<Add directory='&quot;C:/Program Files (x86)/Microsoft DirectX SDK (August 2009)/Lib/x86&quot;' />
+		</Linker>
+		<Unit filename="../GB.cpp" />
+		<Unit filename="../GB.h" />
+		<Unit filename="../GB_MBC.cpp" />
+		<Unit filename="../GB_gfx.cpp" />
+		<Unit filename="../GB_gfx.h" />
+		<Unit filename="../GB_ioregs.cpp" />
+		<Unit filename="../GB_mem.cpp" />
+		<Unit filename="../GB_sound.cpp" />
+		<Unit filename="../SGB.cpp" />
+		<Unit filename="../SGB.h" />
+		<Unit filename="../cheats.cpp" />
+		<Unit filename="../cheats.h" />
+		<Unit filename="../config.cpp" />
+		<Unit filename="../config.h" />
+		<Unit filename="../cpu.cpp" />
+		<Unit filename="../cpu.h" />
+		<Unit filename="../cpucore.h" />
+		<Unit filename="../debug.cpp" />
+		<Unit filename="../debug.h" />
+		<Unit filename="../devices.cpp" />
+		<Unit filename="../devices.h" />
+		<Unit filename="../dialogs.cpp" />
+		<Unit filename="../dialogs.h" />
+		<Unit filename="../directdraw.cpp" />
+		<Unit filename="../directdraw.h" />
+		<Unit filename="../directinput.cpp" />
+		<Unit filename="../directinput.h" />
+		<Unit filename="../filters.cpp" />
+		<Unit filename="../filters.h" />
+		<Unit filename="../keynames.h" />
+		<Unit filename="../licnames.h" />
+		<Unit filename="../main.cpp" />
+		<Unit filename="../main.h" />
+		<Unit filename="../mainloop.cpp" />
+		<Unit filename="../mainloop.h" />
+		<Unit filename="../menu.cpp" />
+		<Unit filename="../menu.h" />
+		<Unit filename="../menu.rc">
+			<Option compilerVar="CPP" />
+		</Unit>
+		<Unit filename="../options.h" />
+		<Unit filename="../palette.cpp" />
+		<Unit filename="../palette.h" />
+		<Unit filename="../render.cpp" />
+		<Unit filename="../render.h" />
+		<Unit filename="../renderer.cpp" />
+		<Unit filename="../renderer.h" />
+		<Unit filename="../rom.cpp" />
+		<Unit filename="../rom.h" />
+		<Unit filename="../scale2x.cpp" />
+		<Unit filename="../scale2x.h" />
+		<Unit filename="../scale3x.cpp" />
+		<Unit filename="../scale3x.h" />
+		<Unit filename="../sound.h" />
+		<Unit filename="../strings.cpp" />
+		<Unit filename="../strings.h" />
+		<Unit filename="../types.h" />
+		<Unit filename="../version.rc">
+			<Option compilerVar="WINDRES" />
+		</Unit>
+		<Unit filename="../zlib/unzip.c">
+			<Option compilerVar="CPP" />
+		</Unit>
+		<Unit filename="../zlib/unzip.h" />
+		<Unit filename="../zlib/zconf.h" />
+		<Unit filename="../zlib/zlib.h" />
+		<Extensions>
+			<code_completion />
+			<envvars />
+			<debugger />
+		</Extensions>
+	</Project>
+</CodeBlocks_project_file>

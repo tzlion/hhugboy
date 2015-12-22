@@ -4,7 +4,7 @@ obj/*
 bin/*.exe
 bin/*.cfg
 *.layout
-devcpp/*.res
+*.res
 *.st0
 *.sv2
 *.st1

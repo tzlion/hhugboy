@@ -25,6 +25,7 @@
 #include <windows.h>
 
 #include "menu.h"
+#include "version.rc"
 
 ID_ICON ICON MOVEABLE DISCARDABLE "hhugboy.ico"
 

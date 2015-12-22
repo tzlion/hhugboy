@@ -21,6 +21,7 @@
 */
 #include "render.h"
 #include "GB.h"
+#include <cstring>
 
 bool asmRendering = true;
 
