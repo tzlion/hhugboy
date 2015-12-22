@@ -21,7 +21,7 @@
 */
 
 #include "filters.h"
-#include "render.h"
+#include "../render.h"
 
 void filter_none(DWORD *pointer,DWORD *source,int width,int height,int pitch)
 {

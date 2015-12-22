@@ -20,7 +20,7 @@
    51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
 #include "render.h"
-#include "GB.h"
+#include "../GB.h"
 #include <cstring>
 
 bool asmRendering = true;

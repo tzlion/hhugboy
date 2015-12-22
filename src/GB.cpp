@@ -23,7 +23,7 @@
 #include <stdlib.h>
 #include <time.h>
 
-#include "render.h"
+#include "rendering/render.h"
 #include "GB.h"
 #include "SGB.h"
 #include "cpu.h"

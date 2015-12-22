@@ -33,7 +33,7 @@
 #include <fstream>
 
 using namespace std;
-#include "directdraw.h"
+#include "rendering/directdraw.h"
 
 #include "rom.h"
 #include "debug.h"

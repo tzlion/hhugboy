@@ -664,3 +664,506 @@
 1361541440 d:\x2015\fuji\gb emu\new\src\debug.h
 	<string>
 
+1450825532 source:d:\x2015\fuji\gb emu\new\src\config.cpp
+	<windows.h>
+	<stdio.h>
+	<dinput.h>
+	<iostream>
+	<fstream>
+	"rendering/directdraw.h"
+	"rom.h"
+	"debug.h"
+	"types.h"
+	"config.h"
+	"main.h"
+	"mainloop.h"
+	"sound.h"
+	"strings.h"
+	"menu.h"
+
+1450313502 d:\x2015\fuji\gb emu\new\src\directdraw.h
+	"types.h"
+	<windows.h>
+	"GB.h"
+	"options.h"
+	"Renderer.h"
+	"palette.h"
+	<ddraw.h>
+	<string>
+
+1361194040 d:\x2015\fuji\gb emu\new\src\gb.h
+	"types.h"
+	"rom.h"
+	"cheats.h"
+
+1361194038 d:\x2015\fuji\gb emu\new\src\rom.h
+	"types.h"
+
+1361194030 d:\x2015\fuji\gb emu\new\src\options.h
+
+1450286706 d:\x2015\fuji\gb emu\new\src\renderer.h
+
+1450313984 d:\x2015\fuji\gb emu\new\src\palette.h
+	<windows.h>
+
+1450286706 d:\x2015\fuji\gb emu\new\src\config.h
+	"types.h"
+	"options.h"
+	<string>
+	<fstream>
+
+1450825660 d:\x2015\fuji\gb emu\new\src\main.h
+	"menu.h"
+	"rendering/directdraw.h"
+
+1450654600 d:\x2015\fuji\gb emu\new\src\menu.h
+	"options.h"
+	<windows.h>
+
+1360844916 d:\x2015\fuji\gb emu\new\src\mainloop.h
+
+1450823938 d:\x2015\fuji\gb emu\new\src\sound.h
+	"types.h"
+	"debug.h"
+	"fmod/fmod.h"
+
+1360844916 d:\x2015\fuji\gb emu\new\includes\\fmod\fmod.h
+
+1361194038 d:\x2015\fuji\gb emu\new\src\strings.h
+
+1450654524 source:d:\x2015\fuji\gb emu\new\src\cpu.cpp
+	"cpu.h"
+	"debug.h"
+	"sound.h"
+	"SGB.h"
+	"GB_gfx.h"
+	"GB.h"
+	"mainloop.h"
+	"main.h"
+	<windows.h>
+	<winbase.h>
+	<stdlib.h>
+	<stdio.h>
+	"strings.h"
+	"rom.h"
+	"config.h"
+
+1361194040 d:\x2015\fuji\gb emu\new\src\cpu.h
+	"types.h"
+	"options.h"
+
+1360844916 d:\x2015\fuji\gb emu\new\src\sgb.h
+	"types.h"
+
+1450286706 d:\x2015\fuji\gb emu\new\src\gb_gfx.h
+	"types.h"
+	"GB.h"
+
+1361194040 source:d:\x2015\fuji\gb emu\new\src\debug.cpp
+	"debug.h"
+	<windows.h>
+	<stdio.h>
+	<string>
+	<stdlib.h>
+	"config.h"
+
+1360844916 source:d:\x2015\fuji\gb emu\new\src\devices.cpp
+	"devices.h"
+	"debug.h"
+	"GB.h"
+	<stdio.h>
+	<stdlib.h>
+	<time.h>
+
+1360844916 d:\x2015\fuji\gb emu\new\src\devices.h
+	"types.h"
+
+1361194040 source:d:\x2015\fuji\gb emu\new\src\dialogs.cpp
+	<windows.h>
+	<stdio.h>
+	<string>
+	<iostream>
+	"dialogs.h"
+	"strings.h"
+	"main.h"
+	"rom.h"
+	"config.h"
+	"cheats.h"
+	"directinput.h"
+	"GB.h"
+
+1360844916 d:\x2015\fuji\gb emu\new\src\dialogs.h
+
+1361194040 d:\x2015\fuji\gb emu\new\src\directinput.h
+	<windows.h>
+
+1450824938 source:d:\x2015\fuji\gb emu\new\src\directdraw.cpp
+	<stdio.h>
+	<ddraw.h>
+	<iostream>
+	<fstream>
+	<stdio.h>
+	<stdlib.h>
+	<stdint.h>
+	<string>
+	<math.h>
+	"directdraw.h"
+	"GB.h"
+	"filters/filters.h"
+	"cpu.h"
+	"debug.h"
+	"SGB.h"
+	"strings.h"
+	"render.h"
+	"config.h"
+	"main.h"
+
+1450654622 d:\x2015\fuji\gb emu\new\src\render.h
+
+1361194040 source:d:\x2015\fuji\gb emu\new\src\directinput.cpp
+	<dinput.h>
+	"directinput.h"
+	"cpu.h"
+	"debug.h"
+	"mainloop.h"
+	"sound.h"
+	"SGB.h"
+	"GB.h"
+	"config.h"
+	"main.h"
+	"keynames.h"
+
+1361194038 d:\x2015\fuji\gb emu\new\src\keynames.h
+
+1450825690 source:d:\x2015\fuji\gb emu\new\src\gb.cpp
+	<string.h>
+	<stdlib.h>
+	<time.h>
+	"rendering/render.h"
+	"GB.h"
+	"SGB.h"
+	"cpu.h"
+	"debug.h"
+	"mainloop.h"
+	"GB_gfx.h"
+	"config.h"
+	"sound.h"
+	"devices.h"
+	"main.h"
+
+1450825704 source:d:\x2015\fuji\gb emu\new\src\gb_gfx.cpp
+	<stdlib.h>
+	"GB_gfx.h"
+	"rendering/render.h"
+	"cpu.h"
+	"debug.h"
+	"SGB.h"
+	"GB.h"
+	"config.h"
+	"main.h"
+	<png.hpp>
+
+1360844916 d:\x2015\fuji\gb emu\new\includes\libpng12\\png.h
+	"zlib.h"
+	"pngconf.h"
+	<crtdbg.h>
+
+1360844918 d:\x2015\fuji\gb emu\new\includes\zlib\\zlib.h
+	"zconf.h"
+
+1360844918 d:\x2015\fuji\gb emu\new\includes\zlib\\zconf.h
+	<windows.h>
+	<windows.h>
+	<sys/types.h>
+	<unistd.h>
+
+1360844916 d:\x2015\fuji\gb emu\new\includes\libpng12\\pngconf.h
+	"pngusr.h"
+	"config.h"
+	<windows.h>
+	<stdio.h>
+	<stdio.h>
+	<sys/types.h>
+	<setjmp.h>
+	<strings.h>
+	<string.h>
+	<stdlib.h>
+	<fp.h>
+	<math.h>
+	<m68881.h>
+	<mem.h>
+	<alloc.h>
+	<malloc.h>
+	<time.h>
+	<dos.h>
+
+1360844916 source:d:\x2015\fuji\gb emu\new\src\gb_ioregs.cpp
+	<stdio.h>
+	<stdlib.h>
+	"devices.h"
+	"cpu.h"
+	"SGB.h"
+	"directinput.h"
+	"sound.h"
+	"GB.h"
+	"mainloop.h"
+
+1360844916 source:d:\x2015\fuji\gb emu\new\src\gb_mbc.cpp
+	"mainloop.h"
+	<time.h>
+	"GB.h"
+	"debug.h"
+	"zlib/zconf.h"
+	<stdio.h>
+
+1360844918 d:\x2015\fuji\gb emu\new\includes\\zlib\zconf.h
+	<windows.h>
+	<windows.h>
+	<sys/types.h>
+	<unistd.h>
+
+1450825724 source:d:\x2015\fuji\gb emu\new\src\gb_mem.cpp
+	<stdio.h>
+	<stdlib.h>
+	<time.h>
+	<windows.h>
+	<iostream>
+	"debug.h"
+	"config.h"
+	"rendering/render.h"
+	"GB.h"
+
+1360844916 source:d:\x2015\fuji\gb emu\new\src\gb_sound.cpp
+	<memory.h>
+	<windows.h>
+	<stdio.h>
+	"sound.h"
+	"cpu.h"
+	"GB.h"
+	"config.h"
+
+1450825748 source:d:\x2015\fuji\gb emu\new\src\main.cpp
+	<windows.h>
+	<shellapi.h>
+	<commdlg.h>
+	<mmsystem.h>
+	<stdio.h>
+	<string>
+	<iostream>
+	<math.h>
+	<time.h>
+	<dinput.h>
+	"strings.h"
+	"cheats.h"
+	"config.h"
+	"dialogs.h"
+	"main.h"
+	"debug.h"
+	"types.h"
+	"cpu.h"
+	"mainloop.h"
+	"sound.h"
+	"GB_gfx.h"
+	"SGB.h"
+	"devices.h"
+	"rendering/render.h"
+	"rendering/directdraw.h"
+	"directinput.h"
+	"menu.h"
+	"GB.h"
+	"licnames.h"
+
+1361194030 d:\x2015\fuji\gb emu\new\src\licnames.h
+
+1450825770 source:d:\x2015\fuji\gb emu\new\src\mainloop.cpp
+	<string.h>
+	<stdio.h>
+	<iostream>
+	"main.h"
+	"mainloop.h"
+	"rendering/render.h"
+	"types.h"
+	"debug.h"
+	"cpu.h"
+	"rom.h"
+	"GB_gfx.h"
+	"SGB.h"
+	"sound.h"
+	"devices.h"
+	"GB.h"
+	"directinput.h"
+	"config.h"
+	"strings.h"
+	"cpucore.h"
+
+1361194026 d:\x2015\fuji\gb emu\new\src\cpucore.h
+	"config.h"
+
+1361194030 source:d:\x2015\fuji\gb emu\new\src\menu.cpp
+	"menu.h"
+
+1450821030 source:d:\x2015\fuji\gb emu\new\src\menu.rc
+	<windows.h>
+	"menu.h"
+	"version.rc"
+
+1450818094 d:\x2015\fuji\gb emu\new\src\version.rc
+	<windows.h>
+
+1450654566 source:d:\x2015\fuji\gb emu\new\src\palette.cpp
+	"palette.h"
+	"GB.h"
+	"strings.h"
+	"config.h"
+
+1450820590 source:d:\x2015\fuji\gb emu\new\src\render.cpp
+	"render.h"
+	"GB.h"
+	<cstring>
+
+1450654634 source:d:\x2015\fuji\gb emu\new\src\renderer.cpp
+	"renderer.h"
+
+1450821090 source:d:\x2015\fuji\gb emu\new\src\rom.cpp
+	<stdio.h>
+	<stdlib.h>
+	<string.h>
+	<sys/stat.h>
+	"strings.h"
+	"config.h"
+	"rom.h"
+	"debug.h"
+	"cpu.h"
+	"mainloop.h"
+	".\zlib\unzip.h"
+	"GB.h"
+
+1360844918 d:\x2015\fuji\gb emu\new\src\zlib\unzip.h
+	"zlib.h"
+
+1450313040 source:d:\x2015\fuji\gb emu\new\src\sgb.cpp
+	<string.h>
+	"SGB.h"
+	"debug.h"
+	"cpu.h"
+	"render.h"
+	"GB_gfx.h"
+	"GB.h"
+	"mainloop.h"
+	"config.h"
+	"main.h"
+	"strings.h"
+
+1450654552 source:d:\x2015\fuji\gb emu\new\src\strings.cpp
+	"strings.h"
+
+1450818094 source:d:\x2015\fuji\gb emu\new\src\version.rc
+	<windows.h>
+
+1360844918 source:d:\x2015\fuji\gb emu\new\src\zlib\unzip.c
+	<stdio.h>
+	<stdlib.h>
+	<string.h>
+	"zlib.h"
+	"unzip.h"
+	<stddef.h>
+	<string.h>
+	<stdlib.h>
+	<errno.h>
+
+1450824820 source:d:\x2015\fuji\gb emu\new\src\filters\filters.cpp
+	"filters.h"
+	"../render.h"
+
+1450305986 d:\x2015\fuji\gb emu\new\src\filters\filters.h
+	"scale2x.h"
+	"scale3x.h"
+
+1450304714 d:\x2015\fuji\gb emu\new\src\filters\scale2x.h
+
+1450304714 d:\x2015\fuji\gb emu\new\src\filters\scale3x.h
+
+1450824878 source:d:\x2015\fuji\gb emu\new\src\filters\scale2x.cpp
+	"scale2x.h"
+	"../directdraw.h"
+	"../config.h"
+
+1450824890 source:d:\x2015\fuji\gb emu\new\src\filters\scale3x.cpp
+	<../config.h>
+	"scale3x.h"
+	<assert.h>
+
+1450825638 d:\x2015\fuji\gb emu\new\src\rendering\directdraw.h
+	"../types.h"
+	<windows.h>
+	"../GB.h"
+	"../options.h"
+	"Renderer.h"
+	"palette.h"
+	<ddraw.h>
+	<string>
+
+1450286706 d:\x2015\fuji\gb emu\new\src\rendering\renderer.h
+
+1450313984 d:\x2015\fuji\gb emu\new\src\rendering\palette.h
+	<windows.h>
+
+1450654622 d:\x2015\fuji\gb emu\new\src\rendering\render.h
+
+1450825798 source:d:\x2015\fuji\gb emu\new\src\rendering\directdraw.cpp
+	<stdio.h>
+	<ddraw.h>
+	<iostream>
+	<fstream>
+	<stdio.h>
+	<stdlib.h>
+	<stdint.h>
+	<string>
+	<math.h>
+	"directdraw.h"
+	"../GB.h"
+	"filters/filters.h"
+	"../cpu.h"
+	"../debug.h"
+	"../SGB.h"
+	"../strings.h"
+	"render.h"
+	"../config.h"
+	"../main.h"
+
+1450305986 d:\x2015\fuji\gb emu\new\src\rendering\filters\filters.h
+	"scale2x.h"
+	"scale3x.h"
+
+1450304714 d:\x2015\fuji\gb emu\new\src\rendering\filters\scale2x.h
+
+1450304714 d:\x2015\fuji\gb emu\new\src\rendering\filters\scale3x.h
+
+1450824820 source:d:\x2015\fuji\gb emu\new\src\rendering\filters\filters.cpp
+	"filters.h"
+	"../render.h"
+
+1450825814 source:d:\x2015\fuji\gb emu\new\src\rendering\filters\scale2x.cpp
+	"scale2x.h"
+	"../directdraw.h"
+	"../../config.h"
+
+1450825638 source:d:\x2015\fuji\gb emu\new\src\rendering\filters\scale3x.cpp
+	<config.h>
+	"scale3x.h"
+	<assert.h>
+
+1450825838 source:d:\x2015\fuji\gb emu\new\src\rendering\palette.cpp
+	"palette.h"
+	"../GB.h"
+	"../strings.h"
+	"../config.h"
+
+1450825852 source:d:\x2015\fuji\gb emu\new\src\rendering\render.cpp
+	"render.h"
+	"../GB.h"
+	<cstring>
+
+1450654634 source:d:\x2015\fuji\gb emu\new\src\rendering\renderer.cpp
+	"renderer.h"
+

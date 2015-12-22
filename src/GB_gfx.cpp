@@ -23,7 +23,7 @@
 */
 #include <stdlib.h>
 #include "GB_gfx.h"
-#include "render.h"
+#include "rendering/render.h"
 #include "cpu.h"
 #include "debug.h"
 #include "SGB.h"

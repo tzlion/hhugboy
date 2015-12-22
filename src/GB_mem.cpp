@@ -36,7 +36,7 @@ using namespace std;
 
 #include "debug.h"
 #include "config.h"
-#include "render.h"
+#include "rendering/render.h"
 
 #include "GB.h"
 

@@ -1,7 +1,7 @@
 #include "palette.h"
-#include "GB.h"
-#include "strings.h"
-#include "config.h"
+#include "../GB.h"
+#include "../strings.h"
+#include "../config.h"
 
 Palette::~Palette()
 {

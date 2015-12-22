@@ -38,18 +38,18 @@
 using namespace std;
 
 #include "directdraw.h"
-#include "GB.h"
+#include "../GB.h"
 
-#include "filters.h"
+#include "filters/filters.h"
 
-#include "cpu.h"
-#include "debug.h"
-#include "SGB.h"
-#include "strings.h"
+#include "../cpu.h"
+#include "../debug.h"
+#include "../SGB.h"
+#include "../strings.h"
 #include "render.h"
-#include "config.h"
+#include "../config.h"
 
-#include "main.h"
+#include "../main.h"
 
 int RGB_BIT_MASK = 0;
 
@@ -288,12 +288,12 @@ void DirectDraw::gbTextOut()
             TextOut(aDC,1*this->gameboyFilterWidth,1*this->gameboyFilterHeight,this->messageText.c_str(),this->messageText.length());
             TextOut(aDC,1*this->gameboyFilterWidth,3*this->gameboyFilterHeight,this->messageText.c_str(),this->messageText.length());
             TextOut(aDC,3*this->gameboyFilterWidth,1*this->gameboyFilterHeight,this->messageText.c_str(),this->messageText.length());
-            
+
             TextOut(aDC,3*this->gameboyFilterWidth,2*this->gameboyFilterHeight,this->messageText.c_str(),this->messageText.length());
             TextOut(aDC,1*this->gameboyFilterWidth,2*this->gameboyFilterHeight,this->messageText.c_str(),this->messageText.length());
             TextOut(aDC,2*this->gameboyFilterWidth,3*this->gameboyFilterHeight,this->messageText.c_str(),this->messageText.length());
             TextOut(aDC,2*this->gameboyFilterWidth,1*this->gameboyFilterHeight,this->messageText.c_str(),this->messageText.length());
-            
+
             SetTextColor(aDC,RGB(255,255,255));
             TextOut(aDC,2*this->gameboyFilterWidth,2*this->gameboyFilterHeight,this->messageText.c_str(),this->messageText.length());
             this->bSurface->ReleaseDC(aDC);

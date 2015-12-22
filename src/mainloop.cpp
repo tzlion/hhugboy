@@ -28,7 +28,7 @@
 using namespace std;
 #include "main.h"
 #include "mainloop.h"
-#include "render.h"
+#include "rendering/render.h"
 #include "types.h"
 #include "debug.h"
 #include "cpu.h"

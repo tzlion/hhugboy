@@ -53,9 +53,9 @@ using namespace std;
 #include "GB_gfx.h"
 #include "SGB.h"
 #include "devices.h"
-#include "render.h"
+#include "rendering/render.h"
 
-#include "directdraw.h"
+#include "rendering/directdraw.h"
 #include "directinput.h"
 
 

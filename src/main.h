@@ -23,7 +23,7 @@
 
 
 #include "menu.h"
-#include "directdraw.h"
+#include "rendering/directdraw.h"
 
 extern bool paused;
 extern bool menupause; 

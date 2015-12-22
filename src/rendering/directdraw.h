@@ -22,14 +22,14 @@
 #ifndef GEST_DIRECTDRAW_H
 #define GEST_DIRECTDRAW_H
 
-#include "types.h"
+#include "../types.h"
 
 #define WIN32_LEAN_AND_MEAN
 #define UNICODE
 
 #include <windows.h>
-#include "GB.h"
-#include "options.h"
+#include "../GB.h"
+#include "../options.h"
 
 #include "Renderer.h"
 #include "palette.h"
