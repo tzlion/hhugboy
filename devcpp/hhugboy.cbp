@@ -72,6 +72,7 @@
 		<Unit filename="../src/options.h" />
 		<Unit filename="../src/rendering/directdraw.cpp" />
 		<Unit filename="../src/rendering/directdraw.h" />
+		<Unit filename="../src/rendering/filters/Filter.h" />
 		<Unit filename="../src/rendering/filters/filters.cpp" />
 		<Unit filename="../src/rendering/filters/filters.h" />
 		<Unit filename="../src/rendering/filters/scale2x.cpp" />

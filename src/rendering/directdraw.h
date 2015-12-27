@@ -34,6 +34,8 @@
 #include "Renderer.h"
 #include "palette.h"
 
+#include "filters/filters.h"
+
 #include <ddraw.h>
 
 #include <string>
@@ -119,11 +121,6 @@ class DirectDraw: public Renderer {
         videofiltertype borderFilterType;
         videofiltertype gameboyFilterType;
         
-		void (*borderFilter16)(WORD *target,WORD *src,int width,int height,int pitch);
-		void (*gameboyFilter16)(WORD *target,WORD *src,int width,int height,int pitch);
-		void (*borderFilter32)(DWORD *target,DWORD *src,int width,int height,int pitch);
-		void (*gameboyFilter32)(DWORD *target,DWORD *src,int width,int height,int pitch);
-        
         int lPitch;
         int borderLPitch;
         
@@ -136,6 +133,9 @@ class DirectDraw: public Renderer {
 		int bitCount;
 		
 		Palette* palette;
+		
+		Filter* gbFilter;
+		Filter* borderFilter;
         
 };
 

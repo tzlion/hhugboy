@@ -23,12 +23,12 @@
 #include "filters.h"
 #include "../render.h"
 
-void filter_none(DWORD *pointer,DWORD *source,int width,int height,int pitch)
+void NoFilter::filter32(DWORD *pointer,DWORD *source,int width,int height,int pitch)
 {
    copy_line32(pointer,source,width*height); 
 }
 
-void filter_none(WORD *pointer,WORD *source,int width,int height,int pitch)
+void NoFilter::filter16(WORD *pointer,WORD *source,int width,int height,int pitch)
 {
    // copy_line16(pointer,source,(width*height)); // fails due to pitch differences?
    
@@ -64,12 +64,12 @@ void softwarexx_tmp(TYPE *pointer, TYPE *source, int width, int height, int pitc
   }
 }
 
-void softwarexx(WORD *pointer,WORD *source,int width,int height,int pitch)
+void NearestNeighbour::filter16(WORD *pointer,WORD *source,int width,int height,int pitch)
 {
    softwarexx_tmp(pointer,source,width,height,pitch);
 }
 
-void softwarexx(DWORD *pointer,DWORD *source,int width,int height,int pitch)
+void NearestNeighbour::filter32(DWORD *pointer,DWORD *source,int width,int height,int pitch)
 {
    softwarexx_tmp(pointer,source,width,height,pitch);
 }

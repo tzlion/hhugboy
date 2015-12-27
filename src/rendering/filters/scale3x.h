@@ -22,6 +22,8 @@
    51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
 
+#include "Filter.h"
+
 #ifndef __SCALE3X_H
 #define __SCALE3X_H
 
@@ -32,8 +34,11 @@ typedef unsigned scale3x_uint32;
 typedef unsigned long DWORD;
 typedef unsigned short WORD;
 
-void Scale3x(DWORD *dstPtr,DWORD *srcPtr,int width,int height,int pitch);
-void Scale3x(WORD *dstPtr,WORD *srcPtr,int width,int height,int pitch);
+class Scale3x: public Filter {
+    public:
+        void filter32(DWORD *pointer,DWORD *source,int width,int height,int pitch);
+        void filter16(WORD *pointer,WORD *source,int width,int height,int pitch);
+};
 
 #endif
 

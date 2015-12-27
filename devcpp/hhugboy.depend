@@ -1041,12 +1041,12 @@
 1360844918 d:\x2015\fuji\gb emu\new\src\zlib\unzip.h
 	"zlib.h"
 
-1450313040 source:d:\x2015\fuji\gb emu\new\src\sgb.cpp
+1450825864 source:d:\x2015\fuji\gb emu\new\src\sgb.cpp
 	<string.h>
 	"SGB.h"
 	"debug.h"
 	"cpu.h"
-	"render.h"
+	"rendering/render.h"
 	"GB_gfx.h"
 	"GB.h"
 	"mainloop.h"
@@ -1093,13 +1093,14 @@
 	"scale3x.h"
 	<assert.h>
 
-1450825638 d:\x2015\fuji\gb emu\new\src\rendering\directdraw.h
+1451186140 d:\x2015\fuji\gb emu\new\src\rendering\directdraw.h
 	"../types.h"
 	<windows.h>
 	"../GB.h"
 	"../options.h"
 	"Renderer.h"
 	"palette.h"
+	"filters/filters.h"
 	<ddraw.h>
 	<string>
 
@@ -1110,7 +1111,7 @@
 
 1450654622 d:\x2015\fuji\gb emu\new\src\rendering\render.h
 
-1450825798 source:d:\x2015\fuji\gb emu\new\src\rendering\directdraw.cpp
+1451186368 source:d:\x2015\fuji\gb emu\new\src\rendering\directdraw.cpp
 	<stdio.h>
 	<ddraw.h>
 	<iostream>
@@ -1121,34 +1122,34 @@
 	<string>
 	<math.h>
 	"directdraw.h"
-	"../GB.h"
 	"filters/filters.h"
 	"../cpu.h"
 	"../debug.h"
 	"../SGB.h"
 	"../strings.h"
-	"render.h"
 	"../config.h"
-	"../main.h"
 
-1450305986 d:\x2015\fuji\gb emu\new\src\rendering\filters\filters.h
+1451185872 d:\x2015\fuji\gb emu\new\src\rendering\filters\filters.h
+	"Filter.h"
 	"scale2x.h"
 	"scale3x.h"
 
-1450304714 d:\x2015\fuji\gb emu\new\src\rendering\filters\scale2x.h
+1451186508 d:\x2015\fuji\gb emu\new\src\rendering\filters\scale2x.h
+	"Filter.h"
 
-1450304714 d:\x2015\fuji\gb emu\new\src\rendering\filters\scale3x.h
+1451186510 d:\x2015\fuji\gb emu\new\src\rendering\filters\scale3x.h
+	"Filter.h"
 
-1450824820 source:d:\x2015\fuji\gb emu\new\src\rendering\filters\filters.cpp
+1451186416 source:d:\x2015\fuji\gb emu\new\src\rendering\filters\filters.cpp
 	"filters.h"
 	"../render.h"
 
-1450825814 source:d:\x2015\fuji\gb emu\new\src\rendering\filters\scale2x.cpp
+1451185496 source:d:\x2015\fuji\gb emu\new\src\rendering\filters\scale2x.cpp
 	"scale2x.h"
 	"../directdraw.h"
 	"../../config.h"
 
-1450825638 source:d:\x2015\fuji\gb emu\new\src\rendering\filters\scale3x.cpp
+1451185804 source:d:\x2015\fuji\gb emu\new\src\rendering\filters\scale3x.cpp
 	<config.h>
 	"scale3x.h"
 	<assert.h>
@@ -1166,4 +1167,19 @@
 
 1450654634 source:d:\x2015\fuji\gb emu\new\src\rendering\renderer.cpp
 	"renderer.h"
+
+1451185350 source:d:\x2015\fuji\gb emu\new\src\rendering\filters\nofilter.cpp
+	"NoFilter.h"
+	"../render.h"
+
+1451185046 d:\x2015\fuji\gb emu\new\src\rendering\filters\nofilter.h
+	"Filter.h"
+
+1451186510 d:\x2015\fuji\gb emu\new\src\rendering\filters\filter.h
+
+1451185364 source:d:\x2015\fuji\gb emu\new\src\rendering\filters\nearestneighbour.cpp
+	"NearestNeighbour.h"
+
+1451185350 d:\x2015\fuji\gb emu\new\src\rendering\filters\nearestneighbour.h
+	"Filter.h"
 

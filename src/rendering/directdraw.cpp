@@ -38,7 +38,6 @@
 using namespace std;
 
 #include "directdraw.h"
-#include "../GB.h"
 
 #include "filters/filters.h"
 
@@ -46,10 +45,7 @@ using namespace std;
 #include "../debug.h"
 #include "../SGB.h"
 #include "../strings.h"
-#include "render.h"
 #include "../config.h"
-
-#include "../main.h"
 
 int RGB_BIT_MASK = 0;
 
@@ -203,7 +199,7 @@ bool DirectDraw::init(Palette* palette)
         this->dxBorderBufferRender = new WORD[256*224];
         
         this->drawBorder = &DirectDraw::drawBorder16;
-        this->gameboyFilter16 = &filter_none;
+        gbFilter = new NoFilter();
         
         this->lPitch >>= 1;
     } else {
@@ -211,7 +207,7 @@ bool DirectDraw::init(Palette* palette)
         this->dxBorderBufferRender = new DWORD[256*224];
         
         this->drawBorder = &DirectDraw::drawBorder32;
-        this->gameboyFilter32 = &filter_none;     
+        gbFilter = new NoFilter();
         
         this->lPitch >>= 2;
     }
@@ -303,6 +299,7 @@ void DirectDraw::gbTextOut()
 }
 
 // get the filter width/height for the selected filter type (currently always the same)
+// the filters should be doing this! probably!
 int DirectDraw::getFilterDimension(videofiltertype type)
 {
     switch (type) {
@@ -376,42 +373,34 @@ bool DirectDraw::changeFilters()
 	switch(this->gameboyFilterType){
 		case VIDEO_FILTER_SOFT2X:
 		case VIDEO_FILTER_SOFTXX:
-			this->gameboyFilter16 = softwarexx;      
-			this->gameboyFilter32 = softwarexx;      
+		    gbFilter = new NearestNeighbour(); 
 			break;
 		case VIDEO_FILTER_SCALE2X:
-			this->gameboyFilter16 = Scale2x;      
-			this->gameboyFilter32 = Scale2x;   
+			gbFilter = new Scale2x();
 			break;   
 		case VIDEO_FILTER_SCALE3X:
-			this->gameboyFilter16 = Scale3x;      
-			this->gameboyFilter32 = Scale3x;    
+			gbFilter = new Scale3x();   
 			break;           
 		case VIDEO_FILTER_NONE:
 		default:
-			this->gameboyFilter16 = filter_none;
-			this->gameboyFilter32 = filter_none;
+			gbFilter = new NoFilter();
 			break;
 	}   
 	
 	switch(this->borderFilterType) { 
 		case VIDEO_FILTER_SOFT2X:
 		case VIDEO_FILTER_SOFTXX:
-			this->borderFilter16 = softwarexx;    
-            this->borderFilter32 = softwarexx;      
+			borderFilter = new NearestNeighbour();     
 			break;
 		case VIDEO_FILTER_SCALE2X:
-			this->borderFilter16 = Scale2x;   
-            this->borderFilter32 = Scale2x;       
+			borderFilter = new Scale2x();      
 			break;  
 		case VIDEO_FILTER_SCALE3X:
-			this->borderFilter16 = Scale3x; 
-            this->borderFilter32 = Scale3x;      
+			borderFilter = new Scale3x();     
 			break;            
 		case VIDEO_FILTER_NONE:
 		default:
-			this->borderFilter16 = filter_none;
-			this->borderFilter32 = filter_none;
+			borderFilter = new NoFilter();
 			break;
 	}    
 	
@@ -577,12 +566,12 @@ void DirectDraw::drawScreenMix16()
 
 void DirectDraw::gameboyFilter(WORD *target,WORD *src,int width,int height,int pitch)
 {
-    this->gameboyFilter16(target,src,width,height,pitch);
+    gbFilter->filter16(target,src,width,height,pitch);
 }
 
 void DirectDraw::gameboyFilter(DWORD *target,DWORD *src,int width,int height,int pitch)
 {
-    this->gameboyFilter32(target,src,width,height,pitch);
+    gbFilter->filter32(target,src,width,height,pitch);
 }
 
 template<typename TYPE>
@@ -592,7 +581,7 @@ void DirectDraw::drawScreenGeneric(TYPE* buffer)
 	
 	ZeroMemory(&ddsd,sizeof(ddsd));
 	ddsd.dwSize = sizeof(DDSURFACEDESC2);
-	renderer.bSurface->Lock(NULL,&ddsd,DDLOCK_WRITEONLY|DDLOCK_SURFACEMEMORYPTR,NULL);
+	bSurface->Lock(NULL,&ddsd,DDLOCK_WRITEONLY|DDLOCK_SURFACEMEMORYPTR,NULL);
 	
 	this->gameboyFilter((TYPE*)ddsd.lpSurface,buffer,160,144,this->lPitch);
 	
@@ -659,7 +648,7 @@ void DirectDraw::drawBorder32()
 	int temp_h = gameboyFilterHeight;   
 	this->gameboyFilterWidth = this->borderFilterWidth;
 	this->gameboyFilterHeight = this->borderFilterHeight;   
-	this->borderFilter32((DWORD*)ddsd.lpSurface,(DWORD*)(this->dxBorderBufferRender),256,224,this->borderLPitch);
+	borderFilter->filter32((DWORD*)ddsd.lpSurface,(DWORD*)(this->dxBorderBufferRender),256,224,this->borderLPitch);
 	this->gameboyFilterWidth = temp_w;
 	this->gameboyFilterHeight = temp_h;
 	
@@ -706,7 +695,7 @@ void DirectDraw::drawBorder16()
 	int temp_h = this->gameboyFilterHeight;   
 	this->gameboyFilterWidth = this->borderFilterWidth;
 	this->gameboyFilterHeight = this->borderFilterHeight;   
-	this->borderFilter16((WORD*)ddsd.lpSurface,(WORD*)(this->dxBorderBufferRender),256,224,this->borderLPitch);
+	borderFilter->filter16((WORD*)ddsd.lpSurface,(WORD*)(this->dxBorderBufferRender),256,224,this->borderLPitch);
 	this->gameboyFilterWidth = temp_w;
 	this->gameboyFilterHeight = temp_h;   
 	

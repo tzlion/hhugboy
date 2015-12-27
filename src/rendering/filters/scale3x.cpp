@@ -273,7 +273,7 @@ void scale3x_32_def(DWORD* dst0, DWORD* dst1, DWORD* dst2, const DWORD* src0, co
 	scale3x_32_def_border(dst2, src2, src1, src0, count);
 }
 
-void Scale3x(WORD *dstPtr,WORD *srcPtr,int width,int height,int pitch)
+void Scale3x::filter16(WORD *dstPtr,WORD *srcPtr,int width,int height,int pitch)
 {
   WORD *dst0 = dstPtr;
   WORD *dst1 = dst0 + pitch;
@@ -306,7 +306,7 @@ void Scale3x(WORD *dstPtr,WORD *srcPtr,int width,int height,int pitch)
   scale3x_16_def(dst0, dst1, dst2, src0, src1, src1, width);
 }
 
-void Scale3x(DWORD *dstPtr,DWORD *srcPtr,int width,int height,int pitch)
+void Scale3x::filter32(DWORD *dstPtr,DWORD *srcPtr,int width,int height,int pitch)
 {
   DWORD *dst0 = dstPtr;
   DWORD *dst1 = dst0 + pitch;

@@ -19,14 +19,18 @@
    along with this program; if not, write to the Free Software Foundation, Inc.,
    51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
+#include "Filter.h"
+
 #ifndef SCALE2X_H
 #define SCALE2X_H
 
 typedef unsigned long DWORD;
 typedef unsigned short WORD;
 
-void Scale2x(DWORD *dstPtr,DWORD *srcPtr,int width,int height,int pitch);
-
-void Scale2x(WORD *dstPtr,WORD *srcPtr,int width,int height,int pitch);
+class Scale2x: public Filter {
+    public:
+        void filter32(DWORD *pointer,DWORD *source,int width,int height,int pitch);
+        void filter16(WORD *pointer,WORD *source,int width,int height,int pitch);
+};
 
 #endif

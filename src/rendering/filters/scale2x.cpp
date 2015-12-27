@@ -890,7 +890,7 @@ void scale2x_32_def(DWORD* dst0, DWORD* dst1, const DWORD* src0, const DWORD* sr
 	scale2x_32_def_single(dst1, src2, src1, src0, count);
 }
 
-void Scale2x(WORD *dstPtr,WORD *srcPtr,int width,int height,int pitch)
+void Scale2x::filter16(WORD *dstPtr,WORD *srcPtr,int width,int height,int pitch)
 {
   WORD *dst0 = dstPtr;
   WORD *dst1 = dst0 + pitch;
@@ -941,7 +941,7 @@ void Scale2x(WORD *dstPtr,WORD *srcPtr,int width,int height,int pitch)
   }
 }
 
-void Scale2x(DWORD *dstPtr,DWORD *srcPtr,int width,int height,int pitch)
+void Scale2x::filter32(DWORD *dstPtr,DWORD *srcPtr,int width,int height,int pitch)
 {
   DWORD *dst0 = dstPtr;
   DWORD *dst1 = dst0 + pitch;
