@@ -338,3 +338,8 @@ void Scale3x::filter32(DWORD *dstPtr,DWORD *srcPtr,int width,int height,int pitc
   dst2 += pitch*3;  
   scale3x_32_def(dst0, dst1, dst2, src0, src1, src1, width);
 }
+
+int Scale3x::getFilterDimension()
+{
+    return 3;
+}

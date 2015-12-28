@@ -38,6 +38,7 @@ class Scale3x: public Filter {
     public:
         void filter32(DWORD *pointer,DWORD *source,int width,int height,int pitch);
         void filter16(WORD *pointer,WORD *source,int width,int height,int pitch);
+        int getFilterDimension();
 };
 
 #endif

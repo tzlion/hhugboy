@@ -993,3 +993,8 @@ void Scale2x::filter32(DWORD *dstPtr,DWORD *srcPtr,int width,int height,int pitc
      scale2x_32_def(dst0, dst1, src0, src1, src1, width);
   }
 }
+
+int Scale2x::getFilterDimension()
+{
+    return 2;
+}

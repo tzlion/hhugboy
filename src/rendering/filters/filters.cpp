@@ -43,6 +43,11 @@ void NoFilter::filter16(WORD *pointer,WORD *source,int width,int height,int pitc
 
 }
 
+int NoFilter::getFilterDimension()
+{
+    return 1;
+}
+
 template<typename TYPE>
 void softwarexx_tmp(TYPE *pointer, TYPE *source, int width, int height, int pitch)
 {
@@ -64,6 +69,11 @@ void softwarexx_tmp(TYPE *pointer, TYPE *source, int width, int height, int pitc
   }
 }
 
+NearestNeighbour::NearestNeighbour(int filterDimension)
+{
+    dimension = filterDimension;
+}
+
 void NearestNeighbour::filter16(WORD *pointer,WORD *source,int width,int height,int pitch)
 {
    softwarexx_tmp(pointer,source,width,height,pitch);
@@ -74,6 +84,10 @@ void NearestNeighbour::filter32(DWORD *pointer,DWORD *source,int width,int heigh
    softwarexx_tmp(pointer,source,width,height,pitch);
 }
 
+int NearestNeighbour::getFilterDimension()
+{
+    return dimension;
+}
 /*
 void blur_32(DWORD *pointer,DWORD *source,int width,int height,int pitch)
 {

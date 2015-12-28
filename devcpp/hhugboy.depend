@@ -1093,7 +1093,7 @@
 	"scale3x.h"
 	<assert.h>
 
-1451186140 d:\x2015\fuji\gb emu\new\src\rendering\directdraw.h
+1451264326 d:\x2015\fuji\gb emu\new\src\rendering\directdraw.h
 	"../types.h"
 	<windows.h>
 	"../GB.h"
@@ -1111,7 +1111,7 @@
 
 1450654622 d:\x2015\fuji\gb emu\new\src\rendering\render.h
 
-1451186368 source:d:\x2015\fuji\gb emu\new\src\rendering\directdraw.cpp
+1451264254 source:d:\x2015\fuji\gb emu\new\src\rendering\directdraw.cpp
 	<stdio.h>
 	<ddraw.h>
 	<iostream>
@@ -1129,27 +1129,27 @@
 	"../strings.h"
 	"../config.h"
 
-1451185872 d:\x2015\fuji\gb emu\new\src\rendering\filters\filters.h
+1451263274 d:\x2015\fuji\gb emu\new\src\rendering\filters\filters.h
 	"Filter.h"
 	"scale2x.h"
 	"scale3x.h"
 
-1451186508 d:\x2015\fuji\gb emu\new\src\rendering\filters\scale2x.h
+1451262776 d:\x2015\fuji\gb emu\new\src\rendering\filters\scale2x.h
 	"Filter.h"
 
-1451186510 d:\x2015\fuji\gb emu\new\src\rendering\filters\scale3x.h
+1451262776 d:\x2015\fuji\gb emu\new\src\rendering\filters\scale3x.h
 	"Filter.h"
 
-1451186416 source:d:\x2015\fuji\gb emu\new\src\rendering\filters\filters.cpp
+1451263276 source:d:\x2015\fuji\gb emu\new\src\rendering\filters\filters.cpp
 	"filters.h"
 	"../render.h"
 
-1451185496 source:d:\x2015\fuji\gb emu\new\src\rendering\filters\scale2x.cpp
+1451262846 source:d:\x2015\fuji\gb emu\new\src\rendering\filters\scale2x.cpp
 	"scale2x.h"
 	"../directdraw.h"
 	"../../config.h"
 
-1451185804 source:d:\x2015\fuji\gb emu\new\src\rendering\filters\scale3x.cpp
+1451262876 source:d:\x2015\fuji\gb emu\new\src\rendering\filters\scale3x.cpp
 	<config.h>
 	"scale3x.h"
 	<assert.h>
@@ -1175,11 +1175,18 @@
 1451185046 d:\x2015\fuji\gb emu\new\src\rendering\filters\nofilter.h
 	"Filter.h"
 
-1451186510 d:\x2015\fuji\gb emu\new\src\rendering\filters\filter.h
+1451263442 d:\x2015\fuji\gb emu\new\src\rendering\filters\filter.h
+	"../../options.h"
 
 1451185364 source:d:\x2015\fuji\gb emu\new\src\rendering\filters\nearestneighbour.cpp
 	"NearestNeighbour.h"
 
 1451185350 d:\x2015\fuji\gb emu\new\src\rendering\filters\nearestneighbour.h
 	"Filter.h"
+
+1451263276 source:d:\x2015\fuji\gb emu\new\src\rendering\filters\filter.cpp
+	"Filter.h"
+	"filters.h"
+	"scale2x.h"
+	"scale3x.h"
 

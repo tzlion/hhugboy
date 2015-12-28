@@ -90,8 +90,6 @@ class DirectDraw: public Renderer {
         
 		IDirectDrawClipper* ddClip;
 		
-        int getFilterDimension(videofiltertype type);
-        
         int changeRect;
             
 		template<typename TYPE>
@@ -118,8 +116,6 @@ class DirectDraw: public Renderer {
         int borderFilterWidth;
         int gameboyFilterHeight;
         int gameboyFilterWidth;
-        videofiltertype borderFilterType;
-        videofiltertype gameboyFilterType;
         
         int lPitch;
         int borderLPitch;

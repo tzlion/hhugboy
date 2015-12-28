@@ -53,7 +53,8 @@ DirectDraw::DirectDraw(HWND* inHwnd)
 {
    //debug_print("Emu Center HX DirectDraw ON");
    this->borderFilterWidth = this->borderFilterHeight = this->gameboyFilterWidth = this->gameboyFilterHeight = 1;
-   this->borderFilterType = this->gameboyFilterType = VIDEO_FILTER_NONE;
+   gbFilter = new NoFilter();
+   borderFilter = new NoFilter();
    this->hwnd = inHwnd;
    //RECT this->targetBltRect;
    this->lPitch = 160;
@@ -298,37 +299,17 @@ void DirectDraw::gbTextOut()
 
 }
 
-// get the filter width/height for the selected filter type (currently always the same)
-// the filters should be doing this! probably!
-int DirectDraw::getFilterDimension(videofiltertype type)
-{
-    switch (type) {
-        case VIDEO_FILTER_SOFTXX:
-            return 8;
-        case VIDEO_FILTER_SCALE2X:
-        case VIDEO_FILTER_SOFT2X:
-        case VIDEO_FILTER_BLUR:
-            return 2;
-        case VIDEO_FILTER_SCALE3X:
-            return 3;
-        case VIDEO_FILTER_NONE:
-        default:
-            return 1;
-    }
-}
-
 void DirectDraw::setBorderFilter(videofiltertype type) 
 {
-    this->borderFilterWidth = this->borderFilterHeight = this->getFilterDimension(type);
-    this->borderFilterType = type;
-    this->changeFilters();
-}
+    borderFilter = Filter::getFilter(type);
+	borderFilterWidth = borderFilterHeight = borderFilter->getFilterDimension(); // width/height the same for now
+	this->changeFilters();}
 
 void DirectDraw::setGameboyFilter(videofiltertype type) 
 {
-    this->gameboyFilterWidth = this->gameboyFilterHeight = this->getFilterDimension(type);
-    this->gameboyFilterType = type;
-    this->changeFilters();
+	gbFilter = Filter::getFilter(type);
+	gameboyFilterWidth = gameboyFilterHeight = gbFilter->getFilterDimension(); // width/height the same for now
+	this->changeFilters();
 }
 
 bool DirectDraw::changeFilters()
@@ -369,41 +350,7 @@ bool DirectDraw::changeFilters()
 	this->bSurface->Unlock(NULL);
 	
 	int effectiveBitCount = this->bitCount == 16 ? 16 : 32;
-	
-	switch(this->gameboyFilterType){
-		case VIDEO_FILTER_SOFT2X:
-		case VIDEO_FILTER_SOFTXX:
-		    gbFilter = new NearestNeighbour(); 
-			break;
-		case VIDEO_FILTER_SCALE2X:
-			gbFilter = new Scale2x();
-			break;   
-		case VIDEO_FILTER_SCALE3X:
-			gbFilter = new Scale3x();   
-			break;           
-		case VIDEO_FILTER_NONE:
-		default:
-			gbFilter = new NoFilter();
-			break;
-	}   
-	
-	switch(this->borderFilterType) { 
-		case VIDEO_FILTER_SOFT2X:
-		case VIDEO_FILTER_SOFTXX:
-			borderFilter = new NearestNeighbour();     
-			break;
-		case VIDEO_FILTER_SCALE2X:
-			borderFilter = new Scale2x();      
-			break;  
-		case VIDEO_FILTER_SCALE3X:
-			borderFilter = new Scale3x();     
-			break;            
-		case VIDEO_FILTER_NONE:
-		default:
-			borderFilter = new NoFilter();
-			break;
-	}    
-	
+
 	this->lPitch >>= ( effectiveBitCount / 16 );
     
    if(GB1->romloaded && sgb_mode)
