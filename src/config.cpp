@@ -66,6 +66,7 @@ program_configuration::program_configuration():
         reduce_cpu_usage(false),
         speedup_skip_9frames(false),
         speedup_sound_off(false),
+        speedup_filter_off(true),
         GBC_SGB_border(OFF),
         video_size(2),
         video_mix_frames(MIX_FRAMES_ON),
@@ -293,6 +294,9 @@ void init_menu_options()
 
    if(options->speedup_sound_off)
       emuMenu.checkOption(IDM_CPUSPSNDOFF);
+      
+   if(options->speedup_filter_off)
+      emuMenu.checkOption(IDM_CPUSPFOFF);
    
    if(!options->sound_on)
       emuMenu.uncheckOption(IDM_OPTIONSOUND);   

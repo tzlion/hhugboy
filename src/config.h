@@ -59,6 +59,7 @@ public:
 
     bool speedup_skip_9frames;
     bool speedup_sound_off;
+    bool speedup_filter_off;
 
     SGBborderoption GBC_SGB_border;
 

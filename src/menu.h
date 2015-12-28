@@ -171,6 +171,7 @@
 
 #define IDM_CPUSPFS9        0x14
 #define IDM_CPUSPSNDOFF     0x15
+#define IDM_CPUSPFOFF       0x3A
 
 #define IDM_CPUOPCODE       0x16
 

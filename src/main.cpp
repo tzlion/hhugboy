@@ -1027,6 +1027,17 @@ void menuAction(int menuOption)
                emuMenu.checkOption(IDM_CPUSPSNDOFF);
                options->speedup_sound_off = true;
             }                
+         break;          
+         case IDM_CPUSPFOFF:
+            if(options->speedup_filter_off)
+            {
+               emuMenu.uncheckOption(IDM_CPUSPFOFF);
+               options->speedup_filter_off = false;
+            } else
+            {
+               emuMenu.checkOption(IDM_CPUSPFOFF);
+               options->speedup_filter_off = true;
+            }                
          break;       
          case IDM_CPUOPCODE:
             if(options->halt_on_unknown_opcode)

@@ -89,6 +89,26 @@ DirectDraw::~DirectDraw()
     DeleteObject(this->afont);
 }
 
+Filter* oldGbFilter;
+Filter* oldBorderFilter; 
+bool filtersToggledOff = false;
+
+void DirectDraw::toggleFiltering(bool on)
+{
+    if (!on) {
+        oldGbFilter = gbFilter;
+        oldBorderFilter = borderFilter;
+        gbFilter = borderFilter = new NoFilter();
+        filtersToggledOff = true;
+        changeFilters();
+    } else if ( filtersToggledOff ) {
+        filtersToggledOff = false;
+        borderFilter = oldBorderFilter;
+        gbFilter = oldGbFilter;
+        changeFilters();
+    }
+}
+
 void DirectDraw::setDrawMode(bool mix) 
 {
 	if (!mix) {
@@ -302,19 +322,20 @@ void DirectDraw::gbTextOut()
 void DirectDraw::setBorderFilter(videofiltertype type) 
 {
     borderFilter = Filter::getFilter(type);
-	borderFilterWidth = borderFilterHeight = borderFilter->getFilterDimension(); // width/height the same for now
 	this->changeFilters();
 }
 
 void DirectDraw::setGameboyFilter(videofiltertype type) 
 {
 	gbFilter = Filter::getFilter(type);
-	gameboyFilterWidth = gameboyFilterHeight = gbFilter->getFilterDimension(); // width/height the same for now
 	this->changeFilters();
 }
 
 bool DirectDraw::changeFilters()
 {
+	borderFilterWidth = borderFilterHeight = borderFilter->getFilterDimension(); // width/height the same for now
+	gameboyFilterWidth = gameboyFilterHeight = gbFilter->getFilterDimension(); // width/height the same for now
+	
 	HRESULT ddrval;
 	DDSURFACEDESC2 ddsd;
 	

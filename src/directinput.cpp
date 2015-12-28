@@ -307,6 +307,9 @@ void Check_KBInput(int i)
          if(FSOUND_IsPlaying(channel_n) == TRUE)
             FSOUND_StopSound(channel_n);
       }
+      if (speedup == 0 && options->speedup_filter_off) {
+        renderer.toggleFiltering(false);
+      }
       speedup = 1;
    }
    else if(speedup)
@@ -318,6 +321,9 @@ void Check_KBInput(int i)
             if(FSOUND_IsPlaying(channel_n) == FALSE)
                channel_n = FSOUND_PlaySound(FSOUND_FREE,FSbuffer);
       }
+      if (speedup == 1 && options->speedup_filter_off) {
+        renderer.toggleFiltering(true);
+      }      
       speedup = 0;
    }
             
@@ -354,6 +360,9 @@ void check_system_keys()
          if(FSOUND_IsPlaying(channel_n) == TRUE)
             FSOUND_StopSound(channel_n);
       }
+      if (speedup == 0 && options->speedup_filter_off) {
+        renderer.toggleFiltering(false);
+      }
       speedup = 1;
       
    }
@@ -365,6 +374,9 @@ void check_system_keys()
          if(options->sound_on)
             if(FSOUND_IsPlaying(channel_n) == FALSE)
                channel_n = FSOUND_PlaySound(FSOUND_FREE,FSbuffer);
+      }
+      if (speedup == 1 && options->speedup_filter_off) {
+        renderer.toggleFiltering(true);
       }
       speedup = 0;
    }

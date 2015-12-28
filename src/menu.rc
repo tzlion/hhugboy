@@ -310,6 +310,7 @@ BEGIN
                 BEGIN
                     MENUITEM "&Skip 9 Frames", IDM_CPUSPFS9
                     MENUITEM "S&ound Off", IDM_CPUSPSNDOFF
+                    MENUITEM "&Filters Off", IDM_CPUSPFOFF
                 END
                 MENUITEM "&Halt on Unknown Opcode", IDM_CPUOPCODE, CHECKED
                 MENUITEM "Reduce &CPU Usage", IDM_OPTIONCPUUSAGE

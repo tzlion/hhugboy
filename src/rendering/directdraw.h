@@ -73,6 +73,8 @@ class DirectDraw: public Renderer {
         
         void handleWindowResize();
         void setRect(bool gb2open);
+        
+        void toggleFiltering(bool on);
 
     private:
         
