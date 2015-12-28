@@ -55,13 +55,14 @@ void softwarexx_tmp(TYPE *pointer, TYPE *source, int width, int height, int pitc
    TYPE* init = source;
    
 	// (pitch/width) indicates scale
-   for(register int y = 0;y < height*(pitch/width);y++)
+	int scale = pitch/width;
+   for(register int y = 0;y < height*scale;y++)
    { 
       target = pointer + y*pitch;
-      source = init + (y/(pitch/width))*width;
+      source = init + (y/scale)*width;
       for(int x = 0;x < width; x++)
       {
-      	 for (int s = 0; s < (pitch/width) - 1; s++) {
+      	 for (int s = 0; s < scale - 1; s++) {
       	 	*target++ = *source;
       	 }
          *target++ = *source++;

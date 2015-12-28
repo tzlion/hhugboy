@@ -303,7 +303,8 @@ void DirectDraw::setBorderFilter(videofiltertype type)
 {
     borderFilter = Filter::getFilter(type);
 	borderFilterWidth = borderFilterHeight = borderFilter->getFilterDimension(); // width/height the same for now
-	this->changeFilters();}
+	this->changeFilters();
+}
 
 void DirectDraw::setGameboyFilter(videofiltertype type) 
 {
