@@ -518,6 +518,10 @@ ifstream& operator>>(ifstream& in, program_configuration& config)
 
         in >> config.joystick_config[i];
    }
+   
+   read_comment_line(in);
+
+    in >> config.speedup_filter_off;
 
    return in;
 }
@@ -692,6 +696,9 @@ ostream& operator<<(ostream& out, const program_configuration& config)
 
     out << "#Joystick Autofire B button:\n";
     out << config.joystick_config[BUTTON_TURBO_B] << "\n\n";
+    
+    out << "#On speedup filter off:\n";
+    out << config.speedup_filter_off << "\n\n";
 
     return out;
 }
