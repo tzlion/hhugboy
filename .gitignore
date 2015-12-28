@@ -17,4 +17,4 @@ bin/*.cfg
 *.st8
 *.st9
 bin/*.png
-
+*.depend
