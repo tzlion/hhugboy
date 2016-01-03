@@ -1,4 +1,4 @@
-hhugboy v1.0
+hhugboy v1.0.5
 a Game Boy/Game Boy Color emulator for Windows
 by taizou (cactusgunman@gmail.com)
 http://hhug.me/
@@ -10,6 +10,7 @@ http://bitbucket.org/taizou/hhugboy
   * Unlicensed Mapper support! (Sintax & Li Cheng)
   * Screenshots!
   * Recent ROM list
+  * Support for simple cheat format
   * Nearest neighbour scaling up to 8x for super sharpness
   * New onscreen text font, PCPaint Bold by codeman38
   * (Visual) rumble always on for Makon games
@@ -69,6 +70,17 @@ http://bitbucket.org/taizou/hhugboy
                            Ctrl+F12   Screenshot GB2
                            0~9, /, =  Change GBC palette for mono games
 
+[ CHEATS ] - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+
+ Cheats are supported in two formats:
+ 
+ Game Genie     xxx-xxx-xxx or xxx-xxx
+                Same as the Game Genie cheat device. 
+                Codes and documentation undoubtedly available online somewhere
+ 
+ Address/Value  xxxx=yy
+                xxxx = address, yy = value, in hexadecimal. e.g. 1234=1F
+
 [ ISSUES ] - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 
  * Loading from Zip fails with Unicode chars anywhere in the filename or path.
@@ -97,7 +109,16 @@ http://bitbucket.org/taizou/hhugboy
 
 [ RELEASE HISTORY ]- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 
- v1.0 18th February 2013 - first public release
+ v1.0.5 3rd January 2016
+ * Adds support for simple address=value hex cheat format
+ * Speed up nearest neighbour filtering a bit
+ * Option to disable filters on speedup (now enabled by default)
+ * Fix filterless rendering in 16-bit colour mode
+ * A bunch of code refactoring to facilitate future changes - should have no
+   effect from a user's perspective!
+
+ v1.0 18th February 2013
+ * First public release
 
 [ COPYRIGHT/LICENSE ]- - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 

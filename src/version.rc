@@ -1,8 +1,8 @@
 
 #include <windows.h> // include for version info constants
 
-#define VER_VERSION             1,0,1,0
-#define VER_VERSION_STR         "1.0.1.0"
+#define VER_VERSION             1,0,5,0
+#define VER_VERSION_STR         "1.0.5.0"
 
 1 VERSIONINFO
 FILEVERSION VER_VERSION
@@ -13,7 +13,7 @@ FILETYPE VFT_APP
   {
     BLOCK "080904E4"
     {
-      VALUE "CompanyName", "lion studio"
+      VALUE "CompanyName", "handheld underground"
       VALUE "FileVersion", VER_VERSION_STR
       VALUE "FileDescription", "hhugboy GB emulator"
       VALUE "InternalName", ""
