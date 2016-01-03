@@ -123,7 +123,7 @@ http://bitbucket.org/taizou/hhugboy
 [ COPYRIGHT/LICENSE ]- - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 
  hhugboy Game Boy emulator
- copyright 2013 taizou
+ copyright 2013-2016 taizou
 
  Based on GEST
  Copyright (C) 2003-2010 TM
@@ -147,4 +147,4 @@ http://bitbucket.org/taizou/hhugboy
 [ SPECIAL THANKS! ]- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 
  PCPaint Bold font by codeman38 (http://www.zone38.net/)
- Beta testers - MLX & RobGBA
+ Beta testers - MLX, Robyn, KingPepe, JP
