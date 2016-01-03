@@ -40,7 +40,7 @@ void menu::init(HINSTANCE instance)
 }
 
 void menu::setText(int option, wchar_t* text) {
-    ModifyMenuW(menuBar,option,NULL,option,text);
+    ModifyMenuW(menuBar,option,MF_BYCOMMAND,option,text);
 }
 
 void menu::checkOption(int option)

@@ -23,7 +23,7 @@
 
 #include "strings.h"
 
-wchar_t* str_table[40] =
+const wchar_t* str_table[40] =
 {
  L"Writing config file failed!",
  L"Error reading config file!",

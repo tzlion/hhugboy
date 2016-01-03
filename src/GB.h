@@ -26,8 +26,6 @@
 #include "rom.h"
 #include "cheats.h"
 
-#define ROM_FILENAME_SIZE 257
-
 enum memoryaccess
 {
     MEMORY_DEFAULT = 0,

@@ -146,6 +146,51 @@ void check_joystick_input()
    } else
        autofire_delay[options->use_joystick_input][1] = 0;
 }
+
+
+void systemKeyActions(char* buffer)
+{
+    if(KEYDOWN(buffer,options->special_keys[BUTTON_SPEEDUP]))
+   {
+      if(speedup == 0 && options->speedup_sound_off)
+      {
+         old_sound_on = options->sound_on;
+         options->sound_on = 0;
+         if(FSOUND_IsPlaying(channel_n) == TRUE)
+            FSOUND_StopSound(channel_n);
+      }
+      if (speedup == 0 && options->speedup_filter_off) {
+        renderer.toggleFiltering(false);
+      }
+      speedup = 1;
+   }
+   else if(speedup)
+   {      
+      if(speedup && options->speedup_sound_off)
+      {
+         options->sound_on = old_sound_on;
+         if(options->sound_on)
+            if(FSOUND_IsPlaying(channel_n) == FALSE)
+               channel_n = FSOUND_PlaySound(FSOUND_FREE,FSbuffer);
+      }
+      if (speedup == 1 && options->speedup_filter_off) {
+        renderer.toggleFiltering(true);
+      }      
+      speedup = 0;
+   }
+   
+   if(KEYDOWN(buffer,options->special_keys[BUTTON_L]) && !multiple_gb)
+   {
+      if(GB1->system_type == SYS_GBA) 
+      	 setWinSize(240,144);
+   } else
+   if(KEYDOWN(buffer,options->special_keys[BUTTON_R]) && !multiple_gb)
+   {
+      if(GB1->system_type == SYS_GBA) 
+         setWinSize(160,144);
+   }          
+}
+
       
 void Check_KBInput(int i) 
 { 
@@ -298,45 +343,8 @@ void Check_KBInput(int i)
    if(di_joystick != NULL && i == options->use_joystick_input)
       check_joystick_input();
       
-   if(KEYDOWN(buffer,options->special_keys[BUTTON_SPEEDUP]))
-   {
-      if(speedup == 0 && options->speedup_sound_off)
-      {
-         old_sound_on = options->sound_on;
-         options->sound_on = 0;
-         if(FSOUND_IsPlaying(channel_n) == TRUE)
-            FSOUND_StopSound(channel_n);
-      }
-      if (speedup == 0 && options->speedup_filter_off) {
-        renderer.toggleFiltering(false);
-      }
-      speedup = 1;
-   }
-   else if(speedup)
-   {      
-      if(speedup && options->speedup_sound_off)
-      {
-         options->sound_on = old_sound_on;
-         if(options->sound_on)
-            if(FSOUND_IsPlaying(channel_n) == FALSE)
-               channel_n = FSOUND_PlaySound(FSOUND_FREE,FSbuffer);
-      }
-      if (speedup == 1 && options->speedup_filter_off) {
-        renderer.toggleFiltering(true);
-      }      
-      speedup = 0;
-   }
-            
-   if(KEYDOWN(buffer,options->special_keys[BUTTON_L]) && !multiple_gb)
-   {
-      if(GB1->system_type == SYS_GBA) 
-         setWinSize(240,144);
-   } else
-   if(KEYDOWN(buffer,options->special_keys[BUTTON_R]) && !multiple_gb)
-   {
-      if(GB1->system_type == SYS_GBA) 
-         setWinSize(160,144);
-   }                                                                              
+   systemKeyActions(buffer);
+                                                                          
 }
 
 void check_system_keys()
@@ -351,46 +359,7 @@ void check_system_keys()
       return; 
    } 
                    
-   if(KEYDOWN(buffer,options->special_keys[BUTTON_SPEEDUP]))
-   {
-      if(speedup == 0 && options->speedup_sound_off)
-      {
-         old_sound_on = options->sound_on;
-         options->sound_on = 0;
-         if(FSOUND_IsPlaying(channel_n) == TRUE)
-            FSOUND_StopSound(channel_n);
-      }
-      if (speedup == 0 && options->speedup_filter_off) {
-        renderer.toggleFiltering(false);
-      }
-      speedup = 1;
-      
-   }
-   else
-   {      
-      if(speedup && options->speedup_sound_off)
-      {
-         options->sound_on = old_sound_on;
-         if(options->sound_on)
-            if(FSOUND_IsPlaying(channel_n) == FALSE)
-               channel_n = FSOUND_PlaySound(FSOUND_FREE,FSbuffer);
-      }
-      if (speedup == 1 && options->speedup_filter_off) {
-        renderer.toggleFiltering(true);
-      }
-      speedup = 0;
-   }
-            
-   if(KEYDOWN(buffer,options->special_keys[BUTTON_L]) && !multiple_gb)
-   {
-      if(GB1->system_type == SYS_GBA) 
-      	 setWinSize(240,144);
-   } else
-   if(KEYDOWN(buffer,options->special_keys[BUTTON_R]) && !multiple_gb)
-   {
-      if(GB1->system_type == SYS_GBA) 
-         setWinSize(160,144);
-   }                  
+   systemKeyActions(buffer);       
 
 }
 

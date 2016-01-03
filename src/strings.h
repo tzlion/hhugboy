@@ -63,6 +63,6 @@
 #define CHECK_OK              38
 #define CHECK_WRONG           39
 
-extern wchar_t* str_table[40];
+extern const wchar_t* str_table[40];
 
 #endif
