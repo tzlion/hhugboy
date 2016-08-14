@@ -42,6 +42,8 @@ using namespace std;
 
 extern int ramsize[9];
 
+bool firststart = 1;
+
 void gb_system::mem_reset()
 {
    memset(memory+0x8000,0x00,0x1FFF);
@@ -63,14 +65,19 @@ void gb_system::mem_reset()
    
    memory[0xc100] = 0xff;// fix for Minesweeper for 'Windows'
 
-   mem_map[0x0] = &cartridge[0x0000];
-   mem_map[0x1] = &cartridge[0x1000];
-   mem_map[0x2] = &cartridge[0x2000];
-   mem_map[0x3] = &cartridge[0x3000];
-   mem_map[0x4] = &cartridge[0x4000];
-   mem_map[0x5] = &cartridge[0x5000];
-   mem_map[0x6] = &cartridge[0x6000];
-   mem_map[0x7] = &cartridge[0x7000];
+   if ( firststart )
+   {
+        mem_map[0x0] = &cartridge[0x0000];
+        mem_map[0x1] = &cartridge[0x1000];
+        mem_map[0x2] = &cartridge[0x2000];
+        mem_map[0x3] = &cartridge[0x3000];
+        mem_map[0x4] = &cartridge[0x4000];
+        mem_map[0x5] = &cartridge[0x5000];
+        mem_map[0x6] = &cartridge[0x6000];
+        mem_map[0x7] = &cartridge[0x7000];
+       // firststart = 0;
+   }
+
 
    if(gbc_mode)
    {

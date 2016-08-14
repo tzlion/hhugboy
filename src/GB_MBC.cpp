@@ -29,6 +29,16 @@
 #include "debug.h"
 #include "zlib/zconf.h"
 #include <stdio.h>
+
+#include "main.h"
+
+byte vfmultimode=0;
+byte vfmultibank=0;
+byte vfmultimem=0;
+byte vfmultifinal=0;
+
+int superaddroffset = 0;
+
 int maxROMbank[9] =
 {
  1, 3, 7, 15, 31, 63, 127, 255, 511
@@ -192,6 +202,20 @@ byte gb_system::readmemory_default(register unsigned short address)
       if((!rom->RAMsize && !rom->battery))
          return 0xFF; 
    }*/
+   
+    //  wchar_t wrmessage[50];
+    //  wsprintf(wrmessage,L"MM %X %X",superaddroffset,mem_map[0x0]);
+    //  renderer.showMessage(wrmessage,60,GB1);
+        
+   /* mem_map[0x0] = &cartridge[superaddroffset];
+    mem_map[0x1] = &cartridge[superaddroffset+0x1000];
+    mem_map[0x2] = &cartridge[superaddroffset+0x2000];
+    mem_map[0x3] = &cartridge[superaddroffset+0x3000];
+    
+    mem_map[0x4] = &cartridge[superaddroffset+0x4000];
+    mem_map[0x5] = &cartridge[superaddroffset+0x5000];
+    mem_map[0x6] = &cartridge[superaddroffset+0x6000];
+    mem_map[0x7] = &cartridge[superaddroffset+0x7000];    */
 
    return io_reg_read(address);
 }
@@ -1085,6 +1109,72 @@ void gb_system::writememory_MBC3(register unsigned short address,register byte d
 //-------------------------------------------------------------------------
 void gb_system::writememory_MBC5(register unsigned short address,register byte data,bool isNiutoude,bool isSintax)
 {
+    bool vfmulti = true;
+    if ( vfmulti && !bc_select ) {
+            
+        if ( /*address & 0xF000 == 0x5000*/ address >= 0x5000 && address <= 0x5FFF ) {
+            vfmultimode = data;
+        }
+        if ( /*address & 0xF000 == 0x7000*/ address >= 0x7000 && address <= 0x7FFF ) {
+            bool effectChange = false;
+            switch( vfmultimode ) {
+                case 0xAA:
+                    if ( vfmultibank == 0 ) {
+                        vfmultibank = data;
+                    } else {
+                        effectChange = true;
+                    }
+                    break;
+                case 0xBB:
+                    vfmultimem = data;
+                    break;
+                case 0x55:
+                    vfmultifinal = data;
+                    effectChange = true;
+                    break;
+            }
+            if ( effectChange ) {
+                    
+                byte size = vfmultifinal & 0x07;
+                byte eightMegBankNo = ( vfmultifinal & 0x08 ) >> 3; // 0 or 1
+                byte doReset = ( vfmultifinal & 0x80 ) >> 7; // 0 or 1 again
+                
+                int addroffset = vfmultibank << 15;
+                addroffset += eightMegBankNo << 17;
+                superaddroffset = addroffset;
+                
+                wchar_t wrmessage[50];
+                wsprintf(wrmessage,L"MM %X %X %X",superaddroffset,vfmultifinal,doReset);
+                renderer.showMessage(wrmessage,60,GB1);
+                
+                mem_map[0x0] = &cartridge[addroffset];
+                mem_map[0x1] = &cartridge[addroffset+0x1000];
+                mem_map[0x2] = &cartridge[addroffset+0x2000];
+                mem_map[0x3] = &cartridge[addroffset+0x3000];
+                
+                mem_map[0x4] = &cartridge[addroffset+0x4000];
+                mem_map[0x5] = &cartridge[addroffset+0x5000];
+                mem_map[0x6] = &cartridge[addroffset+0x6000];
+                mem_map[0x7] = &cartridge[addroffset+0x7000];   
+                
+                // todo: Do the bank switch, changes the effective ROM..
+                // todo: Do the memory switch
+                if ( doReset ) {
+                //    GB1->reset();
+                   MBChi = 0;
+                   MBClo = 1;
+                   rom_bank = 1;
+                }
+                
+               if ( vfmultifinal>0) bc_select = 1;
+                
+                vfmultimode=0; vfmultibank=0; vfmultimem=0; vfmultifinal = 0;
+            
+                return;
+            }
+        }
+    }
+    
    if(address < 0x2000)// Is it a RAM bank enable/disable?
    {
       RAMenable = ( (data&0x0A) == 0x0A ? 1 : 0);
@@ -1160,6 +1250,8 @@ void gb_system::writememory_MBC5(register unsigned short address,register byte d
       cart_address = rom_bank<<14;
       
       cart_address &= rom_size_mask[rom->ROMsize];
+     
+      cart_address += superaddroffset;
       
       MBClo = data;   
 
@@ -1186,6 +1278,8 @@ void gb_system::writememory_MBC5(register unsigned short address,register byte d
       rom_bank = MBClo|(data<<8);
          
       cart_address = rom_bank<<14;
+      
+      cart_address += superaddroffset;
 
       cart_address &= rom_size_mask[rom->ROMsize];
       MBChi = data;
