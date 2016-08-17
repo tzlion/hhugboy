@@ -61,13 +61,13 @@ public:
    ~gb_system();
    
    bool init();
-   void reset(bool change_mode = true);
-   void mem_reset();
+   void reset(bool change_mode = true, bool mini = false);
+   void mem_reset(bool mini = false);
    void cpu_reset();
    void memory_variables_reset();
 
    wchar_t rom_filename[ROM_FILENAME_SIZE];
-   bool load_rom(const wchar_t* filename);
+   bool load_rom(const wchar_t* filename, int offset=0);
    bool loadrom_zip(const wchar_t* filename);
    bool romloaded;
    void crdtype(byte value,byte romsize,byte ramsize);
@@ -264,6 +264,8 @@ public:
    byte* mem_map[0x10];
    byte* cartridge;
    GBrom* rom;
+   
+   int superaddroffset;
 
    byte *memory_another;
 

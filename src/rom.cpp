@@ -710,7 +710,7 @@ bool gb_system::loadrom_zip(const wchar_t* filename)
    return true;
 }
 
-bool gb_system::load_rom(const wchar_t* filename)
+bool gb_system::load_rom(const wchar_t* filename,int offset)
 {    
 
     
@@ -738,7 +738,7 @@ bool gb_system::load_rom(const wchar_t* filename)
   
   
    // Go to start of ROM info area
-   if(fseek(romfile,0x0134,SEEK_SET))
+   if(fseek(romfile,offset+0x0134,SEEK_SET))
    { 
       debug_print(str_table[ERROR_FSEEK]); 
       fclose(romfile);
@@ -755,9 +755,9 @@ bool gb_system::load_rom(const wchar_t* filename)
    
    byte logo1[0x30];
    byte logo2[0x30];
-   fseek(romfile,0x0104,SEEK_SET);
+   fseek(romfile,offset+0x0104,SEEK_SET);
    fread(logo1,1,0x30,romfile);
-   fseek(romfile,0x0184,SEEK_SET);
+   fseek(romfile,offset+0x0184,SEEK_SET);
    fread(logo2,1,0x30,romfile);
    
    // ...process it...
@@ -798,6 +798,7 @@ bool gb_system::load_rom(const wchar_t* filename)
    
    // ...now load the rom into memory
    rewind(romfile);  // go to beginning
+   fseek(romfile,offset,SEEK_SET);
    
    if(cartridge != NULL) 
    { 
@@ -811,7 +812,14 @@ bool gb_system::load_rom(const wchar_t* filename)
       fclose(romfile);
       return false; 
    }
-   if((int)fread(cartridge,1,file_size,romfile) < file_size)
+   
+   /*if ( offset ) {
+        char wrmessage[50];
+        sprintf(wrmessage,"REREAD FROM OFFSET %X",offset);
+        debug_print(wrmessage  );
+   }*/
+   
+   if((int)fread(cartridge,1,file_size-offset,romfile) < file_size-offset)
    { 
       if(rom->ROMsize)
          debug_print(str_table[ERROR_READ_ROM_TO_MEMORY]); 

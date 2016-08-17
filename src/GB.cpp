@@ -356,7 +356,7 @@ gb_system::~gb_system()
    }
 }
 
-void gb_system::reset(bool change_mode)
+void gb_system::reset(bool change_mode, bool mini)
 {
    int old_sgb_mode = sgb_mode;
    int old_gbc_mode = gbc_mode;
@@ -471,7 +471,7 @@ void gb_system::reset(bool change_mode)
 
    frames = 0;
 
-   mem_reset();
+   mem_reset(mini);
    
    cpu_reset();
 
