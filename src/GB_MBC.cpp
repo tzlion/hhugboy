@@ -37,8 +37,6 @@ byte vfmultibank=0;
 byte vfmultimem=0;
 byte vfmultifinal=0;
 
-int superaddroffset = 0;
-
 int maxROMbank[9] =
 {
  1, 3, 7, 15, 31, 63, 127, 255, 511
@@ -1140,11 +1138,11 @@ void gb_system::writememory_MBC5(register unsigned short address,register byte d
                 byte doReset = ( vfmultifinal & 0x80 ) >> 7; // 0 or 1 again
                 
                 int addroffset = vfmultibank << 15;
-                addroffset += eightMegBankNo << 17;
+                addroffset += (eightMegBankNo << 0x17);
                 superaddroffset = addroffset;
                 
                 wchar_t wrmessage[50];
-                wsprintf(wrmessage,L"MM %X %X %X",superaddroffset,vfmultifinal,doReset);
+                wsprintf(wrmessage,L"MM %X %X",superaddroffset,vfmultibank);
                 renderer.showMessage(wrmessage,60,GB1);
                 
                 mem_map[0x0] = &cartridge[addroffset];
@@ -1160,10 +1158,13 @@ void gb_system::writememory_MBC5(register unsigned short address,register byte d
                 // todo: Do the bank switch, changes the effective ROM..
                 // todo: Do the memory switch
                 if ( doReset ) {
-                //    GB1->reset();
-                   MBChi = 0;
-                   MBClo = 1;
-                   rom_bank = 1;
+                      GB1->reset(true,true);
+                  /*  GB1->load_rom(L"dodgy-hardcoded-path",superaddroffset); // reload the ROM from a new offset
+                      superaddroffset = 0;
+                      GB1->reset();
+                    */
+                  // IT SEEMS that if we do a reset here it just doesnt fuck work properly anyway? 
+                  // Need to re-reset thru the menu (assuming superaddroffset not changed) & then it works
                 }
                 
                if ( vfmultifinal>0) bc_select = 1;
@@ -1278,10 +1279,11 @@ void gb_system::writememory_MBC5(register unsigned short address,register byte d
       rom_bank = MBClo|(data<<8);
          
       cart_address = rom_bank<<14;
+    
+      cart_address &= rom_size_mask[rom->ROMsize];
       
       cart_address += superaddroffset;
-
-      cart_address &= rom_size_mask[rom->ROMsize];
+      
       MBChi = data;
 
       mem_map[0x4] = &cartridge[cart_address];
