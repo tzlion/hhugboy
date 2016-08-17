@@ -55,7 +55,7 @@ class DirectDraw: public Renderer {
 		void (DirectDraw::*drawScreen)();
 		
 #ifdef ALLOW_DEBUG
-		void drawDebugScreen();
+		void (DirectDraw::*drawDebugScreen)();
 #endif
         DirectDraw(HWND* inHwnd);
         ~DirectDraw();
