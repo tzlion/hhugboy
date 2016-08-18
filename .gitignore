@@ -18,3 +18,4 @@ bin/*.cfg
 *.st9
 bin/*.png
 *.depend
+.idea/*
