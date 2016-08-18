@@ -26,6 +26,7 @@
 #include "SGB.h"
 #include "GB_gfx.h"
 #include "GB.h"
+#include "memory/GB_MBC.h"
 #include "mainloop.h"
 
 #include "main.h"
@@ -313,35 +314,35 @@ bool gb_system::save_state()
    
    if(rom->bankType == HuC3)
    {
-      fwrite(&HuC3_time, sizeof(unsigned int),1,statefile);
-      fwrite(&HuC3_last_time, sizeof(time_t),1,statefile);
+      fwrite(&(mbc->HuC3_time), sizeof(unsigned int),1,statefile);
+      fwrite(&(mbc->HuC3_last_time), sizeof(time_t),1,statefile);
       fwrite(&rtc.s, sizeof(int),1,statefile); 
          
       //fwrite(HuC3_register,sizeof(int),8,statefile);  
-      fwrite(&HuC3_RAMvalue,sizeof(int),1,statefile);              
+      fwrite(&(mbc->HuC3_RAMvalue),sizeof(int),1,statefile);
       //fwrite(&HuC3_address,sizeof(int),1,statefile);   
-      fwrite(&HuC3_RAMflag,sizeof(int),1,statefile);               
+      fwrite(&(mbc->HuC3_RAMflag),sizeof(int),1,statefile);
    }
 
    if(rom->bankType == MBC7)
    {
-      fwrite(&MBC7_cs,sizeof(int),1,statefile);     
-      fwrite(&MBC7_sk,sizeof(int),1,statefile);           
-      fwrite(&MBC7_state,sizeof(int),1,statefile); 
-      fwrite(&MBC7_buffer,sizeof(int),1,statefile);                     
-      fwrite(&MBC7_idle,sizeof(int),1,statefile);       
-      fwrite(&MBC7_count,sizeof(int),1,statefile);       
-      fwrite(&MBC7_code,sizeof(int),1,statefile);       
-      fwrite(&MBC7_address,sizeof(int),1,statefile);       
-      fwrite(&MBC7_writeEnable,sizeof(int),1,statefile);       
-      fwrite(&MBC7_value,sizeof(int),1,statefile);       
+      fwrite(&(mbc->MBC7_cs),sizeof(int),1,statefile);
+      fwrite(&(mbc->MBC7_sk),sizeof(int),1,statefile);
+      fwrite(&(mbc->MBC7_state),sizeof(int),1,statefile);
+      fwrite(&(mbc->MBC7_buffer),sizeof(int),1,statefile);
+      fwrite(&(mbc->MBC7_idle),sizeof(int),1,statefile);
+      fwrite(&(mbc->MBC7_count),sizeof(int),1,statefile);
+      fwrite(&(mbc->MBC7_code),sizeof(int),1,statefile);
+      fwrite(&(mbc->MBC7_address),sizeof(int),1,statefile);
+      fwrite(&(mbc->MBC7_writeEnable),sizeof(int),1,statefile);
+      fwrite(&(mbc->MBC7_value),sizeof(int),1,statefile);
       fwrite(&sensorX,sizeof(int),1,statefile);       
       fwrite(&sensorY,sizeof(int),1,statefile);           
    }
    
    if(rom->bankType == TAMA5)
    {
-      fwrite(&tama_flag,sizeof(int),1,statefile);             
+      fwrite(&(mbc->tama_flag),sizeof(int),1,statefile);
    }
       
    if(sgb_mode)
@@ -379,14 +380,14 @@ bool gb_system::save_state()
       fwrite(&rtc.control, sizeof(int),1,statefile); 
       fwrite(&rtc.last_time, sizeof(time_t),1,statefile);  
       
-      fwrite(&tama_time, sizeof(byte),1,statefile); 
-      fwrite(&tama_val6, sizeof(int),1,statefile); 
-      fwrite(&tama_val7, sizeof(int),1,statefile);       
-      fwrite(&tama_val4, sizeof(int),1,statefile); 
-      fwrite(&tama_val5, sizeof(int),1,statefile);
-      fwrite(&tama_count, sizeof(int),1,statefile);        
-      fwrite(&tama_month, sizeof(int),1,statefile);       
-      fwrite(&tama_change_clock, sizeof(int),1,statefile);       
+      fwrite(&(mbc->tama_time), sizeof(byte),1,statefile);
+      fwrite(&(mbc->tama_val6), sizeof(int),1,statefile);
+      fwrite(&(mbc->tama_val7), sizeof(int),1,statefile);
+      fwrite(&(mbc->tama_val4), sizeof(int),1,statefile);
+      fwrite(&(mbc->tama_val5), sizeof(int),1,statefile);
+      fwrite(&(mbc->tama_count), sizeof(int),1,statefile);
+      fwrite(&(mbc->tama_month), sizeof(int),1,statefile);
+      fwrite(&(mbc->tama_change_clock), sizeof(int),1,statefile);
    }  
     
    fclose(statefile);
@@ -571,35 +572,35 @@ bool gb_system::load_state()
    
    if(rom->bankType == HuC3)
    {
-      fread(&HuC3_time, sizeof(unsigned int),1,statefile);
-      fread(&HuC3_last_time, sizeof(time_t),1,statefile);
+      fread(&(mbc->HuC3_time), sizeof(unsigned int),1,statefile);
+      fread(&(mbc->HuC3_last_time), sizeof(time_t),1,statefile);
       fread(&rtc.s, sizeof(int),1,statefile); 
             
       //fread(HuC3_register,sizeof(int),8,statefile);  
-      fread(&HuC3_RAMvalue,sizeof(int),1,statefile);                
+      fread(&(mbc->HuC3_RAMvalue),sizeof(int),1,statefile);
       //fread(&HuC3_address,sizeof(int),1,statefile);   
-      fread(&HuC3_RAMflag,sizeof(int),1,statefile);               
+      fread(&(mbc->HuC3_RAMflag),sizeof(int),1,statefile);
    }
    
    if(rom->bankType == MBC7)
    {
-      fread(&MBC7_cs,sizeof(int),1,statefile);     
-      fread(&MBC7_sk,sizeof(int),1,statefile);           
-      fread(&MBC7_state,sizeof(int),1,statefile); 
-      fread(&MBC7_buffer,sizeof(int),1,statefile);                     
-      fread(&MBC7_idle,sizeof(int),1,statefile);       
-      fread(&MBC7_count,sizeof(int),1,statefile);       
-      fread(&MBC7_code,sizeof(int),1,statefile);       
-      fread(&MBC7_address,sizeof(int),1,statefile);       
-      fread(&MBC7_writeEnable,sizeof(int),1,statefile);       
-      fread(&MBC7_value,sizeof(int),1,statefile);       
+      fread(&(mbc->MBC7_cs),sizeof(int),1,statefile);
+      fread(&(mbc->MBC7_sk),sizeof(int),1,statefile);
+      fread(&(mbc->MBC7_state),sizeof(int),1,statefile);
+      fread(&(mbc->MBC7_buffer),sizeof(int),1,statefile);
+      fread(&(mbc->MBC7_idle),sizeof(int),1,statefile);
+      fread(&(mbc->MBC7_count),sizeof(int),1,statefile);
+      fread(&(mbc->MBC7_code),sizeof(int),1,statefile);
+      fread(&(mbc->MBC7_address),sizeof(int),1,statefile);
+      fread(&(mbc->MBC7_writeEnable),sizeof(int),1,statefile);
+      fread(&(mbc->MBC7_value),sizeof(int),1,statefile);
       fread(&sensorX,sizeof(int),1,statefile);       
       fread(&sensorY,sizeof(int),1,statefile);           
    }
 
    if(rom->bankType == TAMA5)
    {
-      fread(&tama_flag,sizeof(int),1,statefile);           
+      fread(&(mbc->tama_flag),sizeof(int),1,statefile);
    }
       
    char c = fgetc(statefile);
@@ -640,14 +641,14 @@ bool gb_system::load_state()
       fread(&rtc.control, sizeof(int),1,statefile); 
       fread(&rtc.last_time, sizeof(time_t),1,statefile);  
 
-      fread(&tama_time, sizeof(byte),1,statefile); 
-      fread(&tama_val6, sizeof(int),1,statefile); 
-      fread(&tama_val7, sizeof(int),1,statefile);       
-      fread(&tama_val4, sizeof(int),1,statefile); 
-      fread(&tama_val5, sizeof(int),1,statefile);
-      fread(&tama_count, sizeof(int),1,statefile);        
-      fread(&tama_month, sizeof(int),1,statefile);       
-      fread(&tama_change_clock, sizeof(int),1,statefile);             
+      fread(&(mbc->tama_time), sizeof(byte),1,statefile);
+      fread(&(mbc->tama_val6), sizeof(int),1,statefile);
+      fread(&(mbc->tama_val7), sizeof(int),1,statefile);
+      fread(&(mbc->tama_val4), sizeof(int),1,statefile);
+      fread(&(mbc->tama_val5), sizeof(int),1,statefile);
+      fread(&(mbc->tama_count), sizeof(int),1,statefile);
+      fread(&(mbc->tama_month), sizeof(int),1,statefile);
+      fread(&(mbc->tama_change_clock), sizeof(int),1,statefile);
    }
    
    int cadr = rom_bank<<14;

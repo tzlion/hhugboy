@@ -26,6 +26,8 @@
 #include "rom.h"
 #include "cheats.h"
 
+class gb_mbc;
+
 enum memoryaccess
 {
     MEMORY_DEFAULT = 0,
@@ -65,6 +67,8 @@ public:
    void mem_reset(bool mini = false);
    void cpu_reset();
    void memory_variables_reset();
+
+    gb_mbc* mbc;
 
    wchar_t rom_filename[ROM_FILENAME_SIZE];
    bool load_rom(const wchar_t* filename, int offset=0);
@@ -132,10 +136,6 @@ public:
 
    bool write_save();
    bool load_save(bool loading_GB1_save_to_GB2 = false);
-
-   void rtc_update();
-   void update_HuC3time();
-   void update_tama_RTC();
 
    //--------------------------------------------
    int frames;
@@ -211,52 +211,6 @@ public:
 
    void writememory(unsigned short address,byte data);
 
-   byte readmemory_default(register unsigned short address);
-
-   byte readmemory_MBC3(register unsigned short address);
-
-   byte readmemory_Camera(register unsigned short address);
-
-   void writememory_default(unsigned short address,register byte data);
-
-   void writememory_MBC1(unsigned short address,register byte data);
-
-   void writememory_MBC2(unsigned short address,register byte data);
-
-   void writememory_MBC3(unsigned short address,register byte data);
-
-   void writememory_MBC5(unsigned short address,register byte data, bool isNiutoude, bool isSintax);
-
-   void writememory_Camera(unsigned short address,register byte data);
-
-   byte readmemory_HuC3(register unsigned short address);
-
-   void writememory_HuC3(register unsigned short address,register byte data);
-
-   void writememory_MBC7(unsigned short address,register byte data);
-
-   byte readmemory_MBC7(register unsigned short address);
-
-   void writememory_TAMA5(register unsigned short address,register byte data);
-
-   byte readmemory_TAMA5(register unsigned short address);
-   
-   byte readmemory_sintax(register unsigned short address);
-
-   void writememory_Rockman8(register unsigned short address,register byte data);
-
-   void writememory_BC(register unsigned short address,register byte data);
-
-   void writememory_8in1(register unsigned short address,register byte data);
-
-   void writememory_MMM01(register unsigned short address,register byte data);
-
-   void writememory_MK12(register unsigned short address,register byte data);
-
-   void writememory_poke(register unsigned short address,register byte data);
-   
-   void setXorForBank(byte bankNo);
-
    byte* memory;
    byte *cartRAM;
    byte *VRAM;
@@ -276,42 +230,8 @@ public:
 
    int cameraIO;
 
-   int HuC3_register[8];
-   int HuC3_RAMvalue;
-   int HuC3_RAMaddress;
-   int HuC3_address;
-   int HuC3_RAMflag;
-
-   time_t HuC3_last_time;
-   int HuC3_flag;
-   unsigned int HuC3_time;
-   int HuC3_shift;
-
-   int MBC7_cs; // chip select
-   int MBC7_sk; // ?
-   int MBC7_state; // mapper state
-   int MBC7_buffer; // buffer for receiving serial data
-   int MBC7_idle; // idle state
-   int MBC7_count; // count of bits received
-   int MBC7_code; // command received
-   int MBC7_address; // address received
-   int MBC7_writeEnable; // write enable
-   int MBC7_value; // value to return on ram
-
-   int bc_select; // for collection carts
-
-   int tama_flag;
-   byte tama_time;
-   int tama_val4;
-   int tama_val5;
-   int tama_val6;
-   int tama_val7;
-   int tama_count;
-   int tama_month;
-   int tama_change_clock;
-
    int rumble_counter;
-   
+
    byte sintax_mode;
    byte sintax_xor2;
    byte sintax_xor3;

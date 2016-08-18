@@ -34,10 +34,12 @@
 #include "sound.h"
 #include "devices.h"
 #include "main.h"
+#include "memory/GB_MBC.h"
 
 int gb_system::gfx_bit_count = 16;
 
 gb_system::gb_system():
+        mbc(new gb_mbc(this)),
         frames(0),
         LCD_clear_needed(false),
         skip_frame(0),
@@ -167,37 +169,6 @@ gb_system::gb_system():
         RTC_latched(0),
 
         cameraIO(0),
-
-        HuC3_RAMvalue(0),
-        HuC3_RAMaddress(0),
-        HuC3_address(0),
-        HuC3_RAMflag(0),
-        HuC3_last_time(time(0)),
-        HuC3_flag(HUC3_NONE),
-        HuC3_time(0),
-        HuC3_shift(0),
-
-        MBC7_cs(0),
-        MBC7_sk(0),
-        MBC7_state(0),
-        MBC7_buffer(0),
-        MBC7_idle(0),
-        MBC7_count(0),
-        MBC7_code(0),
-        MBC7_address(0),
-        MBC7_writeEnable(0),
-        MBC7_value(0),
-
-        bc_select(0),
-        tama_flag(0),
-        tama_time(0),
-        tama_val4(0),
-        tama_val5(0),
-        tama_val6(0),
-        tama_val7(0),
-        tama_count(0),
-        tama_month(0),
-        tama_change_clock(0),
 
         rumble_counter(0),
         

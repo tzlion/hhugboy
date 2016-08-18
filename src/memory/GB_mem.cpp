@@ -34,11 +34,12 @@
 
 using namespace std;
 
-#include "debug.h"
-#include "config.h"
-#include "rendering/render.h"
+#include "../debug.h"
+#include "../config.h"
+#include "../rendering/render.h"
 
-#include "GB.h"
+#include "../GB.h"
+#include "GB_MBC.h"
 
 extern int ramsize[9];
 
@@ -258,8 +259,8 @@ void gb_system::mem_reset(bool mini)
 }
 
 void gb_system::memory_variables_reset()
-{                                          
-   bc_select = 0;       
+{
+   mbc->bc_select = 0;
      
    cameraIO = 0;
    RTC_latched = 0;   
@@ -272,18 +273,18 @@ void gb_system::memory_variables_reset()
    rtc.last_time = time(0);
    rtc.cur_register = 0x08;
 
-   tama_flag = 0;
-   tama_time = 0;
-   tama_val6 = 0;
-   tama_val7 = 0;
-   tama_val4 = 0;
-   tama_val5 = 0;
-   tama_count = 0;
-   tama_month = 0;
-   tama_change_clock = 0;
-   
-   HuC3_flag = HUC3_NONE;
-   HuC3_RAMvalue = 1;
+   mbc->tama_flag = 0;
+   mbc->tama_time = 0;
+   mbc->tama_val6 = 0;
+   mbc->tama_val7 = 0;
+   mbc->tama_val4 = 0;
+   mbc->tama_val5 = 0;
+   mbc->tama_count = 0;
+   mbc->tama_month = 0;
+   mbc->tama_change_clock = 0;
+
+   mbc->HuC3_flag = HUC3_NONE;
+   mbc->HuC3_RAMvalue = 1;
 }
 
 ///////////////////////////////////////////////////////
@@ -372,12 +373,12 @@ bool gb_system::write_save()
    }   
    
    if(rom->bankType==TAMA5)
-      fwrite(&tama_month, sizeof(int),1,savefile);    
+      fwrite(&(mbc->tama_month), sizeof(int),1,savefile);
       
    if(rom->bankType == HuC3)
    {
-      fwrite(&HuC3_time, sizeof(unsigned int),1,savefile);
-      fwrite(&HuC3_last_time, sizeof(time_t),1,savefile); 
+      fwrite(&(mbc->HuC3_time), sizeof(unsigned int),1,savefile);
+      fwrite(&(mbc->HuC3_last_time), sizeof(time_t),1,savefile);
       fwrite(&rtc.s, sizeof(int),1,savefile);      
    }
    
@@ -471,12 +472,12 @@ bool gb_system::load_save(bool loading_GB1_save_to_GB2)
    }
    
    if(rom->bankType==TAMA5)
-      fread(&tama_month, sizeof(int),1,savefile);       
+      fread(&(mbc->tama_month), sizeof(int),1,savefile);
 
    if(rom->bankType == HuC3)
    {
-      fread(&HuC3_time, sizeof(unsigned int),1,savefile);
-      fread(&HuC3_last_time, sizeof(time_t),1,savefile);
+      fread(&(mbc->HuC3_time), sizeof(unsigned int),1,savefile);
+      fread(&(mbc->HuC3_last_time), sizeof(time_t),1,savefile);
       fread(&rtc.s, sizeof(int),1,savefile);            
    }
 
