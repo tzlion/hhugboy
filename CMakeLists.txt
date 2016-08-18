@@ -1,0 +1,86 @@
+cmake_minimum_required(VERSION 3.6)
+project(hhugboy)
+
+set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++11 -U__STRICT_ANSI__ -mwindows")
+
+set(CMAKE_RUNTIME_OUTPUT_DIRECTORY "${CMAKE_SOURCE_DIR}/bin")
+
+set(SOURCE_FILES
+    src/rendering/filters/Filter.cpp
+    src/rendering/filters/Filter.h
+    src/rendering/filters/filters.cpp
+    src/rendering/filters/filters.h
+    src/rendering/filters/scale2x.cpp
+    src/rendering/filters/scale2x.h
+    src/rendering/filters/scale3x.cpp
+    src/rendering/filters/scale3x.h
+    src/rendering/directdraw.cpp
+    src/rendering/directdraw.h
+    src/rendering/palette.cpp
+    src/rendering/palette.h
+    src/rendering/render.cpp
+    src/rendering/render.h
+    src/rendering/renderer.cpp
+    src/rendering/renderer.h
+    src/zlib/unzip.c
+    src/zlib/unzip.h
+    src/cheats.cpp
+    src/cheats.h
+    src/config.cpp
+    src/config.h
+    src/cpu.cpp
+    src/cpu.h
+    src/cpucore.h
+    src/debug.cpp
+    src/debug.h
+    src/devices.cpp
+    src/devices.h
+    src/dialogs.cpp
+    src/dialogs.h
+    src/directinput.cpp
+    src/directinput.h
+    src/GB.cpp
+    src/GB.h
+    src/GB_gfx.cpp
+    src/GB_gfx.h
+    src/GB_ioregs.cpp
+    src/GB_MBC.cpp
+    src/GB_mem.cpp
+    src/GB_sound.cpp
+    src/keynames.h
+    src/licnames.h
+    src/main.cpp
+    src/main.h
+    src/menu.cpp
+    src/menu.rc
+    src/mainloop.cpp
+    src/mainloop.h
+    src/menu.h
+    src/options.h
+    src/rom.cpp
+    src/rom.h
+    src/SGB.cpp
+    src/SGB.h
+    src/sound.h
+    src/strings.cpp
+    src/strings.h
+    src/types.h
+    src/version.rc
+    src/version.res)
+
+include_directories(includes includes/zlib includes/libpng12 includes/fmod "C:\\png\\png++-0.2.5\\png++-0.2.5" "C:\\Program Files (x86)\\Microsoft DirectX SDK (August 2009)\\Include")
+
+link_libraries(
+        "${CMAKE_SOURCE_DIR}/libs/libfmod.a"
+        "${CMAKE_SOURCE_DIR}/libs/libwinmm.a"
+        "${CMAKE_SOURCE_DIR}/libs/libdinput.a"
+        "${CMAKE_SOURCE_DIR}/libs/libddraw.a"
+        "${CMAKE_SOURCE_DIR}/libs/libdinput.a"
+        "${CMAKE_SOURCE_DIR}/libs/libdinput8.a"
+        "${CMAKE_SOURCE_DIR}/libs/libdxguid.a"
+        "${CMAKE_SOURCE_DIR}/libs/libpng12.dll.a"
+        "${CMAKE_SOURCE_DIR}/libs/libz.a"
+)
+
+add_executable(hhugboy ${SOURCE_FILES})
+add_executable(hhugboy-debug ${SOURCE_FILES})
