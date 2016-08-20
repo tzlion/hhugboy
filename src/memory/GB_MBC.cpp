@@ -96,13 +96,16 @@ gb_mbc::gb_mbc(gb_system* inGB):
         tama_val7(0),
         tama_count(0),
         tama_month(0),
-        tama_change_clock(0)
+        tama_change_clock(0),
+
+        memory_read(MEMORY_DEFAULT),
+        memory_write(MEMORY_DEFAULT)
 {
     aGB = inGB;
 }
 
 byte gb_mbc::readmemory_cart(register unsigned short address) {
-    switch(aGB->memory_read)
+    switch(memory_read)
     {
         case MEMORY_MBC3:
             return readmemory_MBC3(address);
@@ -123,7 +126,7 @@ byte gb_mbc::readmemory_cart(register unsigned short address) {
 }
 
 void gb_mbc::writememory_cart(unsigned short address, register byte data) {
-    switch(aGB->memory_write)
+    switch(memory_write)
     {
         case MEMORY_MBC1:
             writememory_MBC1(address,data);

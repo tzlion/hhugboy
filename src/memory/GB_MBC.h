@@ -6,6 +6,34 @@
 
 class gb_system;
 
+enum memoryaccess
+{
+    MEMORY_DEFAULT = 0,
+    MEMORY_MBC1,
+    MEMORY_MBC2,
+    MEMORY_MBC3,
+    MEMORY_MBC5,
+    MEMORY_CAMERA,
+    MEMORY_HUC3,
+    MEMORY_MBC7,
+    MEMORY_TAMA5,
+    MEMORY_ROCKMAN8,
+    MEMORY_BC,
+    MEMORY_8IN1,
+    MEMORY_MMM01,
+    MEMORY_MK12,
+    MEMORY_POKE,
+    MEMORY_NIUTOUDE,
+    MEMORY_SINTAX
+};
+
+enum
+{
+    HUC3_READ = 0,
+    HUC3_WRITE = 1,
+    HUC3_NONE = 2
+};
+
 class gb_mbc {
 
 public:
@@ -44,6 +72,9 @@ public:
     int tama_count;
     int tama_month;
     int tama_change_clock;
+
+    memoryaccess memory_read;
+    memoryaccess memory_write;
 
     void rtc_update();
     void update_HuC3time();

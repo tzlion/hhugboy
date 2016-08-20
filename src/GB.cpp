@@ -105,8 +105,6 @@ gb_system::gb_system():
         MBChi(0),
         MBClo(0),
         RTCIO(0),
-        memory_read(MEMORY_DEFAULT),
-        memory_write(MEMORY_DEFAULT),
 
         sound_on(1),
         sound_index(0),
