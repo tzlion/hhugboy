@@ -35,6 +35,12 @@
 #include <stdio.h>
 
 #include "../main.h"
+#include "mbc/Mbc3.h"
+#include "mbc/MbcCamera.h"
+#include "mbc/Mbc7.h"
+#include "mbc/Huc3.h"
+#include "mbc/Tama5.h"
+#include "mbc/Sintax.h"
 
 byte vfmultimode=0;
 byte vfmultibank=0;
@@ -71,55 +77,14 @@ unsigned int cart_address = 0;
 
 // Eventually GB should contain cart and cart should contain MBC
 gb_mbc::gb_mbc(byte** gbMemMap, byte** gbCartridge, GBrom** gbRom, byte** gbCartRam, byte* gbRomBankXor, int* gbRumbleCounter, byte** gbMemory):
-        HuC3_RAMvalue(0),
-        HuC3_RAMaddress(0),
-        HuC3_address(0),
-        HuC3_RAMflag(0),
-        HuC3_last_time(time(0)),
-        HuC3_flag(HUC3_NONE),
-        HuC3_time(0),
-        HuC3_shift(0),
-
-        MBC7_cs(0),
-        MBC7_sk(0),
-        MBC7_state(0),
-        MBC7_buffer(0),
-        MBC7_idle(0),
-        MBC7_count(0),
-        MBC7_code(0),
-        MBC7_address(0),
-        MBC7_writeEnable(0),
-        MBC7_value(0),
-
-        bc_select(0),
-        tama_flag(0),
-        tama_time(0),
-        tama_val4(0),
-        tama_val5(0),
-        tama_val6(0),
-        tama_val7(0),
-        tama_count(0),
-        tama_month(0),
-        tama_change_clock(0),
 
         mbcType(MEMORY_DEFAULT),
 
-        sintax_mode(0),
-        sintax_xor2(0),
-        sintax_xor3(0),
-        sintax_xor4(0),
-        sintax_xor5(0),
-
-        MBC1memorymodel(0),
         RAMenable(0),
         rom_bank(1),
         ram_bank(0),
         MBChi(0),
-        MBClo(0),
-        RTCIO(0),
-
-        RTC_latched(0),
-        cameraIO(0)
+        MBClo(0)
 
 {
     this->gbCartridge = gbCartridge;
@@ -129,66 +94,51 @@ gb_mbc::gb_mbc(byte** gbMemMap, byte** gbCartridge, GBrom** gbRom, byte** gbCart
     this->gbRomBankXor = gbRomBankXor;
     this->gbRumbleCounter = gbRumbleCounter;
     this->gbMemory = gbMemory;
+
+    setMemoryReadWrite(mbcType);
 }
 
 void gb_mbc::resetMbcVariables()
 {
-    MBC1memorymodel = 0;
+    mbc->MBC1memorymodel = 0;
     MBChi = 0;
     MBClo = 1;
     rom_bank = 1;
     ram_bank = 0;
-    RTCIO = 0;
+    mbc->RTCIO = 0;
 
-    bc_select = 0;
+    mbc->bc_select = 0;
 
-    cameraIO = 0;
-    RTC_latched = 0;
+    mbc->cameraIO = 0;
+    mbc->RTC_latched = 0;
 
-    rtc.s = 0;
-    rtc.m = 0;
-    rtc.h = 0;
-    rtc.d = 0;
-    rtc.control = 0;
-    rtc.last_time = time(0);
-    rtc.cur_register = 0x08;
+    mbc->rtc.s = 0;
+    mbc->rtc.m = 0;
+    mbc->rtc.h = 0;
+    mbc->rtc.d = 0;
+    mbc->rtc.control = 0;
+    mbc->rtc.last_time = time(0);
+    mbc->rtc.cur_register = 0x08;
 
-    tama_flag = 0;
-    tama_time = 0;
-    tama_val6 = 0;
-    tama_val7 = 0;
-    tama_val4 = 0;
-    tama_val5 = 0;
-    tama_count = 0;
-    tama_month = 0;
-    tama_change_clock = 0;
+    mbc->tama_flag = 0;
+    mbc->tama_time = 0;
+    mbc->tama_val6 = 0;
+    mbc->tama_val7 = 0;
+    mbc->tama_val4 = 0;
+    mbc->tama_val5 = 0;
+    mbc->tama_count = 0;
+    mbc->tama_month = 0;
+    mbc->tama_change_clock = 0;
 
-    HuC3_flag = HUC3_NONE;
-    HuC3_RAMvalue = 1;
+    mbc->HuC3_flag = HUC3_NONE;
+    mbc->HuC3_RAMvalue = 1;
 
-    sintax_mode = 0;
-    sintax_xor2 = sintax_xor3 = sintax_xor4 = sintax_xor5 = 0;
+    mbc->sintax_mode = 0;
+    mbc->sintax_xor2 = mbc->sintax_xor3 = mbc->sintax_xor4 = mbc->sintax_xor5 = 0;
 }
 
 byte gb_mbc::readmemory_cart(register unsigned short address) {
-    switch(mbcType)
-    {
-        case MEMORY_MBC3:
-            return readmemory_MBC3(address);
-        case MEMORY_CAMERA:
-            return readmemory_Camera(address);
-        case MEMORY_MBC7:
-            return readmemory_MBC7(address);
-        case MEMORY_HUC3:
-            return readmemory_HuC3(address);
-        case MEMORY_TAMA5:
-            return readmemory_TAMA5(address);
-        case MEMORY_SINTAX:
-            return readmemory_sintax(address);
-        default:
-        case MEMORY_DEFAULT:
-            return readmemory_default(address);
-    }
+    return mbc->readMemory(address);
 }
 
 void gb_mbc::writememory_cart(unsigned short address, register byte data) {
@@ -269,16 +219,16 @@ void gb_mbc::setXorForBank(byte bankNo)
 {
   	switch(bankNo & 0x0F) {
 	case 0x00: case 0x04: case 0x08: case 0x0C:
-		*gbRomBankXor = sintax_xor2;
+		*gbRomBankXor = mbc->sintax_xor2;
 		break;
 	case 0x01: case 0x05: case 0x09: case 0x0D:
-		*gbRomBankXor = sintax_xor3;
+		*gbRomBankXor = mbc->sintax_xor3;
 		break;
 	case 0x02: case 0x06: case 0x0A: case 0x0E:
-		*gbRomBankXor = sintax_xor4;
+		*gbRomBankXor = mbc->sintax_xor4;
 		break;
 	case 0x03: case 0x07: case 0x0B: case 0x0F:
-		*gbRomBankXor = sintax_xor5;
+		*gbRomBankXor = mbc->sintax_xor5;
 		break;
   	}
   	
@@ -287,109 +237,6 @@ void gb_mbc::setXorForBank(byte bankNo)
   //	debug_print(buff);
 }
 
-//-------------------------------------------------------------------------
-// readmemory_default:
-// for most MBCs
-//-------------------------------------------------------------------------
-byte gb_mbc::readmemory_default(register unsigned short address)
-{            
-  /* if(address >= 0xA000 && address < 0xC000)
-   {
-      if((!rom->RAMsize && !rom->battery))
-         return 0xFF; 
-   }*/
-   
-    //  wchar_t wrmessage[50];
-    //  wsprintf(wrmessage,L"MM %X %X",superaddroffset,mem_map[0x0]);
-    //  renderer.showMessage(wrmessage,60,GB1);
-        
-   /* mem_map[0x0] = &cartridge[superaddroffset];
-    mem_map[0x1] = &cartridge[superaddroffset+0x1000];
-    mem_map[0x2] = &cartridge[superaddroffset+0x2000];
-    mem_map[0x3] = &cartridge[superaddroffset+0x3000];
-    
-    mem_map[0x4] = &cartridge[superaddroffset+0x4000];
-    mem_map[0x5] = &cartridge[superaddroffset+0x5000];
-    mem_map[0x6] = &cartridge[superaddroffset+0x6000];
-    mem_map[0x7] = &cartridge[superaddroffset+0x7000];    */
-
-   return gbMemMap[address>>12][address&0x0FFF];
-}
-
-//-------------------------------------------------------------------------
-// readmemory_sintax:
-// for SiNTAX
-//-------------------------------------------------------------------------
-byte gb_mbc::readmemory_sintax(register unsigned short address)
-{            
-
-   if(address >= 0x4000 && address < 0x8000)
-   {
-   	byte data = gbMemMap[address>>12][address&0x0FFF];
-
-   	
-   	//char buff[100];
-	//sprintf(buff,"MBCLo %X Addr %X Data %X XOR %X XOR'd data %X",MBClo,address,data,rom_bank_xor, data ^ rom_bank_xor);
-	//debug_print(buff);
-   	
-     return  data ^ *gbRomBankXor;
-   }
-
-   return gbMemMap[address>>12][address&0x0FFF];
-}
-
-
-//-------------------------------------------------------------------------
-// readmemory_MBC3:
-// for MBC3
-//-------------------------------------------------------------------------
-byte gb_mbc::readmemory_MBC3(register unsigned short address)
-{ 
-   if(address >= 0xA000 && address < 0xC000)
-   {
-      if((*gbRom)->RTC && RTCIO)
-      {
-         switch(rtc.cur_register)
-         {
-            case 0x08:
-               return rtc_latch.s;
-            case 0x09:
-               return rtc_latch.m;
-            case 0x0A:
-               return rtc_latch.h;
-            case 0x0B:
-               return (rtc_latch.d&0xFF);
-            case 0x0C:
-               return ((rtc_latch.d&0x100)>>8)|rtc_latch.control;
-         }
-      } 
-      //if(!rom->RAMsize)
-      //   return 0xFF; 
-   }
-
-   return gbMemMap[address>>12][address&0x0FFF];
-}
-
-//-------------------------------------------------------------------------
-// readmemory_Camera:
-// for GB Pocket Camera
-//-------------------------------------------------------------------------
-byte gb_mbc::readmemory_Camera(register unsigned short address)
-{   
-   if(address >= 0xA000 && address < 0xC000)
-   {
-      if(cameraIO) // Camera I/O register in cart RAM area
-      {
-         if(address == 0xA000)
-            return 0x00; // Hardware is ready 
-         else
-            return 0xFF; // others write only
-      }
-   }
-   
-   return gbMemMap[address>>12][address&0x0FFF];
-}
-      
 //-------------------------------------------------------------------------
 // writememory_default:
 // for ROM only and for undocumented/unknown MBCs
@@ -436,7 +283,7 @@ void gb_mbc::writememory_default(register unsigned short address,register byte d
 
    if(address < 0x8000) // BHGOS multicart
    {
-      if(++bc_select == 2 && (*gbRom)->ROMsize>1)
+      if(++mbc->bc_select == 2 && (*gbRom)->ROMsize>1)
       {
          MBChi = (data&0xFF);
 
@@ -488,9 +335,9 @@ void gb_mbc::writememory_8in1(register unsigned short address,register byte data
 
    if(address < 0x6000) // Is it a RAM bank switch?
    {
-      if(address == 0x4000 && bc_select < 3) // game select
+      if(address == 0x4000 && mbc->bc_select < 3) // game select
       {
-         ++bc_select;
+         ++mbc->bc_select;
 
          MBClo = 0;
 
@@ -541,7 +388,7 @@ void gb_mbc::writememory_MBC1(register unsigned short address,register byte data
 
    if(address < 0x4000) // Is it a ROM bank switch?
    {
-      if(MBC1memorymodel == 0)
+      if(mbc->MBC1memorymodel == 0)
       {
          if(data == 0)
             data = 1;
@@ -580,7 +427,7 @@ void gb_mbc::writememory_MBC1(register unsigned short address,register byte data
 
    if(address < 0x6000) // Is it a RAM bank switch?
    {
-      if(MBC1memorymodel == 0)
+      if(mbc->MBC1memorymodel == 0)
       {
          if((((data&0x03)<<5)|MBClo) > maxROMbank[(*gbRom)->ROMsize])
             return;
@@ -619,7 +466,7 @@ void gb_mbc::writememory_MBC1(register unsigned short address,register byte data
 
    if(address < 0x8000) // Is it a MBC1 max memory model change?
    {
-       MBC1memorymodel = (data&0x01);
+       mbc->MBC1memorymodel = (data&0x01);
       return;
    }
 
@@ -663,9 +510,9 @@ void gb_mbc::writememory_MMM01(register unsigned short address,register byte dat
 
    if(address < 0x6000) // Is it a RAM bank switch?
    {
-      if(address == 0x5fff && !bc_select)
+      if(address == 0x5fff && !mbc->bc_select)
       {
-         bc_select = 1;
+         mbc->bc_select = 1;
 
          data &= 0x2f;
          MBClo = 0;
@@ -766,7 +613,7 @@ void gb_mbc::writememory_BC(register unsigned short address,register byte data)
 
    if(address < 0x8000)
    {
-      MBC1memorymodel = (data&0x01);
+      mbc->MBC1memorymodel = (data&0x01);
       return;
    }
 
@@ -837,7 +684,7 @@ void gb_mbc::writememory_MK12(register unsigned short address,register byte data
 
    if(address < 0x8000)
    {
-      MBC1memorymodel = (data&0x01);
+       mbc->MBC1memorymodel = (data&0x01);
       return;
    }
 
@@ -942,54 +789,54 @@ void gb_mbc::writememory_MBC2(register unsigned short address,register byte data
 
 void gb_mbc::rtc_update()
 {
-   if(rtc.control&0x40)
+   if(mbc->rtc.control&0x40)
    {
-       rtc.last_time = time(0);
+       mbc->rtc.last_time = time(0);
       return;
    }
 
    time_t now = time(0);
-   time_t diff = now-rtc.last_time;
+   time_t diff = now-mbc->rtc.last_time;
    if(diff > 0)
    {
-    rtc.s += diff % 60;
-    if(rtc.s > 59)
+    mbc->rtc.s += diff % 60;
+    if(mbc->rtc.s > 59)
     {
-      rtc.s -= 60;
-      rtc.m++;
+      mbc->rtc.s -= 60;
+      mbc->rtc.m++;
     }
 
     diff /= 60;
 
-    rtc.m += diff % 60;
-    if(rtc.m > 59)
+    mbc->rtc.m += diff % 60;
+    if(mbc->rtc.m > 59)
     {
-      rtc.m -= 60;
-      rtc.h++;
+      mbc->rtc.m -= 60;
+      mbc->rtc.h++;
     }
 
     diff /= 60;
 
-    rtc.h += diff % 24;
-    if(rtc.h > 24)
+    mbc->rtc.h += diff % 24;
+    if(mbc->rtc.h > 24)
     {
-      rtc.h -= 24;
-      rtc.d++;
+      mbc->rtc.h -= 24;
+      mbc->rtc.d++;
     }
     diff /= 24;
 
-    rtc.d += diff;
-    if(rtc.d > 255)
+    mbc->rtc.d += diff;
+    if(mbc->rtc.d > 255)
     {
-      if(rtc.d > 511)
+      if(mbc->rtc.d > 511)
       {
-         rtc.d %= 512;
-         rtc.control |= 0x80;
+         mbc->rtc.d %= 512;
+         mbc->rtc.control |= 0x80;
       }
-      rtc.control = (rtc.control & 0xfe) | (rtc.d>255 ? 1 : 0);
+      mbc->rtc.control = (mbc->rtc.control & 0xfe) | (mbc->rtc.d>255 ? 1 : 0);
     }
   }
-  rtc.last_time = now;
+  mbc->rtc.last_time = now;
 }
 
 //-------------------------------------------------------------------------
@@ -1050,7 +897,7 @@ void gb_mbc::writememory_poke(register unsigned short address,register byte data
 
    if(address >= 0xA000 && address < 0xC000)
    {
-      if(bank0_change && address==0xA100 && !bc_select)
+      if(bank0_change && address==0xA100 && !mbc->bc_select)
       {
          MBClo = 0;
          if(data==1)
@@ -1059,7 +906,7 @@ void gb_mbc::writememory_poke(register unsigned short address,register byte data
          if(data!=0xc0)
             MBChi = 66;
          else
-            bc_select = 1;
+            mbc->bc_select = 1;
 
          cart_address = MBChi<<14;
 
@@ -1115,11 +962,11 @@ void gb_mbc::writememory_MBC3(register unsigned short address,register byte data
    {
       if((*gbRom)->RTC && data>8)
       {
-         RTCIO = 1;
-         rtc.cur_register = data;
+         mbc->RTCIO = 1;
+         mbc->rtc.cur_register = data;
 
          return;
-      } else RTCIO = 0;
+      } else mbc->RTCIO = 0;
 
       if((*gbRom)->RAMsize <= 2) // no need to change it if there isn't over 8KB ram
          return;
@@ -1142,34 +989,34 @@ void gb_mbc::writememory_MBC3(register unsigned short address,register byte data
       if(data == 1)
       {
          rtc_update();
-         RTC_latched = !RTC_latched;
-         rtc_latch = rtc;
+         mbc->RTC_latched = !mbc->RTC_latched;
+         mbc->rtc_latch = mbc->rtc;
       }
       return;
    }
 
    if(address >= 0xA000 && address < 0xC000)
    {
-      if(RAMenable && (*gbRom)->RTC && RTCIO)
+      if(RAMenable && (*gbRom)->RTC && mbc->RTCIO)
       {
-         time(&(rtc).last_time);
-         switch(rtc.cur_register)
+         time(&(mbc->rtc).last_time);
+         switch(mbc->rtc.cur_register)
          {
             case 0x08:
-               rtc.s = data;
+               mbc->rtc.s = data;
             break;
             case 0x09:
-               rtc.m = data;
+               mbc->rtc.m = data;
             break;
             case 0x0A:
-               rtc.h = data;
+               mbc->rtc.h = data;
             break;
             case 0x0B:
-               rtc.d = data;
+               mbc->rtc.d = data;
             break;
             case 0x0C:
-               rtc.control = data;
-               rtc.d |= (data&1)<<8;
+               mbc->rtc.control = data;
+               mbc->rtc.d |= (data&1)<<8;
             break;
          }
       }
@@ -1187,7 +1034,7 @@ void gb_mbc::writememory_MBC3(register unsigned short address,register byte data
 void gb_mbc::writememory_MBC5(register unsigned short address,register byte data,bool isNiutoude,bool isSintax)
 {
     bool vfmulti = true;
-    if ( vfmulti && !bc_select ) {
+    if ( vfmulti && !mbc->bc_select ) {
 
         if ( /*address & 0xF000 == 0x5000*/ address >= 0x5000 && address <= 0x5FFF ) {
             vfmultimode = data;
@@ -1246,7 +1093,7 @@ void gb_mbc::writememory_MBC5(register unsigned short address,register byte data
                   // Need to re-reset thru the menu (assuming superaddroffset not changed) & then it works
                 }
 
-               if ( vfmultifinal>0) bc_select = 1;
+               if ( vfmultifinal>0) mbc->bc_select = 1;
 
                 vfmultimode=0; vfmultibank=0; vfmultimem=0; vfmultifinal = 0;
 
@@ -1272,7 +1119,7 @@ void gb_mbc::writememory_MBC5(register unsigned short address,register byte data
       byte origData = data;
 
       if (isSintax) {
-      	switch(sintax_mode & 0x0f) {
+      	switch(mbc->sintax_mode & 0x0f) {
       		// Maybe these could go in a config file, so new ones can be added easily?
       		case 0x0D: {
       			byte flips[] = {6,7,0,1,2,3,4,5};
@@ -1379,7 +1226,7 @@ void gb_mbc::writememory_MBC5(register unsigned short address,register byte data
    		// sintaxs not entirely understood addressing thing hi
 
    		// check sintax_mode was not already set; if it was, ignore it (otherwise Metal Max breaks)
-   		if (isSintax && sintax_mode ==0 && address >= 0x5000 ) {
+   		if (isSintax && mbc->sintax_mode ==0 && address >= 0x5000 ) {
 
    		 switch(0x0F & data) {
    		 	case 0x0D: // old
@@ -1398,7 +1245,7 @@ void gb_mbc::writememory_MBC5(register unsigned short address,register byte data
    		 		debug_print(buff);
    			break;
    		 }
-   		 sintax_mode=data;
+   		 mbc->sintax_mode=data;
 
    		 writememory_MBC5(0x2000,01,false,true); // force a fake bank switch
 
@@ -1436,16 +1283,16 @@ void gb_mbc::writememory_MBC5(register unsigned short address,register byte data
    			int xorNo = ( address & 0x00F0 ) >> 4;
    			switch (xorNo) {
    				case 2:
-   					sintax_xor2 = data;
+   					mbc->sintax_xor2 = data;
    				break;
    				case 3:
-   					sintax_xor3 = data;
+   					mbc->sintax_xor3 = data;
    				break;
    				case 4:
-   					sintax_xor4 = data;
+   					mbc->sintax_xor4 = data;
    				break;
    				case 5:
-					sintax_xor5 = data;
+					mbc->sintax_xor5 = data;
    				break;
    			}
 
@@ -1459,7 +1306,7 @@ void gb_mbc::writememory_MBC5(register unsigned short address,register byte data
    		}
 
 
-    /*  if(++bc_select == 2 && rom->ROMsize>1)
+    /*  if(++mbc->bc_select == 2 && rom->ROMsize>1)
       {
          MBChi = (data&0xFF);
 
@@ -1520,11 +1367,11 @@ void gb_mbc::writememory_Camera(register unsigned short address,register byte da
    {
       if(data == 0x10)
       {
-         cameraIO = 1;
+         mbc->cameraIO = 1;
          return;
       }
       else
-         cameraIO = 0;
+         mbc->cameraIO = 0;
 
       data &= 0x0F;
 
@@ -1555,65 +1402,44 @@ void gb_mbc::writememory_Camera(register unsigned short address,register byte da
 void gb_mbc::update_HuC3time()
 {
    time_t now = time(0);
-   time_t diff = now-HuC3_last_time;
+   time_t diff = now-mbc->HuC3_last_time;
    if(diff > 0)
    {
-      rtc.s += diff % 60; // use rtc.s to store seconds
-      if(rtc.s > 59)
+      mbc->rtc.s += diff % 60; // use mbc->rtc.s to store seconds
+      if(mbc->rtc.s > 59)
       {
-          rtc.s -= 60;
-         HuC3_time++;
+          mbc->rtc.s -= 60;
+         mbc->HuC3_time++;
       }
 
       diff /= 60;
 
-      HuC3_time += diff % 60;
-      if((HuC3_time&0xFFF) > 1439)
+      mbc->HuC3_time += diff % 60;
+      if((mbc->HuC3_time&0xFFF) > 1439)
       {
-         HuC3_time = (HuC3_time&0xFFFF000)|((HuC3_time&0xFFF)-1440);
-         HuC3_time += 0x1000; // day counter ?
+         mbc->HuC3_time = (mbc->HuC3_time&0xFFFF000)|((mbc->HuC3_time&0xFFF)-1440);
+         mbc->HuC3_time += 0x1000; // day counter ?
       }
 
       diff /= 60;
 
-      HuC3_time += (diff % 24)*60;
-      if((HuC3_time&0xFFF) > 1439)
+      mbc->HuC3_time += (diff % 24)*60;
+      if((mbc->HuC3_time&0xFFF) > 1439)
       {
-         HuC3_time = (HuC3_time&0xFFFF000)|((HuC3_time&0xFFF)-1440);
-         HuC3_time += 0x1000; // day counter ?
+         mbc->HuC3_time = (mbc->HuC3_time&0xFFFF000)|((mbc->HuC3_time&0xFFF)-1440);
+         mbc->HuC3_time += 0x1000; // day counter ?
       }
 
       diff /= 24;
 
-      HuC3_time += (diff<<12);
-      if(((HuC3_time&0xFFF000)>>12) > 356)
+      mbc->HuC3_time += (diff<<12);
+      if(((mbc->HuC3_time&0xFFF000)>>12) > 356)
       {
-         HuC3_time = HuC3_time&0xF000FFF;
-         HuC3_time += 0x1000000; // year counter ????
+         mbc->HuC3_time = mbc->HuC3_time&0xF000FFF;
+         mbc->HuC3_time += 0x1000000; // year counter ????
       }
    }
-   HuC3_last_time = now;
-}
-
-//-------------------------------------------------------------------------
-// readmemory_HuC3:
-// for HuC3
-//-------------------------------------------------------------------------
-byte gb_mbc::readmemory_HuC3(register unsigned short address)
-{
-   if(address >= 0xA000 && address < 0xC000)
-   {
-      if(HuC3_RAMflag >= 0x0b && HuC3_RAMflag < 0x0e)
-      {
-         if(HuC3_RAMflag == 0x0D)
-            return 1;
-         return HuC3_RAMvalue;
-      }
-      if(!(*gbRom)->RAMsize)
-         return 0xFF;
-   }
-
-   return gbMemMap[address>>12][address&0x0FFF];
+   mbc->HuC3_last_time = now;
 }
 
 //-------------------------------------------------------------------------
@@ -1625,7 +1451,7 @@ void gb_mbc::writememory_HuC3(register unsigned short address,register byte data
    if(address < 0x2000)// Is it a RAM bank enable/disable?
    {
       RAMenable = ( (data&0x0A) == 0x0A ? 1 : 0);
-      HuC3_RAMflag = data;
+      mbc->HuC3_RAMflag = data;
       return;
    }
 
@@ -1666,40 +1492,40 @@ void gb_mbc::writememory_HuC3(register unsigned short address,register byte data
 
    if(address >= 0xA000 && address < 0xC000)
    {
-      if(HuC3_RAMflag < 0x0b || HuC3_RAMflag > 0x0e) // write to RAM
+      if(mbc->HuC3_RAMflag < 0x0b || mbc->HuC3_RAMflag > 0x0e) // write to RAM
       {
          if(!RAMenable || !(*gbRom)->RAMsize)
             return;
       } else
       {
-         if(HuC3_RAMflag == 0x0B) // send command ?
+         if(mbc->HuC3_RAMflag == 0x0B) // send command ?
          {
             switch(data & 0xf0)
             {
             case 0x10: // read time
                update_HuC3time();
-               if(HuC3_flag == HUC3_READ)
+               if(mbc->HuC3_flag == HUC3_READ)
                {
-                  HuC3_RAMvalue = ((HuC3_time>>HuC3_shift)&0x0F);
-                  HuC3_shift += 4;
-                  if(HuC3_shift > 24)
-                     HuC3_shift = 0;
+                  mbc->HuC3_RAMvalue = ((mbc->HuC3_time>>mbc->HuC3_shift)&0x0F);
+                  mbc->HuC3_shift += 4;
+                  if(mbc->HuC3_shift > 24)
+                     mbc->HuC3_shift = 0;
                }
             break;
             case 0x30: // write to registers (minute,day and year(?) counters)
                // to write time 23:59 program will send commands
                // 3F 39 35 30 30 30 31
-               // HuC3_time will then be 59F = 1439 = 23*60+59 minutes
-               if(HuC3_flag == HUC3_WRITE)
+               // mbc->HuC3_time will then be 59F = 1439 = 23*60+59 minutes
+               if(mbc->HuC3_flag == HUC3_WRITE)
                {
-                  if(HuC3_shift == 0)
-                     HuC3_time = 0;
-                  if(HuC3_shift < 24)
+                  if(mbc->HuC3_shift == 0)
+                     mbc->HuC3_time = 0;
+                  if(mbc->HuC3_shift < 24)
                   {
-                     HuC3_time |= ((data&0x0F)<<HuC3_shift);
-                     HuC3_shift += 4;
-                     if(HuC3_shift == 24)
-                        HuC3_flag = HUC3_READ;
+                     mbc->HuC3_time |= ((data&0x0F)<<mbc->HuC3_shift);
+                     mbc->HuC3_shift += 4;
+                     if(mbc->HuC3_shift == 24)
+                        mbc->HuC3_flag = HUC3_READ;
                   }
                }
             break;
@@ -1708,15 +1534,15 @@ void gb_mbc::writememory_HuC3(register unsigned short address,register byte data
                {
                case 0x00: //  ?
                   //HuC3_flag = HUC3_READ;
-                  HuC3_shift = 0;
+                  mbc->HuC3_shift = 0;
                break;
                case 0x03: // write time mode ?
-                  HuC3_flag = HUC3_WRITE;
-                  HuC3_shift = 0;
+                  mbc->HuC3_flag = HUC3_WRITE;
+                  mbc->HuC3_shift = 0;
                break;
                case 0x07: // read time mode ?
-                  HuC3_flag = HUC3_READ;
-                  HuC3_shift = 0;
+                  mbc->HuC3_flag = HUC3_READ;
+                  mbc->HuC3_shift = 0;
                break;
                case 0x06: // alarm clock sound test
                break;
@@ -1739,15 +1565,15 @@ void gb_mbc::writememory_HuC3(register unsigned short address,register byte data
             break;
             case 0x60: // ?
             {
-               //HuC3_RAMvalue = 1;
-               HuC3_flag = HUC3_READ;
+               //mbc->HuC3_RAMvalue = 1;
+               mbc->HuC3_flag = HUC3_READ;
             }
             break;
             }
-         } else if(HuC3_RAMflag == 0x0C) // not used ?
+         } else if(mbc->HuC3_RAMflag == 0x0C) // not used ?
          {
             // ?
-         } else if(HuC3_RAMflag == 0x0D) // programs will write 0xFE here
+         } else if(mbc->HuC3_RAMflag == 0x0D) // programs will write 0xFE here
          {
             // maybe a execute command function ?
          }
@@ -1823,145 +1649,145 @@ void gb_mbc::writememory_MBC7(register unsigned short address,register byte data
       if(address == 0xa080) 
       {
          // special processing needed
-         int oldCs = MBC7_cs,oldSk=MBC7_sk;
+         int oldCs = mbc->MBC7_cs,oldSk=mbc->MBC7_sk;
 
-          MBC7_cs=data>>7;
-          MBC7_sk=(data>>6)&1;
+          mbc->MBC7_cs=data>>7;
+          mbc->MBC7_sk=(data>>6)&1;
     
-         if(!oldCs && MBC7_cs)
+         if(!oldCs && mbc->MBC7_cs)
          {
-            if(MBC7_state == 5)
+            if(mbc->MBC7_state == 5)
             {
-               if(MBC7_writeEnable)
+               if(mbc->MBC7_writeEnable)
                {
-                   (*gbMemory)[0xa000+MBC7_address*2] = MBC7_buffer>>8;
-                   (*gbMemory)[0xa000+MBC7_address*2+1] = MBC7_buffer&0xff;
+                   (*gbMemory)[0xa000+mbc->MBC7_address*2] = mbc->MBC7_buffer>>8;
+                   (*gbMemory)[0xa000+mbc->MBC7_address*2+1] = mbc->MBC7_buffer&0xff;
                }
-                MBC7_state = 0;
-                MBC7_value = 1;
+                mbc->MBC7_state = 0;
+                mbc->MBC7_value = 1;
             } else 
             {
-                MBC7_idle = true;
-                MBC7_state = 0;
+                mbc->MBC7_idle = true;
+                mbc->MBC7_state = 0;
             }
         }
     
-        if(!oldSk && MBC7_sk)
+        if(!oldSk && mbc->MBC7_sk)
         {
-           if(MBC7_idle)
+           if(mbc->MBC7_idle)
            {
               if(data & 0x02) 
               {
-                  MBC7_idle = false;
-                  MBC7_count = 0;
-                  MBC7_state = 1;
+                  mbc->MBC7_idle = false;
+                  mbc->MBC7_count = 0;
+                  mbc->MBC7_state = 1;
               }
            } else 
            {
-              switch(MBC7_state)
+              switch(mbc->MBC7_state)
               {
               case 1:
                  // receiving command
-                  MBC7_buffer <<= 1;
-                  MBC7_buffer |= (data & 0x02)?1:0;
-                  MBC7_count++;
-                 if(MBC7_count == 2)
+                  mbc->MBC7_buffer <<= 1;
+                  mbc->MBC7_buffer |= (data & 0x02)?1:0;
+                  mbc->MBC7_count++;
+                 if(mbc->MBC7_count == 2)
                  {
                     // finished receiving command
-                     MBC7_state = 2;
-                     MBC7_count = 0;
-                     MBC7_code = MBC7_buffer & 3;
+                     mbc->MBC7_state = 2;
+                     mbc->MBC7_count = 0;
+                     mbc->MBC7_code = mbc->MBC7_buffer & 3;
                  }
               break;
               case 2:
                  // receive address
-                  MBC7_buffer <<= 1;
-                  MBC7_buffer |= (data&0x02)?1:0;
-                  MBC7_count++;
-                 if(MBC7_count==8)
+                  mbc->MBC7_buffer <<= 1;
+                  mbc->MBC7_buffer |= (data&0x02)?1:0;
+                  mbc->MBC7_count++;
+                 if(mbc->MBC7_count==8)
                  {
                     // finish receiving
-                    MBC7_state = 3;
-                    MBC7_count = 0;
-                    MBC7_address = MBC7_buffer&0xff;
-                    if(MBC7_code == 0)
+                    mbc->MBC7_state = 3;
+                    mbc->MBC7_count = 0;
+                    mbc->MBC7_address = mbc->MBC7_buffer&0xff;
+                    if(mbc->MBC7_code == 0)
                     {
-                       if((MBC7_address>>6) == 0)
+                       if((mbc->MBC7_address>>6) == 0)
                        {
-                          MBC7_writeEnable = 0;
-                          MBC7_state = 0;
-                       } else if((MBC7_address>>6) == 3)
+                          mbc->MBC7_writeEnable = 0;
+                          mbc->MBC7_state = 0;
+                       } else if((mbc->MBC7_address>>6) == 3)
                        {
-                          MBC7_writeEnable = 1;
-                          MBC7_state = 0;
+                          mbc->MBC7_writeEnable = 1;
+                          mbc->MBC7_state = 0;
                        }
                     }
                  }
               break;
               case 3:
-                 MBC7_buffer <<= 1;
-                 MBC7_buffer |= (data&0x02)?1:0;
-                 MBC7_count++;
+                 mbc->MBC7_buffer <<= 1;
+                 mbc->MBC7_buffer |= (data&0x02)?1:0;
+                 mbc->MBC7_count++;
           
-                 switch(MBC7_code)
+                 switch(mbc->MBC7_code)
                  {
                  case 0:
-                    if(MBC7_count==16)
+                    if(mbc->MBC7_count==16)
                     {
-                       if((MBC7_address>>6)==0)
+                       if((mbc->MBC7_address>>6)==0)
                        {
-                          MBC7_writeEnable = 0;
-                          MBC7_state = 0;
-                       } else if((MBC7_address>>6) == 1)
+                          mbc->MBC7_writeEnable = 0;
+                          mbc->MBC7_state = 0;
+                       } else if((mbc->MBC7_address>>6) == 1)
                        {
-                          if(MBC7_writeEnable)
+                          if(mbc->MBC7_writeEnable)
                           {
                              for(int i=0;i<256;i++) 
                              {
-                                 (*gbMemory)[0xa000+i*2] = MBC7_buffer >> 8;
-                                 (*gbMemory)[0xa000+i*2+1] = MBC7_buffer & 0xff;
+                                 (*gbMemory)[0xa000+i*2] = mbc->MBC7_buffer >> 8;
+                                 (*gbMemory)[0xa000+i*2+1] = mbc->MBC7_buffer & 0xff;
                              }
                           }
-                          MBC7_state = 5;
-                       } else if((MBC7_address>>6) == 2)
+                          mbc->MBC7_state = 5;
+                       } else if((mbc->MBC7_address>>6) == 2)
                        {
-                          if(MBC7_writeEnable)
+                          if(mbc->MBC7_writeEnable)
                           {
                              for(int i=0;i<256;i++)
                                 *((unsigned short *)&((*gbMemory))[0xa000+i*2]) = 0xffff;
                           }
-                          MBC7_state = 5;
-                       } else if((MBC7_address>>6) == 3)
+                          mbc->MBC7_state = 5;
+                       } else if((mbc->MBC7_address>>6) == 3)
                        {
-                          MBC7_writeEnable = 1;
-                          MBC7_state = 0;
+                          mbc->MBC7_writeEnable = 1;
+                          mbc->MBC7_state = 0;
                        }
-                       MBC7_count = 0;
+                       mbc->MBC7_count = 0;
                     }
                  break;
                  case 1:
-                    if(MBC7_count == 16)
+                    if(mbc->MBC7_count == 16)
                     {
-                       MBC7_count = 0;
-                       MBC7_state = 5;
-                       MBC7_value = 0;
+                       mbc->MBC7_count = 0;
+                       mbc->MBC7_state = 5;
+                       mbc->MBC7_value = 0;
                     }
                  break;
                  case 2:
-                    if(MBC7_count == 1)
+                    if(mbc->MBC7_count == 1)
                     {
-                       MBC7_state = 4;
-                       MBC7_count = 0;
-                       MBC7_buffer = ((*gbMemory)[0xa000+MBC7_address*2]<<8)|((*gbMemory)[0xa000+MBC7_address*2+1]);
+                       mbc->MBC7_state = 4;
+                       mbc->MBC7_count = 0;
+                       mbc->MBC7_buffer = ((*gbMemory)[0xa000+mbc->MBC7_address*2]<<8)|((*gbMemory)[0xa000+mbc->MBC7_address*2+1]);
                     }
                  break;
                  case 3:
-                    if(MBC7_count == 16)
+                    if(mbc->MBC7_count == 16)
                     {
-                       MBC7_count = 0;
-                       MBC7_state = 5;
-                       MBC7_value = 0;
-                       MBC7_buffer = 0xffff;
+                       mbc->MBC7_count = 0;
+                       mbc->MBC7_state = 5;
+                       mbc->MBC7_value = 0;
+                       mbc->MBC7_buffer = 0xffff;
                     }
                  break;
                  }
@@ -1970,17 +1796,17 @@ void gb_mbc::writememory_MBC7(register unsigned short address,register byte data
           }
        }
     
-       if(oldSk && !MBC7_sk)
+       if(oldSk && !mbc->MBC7_sk)
        {
-          if(MBC7_state == 4)
+          if(mbc->MBC7_state == 4)
           { 
-             MBC7_value = (MBC7_buffer & 0x8000)?1:0;
-             MBC7_buffer <<= 1;
-             MBC7_count++;
-             if(MBC7_count == 16)
+             mbc->MBC7_value = (mbc->MBC7_buffer & 0x8000)?1:0;
+             mbc->MBC7_buffer <<= 1;
+             mbc->MBC7_count++;
+             if(mbc->MBC7_count == 16)
              {
-                MBC7_count = 0;
-                MBC7_state = 0;
+                mbc->MBC7_count = 0;
+                mbc->MBC7_state = 0;
              }
           }
        }
@@ -1989,227 +1815,6 @@ void gb_mbc::writememory_MBC7(register unsigned short address,register byte data
    }
    
     gbMemMap[address>>12][address&0x0FFF] = data;
-}
-
-//-------------------------------------------------------------------------
-// readmemory_MBC7:
-// for MBC7
-//-------------------------------------------------------------------------
-byte gb_mbc::readmemory_MBC7(register unsigned short address)
-{ 
-   if(address >= 0xA000 && address < 0xC000)
-   {
-      switch(address & 0xa0f0) 
-      {
-         case 0xa000:
-         case 0xa010:
-         case 0xa060:
-         case 0xa070:
-            return 0;
-         case 0xa020:
-            // sensor X low byte
-            return sensorX & 255;
-         case 0xa030:
-            // sensor X high byte
-            return sensorX >> 8;
-         case 0xa040:
-            // sensor Y low byte
-            return sensorY & 255;
-         case 0xa050:
-            // sensor Y high byte
-            return sensorY >> 8;
-         case 0xa080:
-            return MBC7_value;
-      }
-      return 0xff;
-   }
-   
-   return gbMemMap[address>>12][address&0x0FFF];
-}
-
-//-------------------------------------------------------------------------
-// readmemory_TAMA5:
-// for Bandai TAMA5 (Tamagotchi3)
-//-------------------------------------------------------------------------
-
-void gb_mbc::update_tama_RTC()
-{
-   time_t now = time(0);
-   time_t diff = now-rtc.last_time;
-   if(diff > 0)
-   {
-    rtc.s += diff % 60;
-    if(rtc.s > 59)
-    {
-      rtc.s -= 60;
-      rtc.m++;
-    }
-
-    diff /= 60;
-
-    rtc.m += diff % 60;
-    if(rtc.m > 59)
-    {
-      rtc.m -= 60;
-      rtc.h++;
-    }
-
-    diff /= 60;
-
-    rtc.h += diff % 24;
-    if(rtc.h > 24)
-    {
-      rtc.h -= 24;
-      rtc.d++;
-    }
-    diff /= 24;
-
-    rtc.d += diff;
-    if(rtc.d > 31)
-    {
-      rtc.d -= 31;
-      tama_month++;
-      if(tama_month > 12)
-         tama_month -= 12;
-    }
-  }
-  rtc.last_time = now;
-}
-
-byte gb_mbc::readmemory_TAMA5(register unsigned short address)
-{ 
-   if(address >= 0xA000 && address < 0xC000)
-   {         
-      if(address == 0xA000)
-      {
-         switch(tama_flag)
-         {
-         case 0x0A: // test register ?
-            return 1; 
-         case 0x0D: // RTC registers 
-         {       
-            byte read = 0;
-            if(tama_val4 == 1)
-            {           
-               if(tama_val6 == 0x04)
-               {
-                  if(tama_val7 == 0x06) // get minutes higher nibble
-                  {
-                     read = rtc.m;
-                     if(read > 0x0f)
-                        read += 6;
-                     if(read > 0x1f)
-                        read += 6;
-                     if(read > 0x2f)
-                        read += 6;
-                     if(read > 0x3f)
-                        read += 6;   
-                     if(read > 0x4f)
-                        read += 6; 
-                     if(read == 0x5A)
-                        read = 0;                                                             
-                     read = (read&0xf0)>>4;
-                  }
-                  else
-                  if(tama_val7 == 0x07) // get hours higher nibble
-                  {
-                     read = rtc.h;
-                     if(read > 0x0f)
-                        read += 6;
-                     if(read > 0x1f)
-                        read += 6;
-                     if(read > 0x2f)
-                        read += 6;
-                     if(read > 0x3f)
-                        read += 6;   
-                                                        
-                     read = (read&0xf0)>>4;                  
-                  }
-               } 
-            } else
-            { // read memory ?
-               read = (*gbMemory)[0xA000|(tama_val6<<4)|tama_val7];
-            } 
-            return read;
-         }   
-         case 0x0C: // RTC registers
-         {
-            update_tama_RTC();
-            byte read = 0;
-            switch(tama_val4)
-            {
-            case 0:
-               if(rtc.s == 0)
-                  read = 0;
-               else
-                  read = rtc.s - (tama_time+1); // return 0 if second has passed
-                tama_time = rtc.s;
-            break;
-            case 1:   
-               if(tama_val6 == 0x04)
-               {              
-                  if(tama_val7 == 0x06) // get minutes lower nibble
-                  {
-                     read = rtc.m;
-                     
-                     //change into correct format
-                     if(read > 0x0f)
-                        read += 6;
-                     if(read > 0x1f)
-                        read += 6;
-                     if(read > 0x2f)
-                        read += 6;
-                     if(read > 0x3f)
-                        read += 6;     
-                     if(read > 0x4f)
-                        read += 6;
-                     if(read == 0x5A)
-                        read = 0;
-                                                                  
-                     read &= 0x0f;
-                  }
-                  else 
-                  if(tama_val7 == 0x07) // get hours lower nibble
-                  {
-                     read = rtc.h;
-                     
-                     //change into correct format
-                     if(read > 0x0f)
-                        read += 6;
-                     if(read > 0x1f)
-                        read += 6;
-                     if(read > 0x2f)
-                        read += 6;
-                     if(read > 0x3f)
-                        read += 6;     
-                        
-                     read &= 0x0f;                                          
-                  }
-               } 
-            break;
-            case 7: // day low
-               read = rtc.d&0xF;
-            break;
-            case 8: // day high
-               read = ((rtc.d&0xf0)>>4);
-            break;
-            case 9: // month
-               read = tama_month;
-            break;
-            case 0xA: // ? (year maybe?)
-               read = 0;            
-            break;
-            case 0xF: // ? (year maybe?)
-               read = 0;            
-            break;
-            }
-            return read;
-         }  
-         }
-      }
-   }
-   
-   return gbMemMap[address>>12][address&0x0FFF];
 }
 
 //-------------------------------------------------------------------------
@@ -2227,7 +1832,7 @@ void gb_mbc::writememory_TAMA5(register unsigned short address,register byte dat
    {       
       if(address == 0xA000)
       {                 
-         switch(tama_flag)
+         switch(mbc->tama_flag)
          {
          case 0: // rom bank lower nibble
          {
@@ -2259,64 +1864,64 @@ void gb_mbc::writememory_TAMA5(register unsigned short address,register byte dat
          }
          return;
          case 4: // RTC controls
-            tama_val4 = data;
+            mbc->tama_val4 = data;
          return;
          case 5: // write time (and write memory????)
-            tama_val5 = data;
-            ++tama_count;
-            if(tama_count==1 && data == 0) tama_change_clock |= 2;
-            if(tama_count==2 && data == 1) tama_change_clock |= 1;
-            if(tama_change_clock == 3) rtc.last_time = time(0);
+            mbc->tama_val5 = data;
+            ++mbc->tama_count;
+            if(mbc->tama_count==1 && data == 0) mbc->tama_change_clock |= 2;
+            if(mbc->tama_count==2 && data == 1) mbc->tama_change_clock |= 1;
+            if(mbc->tama_change_clock == 3) mbc->rtc.last_time = time(0);
 
-             (*gbMemory)[0xA000+(tama_val6<<4)+tama_val7] = tama_val4|(data<<4);
+             (*gbMemory)[0xA000+(mbc->tama_val6<<4)+mbc->tama_val7] = mbc->tama_val4|(data<<4);
             
             //which time counter is changed?
-            if(tama_count==6 && tama_change_clock==3)
+            if(mbc->tama_count==6 && mbc->tama_change_clock==3)
             {
-               tama_month = data;
+               mbc->tama_month = data;
             } else
-            if(tama_count==7 && tama_change_clock==3)
+            if(mbc->tama_count==7 && mbc->tama_change_clock==3)
             {
-               tama_month += data*10;
+               mbc->tama_month += data*10;
             } else
-            if(tama_count==8 && tama_change_clock==3)
+            if(mbc->tama_count==8 && mbc->tama_change_clock==3)
             {
-               rtc.d = data;
+               mbc->rtc.d = data;
             } else
-            if(tama_count==9 && tama_change_clock==3)
+            if(mbc->tama_count==9 && mbc->tama_change_clock==3)
             {
-                rtc.d += data*10;
+                mbc->rtc.d += data*10;
             } else
-            if(tama_count==10 && tama_change_clock==3)
+            if(mbc->tama_count==10 && mbc->tama_change_clock==3)
             {
-                rtc.m = data*10;
+                mbc->rtc.m = data*10;
             } else
-            if(tama_count==11 && tama_change_clock==3)
+            if(mbc->tama_count==11 && mbc->tama_change_clock==3)
             {
-                rtc.h = data*10;
+                mbc->rtc.h = data*10;
             } else
-            if(tama_change_clock==3 && tama_count >= 13)
+            if(mbc->tama_change_clock==3 && mbc->tama_count >= 13)
             {
-                tama_count = 0;
-                tama_change_clock = 0;
+                mbc->tama_count = 0;
+                mbc->tama_change_clock = 0;
             } else
-            if(tama_change_clock!=3 && tama_count >= 2)
+            if(mbc->tama_change_clock!=3 && mbc->tama_count >= 2)
             {
-                tama_count=0;
-                tama_change_clock = 0;
+                mbc->tama_count=0;
+                mbc->tama_change_clock = 0;
             }
          return;         
          case 6: // RTC controls
-             tama_val6 = data;
+             mbc->tama_val6 = data;
          return;         
          case 7: // RTC controls
-             tama_val7 = data;
+             mbc->tama_val7 = data;
          return;
          }
       } else
       if(address == 0xA001)
       {
-          tama_flag = data;
+          mbc->tama_flag = data;
                   
          return;
       } 
@@ -2328,45 +1933,45 @@ void gb_mbc::writememory_TAMA5(register unsigned short address,register byte dat
 void gb_mbc::readMbcSpecificStuffFromSaveFile(FILE *savefile) {
     if((*gbRom)->RTC || (*gbRom)->bankType == TAMA5)
     {
-        fwrite(&(rtc).s, sizeof(int), 1, savefile);
-        fwrite(&(rtc).m, sizeof(int), 1, savefile);
-        fwrite(&(rtc).h, sizeof(int), 1, savefile);
-        fwrite(&(rtc).d, sizeof(int), 1, savefile);
-        fwrite(&(rtc).control, sizeof(int), 1, savefile);
-        fwrite(&(rtc).last_time, sizeof(time_t), 1, savefile);
+        fwrite(&(mbc->rtc).s, sizeof(int), 1, savefile);
+        fwrite(&(mbc->rtc).m, sizeof(int), 1, savefile);
+        fwrite(&(mbc->rtc).h, sizeof(int), 1, savefile);
+        fwrite(&(mbc->rtc).d, sizeof(int), 1, savefile);
+        fwrite(&(mbc->rtc).control, sizeof(int), 1, savefile);
+        fwrite(&(mbc->rtc).last_time, sizeof(time_t), 1, savefile);
     }
 
     if((*gbRom)->bankType == TAMA5)
-        fwrite(&(tama_month), sizeof(int), 1, savefile);
+        fwrite(&(mbc->tama_month), sizeof(int), 1, savefile);
 
     if((*gbRom)->bankType == HuC3)
     {
-        fwrite(&(HuC3_time), sizeof(unsigned int), 1, savefile);
-        fwrite(&(HuC3_last_time), sizeof(time_t), 1, savefile);
-        fwrite(&(rtc).s, sizeof(int), 1, savefile);
+        fwrite(&(mbc->HuC3_time), sizeof(unsigned int), 1, savefile);
+        fwrite(&(mbc->HuC3_last_time), sizeof(time_t), 1, savefile);
+        fwrite(&(mbc->rtc).s, sizeof(int), 1, savefile);
     }
 }
 
 void gb_mbc::writeMbcSpecificStuffToSaveFile(FILE *savefile){
     if((*gbRom)->RTC || (*gbRom)->bankType == TAMA5)
     {
-        fread(&(rtc).s, sizeof(int), 1, savefile);
-        fread(&(rtc).m, sizeof(int), 1, savefile);
-        fread(&(rtc).h, sizeof(int), 1, savefile);
-        fread(&(rtc).d, sizeof(int), 1, savefile);
-        fread(&(rtc).control, sizeof(int), 1, savefile);
-        fread(&(rtc).last_time, sizeof(time_t), 1, savefile);
-        rtc_latch = rtc;
+        fread(&(mbc->rtc).s, sizeof(int), 1, savefile);
+        fread(&(mbc->rtc).m, sizeof(int), 1, savefile);
+        fread(&(mbc->rtc).h, sizeof(int), 1, savefile);
+        fread(&(mbc->rtc).d, sizeof(int), 1, savefile);
+        fread(&(mbc->rtc).control, sizeof(int), 1, savefile);
+        fread(&(mbc->rtc).last_time, sizeof(time_t), 1, savefile);
+        mbc->rtc_latch = mbc->rtc;
     }
 
     if((*gbRom)->bankType == TAMA5)
-        fread(&(tama_month), sizeof(int), 1, savefile);
+        fread(&(mbc->tama_month), sizeof(int), 1, savefile);
 
     if((*gbRom)->bankType == HuC3)
     {
-        fread(&(HuC3_time), sizeof(unsigned int), 1, savefile);
-        fread(&(HuC3_last_time), sizeof(time_t), 1, savefile);
-        fread(&(rtc).s, sizeof(int), 1, savefile);
+        fread(&(mbc->HuC3_time), sizeof(unsigned int), 1, savefile);
+        fread(&(mbc->HuC3_last_time), sizeof(time_t), 1, savefile);
+        fread(&(mbc->rtc).s, sizeof(int), 1, savefile);
     }
 }
 
@@ -2432,69 +2037,69 @@ void gb_mbc::writeNewerCartSpecificVarsToStateFile(FILE *statefile) {
 }
 
 void gb_mbc::writeMoreTama5VarsToStateFile(FILE *statefile) {
-    fwrite(&(rtc).s, sizeof(int), 1, statefile);
-    fwrite(&(rtc).m, sizeof(int), 1, statefile);
-    fwrite(&(rtc).h, sizeof(int), 1, statefile);
-    fwrite(&(rtc).d, sizeof(int), 1, statefile);
-    fwrite(&(rtc).control, sizeof(int), 1, statefile);
-    fwrite(&(rtc).last_time, sizeof(time_t), 1, statefile);
+    fwrite(&(mbc->rtc).s, sizeof(int), 1, statefile);
+    fwrite(&(mbc->rtc).m, sizeof(int), 1, statefile);
+    fwrite(&(mbc->rtc).h, sizeof(int), 1, statefile);
+    fwrite(&(mbc->rtc).d, sizeof(int), 1, statefile);
+    fwrite(&(mbc->rtc).control, sizeof(int), 1, statefile);
+    fwrite(&(mbc->rtc).last_time, sizeof(time_t), 1, statefile);
 
-    fwrite(&(tama_time), sizeof(byte), 1, statefile);
-    fwrite(&(tama_val6), sizeof(int), 1, statefile);
-    fwrite(&(tama_val7), sizeof(int), 1, statefile);
-    fwrite(&(tama_val4), sizeof(int), 1, statefile);
-    fwrite(&(tama_val5), sizeof(int), 1, statefile);
-    fwrite(&(tama_count), sizeof(int), 1, statefile);
-    fwrite(&(tama_month), sizeof(int), 1, statefile);
-    fwrite(&(tama_change_clock), sizeof(int), 1, statefile);
+    fwrite(&(mbc->tama_time), sizeof(byte), 1, statefile);
+    fwrite(&(mbc->tama_val6), sizeof(int), 1, statefile);
+    fwrite(&(mbc->tama_val7), sizeof(int), 1, statefile);
+    fwrite(&(mbc->tama_val4), sizeof(int), 1, statefile);
+    fwrite(&(mbc->tama_val5), sizeof(int), 1, statefile);
+    fwrite(&(mbc->tama_count), sizeof(int), 1, statefile);
+    fwrite(&(mbc->tama_month), sizeof(int), 1, statefile);
+    fwrite(&(mbc->tama_change_clock), sizeof(int), 1, statefile);
 }
 
-void gb_mbc::writeTama5VarsToStateFile(FILE *statefile) { fwrite(&(tama_flag), sizeof(int), 1, statefile); }
+void gb_mbc::writeTama5VarsToStateFile(FILE *statefile) { fwrite(&(mbc->tama_flag), sizeof(int), 1, statefile); }
 
 void gb_mbc::writeMbc7VarsToStateFile(FILE *statefile) {
-    fwrite(&(MBC7_cs), sizeof(int), 1, statefile);
-    fwrite(&(MBC7_sk), sizeof(int), 1, statefile);
-    fwrite(&(MBC7_state), sizeof(int), 1, statefile);
-    fwrite(&(MBC7_buffer), sizeof(int), 1, statefile);
-    fwrite(&(MBC7_idle), sizeof(int), 1, statefile);
-    fwrite(&(MBC7_count), sizeof(int), 1, statefile);
-    fwrite(&(MBC7_code), sizeof(int), 1, statefile);
-    fwrite(&(MBC7_address), sizeof(int), 1, statefile);
-    fwrite(&(MBC7_writeEnable), sizeof(int), 1, statefile);
-    fwrite(&(MBC7_value), sizeof(int), 1, statefile);
+    fwrite(&(mbc->MBC7_cs), sizeof(int), 1, statefile);
+    fwrite(&(mbc->MBC7_sk), sizeof(int), 1, statefile);
+    fwrite(&(mbc->MBC7_state), sizeof(int), 1, statefile);
+    fwrite(&(mbc->MBC7_buffer), sizeof(int), 1, statefile);
+    fwrite(&(mbc->MBC7_idle), sizeof(int), 1, statefile);
+    fwrite(&(mbc->MBC7_count), sizeof(int), 1, statefile);
+    fwrite(&(mbc->MBC7_code), sizeof(int), 1, statefile);
+    fwrite(&(mbc->MBC7_address), sizeof(int), 1, statefile);
+    fwrite(&(mbc->MBC7_writeEnable), sizeof(int), 1, statefile);
+    fwrite(&(mbc->MBC7_value), sizeof(int), 1, statefile);
     fwrite(&sensorX,sizeof(int),1,statefile);
     fwrite(&sensorY,sizeof(int),1,statefile);
 }
 
 void gb_mbc::writeHuc3VarsToStateFile(FILE *statefile) {
-    fwrite(&(HuC3_time), sizeof(unsigned int), 1, statefile);
-    fwrite(&(HuC3_last_time), sizeof(time_t), 1, statefile);
-    fwrite(&(rtc).s, sizeof(int), 1, statefile);
+    fwrite(&(mbc->HuC3_time), sizeof(unsigned int), 1, statefile);
+    fwrite(&(mbc->HuC3_last_time), sizeof(time_t), 1, statefile);
+    fwrite(&(mbc->rtc).s, sizeof(int), 1, statefile);
 
-    //fwrite(HuC3_register,sizeof(int),8,statefile);
-    fwrite(&(HuC3_RAMvalue), sizeof(int), 1, statefile);
-    //fwrite(&HuC3_address,sizeof(int),1,statefile);
-    fwrite(&(HuC3_RAMflag), sizeof(int), 1, statefile);
+    //fwrite(mbc->HuC3_register,sizeof(int),8,statefile);
+    fwrite(&(mbc->HuC3_RAMvalue), sizeof(int), 1, statefile);
+    //fwrite(&mbc->HuC3_address,sizeof(int),1,statefile);
+    fwrite(&(mbc->HuC3_RAMflag), sizeof(int), 1, statefile);
 }
 
 void gb_mbc::writeRtcVarsToStateFile(FILE *statefile) {
-    fwrite(&(rtc).s, sizeof(int), 1, statefile);
-    fwrite(&(rtc).m, sizeof(int), 1, statefile);
-    fwrite(&(rtc).h, sizeof(int), 1, statefile);
-    fwrite(&(rtc).d, sizeof(int), 1, statefile);
-    fwrite(&(rtc).control, sizeof(int), 1, statefile);
-    fwrite(&(rtc).last_time, sizeof(time_t), 1, statefile);
+    fwrite(&(mbc->rtc).s, sizeof(int), 1, statefile);
+    fwrite(&(mbc->rtc).m, sizeof(int), 1, statefile);
+    fwrite(&(mbc->rtc).h, sizeof(int), 1, statefile);
+    fwrite(&(mbc->rtc).d, sizeof(int), 1, statefile);
+    fwrite(&(mbc->rtc).control, sizeof(int), 1, statefile);
+    fwrite(&(mbc->rtc).last_time, sizeof(time_t), 1, statefile);
 
-    fwrite(&(rtc_latch).s, sizeof(int), 1, statefile);
-    fwrite(&(rtc_latch).m, sizeof(int), 1, statefile);
-    fwrite(&(rtc_latch).h, sizeof(int), 1, statefile);
-    fwrite(&(rtc_latch).d, sizeof(int), 1, statefile);
-    fwrite(&(rtc_latch).control, sizeof(int), 1, statefile);
-    fwrite(&(rtc_latch).last_time, sizeof(time_t), 1, statefile);
+    fwrite(&(mbc->rtc_latch).s, sizeof(int), 1, statefile);
+    fwrite(&(mbc->rtc_latch).m, sizeof(int), 1, statefile);
+    fwrite(&(mbc->rtc_latch).h, sizeof(int), 1, statefile);
+    fwrite(&(mbc->rtc_latch).d, sizeof(int), 1, statefile);
+    fwrite(&(mbc->rtc_latch).control, sizeof(int), 1, statefile);
+    fwrite(&(mbc->rtc_latch).last_time, sizeof(time_t), 1, statefile);
 }
 
 void gb_mbc::writeMbcOtherStuffToStateFile(FILE *statefile) {
-    fwrite(&(MBC1memorymodel), sizeof(int), 1, statefile);
+    fwrite(&( mbc->MBC1memorymodel), sizeof(int), 1, statefile);
     fwrite(&(RAMenable), sizeof(int), 1, statefile);
     fwrite(&(MBChi), sizeof(unsigned int), 1, statefile);
     fwrite(&(MBClo), sizeof(unsigned int), 1, statefile);
@@ -2506,7 +2111,7 @@ void gb_mbc::writeMbcBanksToStateFile(FILE *statefile) {
 }
 
 void gb_mbc::readMbcMoreCrapFromStateFile(FILE *statefile) {
-    fread(&(MBC1memorymodel), sizeof(int), 1, statefile);
+    fread(&( mbc->MBC1memorymodel), sizeof(int), 1, statefile);
     fread(&(RAMenable), sizeof(int), 1, statefile);
     fread(&(MBChi), sizeof(unsigned int), 1, statefile);
     fread(&(MBClo), sizeof(unsigned int), 1, statefile);
@@ -2518,65 +2123,65 @@ void gb_mbc::readMbcBanksFromStateFile(FILE *statefile) {
 }
 
 void gb_mbc::readMoreTama5VarsFromStateFile(FILE *statefile) {
-    fread(&(rtc).s, sizeof(int), 1, statefile);
-    fread(&(rtc).m, sizeof(int), 1, statefile);
-    fread(&(rtc).h, sizeof(int), 1, statefile);
-    fread(&(rtc).d, sizeof(int), 1, statefile);
-    fread(&(rtc).control, sizeof(int), 1, statefile);
-    fread(&(rtc).last_time, sizeof(time_t), 1, statefile);
+    fread(&(mbc->rtc).s, sizeof(int), 1, statefile);
+    fread(&(mbc->rtc).m, sizeof(int), 1, statefile);
+    fread(&(mbc->rtc).h, sizeof(int), 1, statefile);
+    fread(&(mbc->rtc).d, sizeof(int), 1, statefile);
+    fread(&(mbc->rtc).control, sizeof(int), 1, statefile);
+    fread(&(mbc->rtc).last_time, sizeof(time_t), 1, statefile);
 
-    fread(&(tama_time), sizeof(byte), 1, statefile);
-    fread(&(tama_val6), sizeof(int), 1, statefile);
-    fread(&(tama_val7), sizeof(int), 1, statefile);
-    fread(&(tama_val4), sizeof(int), 1, statefile);
-    fread(&(tama_val5), sizeof(int), 1, statefile);
-    fread(&(tama_count), sizeof(int), 1, statefile);
-    fread(&(tama_month), sizeof(int), 1, statefile);
-    fread(&(tama_change_clock), sizeof(int), 1, statefile);
+    fread(&(mbc->tama_time), sizeof(byte), 1, statefile);
+    fread(&(mbc->tama_val6), sizeof(int), 1, statefile);
+    fread(&(mbc->tama_val7), sizeof(int), 1, statefile);
+    fread(&(mbc->tama_val4), sizeof(int), 1, statefile);
+    fread(&(mbc->tama_val5), sizeof(int), 1, statefile);
+    fread(&(mbc->tama_count), sizeof(int), 1, statefile);
+    fread(&(mbc->tama_month), sizeof(int), 1, statefile);
+    fread(&(mbc->tama_change_clock), sizeof(int), 1, statefile);
 }
 
-void gb_mbc::readTama5VarsFromStateFile(FILE *statefile) { fread(&(tama_flag), sizeof(int), 1, statefile); }
+void gb_mbc::readTama5VarsFromStateFile(FILE *statefile) { fread(&(mbc->tama_flag), sizeof(int), 1, statefile); }
 
 void gb_mbc::readMbc7VarsFromStateFile(FILE *statefile) {
-    fread(&(MBC7_cs), sizeof(int), 1, statefile);
-    fread(&(MBC7_sk), sizeof(int), 1, statefile);
-    fread(&(MBC7_state), sizeof(int), 1, statefile);
-    fread(&(MBC7_buffer), sizeof(int), 1, statefile);
-    fread(&(MBC7_idle), sizeof(int), 1, statefile);
-    fread(&(MBC7_count), sizeof(int), 1, statefile);
-    fread(&(MBC7_code), sizeof(int), 1, statefile);
-    fread(&(MBC7_address), sizeof(int), 1, statefile);
-    fread(&(MBC7_writeEnable), sizeof(int), 1, statefile);
-    fread(&(MBC7_value), sizeof(int), 1, statefile);
+    fread(&(mbc->MBC7_cs), sizeof(int), 1, statefile);
+    fread(&(mbc->MBC7_sk), sizeof(int), 1, statefile);
+    fread(&(mbc->MBC7_state), sizeof(int), 1, statefile);
+    fread(&(mbc->MBC7_buffer), sizeof(int), 1, statefile);
+    fread(&(mbc->MBC7_idle), sizeof(int), 1, statefile);
+    fread(&(mbc->MBC7_count), sizeof(int), 1, statefile);
+    fread(&(mbc->MBC7_code), sizeof(int), 1, statefile);
+    fread(&(mbc->MBC7_address), sizeof(int), 1, statefile);
+    fread(&(mbc->MBC7_writeEnable), sizeof(int), 1, statefile);
+    fread(&(mbc->MBC7_value), sizeof(int), 1, statefile);
     fread(&sensorX,sizeof(int),1,statefile);
     fread(&sensorY,sizeof(int),1,statefile);
 }
 
 void gb_mbc::readHuc3VarsFromStateFile(FILE *statefile) {
-    fread(&(HuC3_time), sizeof(unsigned int), 1, statefile);
-    fread(&(HuC3_last_time), sizeof(time_t), 1, statefile);
-    fread(&(rtc).s, sizeof(int), 1, statefile);
+    fread(&(mbc->HuC3_time), sizeof(unsigned int), 1, statefile);
+    fread(&(mbc->HuC3_last_time), sizeof(time_t), 1, statefile);
+    fread(&(mbc->rtc).s, sizeof(int), 1, statefile);
 
-    //fread(HuC3_register,sizeof(int),8,statefile);
-    fread(&(HuC3_RAMvalue), sizeof(int), 1, statefile);
-    //fread(&HuC3_address,sizeof(int),1,statefile);
-    fread(&(HuC3_RAMflag), sizeof(int), 1, statefile);
+    //fread(mbc->HuC3_register,sizeof(int),8,statefile);
+    fread(&(mbc->HuC3_RAMvalue), sizeof(int), 1, statefile);
+    //fread(&mbc->HuC3_address,sizeof(int),1,statefile);
+    fread(&(mbc->HuC3_RAMflag), sizeof(int), 1, statefile);
 }
 
 void gb_mbc::readRtcVarsFromStateFile(FILE *statefile) {
-    fread(&(rtc).s, sizeof(int), 1, statefile);
-    fread(&(rtc).m, sizeof(int), 1, statefile);
-    fread(&(rtc).h, sizeof(int), 1, statefile);
-    fread(&(rtc).d, sizeof(int), 1, statefile);
-    fread(&(rtc).control, sizeof(int), 1, statefile);
-    fread(&(rtc).last_time, sizeof(time_t), 1, statefile);
+    fread(&(mbc->rtc).s, sizeof(int), 1, statefile);
+    fread(&(mbc->rtc).m, sizeof(int), 1, statefile);
+    fread(&(mbc->rtc).h, sizeof(int), 1, statefile);
+    fread(&(mbc->rtc).d, sizeof(int), 1, statefile);
+    fread(&(mbc->rtc).control, sizeof(int), 1, statefile);
+    fread(&(mbc->rtc).last_time, sizeof(time_t), 1, statefile);
 
-    fread(&(rtc_latch).s, sizeof(int), 1, statefile);
-    fread(&(rtc_latch).m, sizeof(int), 1, statefile);
-    fread(&(rtc_latch).h, sizeof(int), 1, statefile);
-    fread(&(rtc_latch).d, sizeof(int), 1, statefile);
-    fread(&(rtc_latch).control, sizeof(int), 1, statefile);
-    fread(&(rtc_latch).last_time, sizeof(time_t), 1, statefile);
+    fread(&(mbc->rtc_latch).s, sizeof(int), 1, statefile);
+    fread(&(mbc->rtc_latch).m, sizeof(int), 1, statefile);
+    fread(&(mbc->rtc_latch).h, sizeof(int), 1, statefile);
+    fread(&(mbc->rtc_latch).d, sizeof(int), 1, statefile);
+    fread(&(mbc->rtc_latch).control, sizeof(int), 1, statefile);
+    fread(&(mbc->rtc_latch).last_time, sizeof(time_t), 1, statefile);
 }
 
 void gb_mbc::resetRomMemoryMap(bool resetOffset=false) {
@@ -2603,4 +2208,32 @@ int gb_mbc::getRamBank() {
 
 void gb_mbc::setMemoryReadWrite(memoryaccess memory_type) {
     gb_mbc::mbcType = memory_type;
+
+    switch(mbcType)
+    {
+        case MEMORY_MBC3:
+            mbc = new Mbc3();
+            break;
+        case MEMORY_CAMERA:
+            mbc = new MbcCamera();
+            break;
+        case MEMORY_MBC7:
+            mbc = new Mbc7();
+            break;
+        case MEMORY_HUC3:
+            mbc = new Huc3();
+            break;
+        case MEMORY_TAMA5:
+            mbc = new Tama5();
+            break;
+        case MEMORY_SINTAX:
+            mbc = new Sintax();
+            break;
+        default:
+        case MEMORY_DEFAULT:
+            mbc = new Default();
+            break;
+    }
+
+    mbc->init( gbMemMap, gbRom, gbMemory, gbRomBankXor );
 }

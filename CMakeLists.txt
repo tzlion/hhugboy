@@ -67,7 +67,24 @@ set(SOURCE_FILES
     src/strings.h
     src/types.h
     src/version.rc
-    src/version.res)
+    src/version.res
+    src/memory/mbc/Default.cpp
+    src/memory/mbc/Default.h
+    src/memory/mbc/Mbc3.cpp
+    src/memory/mbc/Mbc3.h
+    src/memory/mbc/Mbc7.cpp
+    src/memory/mbc/Mbc7.h
+    src/memory/mbc/Huc3.cpp
+    src/memory/mbc/Huc3.h
+    src/memory/mbc/Tama5.cpp
+    src/memory/mbc/Tama5.h
+    src/memory/mbc/Sintax.cpp
+    src/memory/mbc/Sintax.h
+    src/memory/mbc/Mbc.cpp
+    src/memory/mbc/Mbc.h
+    src/memory/mbc/MbcCamera.cpp
+    src/memory/mbc/MbcCamera.h
+        )
 
 include_directories(includes includes/zlib includes/libpng12 includes/fmod "C:\\png\\png++-0.2.5\\png++-0.2.5" "C:\\Program Files (x86)\\Microsoft DirectX SDK (August 2009)\\Include")
 
