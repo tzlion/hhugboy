@@ -49,6 +49,9 @@ public:
     void update_HuC3time();
     void update_tama_RTC();
 
+    byte readmemory_cart(register unsigned short address);
+    void writememory_cart(unsigned short address,register byte data);
+
 //private:
     // MBC R/W methods
     byte readmemory_default(register unsigned short address);

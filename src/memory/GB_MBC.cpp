@@ -1,6 +1,6 @@
 /*
    hhugboy Game Boy emulator
-   copyright 2013 taizou
+   copyright 2013-2016 taizou
 
    Based on GEST
    Copyright (C) 2003-2010 TM
@@ -101,106 +101,99 @@ gb_mbc::gb_mbc(gb_system* inGB):
     aGB = inGB;
 }
 
-byte gb_system::readmemory(unsigned short address)
-{
-     if(number_of_cheats)
-        for(int i=0;i<number_of_cheats;++i)
-           if(address == cheat[i].address && (!(cheat[i].long_code) || (cheat[i].old_value == mem_map[address>>12][address&0x0fff])))
-              return cheat[i].new_value;
-
-     switch(memory_read)
-     {
-         case MEMORY_MBC3:
-             return mbc->readmemory_MBC3(address);
-         case MEMORY_CAMERA:
-             return mbc->readmemory_Camera(address);
-         case MEMORY_MBC7:
-             return mbc->readmemory_MBC7(address);
-         case MEMORY_HUC3:
-             return mbc->readmemory_HuC3(address);
-         case MEMORY_TAMA5:
-             return mbc->readmemory_TAMA5(address);
-    	 case MEMORY_SINTAX:
-    	 	return mbc->readmemory_sintax(address);
-         default:
-         case MEMORY_DEFAULT:
-             return mbc->readmemory_default(address);
-     }
+byte gb_mbc::readmemory_cart(register unsigned short address) {
+    switch(aGB->memory_read)
+    {
+        case MEMORY_MBC3:
+            return readmemory_MBC3(address);
+        case MEMORY_CAMERA:
+            return readmemory_Camera(address);
+        case MEMORY_MBC7:
+            return readmemory_MBC7(address);
+        case MEMORY_HUC3:
+            return readmemory_HuC3(address);
+        case MEMORY_TAMA5:
+            return readmemory_TAMA5(address);
+        case MEMORY_SINTAX:
+            return readmemory_sintax(address);
+        default:
+        case MEMORY_DEFAULT:
+            return readmemory_default(address);
+    }
 }
 
-void gb_system::writememory(unsigned short address,byte data)
-{
-     switch(memory_write)
-     {
-         case MEMORY_MBC1:
-             mbc->writememory_MBC1(address,data);
-         break;
+void gb_mbc::writememory_cart(unsigned short address, register byte data) {
+    switch(aGB->memory_write)
+    {
+        case MEMORY_MBC1:
+            writememory_MBC1(address,data);
+            break;
 
-         case MEMORY_MBC2:
-             mbc->writememory_MBC2(address,data);
-         break;
+        case MEMORY_MBC2:
+            writememory_MBC2(address,data);
+            break;
 
-         case MEMORY_MBC3:
-             mbc->writememory_MBC3(address,data);
-         break;
+        case MEMORY_MBC3:
+            writememory_MBC3(address,data);
+            break;
 
-         case MEMORY_MBC5:
-             mbc->writememory_MBC5(address,data,false,false);
-         break;
+        case MEMORY_MBC5:
+            writememory_MBC5(address,data,false,false);
+            break;
 
-         case MEMORY_MBC7:
-             mbc->writememory_MBC7(address,data);
-         break;
+        case MEMORY_MBC7:
+            writememory_MBC7(address,data);
+            break;
 
-         case MEMORY_CAMERA:
-             mbc->writememory_Camera(address,data);
-         break;
+        case MEMORY_CAMERA:
+            writememory_Camera(address,data);
+            break;
 
-         case MEMORY_HUC3:
-             mbc->writememory_HuC3(address,data);
-         break;
+        case MEMORY_HUC3:
+            writememory_HuC3(address,data);
+            break;
 
-         case MEMORY_TAMA5:
-             mbc->writememory_TAMA5(address,data);
-         break;
+        case MEMORY_TAMA5:
+            writememory_TAMA5(address,data);
+            break;
 
-         case MEMORY_ROCKMAN8:
-             mbc->writememory_Rockman8(address,data);
-         break;
+        case MEMORY_ROCKMAN8:
+            writememory_Rockman8(address,data);
+            break;
 
-         case MEMORY_BC:
-             mbc->writememory_BC(address,data);
-         break;
+        case MEMORY_BC:
+            writememory_BC(address,data);
+            break;
 
-         case MEMORY_MMM01:
-             mbc->writememory_MMM01(address,data);
-         break;
+        case MEMORY_MMM01:
+            writememory_MMM01(address,data);
+            break;
 
-         case MEMORY_POKE:
-             mbc->writememory_poke(address,data);
-         break;
+        case MEMORY_POKE:
+            writememory_poke(address,data);
+            break;
 
-         case MEMORY_8IN1:
-             mbc->writememory_8in1(address,data);
-         break;
+        case MEMORY_8IN1:
+            writememory_8in1(address,data);
+            break;
 
-         case MEMORY_MK12:
-             mbc->writememory_MK12(address,data);
-         break;
+        case MEMORY_MK12:
+            writememory_MK12(address,data);
+            break;
 
-		 case MEMORY_NIUTOUDE:
-             mbc->writememory_MBC5(address,data,true,false);
-		 break;
-		 
-		 case MEMORY_SINTAX:
-             mbc->writememory_MBC5(address,data,false,true);
-		 break;
+        case MEMORY_NIUTOUDE:
+            writememory_MBC5(address,data,true,false);
+            break;
 
-         default:
-         case MEMORY_DEFAULT:
-             mbc->writememory_default(address,data);
-         break;
-     }
+        case MEMORY_SINTAX:
+            writememory_MBC5(address,data,false,true);
+            break;
+
+        default:
+        case MEMORY_DEFAULT:
+            writememory_default(address,data);
+            break;
+    }
 }
 
 void gb_mbc::setXorForBank(byte bankNo)

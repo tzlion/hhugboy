@@ -43,6 +43,31 @@ using namespace std;
 
 extern int ramsize[9];
 
+byte gb_system::readmemory(unsigned short address)
+{
+    if(number_of_cheats)
+        for(int i=0;i<number_of_cheats;++i)
+            if(address == cheat[i].address && (!(cheat[i].long_code) || (cheat[i].old_value == mem_map[address>>12][address&0x0fff])))
+                return cheat[i].new_value;
+
+    if ( address <= 0x7FFF || ( address >= 0xA000 && address <= 0xBFFF ) ) {
+        return mbc->readmemory_cart(address);
+    } else {
+        return io_reg_read(address);
+    }
+}
+
+void gb_system::writememory(unsigned short address,byte data)
+{
+    if ( address <= 0x7FFF || ( address >= 0xA000 && address <= 0xBFFF ) ) {
+        mbc->writememory_cart(address,data);
+    } else {
+        if(io_reg_write(address,data)) return;
+        mem_map[address>>12][address&0x0FFF] = data;
+    }
+    // Todo; these should only call the MBC if its in ROM area
+}
+
 void gb_system::mem_reset(bool mini)
 {
    memset(memory+0x8000,0x00,0x1FFF);
