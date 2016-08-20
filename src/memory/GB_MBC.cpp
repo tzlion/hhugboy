@@ -102,8 +102,7 @@ gb_mbc::gb_mbc(byte** gbMemMap, byte** gbCartridge, GBrom** gbRom, byte** gbCart
         tama_month(0),
         tama_change_clock(0),
 
-        memory_read(MEMORY_DEFAULT),
-        memory_write(MEMORY_DEFAULT),
+        mbcType(MEMORY_DEFAULT),
 
         sintax_mode(0),
         sintax_xor2(0),
@@ -172,7 +171,7 @@ void gb_mbc::resetMbcVariables()
 }
 
 byte gb_mbc::readmemory_cart(register unsigned short address) {
-    switch(memory_read)
+    switch(mbcType)
     {
         case MEMORY_MBC3:
             return readmemory_MBC3(address);
@@ -193,7 +192,7 @@ byte gb_mbc::readmemory_cart(register unsigned short address) {
 }
 
 void gb_mbc::writememory_cart(unsigned short address, register byte data) {
-    switch(memory_write)
+    switch(mbcType)
     {
         case MEMORY_MBC1:
             writememory_MBC1(address,data);
@@ -2602,10 +2601,6 @@ int gb_mbc::getRamBank() {
     return ram_bank;
 }
 
-void gb_mbc::setMemoryRead(memoryaccess memory_read) {
-    gb_mbc::memory_read = memory_read;
-}
-
-void gb_mbc::setMemoryWrite(memoryaccess memory_write) {
-    gb_mbc::memory_write = memory_write;
+void gb_mbc::setMemoryReadWrite(memoryaccess memory_type) {
+    gb_mbc::mbcType = memory_type;
 }
