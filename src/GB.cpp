@@ -96,15 +96,8 @@ gb_system::gb_system():
         NFLAG(1),
         //flags(0x5100),
         CYCLES_SERIAL(CYCLES_SERIAL_GB),
-        MBC1memorymodel(0),
-        RAMenable(0),
-        rom_bank(1),
-        ram_bank(0),
         wram_bank(1),
         vram_bank(0),
-        MBChi(0),
-        MBClo(0),
-        RTCIO(0),
 
         sound_on(1),
         sound_index(0),
@@ -164,17 +157,8 @@ gb_system::gb_system():
         channel4_envelopedir(0),
         channel4_envelopeATLreload(0),
 
-        RTC_latched(0),
-
-        cameraIO(0),
-
         rumble_counter(0),
-        
-        sintax_mode(0),
-        sintax_xor2(0),
-        sintax_xor3(0),
-        sintax_xor4(0),
-        sintax_xor5(0),
+
         sintax_currentxor(0)
 {
    button_pressed[B_LEFT]=button_pressed[B_RIGHT]=button_pressed[B_DOWN]=button_pressed[B_UP]=1;

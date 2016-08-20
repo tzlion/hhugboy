@@ -303,8 +303,8 @@ int gb_system::process_rom_info(byte *rominfo,byte *logo1, byte *logo2)
    bool useSintax = false;
    
    sintax_currentxor = 0; // reset this, otherwise it leaks over into other roms
-   sintax_mode = 0;
-   sintax_xor2 = sintax_xor3 = sintax_xor4 = sintax_xor5 = 0;
+   mbc->sintax_mode = 0;
+   mbc->sintax_xor2 = mbc->sintax_xor3 = mbc->sintax_xor4 = mbc->sintax_xor5 = 0;
    
    switch(options->unl_compat_mode) {
    	

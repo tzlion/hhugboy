@@ -115,15 +115,8 @@ public:
    int button_pressed[8];
    int last_button_pressed[8];
 
-   int MBC1memorymodel;
-   int RAMenable;
-   int rom_bank;
-   int ram_bank;
    int wram_bank; 
    int vram_bank;
-   unsigned short MBChi;
-   unsigned short MBClo;
-   int RTCIO;   
 
    bool LCD_clear_needed;
    int skip_frame;
@@ -187,26 +180,11 @@ public:
    byte* mem_map[0x10];
    byte* cartridge;
    GBrom* rom;
-   
-   int superaddroffset;
 
    byte *memory_another;
 
-   rtc_clock rtc;
-   rtc_clock rtc_latch;
-
-   int RTC_latched;
-
-   int cameraIO;
-
-   int rumble_counter;
-
-   byte sintax_mode;
-   byte sintax_xor2;
-   byte sintax_xor3;
-   byte sintax_xor4;
-   byte sintax_xor5;
-   byte sintax_currentxor;
+   int rumble_counter; // maybe should be in mbc
+   byte sintax_currentxor; // definitely should be in mbc, referred to by stuff thats hard to change tho
 
    //Sound ---------------------------------------
    byte sound_buffer[4][735];

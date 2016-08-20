@@ -2382,7 +2382,7 @@
         {
            wchar_t buffer[100];
 
-           wsprintf(buffer,L"%s PC:%x, %s:%x bank %x",str_table[ERROR_UNK_OPCODE],PC.W,str_table[ERROR_OPCODE],opcode,gb_system::MBClo);
+           wsprintf(buffer,L"%s PC:%x, %s:%x bank %x",str_table[ERROR_UNK_OPCODE],PC.W,str_table[ERROR_OPCODE],opcode,gb_system::mbc->MBClo);
            debug_print(buffer);  
 
            emulating = false;

@@ -212,14 +212,14 @@ bool gb_system::save_state()
    fwrite(&hdma_source, sizeof(int),1,statefile);  
    fwrite(&hdma_destination, sizeof(int),1,statefile);  
    fwrite(&hdma_bytes, sizeof(int),1,statefile);           
-   fwrite(&rom_bank, sizeof(int),1,statefile);           
-   fwrite(&ram_bank, sizeof(int),1,statefile);
+   fwrite(&(mbc->rom_bank), sizeof(int),1,statefile);
+   fwrite(&(mbc->ram_bank), sizeof(int),1,statefile);
    fwrite(&wram_bank, sizeof(int),1,statefile);              
    fwrite(&vram_bank, sizeof(int),1,statefile);   
-   fwrite(&MBC1memorymodel, sizeof(int),1,statefile);           
-   fwrite(&RAMenable, sizeof(int),1,statefile);           
-   fwrite(&MBChi, sizeof(unsigned int),1,statefile);           
-   fwrite(&MBClo, sizeof(unsigned int),1,statefile);           
+   fwrite(&(mbc->MBC1memorymodel), sizeof(int),1,statefile);
+   fwrite(&(mbc->RAMenable), sizeof(int),1,statefile);
+   fwrite(&(mbc->MBChi), sizeof(unsigned int),1,statefile);
+   fwrite(&(mbc->MBClo), sizeof(unsigned int),1,statefile);
    fwrite(&sound_on, sizeof(int),1,statefile);           
    fwrite(&sound_index, sizeof(int),1,statefile);           
    fwrite(&sound_buffer_index, sizeof(int),1,statefile);           
@@ -297,26 +297,26 @@ bool gb_system::save_state()
    
    if(rom->RTC)
    {
-      fwrite(&rtc.s, sizeof(int),1,statefile);
-      fwrite(&rtc.m, sizeof(int),1,statefile);
-      fwrite(&rtc.h, sizeof(int),1,statefile);     
-      fwrite(&rtc.d, sizeof(int),1,statefile);   
-      fwrite(&rtc.control, sizeof(int),1,statefile); 
-      fwrite(&rtc.last_time, sizeof(time_t),1,statefile);  
+      fwrite(&(mbc->rtc).s, sizeof(int),1,statefile);
+      fwrite(&(mbc->rtc).m, sizeof(int),1,statefile);
+      fwrite(&(mbc->rtc).h, sizeof(int),1,statefile);
+      fwrite(&(mbc->rtc).d, sizeof(int),1,statefile);
+      fwrite(&(mbc->rtc).control, sizeof(int),1,statefile);
+      fwrite(&(mbc->rtc).last_time, sizeof(time_t),1,statefile);
 
-      fwrite(&rtc_latch.s, sizeof(int),1,statefile);
-      fwrite(&rtc_latch.m, sizeof(int),1,statefile);
-      fwrite(&rtc_latch.h, sizeof(int),1,statefile);     
-      fwrite(&rtc_latch.d, sizeof(int),1,statefile);   
-      fwrite(&rtc_latch.control, sizeof(int),1,statefile); 
-      fwrite(&rtc_latch.last_time, sizeof(time_t),1,statefile);             
+      fwrite(&(mbc->rtc_latch).s, sizeof(int),1,statefile);
+      fwrite(&(mbc->rtc_latch).m, sizeof(int),1,statefile);
+      fwrite(&(mbc->rtc_latch).h, sizeof(int),1,statefile);
+      fwrite(&(mbc->rtc_latch).d, sizeof(int),1,statefile);
+      fwrite(&(mbc->rtc_latch).control, sizeof(int),1,statefile);
+      fwrite(&(mbc->rtc_latch).last_time, sizeof(time_t),1,statefile);
    }
    
    if(rom->bankType == HuC3)
    {
       fwrite(&(mbc->HuC3_time), sizeof(unsigned int),1,statefile);
       fwrite(&(mbc->HuC3_last_time), sizeof(time_t),1,statefile);
-      fwrite(&rtc.s, sizeof(int),1,statefile); 
+      fwrite(&(mbc->rtc).s, sizeof(int),1,statefile);
          
       //fwrite(HuC3_register,sizeof(int),8,statefile);  
       fwrite(&(mbc->HuC3_RAMvalue),sizeof(int),1,statefile);
@@ -373,12 +373,12 @@ bool gb_system::save_state()
    
    if(rom->bankType == TAMA5)
    {    
-      fwrite(&rtc.s, sizeof(int),1,statefile);
-      fwrite(&rtc.m, sizeof(int),1,statefile);
-      fwrite(&rtc.h, sizeof(int),1,statefile);     
-      fwrite(&rtc.d, sizeof(int),1,statefile);   
-      fwrite(&rtc.control, sizeof(int),1,statefile); 
-      fwrite(&rtc.last_time, sizeof(time_t),1,statefile);  
+      fwrite(&(mbc->rtc).s, sizeof(int),1,statefile);
+      fwrite(&(mbc->rtc).m, sizeof(int),1,statefile);
+      fwrite(&(mbc->rtc).h, sizeof(int),1,statefile);
+      fwrite(&(mbc->rtc).d, sizeof(int),1,statefile);
+      fwrite(&(mbc->rtc).control, sizeof(int),1,statefile);
+      fwrite(&(mbc->rtc).last_time, sizeof(time_t),1,statefile);
       
       fwrite(&(mbc->tama_time), sizeof(byte),1,statefile);
       fwrite(&(mbc->tama_val6), sizeof(int),1,statefile);
@@ -470,14 +470,14 @@ bool gb_system::load_state()
    fread(&hdma_source, sizeof(int),1,statefile);  
    fread(&hdma_destination, sizeof(int),1,statefile);  
    fread(&hdma_bytes, sizeof(int),1,statefile);           
-   fread(&rom_bank, sizeof(int),1,statefile);           
-   fread(&ram_bank, sizeof(int),1,statefile);
+   fread(&(mbc->rom_bank), sizeof(int),1,statefile);
+   fread(&(mbc->ram_bank), sizeof(int),1,statefile);
    fread(&wram_bank, sizeof(int),1,statefile);              
    fread(&vram_bank, sizeof(int),1,statefile);   
-   fread(&MBC1memorymodel, sizeof(int),1,statefile);           
-   fread(&RAMenable, sizeof(int),1,statefile);           
-   fread(&MBChi, sizeof(unsigned int),1,statefile);           
-   fread(&MBClo, sizeof(unsigned int),1,statefile);   
+   fread(&(mbc->MBC1memorymodel), sizeof(int),1,statefile);
+   fread(&(mbc->RAMenable), sizeof(int),1,statefile);
+   fread(&(mbc->MBChi), sizeof(unsigned int),1,statefile);
+   fread(&(mbc->MBClo), sizeof(unsigned int),1,statefile);
    fread(&sound_on, sizeof(int),1,statefile);           
    fread(&sound_index, sizeof(int),1,statefile);           
    fread(&sound_buffer_index, sizeof(int),1,statefile);           
@@ -555,26 +555,26 @@ bool gb_system::load_state()
    
    if(rom->RTC)
    {
-      fread(&rtc.s, sizeof(int),1,statefile);
-      fread(&rtc.m, sizeof(int),1,statefile);
-      fread(&rtc.h, sizeof(int),1,statefile);     
-      fread(&rtc.d, sizeof(int),1,statefile);   
-      fread(&rtc.control, sizeof(int),1,statefile); 
-      fread(&rtc.last_time, sizeof(time_t),1,statefile);  
+      fread(&(mbc->rtc).s, sizeof(int),1,statefile);
+      fread(&(mbc->rtc).m, sizeof(int),1,statefile);
+      fread(&(mbc->rtc).h, sizeof(int),1,statefile);
+      fread(&(mbc->rtc).d, sizeof(int),1,statefile);
+      fread(&(mbc->rtc).control, sizeof(int),1,statefile);
+      fread(&(mbc->rtc).last_time, sizeof(time_t),1,statefile);
 
-      fread(&rtc_latch.s, sizeof(int),1,statefile);
-      fread(&rtc_latch.m, sizeof(int),1,statefile);
-      fread(&rtc_latch.h, sizeof(int),1,statefile);     
-      fread(&rtc_latch.d, sizeof(int),1,statefile);   
-      fread(&rtc_latch.control, sizeof(int),1,statefile); 
-      fread(&rtc_latch.last_time, sizeof(time_t),1,statefile);             
+      fread(&(mbc->rtc_latch).s, sizeof(int),1,statefile);
+      fread(&(mbc->rtc_latch).m, sizeof(int),1,statefile);
+      fread(&(mbc->rtc_latch).h, sizeof(int),1,statefile);
+      fread(&(mbc->rtc_latch).d, sizeof(int),1,statefile);
+      fread(&(mbc->rtc_latch).control, sizeof(int),1,statefile);
+      fread(&(mbc->rtc_latch).last_time, sizeof(time_t),1,statefile);
    }
    
    if(rom->bankType == HuC3)
    {
       fread(&(mbc->HuC3_time), sizeof(unsigned int),1,statefile);
       fread(&(mbc->HuC3_last_time), sizeof(time_t),1,statefile);
-      fread(&rtc.s, sizeof(int),1,statefile); 
+      fread(&(mbc->rtc).s, sizeof(int),1,statefile);
             
       //fread(HuC3_register,sizeof(int),8,statefile);  
       fread(&(mbc->HuC3_RAMvalue),sizeof(int),1,statefile);
@@ -634,12 +634,12 @@ bool gb_system::load_state()
      
    if(rom->bankType == TAMA5)
    {    
-      fread(&rtc.s, sizeof(int),1,statefile);
-      fread(&rtc.m, sizeof(int),1,statefile);
-      fread(&rtc.h, sizeof(int),1,statefile);     
-      fread(&rtc.d, sizeof(int),1,statefile);   
-      fread(&rtc.control, sizeof(int),1,statefile); 
-      fread(&rtc.last_time, sizeof(time_t),1,statefile);  
+      fread(&(mbc->rtc).s, sizeof(int),1,statefile);
+      fread(&(mbc->rtc).m, sizeof(int),1,statefile);
+      fread(&(mbc->rtc).h, sizeof(int),1,statefile);
+      fread(&(mbc->rtc).d, sizeof(int),1,statefile);
+      fread(&(mbc->rtc).control, sizeof(int),1,statefile);
+      fread(&(mbc->rtc).last_time, sizeof(time_t),1,statefile);
 
       fread(&(mbc->tama_time), sizeof(byte),1,statefile);
       fread(&(mbc->tama_val6), sizeof(int),1,statefile);
@@ -651,7 +651,7 @@ bool gb_system::load_state()
       fread(&(mbc->tama_change_clock), sizeof(int),1,statefile);
    }
    
-   int cadr = rom_bank<<14;
+   int cadr = mbc->rom_bank<<14;
    mem_map[0x4] = &cartridge[cadr];
    mem_map[0x5] = &cartridge[cadr+0x1000];
    mem_map[0x6] = &cartridge[cadr+0x2000];
@@ -659,7 +659,7 @@ bool gb_system::load_state()
    
    if(rom->RAMsize > 2)
    {
-      int madr = ram_bank<<13;
+      int madr = mbc->ram_bank<<13;
       mem_map[0xA] = &cartRAM[madr];
       mem_map[0xB] = &cartRAM[madr+0x1000];          
    }

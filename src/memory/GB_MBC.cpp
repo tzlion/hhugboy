@@ -99,7 +99,25 @@ gb_mbc::gb_mbc(gb_system* inGB):
         tama_change_clock(0),
 
         memory_read(MEMORY_DEFAULT),
-        memory_write(MEMORY_DEFAULT)
+        memory_write(MEMORY_DEFAULT),
+
+        sintax_mode(0),
+        sintax_xor2(0),
+        sintax_xor3(0),
+        sintax_xor4(0),
+        sintax_xor5(0),
+
+        MBC1memorymodel(0),
+        RAMenable(0),
+        rom_bank(1),
+        ram_bank(0),
+        MBChi(0),
+        MBClo(0),
+        RTCIO(0),
+
+        RTC_latched(0),
+        cameraIO(0)
+
 {
     aGB = inGB;
 }
@@ -203,16 +221,16 @@ void gb_mbc::setXorForBank(byte bankNo)
 {
   	switch(bankNo & 0x0F) {
 	case 0x00: case 0x04: case 0x08: case 0x0C:
-		aGB->sintax_currentxor = aGB->sintax_xor2;
+		aGB->sintax_currentxor = sintax_xor2;
 		break;
 	case 0x01: case 0x05: case 0x09: case 0x0D:
-		aGB->sintax_currentxor = aGB->sintax_xor3;
+		aGB->sintax_currentxor = sintax_xor3;
 		break;
 	case 0x02: case 0x06: case 0x0A: case 0x0E:
-		aGB->sintax_currentxor = aGB->sintax_xor4;
+		aGB->sintax_currentxor = sintax_xor4;
 		break;
 	case 0x03: case 0x07: case 0x0B: case 0x0F:
-		aGB->sintax_currentxor = aGB->sintax_xor5;
+		aGB->sintax_currentxor = sintax_xor5;
 		break;
   	}
   	
@@ -281,20 +299,20 @@ byte gb_mbc::readmemory_MBC3(register unsigned short address)
 { 
    if(address >= 0xA000 && address < 0xC000)
    {
-      if(aGB->rom->RTC && aGB->RTCIO)
+      if(aGB->rom->RTC && RTCIO)
       {
-         switch(aGB->rtc.cur_register)
+         switch(rtc.cur_register)
          {
             case 0x08:
-               return aGB->rtc_latch.s;
+               return rtc_latch.s;
             case 0x09:
-               return aGB->rtc_latch.m;
+               return rtc_latch.m;
             case 0x0A:
-               return aGB->rtc_latch.h;
+               return rtc_latch.h;
             case 0x0B:
-               return (aGB->rtc_latch.d&0xFF);
+               return (rtc_latch.d&0xFF);
             case 0x0C:
-               return ((aGB->rtc_latch.d&0x100)>>8)|aGB->rtc_latch.control;
+               return ((rtc_latch.d&0x100)>>8)|rtc_latch.control;
          }
       } 
       //if(!rom->RAMsize)
@@ -312,7 +330,7 @@ byte gb_mbc::readmemory_Camera(register unsigned short address)
 {   
    if(address >= 0xA000 && address < 0xC000)
    {
-      if(aGB->cameraIO) // Camera I/O register in cart RAM area
+      if(cameraIO) // Camera I/O register in cart RAM area
       {
          if(address == 0xA000)
             return 0x00; // Hardware is ready 
@@ -332,7 +350,7 @@ void gb_mbc::writememory_default(register unsigned short address,register byte d
 {
    if(address < 0x2000)// Is it a RAM bank enable/disable?
    {
-      aGB->RAMenable = ( (data&0x0A) == 0x0A ? 1 : 0);
+      RAMenable = ( (data&0x0A) == 0x0A ? 1 : 0);
       return;  
    } 
    
@@ -345,9 +363,9 @@ void gb_mbc::writememory_default(register unsigned short address,register byte d
          if(data == 0)
             data = 1;
          
-         aGB->rom_bank = data;
+         rom_bank = data;
          
-         int cadr = (data<<14)+((aGB->MBChi<<1)<<14);
+         int cadr = (data<<14)+((MBChi<<1)<<14);
          aGB->mem_map[0x4] = &(aGB->cartridge)[cadr];
          aGB->mem_map[0x5] = &(aGB->cartridge)[cadr+0x1000];
          aGB->mem_map[0x6] = &(aGB->cartridge)[cadr+0x2000];
@@ -360,7 +378,7 @@ void gb_mbc::writememory_default(register unsigned short address,register byte d
    {          
       data &= 0x03;
               
-      aGB->ram_bank = data;
+      ram_bank = data;
       
       int madr = data<<13;
       aGB->mem_map[0xA] = &(aGB->cartRAM)[madr];
@@ -372,9 +390,9 @@ void gb_mbc::writememory_default(register unsigned short address,register byte d
    {           
       if(++bc_select == 2 && aGB->rom->ROMsize>1)
       {
-         aGB->MBChi = (data&0xFF);
+         MBChi = (data&0xFF);
 
-         cart_address = (aGB->MBChi<<1)<<14;
+         cart_address = (MBChi<<1)<<14;
          
          aGB->mem_map[0x0] = &(aGB->cartridge)[cart_address];
          aGB->mem_map[0x1] = &(aGB->cartridge)[cart_address+0x1000];
@@ -411,9 +429,9 @@ void gb_mbc::writememory_8in1(register unsigned short address,register byte data
       if(data == 0)
          data = 1;
          
-      aGB->rom_bank = data;
+      rom_bank = data;
          
-      int cadr = (data<<14)+(aGB->MBChi<<14);
+      int cadr = (data<<14)+(MBChi<<14);
       cadr &= rom_size_mask[aGB->rom->ROMsize];
       aGB->mem_map[0x4] = &(aGB->cartridge)[cadr];
       aGB->mem_map[0x5] = &(aGB->cartridge)[cadr+0x1000];
@@ -428,11 +446,11 @@ void gb_mbc::writememory_8in1(register unsigned short address,register byte data
       {
          ++bc_select;
          
-         aGB->MBClo = 0;
+         MBClo = 0;
          
-         aGB->MBChi = (data&0x1f);
+         MBChi = (data&0x1f);
 
-         cart_address = aGB->MBChi<<14;
+         cart_address = MBChi<<14;
          aGB->mem_map[0x0] = &(aGB->cartridge)[cart_address];
          aGB->mem_map[0x1] = &(aGB->cartridge)[cart_address+0x1000];
          aGB->mem_map[0x2] = &(aGB->cartridge)[cart_address+0x2000];
@@ -447,7 +465,7 @@ void gb_mbc::writememory_8in1(register unsigned short address,register byte data
 
       data &= 0x03;
               
-      aGB->ram_bank = data;
+      ram_bank = data;
       
       int madr = data<<13;
       aGB->mem_map[0xA] = &(aGB->cartRAM)[madr];
@@ -473,23 +491,23 @@ void gb_mbc::writememory_MBC1(register unsigned short address,register byte data
 {
    if(address < 0x2000)// Is it a RAM bank enable/disable?
    {
-       aGB->RAMenable = ( (data&0x0A) == 0x0A ? 1 : 0);
+       RAMenable = ( (data&0x0A) == 0x0A ? 1 : 0);
       return;  
    }
    
    if(address < 0x4000) // Is it a ROM bank switch?
    {      
-      if(aGB->MBC1memorymodel == 0)
+      if(MBC1memorymodel == 0)
       {
          if(data == 0)
             data = 1;
 
-         aGB->MBClo = data;
+         MBClo = data;
          
-         aGB->rom_bank = aGB->MBClo|(aGB->MBChi<<5);
+         rom_bank = MBClo|(MBChi<<5);
           
-         cart_address = aGB->MBClo<<14;
-         cart_address |= (aGB->MBChi<<19);
+         cart_address = MBClo<<14;
+         cart_address |= (MBChi<<19);
          
          cart_address &= rom_size_mask[aGB->rom->ROMsize];
 
@@ -502,9 +520,9 @@ void gb_mbc::writememory_MBC1(register unsigned short address,register byte data
          if(data == 0)
             data = 1;
       
-         aGB->rom_bank = data;
+         rom_bank = data;
          
-         int cadr = aGB->rom_bank<<14;
+         int cadr = rom_bank<<14;
          
          cadr &= rom_size_mask[aGB->rom->ROMsize];
          
@@ -518,17 +536,17 @@ void gb_mbc::writememory_MBC1(register unsigned short address,register byte data
    
    if(address < 0x6000) // Is it a RAM bank switch?
    {          
-      if(aGB->MBC1memorymodel == 0)
+      if(MBC1memorymodel == 0)
       {  
-         if((((data&0x03)<<5)|aGB->MBClo) > maxROMbank[aGB->rom->ROMsize])
+         if((((data&0x03)<<5)|MBClo) > maxROMbank[aGB->rom->ROMsize])
             return;
          
-         aGB->MBChi = (data&0x03);
+         MBChi = (data&0x03);
          
-         aGB->rom_bank = aGB->MBClo|(aGB->MBChi<<5);
+         rom_bank = MBClo|(MBChi<<5);
          
-         cart_address = aGB->MBClo<<14;
-         cart_address |= (aGB->MBChi<<19);
+         cart_address = MBClo<<14;
+         cart_address |= (MBChi<<19);
          
          cart_address &= rom_size_mask[aGB->rom->ROMsize];
 
@@ -547,7 +565,7 @@ void gb_mbc::writememory_MBC1(register unsigned short address,register byte data
       if(data > maxRAMbank[aGB->rom->RAMsize])
          data = maxRAMbank[aGB->rom->RAMsize];
       
-      aGB->ram_bank = data;
+      ram_bank = data;
       
       int madr = data<<13;
       aGB->mem_map[0xA] = &(aGB->cartRAM)[madr];
@@ -557,7 +575,7 @@ void gb_mbc::writememory_MBC1(register unsigned short address,register byte data
    
    if(address < 0x8000) // Is it a MBC1 max memory model change?
    {
-       aGB->MBC1memorymodel = (data&0x01);
+       MBC1memorymodel = (data&0x01);
       return;
    }
    
@@ -588,9 +606,9 @@ void gb_mbc::writememory_MMM01(register unsigned short address,register byte dat
       if(data == 0)
          data = 1;
         
-      aGB->rom_bank = data;
+      rom_bank = data;
          
-      int cadr = (aGB->rom_bank<<14)+(aGB->MBChi<<14);
+      int cadr = (rom_bank<<14)+(MBChi<<14);
          
       cadr &= rom_size_mask[aGB->rom->ROMsize];
          
@@ -608,10 +626,10 @@ void gb_mbc::writememory_MMM01(register unsigned short address,register byte dat
          bc_select = 1;
          
          data &= 0x2f;
-         aGB->MBClo = 0;
+         MBClo = 0;
       
-         aGB->MBChi = data;
-         cart_address = aGB->MBChi<<14;
+         MBChi = data;
+         cart_address = MBChi<<14;
          
          aGB->mem_map[0x0] = &(aGB->cartridge)[cart_address];
          aGB->mem_map[0x1] = &(aGB->cartridge)[cart_address+0x1000];
@@ -633,7 +651,7 @@ void gb_mbc::writememory_MMM01(register unsigned short address,register byte dat
       if(data > maxRAMbank[aGB->rom->RAMsize])
          data = maxRAMbank[aGB->rom->RAMsize];
       
-      aGB->ram_bank = data;
+      ram_bank = data;
       
       int madr = data<<13;
       aGB->mem_map[0xA] = &(aGB->cartRAM)[madr];
@@ -659,7 +677,7 @@ void gb_mbc::writememory_BC(register unsigned short address,register byte data)
 {
    if(address < 0x2000)// Is it a RAM bank enable/disable?
    {
-      aGB->RAMenable = ( (data&0x0A) == 0x0A ? 1 : 0);
+      RAMenable = ( (data&0x0A) == 0x0A ? 1 : 0);
       return;  
    }
    
@@ -670,9 +688,9 @@ void gb_mbc::writememory_BC(register unsigned short address,register byte data)
       if(data == 0)
          data = 1;
         
-      aGB->rom_bank = data|(aGB->MBChi<<4);
+      rom_bank = data|(MBChi<<4);
        
-      int cadr = aGB->rom_bank<<14;
+      int cadr = rom_bank<<14;
          
       cadr &= rom_size_mask[aGB->rom->ROMsize];
          
@@ -687,10 +705,10 @@ void gb_mbc::writememory_BC(register unsigned short address,register byte data)
    {                   
       if(address == 0x4000 || address == 0x5fff) // game select
       { 
-         aGB->MBClo = 0;
-         aGB->MBChi = (data&0x03);
+         MBClo = 0;
+         MBChi = (data&0x03);
                   
-         cart_address = (aGB->MBChi<<4)<<14;
+         cart_address = (MBChi<<4)<<14;
          
          aGB->mem_map[0x0] = &(aGB->cartridge)[cart_address];
          aGB->mem_map[0x1] = &(aGB->cartridge)[cart_address+0x1000];
@@ -708,7 +726,7 @@ void gb_mbc::writememory_BC(register unsigned short address,register byte data)
    
    if(address < 0x8000) 
    {
-      aGB->MBC1memorymodel = (data&0x01);
+      MBC1memorymodel = (data&0x01);
       return;
    }
    
@@ -731,7 +749,7 @@ void gb_mbc::writememory_MK12(register unsigned short address,register byte data
 {
    if(address < 0x2000)// Is it a RAM bank enable/disable?
    {
-      aGB->RAMenable = ( (data&0x0A) == 0x0A ? 1 : 0);
+      RAMenable = ( (data&0x0A) == 0x0A ? 1 : 0);
       return;  
    }
    
@@ -742,9 +760,9 @@ void gb_mbc::writememory_MK12(register unsigned short address,register byte data
       if(data == 0)
          data = 1;
         
-      aGB->rom_bank = data+aGB->MBChi;
+      rom_bank = data+MBChi;
        
-      int cadr = aGB->rom_bank<<14;
+      int cadr = rom_bank<<14;
         
       cadr &= rom_size_mask[aGB->rom->ROMsize];
          
@@ -759,11 +777,11 @@ void gb_mbc::writememory_MK12(register unsigned short address,register byte data
    {                   
       if(address == 0x5000) // game select
       {         
-         aGB->MBClo = 0;
-         aGB->MBChi = (data&0x03);
-         if(aGB->MBChi==2) aGB->MBChi = 17;
+         MBClo = 0;
+         MBChi = (data&0x03);
+         if(MBChi==2) MBChi = 17;
                   
-         cart_address = aGB->MBChi<<14;
+         cart_address = MBChi<<14;
 
          aGB->mem_map[0x0] = &(aGB->cartridge)[cart_address];
          aGB->mem_map[0x1] = &(aGB->cartridge)[cart_address+0x1000];
@@ -781,7 +799,7 @@ void gb_mbc::writememory_MK12(register unsigned short address,register byte data
    
    if(address < 0x8000) 
    {
-      aGB->MBC1memorymodel = (data&0x01);
+      MBC1memorymodel = (data&0x01);
       return;
    }
    
@@ -815,7 +833,7 @@ void gb_mbc::writememory_Rockman8(register unsigned short address,register byte 
       if(data > maxROMbank[aGB->rom->ROMsize])
          data -= 8; // <--- MAKE IT WORK!!!
          
-      aGB->rom_bank = data;
+      rom_bank = data;
           
       cart_address = data<<14;
          
@@ -848,7 +866,7 @@ void gb_mbc::writememory_MBC2(register unsigned short address,register byte data
    if(address < 0x2000)// Is it a RAM bank enable/disable?
    {
       if(!(address&0x0100))
-         aGB->RAMenable =  (data&0x0F) == 0x0A;
+         RAMenable =  (data&0x0F) == 0x0A;
       return;  
    }
    
@@ -862,7 +880,7 @@ void gb_mbc::writememory_MBC2(register unsigned short address,register byte data
          if(data > maxROMbank[aGB->rom->ROMsize])
             data = maxROMbank[aGB->rom->ROMsize];
          
-         aGB->rom_bank = data;
+         rom_bank = data;
          
          int cadr = data<<14;
          aGB->mem_map[0x4] = &(aGB->cartridge)[cadr];
@@ -892,54 +910,54 @@ void gb_mbc::writememory_MBC2(register unsigned short address,register byte data
 
 void gb_mbc::rtc_update()
 {
-   if(aGB->rtc.control&0x40)
+   if(rtc.control&0x40)
    {
-       aGB->rtc.last_time = time(0);
+       rtc.last_time = time(0);
       return;
    }
    
    time_t now = time(0);
-   time_t diff = now-aGB->rtc.last_time;
+   time_t diff = now-rtc.last_time;
    if(diff > 0)
    {
-    aGB->rtc.s += diff % 60;
-    if(aGB->rtc.s > 59)
+    rtc.s += diff % 60;
+    if(rtc.s > 59)
     {
-      aGB->rtc.s -= 60;
-      aGB->rtc.m++;
+      rtc.s -= 60;
+      rtc.m++;
     }
 
     diff /= 60;
 
-    aGB->rtc.m += diff % 60;
-    if(aGB->rtc.m > 59)
+    rtc.m += diff % 60;
+    if(rtc.m > 59)
     {
-      aGB->rtc.m -= 60;
-      aGB->rtc.h++;
+      rtc.m -= 60;
+      rtc.h++;
     }
 
     diff /= 60;
 
-    aGB->rtc.h += diff % 24;
-    if(aGB->rtc.h > 24)
+    rtc.h += diff % 24;
+    if(rtc.h > 24)
     {
-      aGB->rtc.h -= 24;
-      aGB->rtc.d++;
+      rtc.h -= 24;
+      rtc.d++;
     }
     diff /= 24;
 
-    aGB->rtc.d += diff;
-    if(aGB->rtc.d > 255)
+    rtc.d += diff;
+    if(rtc.d > 255)
     {
-      if(aGB->rtc.d > 511)
+      if(rtc.d > 511)
       {
-         aGB->rtc.d %= 512;
-         aGB->rtc.control |= 0x80;
+         rtc.d %= 512;
+         rtc.control |= 0x80;
       }
-      aGB->rtc.control = (aGB->rtc.control & 0xfe) | (aGB->rtc.d>255 ? 1 : 0);
+      rtc.control = (rtc.control & 0xfe) | (rtc.d>255 ? 1 : 0);
     }
   }
-  aGB->rtc.last_time = now;
+  rtc.last_time = now;
 }
 
 //-------------------------------------------------------------------------
@@ -952,7 +970,7 @@ void gb_mbc::writememory_poke(register unsigned short address,register byte data
 {
    if(address < 0x2000)// Is it a RAM bank enable/disable?
    {
-      aGB->RAMenable = ( (data&0x0A) == 0x0A ? 1 : 0);
+      RAMenable = ( (data&0x0A) == 0x0A ? 1 : 0);
       bank0_change = ( (data&0xC0) == 0xC0 ? 1 : 0);
       return;  
    }
@@ -962,9 +980,9 @@ void gb_mbc::writememory_poke(register unsigned short address,register byte data
       data &= 0x7F;  
       if(data==0) 
          data=1;
-      data += aGB->MBChi;
+      data += MBChi;
          
-      aGB->rom_bank = data;
+      rom_bank = data;
          
       int cadr = data<<14;
       cadr &= rom_size_mask[aGB->rom->ROMsize];
@@ -985,7 +1003,7 @@ void gb_mbc::writememory_poke(register unsigned short address,register byte data
       if(data > maxRAMbank[aGB->rom->RAMsize])
          data = maxRAMbank[aGB->rom->RAMsize];
       
-      aGB->ram_bank = data;
+      ram_bank = data;
       
       int madr = data<<13;
       aGB->mem_map[0xA] = &(aGB->cartRAM)[madr];
@@ -1002,16 +1020,16 @@ void gb_mbc::writememory_poke(register unsigned short address,register byte data
    { 
       if(bank0_change && address==0xA100 && !bc_select)
       {
-         aGB->MBClo = 0;
+         MBClo = 0;
          if(data==1)
-            aGB->MBChi = 2;
+            MBChi = 2;
          else 
          if(data!=0xc0)
-            aGB->MBChi = 66;
+            MBChi = 66;
          else
             bc_select = 1;
                   
-         cart_address = aGB->MBChi<<14;
+         cart_address = MBChi<<14;
 
          aGB->mem_map[0x0] = &(aGB->cartridge)[cart_address];
          aGB->mem_map[0x1] = &(aGB->cartridge)[cart_address+0x1000];
@@ -1041,7 +1059,7 @@ void gb_mbc::writememory_MBC3(register unsigned short address,register byte data
 {
    if(address < 0x2000)// Is it a RAM bank enable/disable?
    {
-      aGB->RAMenable = ( (data&0x0A) == 0x0A ? 1 : 0);
+      RAMenable = ( (data&0x0A) == 0x0A ? 1 : 0);
       return;  
    }
    
@@ -1051,7 +1069,7 @@ void gb_mbc::writememory_MBC3(register unsigned short address,register byte data
       if(data==0) 
          data=1;
          
-      aGB->rom_bank = data;
+      rom_bank = data;
          
       int cadr = data<<14;
       cadr &= rom_size_mask[aGB->rom->ROMsize];
@@ -1066,11 +1084,11 @@ void gb_mbc::writememory_MBC3(register unsigned short address,register byte data
    {                
       if(aGB->rom->RTC && data>8)
       {
-         aGB->RTCIO = 1;
-         aGB->rtc.cur_register = data;
+         RTCIO = 1;
+         rtc.cur_register = data;
 
          return;
-      } else aGB->RTCIO = 0;
+      } else RTCIO = 0;
       
       if(aGB->rom->RAMsize <= 2) // no need to change it if there isn't over 8KB ram
          return;
@@ -1080,7 +1098,7 @@ void gb_mbc::writememory_MBC3(register unsigned short address,register byte data
       if(data > maxRAMbank[aGB->rom->RAMsize])
          data = maxRAMbank[aGB->rom->RAMsize];
       
-      aGB->ram_bank = data;
+      ram_bank = data;
       
       int madr = data<<13;
       aGB->mem_map[0xA] = &(aGB->cartRAM)[madr];
@@ -1093,34 +1111,34 @@ void gb_mbc::writememory_MBC3(register unsigned short address,register byte data
       if(data == 1)
       {
          rtc_update();
-         aGB->RTC_latched = !aGB->RTC_latched;
-         aGB->rtc_latch = aGB->rtc;
+         RTC_latched = !RTC_latched;
+         rtc_latch = rtc;
       }
       return;
    }
    
    if(address >= 0xA000 && address < 0xC000)
    {  
-      if(aGB->RAMenable && aGB->rom->RTC && aGB->RTCIO)
+      if(RAMenable && aGB->rom->RTC && RTCIO)
       {
-         time(&(aGB->rtc).last_time);
-         switch(aGB->rtc.cur_register)
+         time(&(rtc).last_time);
+         switch(rtc.cur_register)
          {
             case 0x08:
-               aGB->rtc.s = data;
+               rtc.s = data;
             break;
             case 0x09:
-               aGB->rtc.m = data;
+               rtc.m = data;
             break;            
             case 0x0A:
-               aGB->rtc.h = data;
+               rtc.h = data;
             break;            
             case 0x0B:
-               aGB->rtc.d = data;
+               rtc.d = data;
             break;            
             case 0x0C:
-               aGB->rtc.control = data;
-               aGB->rtc.d |= (data&1)<<8;
+               rtc.control = data;
+               rtc.d |= (data&1)<<8;
             break;            
          }
       }
@@ -1171,10 +1189,10 @@ void gb_mbc::writememory_MBC5(register unsigned short address,register byte data
                 
                 int addroffset = vfmultibank << 15;
                 addroffset += (eightMegBankNo << 0x17);
-                aGB->superaddroffset = addroffset;
+                superaddroffset = addroffset;
                 
                 wchar_t wrmessage[50];
-                wsprintf(wrmessage,L"MM %X %X",aGB->superaddroffset,vfmultibank);
+                wsprintf(wrmessage,L"MM %X %X",superaddroffset,vfmultibank);
                 renderer.showMessage(wrmessage,60,GB1);
                 
                 aGB->mem_map[0x0] = &(aGB->cartridge)[addroffset];
@@ -1210,7 +1228,7 @@ void gb_mbc::writememory_MBC5(register unsigned short address,register byte data
     
    if(address < 0x2000)// Is it a RAM bank enable/disable?
    {
-      aGB->RAMenable = ( (data&0x0A) == 0x0A ? 1 : 0);
+      RAMenable = ( (data&0x0A) == 0x0A ? 1 : 0);
       return;  
    }
    
@@ -1225,7 +1243,7 @@ void gb_mbc::writememory_MBC5(register unsigned short address,register byte data
       byte origData = data;
       
       if (isSintax) {
-      	switch(aGB->sintax_mode & 0x0f) {
+      	switch(sintax_mode & 0x0f) {
       		// Maybe these could go in a config file, so new ones can be added easily?
       		case 0x0D: {
       			byte flips[] = {6,7,0,1,2,3,4,5};
@@ -1279,14 +1297,14 @@ void gb_mbc::writememory_MBC5(register unsigned short address,register byte data
 	
       // Set current xor so we dont have to figure it out on every read
       
-      aGB->rom_bank = data|(aGB->MBChi<<8);
-      cart_address = aGB->rom_bank<<14;
+      rom_bank = data|(MBChi<<8);
+      cart_address = rom_bank<<14;
       
       cart_address &= rom_size_mask[aGB->rom->ROMsize];
      
-      cart_address += aGB->superaddroffset;
+      cart_address += superaddroffset;
       
-      aGB->MBClo = data;
+      MBClo = data;
 
       aGB->mem_map[0x4] = &(aGB->cartridge)[cart_address];
       aGB->mem_map[0x5] = &(aGB->cartridge)[cart_address+0x1000];
@@ -1308,15 +1326,15 @@ void gb_mbc::writememory_MBC5(register unsigned short address,register byte data
    { 
       data = data&1;
                  
-      aGB->rom_bank = aGB->MBClo|(data<<8);
+      rom_bank = MBClo|(data<<8);
          
-      cart_address = aGB->rom_bank<<14;
+      cart_address = rom_bank<<14;
     
       cart_address &= rom_size_mask[aGB->rom->ROMsize];
       
-      cart_address += aGB->superaddroffset;
+      cart_address += superaddroffset;
       
-      aGB->MBChi = data;
+      MBChi = data;
 
       aGB->mem_map[0x4] = &(aGB->cartridge)[cart_address];
       aGB->mem_map[0x5] = &(aGB->cartridge)[cart_address+0x1000];
@@ -1332,7 +1350,7 @@ void gb_mbc::writememory_MBC5(register unsigned short address,register byte data
    		// sintaxs not entirely understood addressing thing hi  
    		
    		// check sintax_mode was not already set; if it was, ignore it (otherwise Metal Max breaks)
-   		if (isSintax && aGB->sintax_mode ==0 && address >= 0x5000 ) {
+   		if (isSintax && sintax_mode ==0 && address >= 0x5000 ) {
    					
    		 switch(0x0F & data) {
    		 	case 0x0D: // old
@@ -1351,7 +1369,7 @@ void gb_mbc::writememory_MBC5(register unsigned short address,register byte data
    		 		debug_print(buff);
    			break;
    		 }
-   		 aGB->sintax_mode=data;
+   		 sintax_mode=data;
    		 
    		 writememory_MBC5(0x2000,01,false,true); // force a fake bank switch
    		 
@@ -1374,7 +1392,7 @@ void gb_mbc::writememory_MBC5(register unsigned short address,register byte data
       if(data > maxRAMbank[aGB->rom->RAMsize])
          data = maxRAMbank[aGB->rom->RAMsize];
       
-      aGB->ram_bank = data;
+      ram_bank = data;
       
       int madr = data<<13;
       aGB->mem_map[0xA] = &(aGB->cartRAM)[madr];
@@ -1389,16 +1407,16 @@ void gb_mbc::writememory_MBC5(register unsigned short address,register byte data
    			int xorNo = ( address & 0x00F0 ) >> 4;
    			switch (xorNo) {
    				case 2:
-   					aGB->sintax_xor2 = data;
+   					sintax_xor2 = data;
    				break;
    				case 3:
-   					aGB->sintax_xor3 = data;
+   					sintax_xor3 = data;
    				break;
    				case 4:
-   					aGB->sintax_xor4 = data;
+   					sintax_xor4 = data;
    				break;
    				case 5:
-					aGB->sintax_xor5 = data;
+					sintax_xor5 = data;
    				break;
    			}
    			
@@ -1450,7 +1468,7 @@ void gb_mbc::writememory_Camera(register unsigned short address,register byte da
 {
    if(address < 0x2000)// Is it a RAM bank enable/disable?
    {
-      aGB->RAMenable = ( (data&0x0A) == 0x0A ? 1 : 0);
+      RAMenable = ( (data&0x0A) == 0x0A ? 1 : 0);
       return;  
    }
       
@@ -1461,7 +1479,7 @@ void gb_mbc::writememory_Camera(register unsigned short address,register byte da
       if(data > maxROMbank[aGB->rom->ROMsize])
          data = maxROMbank[aGB->rom->ROMsize];
          
-      aGB->rom_bank = data;
+      rom_bank = data;
          
       int cadr = data<<14;
       aGB->mem_map[0x4] = &(aGB->cartridge)[cadr];
@@ -1475,18 +1493,18 @@ void gb_mbc::writememory_Camera(register unsigned short address,register byte da
    {               
       if(data == 0x10)
       {
-         aGB->cameraIO = 1;
+         cameraIO = 1;
          return;
       }
       else
-         aGB->cameraIO = 0;
+         cameraIO = 0;
          
       data &= 0x0F;
          
       if(data > maxRAMbank[aGB->rom->RAMsize])
          data = maxRAMbank[aGB->rom->RAMsize];
       
-      aGB->ram_bank = data;
+      ram_bank = data;
       
       int madr = data<<13;
       aGB->mem_map[0xA] = &(aGB->cartRAM)[madr];
@@ -1515,10 +1533,10 @@ void gb_mbc::update_HuC3time()
    time_t diff = now-HuC3_last_time;
    if(diff > 0)
    {
-      aGB->rtc.s += diff % 60; // use rtc.s to store seconds
-      if(aGB->rtc.s > 59)
+      rtc.s += diff % 60; // use rtc.s to store seconds
+      if(rtc.s > 59)
       {
-          aGB->rtc.s -= 60;
+          rtc.s -= 60;
          HuC3_time++;
       }
 
@@ -1581,7 +1599,7 @@ void gb_mbc::writememory_HuC3(register unsigned short address,register byte data
 {
    if(address < 0x2000)// Is it a RAM bank enable/disable?
    {
-      aGB->RAMenable = ( (data&0x0A) == 0x0A ? 1 : 0);
+      RAMenable = ( (data&0x0A) == 0x0A ? 1 : 0);
       HuC3_RAMflag = data;
       return;  
    }
@@ -1593,7 +1611,7 @@ void gb_mbc::writememory_HuC3(register unsigned short address,register byte data
       if(data > maxROMbank[aGB->rom->ROMsize])
          data = maxROMbank[aGB->rom->ROMsize];
          
-      aGB->rom_bank = data;
+      rom_bank = data;
          
       int cadr = data<<14;
       aGB->mem_map[0x4] = &(aGB->cartridge)[cadr];
@@ -1610,7 +1628,7 @@ void gb_mbc::writememory_HuC3(register unsigned short address,register byte data
       if(data > maxRAMbank[aGB->rom->RAMsize])
          data = maxRAMbank[aGB->rom->RAMsize];
       
-      aGB->ram_bank = data;
+      ram_bank = data;
       
       int madr = data<<13;
       aGB->mem_map[0xA] = &(aGB->cartRAM)[madr];
@@ -1625,7 +1643,7 @@ void gb_mbc::writememory_HuC3(register unsigned short address,register byte data
    { 
       if(HuC3_RAMflag < 0x0b || HuC3_RAMflag > 0x0e) // write to RAM
       {
-         if(!aGB->RAMenable || !aGB->rom->RAMsize)
+         if(!RAMenable || !aGB->rom->RAMsize)
             return;
       } else 
       {
@@ -1733,7 +1751,7 @@ void gb_mbc::writememory_MBC7(register unsigned short address,register byte data
          data=1;
 
 
-       aGB->rom_bank = data;
+       rom_bank = data;
          
       cart_address = data<<14;
 
@@ -1750,7 +1768,7 @@ void gb_mbc::writememory_MBC7(register unsigned short address,register byte data
    {               
       if(data<8)
       {
-          aGB->RAMenable = 0;
+          RAMenable = 0;
          
          if(aGB->rom->RAMsize <= 2) // no need to change it if there isn't over 8KB ram
             return;
@@ -1760,7 +1778,7 @@ void gb_mbc::writememory_MBC7(register unsigned short address,register byte data
          if(data > maxRAMbank[aGB->rom->RAMsize])
             data = maxRAMbank[aGB->rom->RAMsize];
 
-          aGB->ram_bank = data;
+          ram_bank = data;
       
          int madr = data<<13;
           aGB->mem_map[0xA] = &(aGB->cartRAM)[madr];
@@ -1768,7 +1786,7 @@ void gb_mbc::writememory_MBC7(register unsigned short address,register byte data
          return;  
       } else
       {
-          aGB->RAMenable=0;
+          RAMenable=0;
          return;
       }
 
@@ -1996,45 +2014,45 @@ byte gb_mbc::readmemory_MBC7(register unsigned short address)
 void gb_mbc::update_tama_RTC()
 {
    time_t now = time(0);
-   time_t diff = now-aGB->rtc.last_time;
+   time_t diff = now-rtc.last_time;
    if(diff > 0)
    {
-    aGB->rtc.s += diff % 60;
-    if(aGB->rtc.s > 59)
+    rtc.s += diff % 60;
+    if(rtc.s > 59)
     {
-      aGB->rtc.s -= 60;
-      aGB->rtc.m++;
+      rtc.s -= 60;
+      rtc.m++;
     }
 
     diff /= 60;
 
-    aGB->rtc.m += diff % 60;
-    if(aGB->rtc.m > 59)
+    rtc.m += diff % 60;
+    if(rtc.m > 59)
     {
-      aGB->rtc.m -= 60;
-      aGB->rtc.h++;
+      rtc.m -= 60;
+      rtc.h++;
     }
 
     diff /= 60;
 
-    aGB->rtc.h += diff % 24;
-    if(aGB->rtc.h > 24)
+    rtc.h += diff % 24;
+    if(rtc.h > 24)
     {
-      aGB->rtc.h -= 24;
-      aGB->rtc.d++;
+      rtc.h -= 24;
+      rtc.d++;
     }
     diff /= 24;
 
-    aGB->rtc.d += diff;
-    if(aGB->rtc.d > 31)
+    rtc.d += diff;
+    if(rtc.d > 31)
     {
-      aGB->rtc.d -= 31;
+      rtc.d -= 31;
       tama_month++;
       if(tama_month > 12)
          tama_month -= 12;
     }
   }
-  aGB->rtc.last_time = now;
+  rtc.last_time = now;
 }
 
 byte gb_mbc::readmemory_TAMA5(register unsigned short address)
@@ -2056,7 +2074,7 @@ byte gb_mbc::readmemory_TAMA5(register unsigned short address)
                {
                   if(tama_val7 == 0x06) // get minutes higher nibble
                   {
-                     read = aGB->rtc.m;
+                     read = rtc.m;
                      if(read > 0x0f)
                         read += 6;
                      if(read > 0x1f)
@@ -2074,7 +2092,7 @@ byte gb_mbc::readmemory_TAMA5(register unsigned short address)
                   else
                   if(tama_val7 == 0x07) // get hours higher nibble
                   {
-                     read = aGB->rtc.h;
+                     read = rtc.h;
                      if(read > 0x0f)
                         read += 6;
                      if(read > 0x1f)
@@ -2100,18 +2118,18 @@ byte gb_mbc::readmemory_TAMA5(register unsigned short address)
             switch(tama_val4)
             {
             case 0:
-               if(aGB->rtc.s == 0)
+               if(rtc.s == 0)
                   read = 0;
                else
-                  read = aGB->rtc.s - (tama_time+1); // return 0 if second has passed
-                tama_time = aGB->rtc.s;
+                  read = rtc.s - (tama_time+1); // return 0 if second has passed
+                tama_time = rtc.s;
             break;
             case 1:   
                if(tama_val6 == 0x04)
                {              
                   if(tama_val7 == 0x06) // get minutes lower nibble
                   {
-                     read = aGB->rtc.m;
+                     read = rtc.m;
                      
                      //change into correct format
                      if(read > 0x0f)
@@ -2132,7 +2150,7 @@ byte gb_mbc::readmemory_TAMA5(register unsigned short address)
                   else 
                   if(tama_val7 == 0x07) // get hours lower nibble
                   {
-                     read = aGB->rtc.h;
+                     read = rtc.h;
                      
                      //change into correct format
                      if(read > 0x0f)
@@ -2149,10 +2167,10 @@ byte gb_mbc::readmemory_TAMA5(register unsigned short address)
                } 
             break;
             case 7: // day low
-               read = aGB->rtc.d&0xF;
+               read = rtc.d&0xF;
             break;
             case 8: // day high
-               read = ((aGB->rtc.d&0xf0)>>4);
+               read = ((rtc.d&0xf0)>>4);
             break;
             case 9: // month
                read = tama_month;
@@ -2194,10 +2212,10 @@ void gb_mbc::writememory_TAMA5(register unsigned short address,register byte dat
          {
             data &= 0x0F;
 
-             aGB->MBClo = data;
-             aGB->rom_bank = aGB->MBClo|(aGB->MBChi<<4);
+             MBClo = data;
+             rom_bank = MBClo|(MBChi<<4);
        
-            int cadr = aGB->rom_bank<<14;
+            int cadr = rom_bank<<14;
              aGB->mem_map[0x4] = &(aGB->cartridge)[cadr];
              aGB->mem_map[0x5] = &(aGB->cartridge)[cadr+0x1000];
              aGB->mem_map[0x6] = &(aGB->cartridge)[cadr+0x2000];
@@ -2208,11 +2226,11 @@ void gb_mbc::writememory_TAMA5(register unsigned short address,register byte dat
          {
             data &= 0x01;
             
-            aGB->MBChi = data;
+            MBChi = data;
             
-            aGB->rom_bank = aGB->MBClo|(aGB->MBChi<<4);
+            rom_bank = MBClo|(MBChi<<4);
        
-            int cadr = aGB->rom_bank<<14;
+            int cadr = rom_bank<<14;
             aGB->mem_map[0x4] = &(aGB->cartridge)[cadr];
             aGB->mem_map[0x5] = &(aGB->cartridge)[cadr+0x1000];
             aGB->mem_map[0x6] = &(aGB->cartridge)[cadr+0x2000];
@@ -2227,7 +2245,7 @@ void gb_mbc::writememory_TAMA5(register unsigned short address,register byte dat
             ++tama_count;
             if(tama_count==1 && data == 0) tama_change_clock |= 2;
             if(tama_count==2 && data == 1) tama_change_clock |= 1;
-            if(tama_change_clock == 3) aGB->rtc.last_time = time(0);
+            if(tama_change_clock == 3) rtc.last_time = time(0);
 
              aGB->memory[0xA000+(tama_val6<<4)+tama_val7] = tama_val4|(data<<4);
             
@@ -2242,19 +2260,19 @@ void gb_mbc::writememory_TAMA5(register unsigned short address,register byte dat
             } else
             if(tama_count==8 && tama_change_clock==3)
             {
-               aGB->rtc.d = data;
+               rtc.d = data;
             } else
             if(tama_count==9 && tama_change_clock==3)
             {
-                aGB->rtc.d += data*10;
+                rtc.d += data*10;
             } else
             if(tama_count==10 && tama_change_clock==3)
             {
-                aGB->rtc.m = data*10;
+                rtc.m = data*10;
             } else
             if(tama_count==11 && tama_change_clock==3)
             {
-                aGB->rtc.h = data*10;
+                rtc.h = data*10;
             } else
             if(tama_change_clock==3 && tama_count >= 13)
             {

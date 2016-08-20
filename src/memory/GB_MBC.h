@@ -76,6 +76,30 @@ public:
     memoryaccess memory_read;
     memoryaccess memory_write;
 
+    byte sintax_mode;
+    byte sintax_xor2;
+    byte sintax_xor3;
+    byte sintax_xor4;
+    byte sintax_xor5;
+
+    int MBC1memorymodel;
+    int RAMenable;
+    int rom_bank;
+    int ram_bank;
+    unsigned short MBChi;
+    unsigned short MBClo;
+    int RTCIO;
+
+    int superaddroffset;
+
+    rtc_clock rtc;
+    rtc_clock rtc_latch;
+    int RTC_latched;
+
+    int cameraIO;
+
+    int rumble_counter;
+
     void rtc_update();
     void update_HuC3time();
     void update_tama_RTC();

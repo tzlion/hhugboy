@@ -90,17 +90,17 @@ void gb_system::mem_reset(bool mini)
    memory[0xc100] = 0xff;// fix for Minesweeper for 'Windows'
 
    if ( !mini ) {
-    superaddroffset = 0; // Comment this out for in-emu resets to reset the one game, which makes it work. pfft
+      mbc->superaddroffset = 0; // Comment this out for in-emu resets to reset the one game, which makes it work. pfft
    }
 
-    mem_map[0x0] = &cartridge[superaddroffset+0x0000];
-    mem_map[0x1] = &cartridge[superaddroffset+0x1000];
-    mem_map[0x2] = &cartridge[superaddroffset+0x2000];
-    mem_map[0x3] = &cartridge[superaddroffset+0x3000];
-    mem_map[0x4] = &cartridge[superaddroffset+0x4000];
-    mem_map[0x5] = &cartridge[superaddroffset+0x5000];
-    mem_map[0x6] = &cartridge[superaddroffset+0x6000];
-    mem_map[0x7] = &cartridge[superaddroffset+0x7000];
+    mem_map[0x0] = &cartridge[mbc->superaddroffset+0x0000];
+    mem_map[0x1] = &cartridge[mbc->superaddroffset+0x1000];
+    mem_map[0x2] = &cartridge[mbc->superaddroffset+0x2000];
+    mem_map[0x3] = &cartridge[mbc->superaddroffset+0x3000];
+    mem_map[0x4] = &cartridge[mbc->superaddroffset+0x4000];
+    mem_map[0x5] = &cartridge[mbc->superaddroffset+0x5000];
+    mem_map[0x6] = &cartridge[mbc->superaddroffset+0x6000];
+    mem_map[0x7] = &cartridge[mbc->superaddroffset+0x7000];
 
    if(gbc_mode)
    {
@@ -197,14 +197,14 @@ void gb_system::mem_reset(bool mini)
    OBP0[0]=OBP0[1]=OBP0[2]=OBP0[3]=3;
    OBP1[0]=OBP1[1]=OBP1[2]=OBP1[3]=3;
 
-   MBC1memorymodel = 0;
-   MBChi = 0;
-   MBClo = 1;
-   rom_bank = 1;
-   ram_bank = 0;
+   mbc->MBC1memorymodel = 0;
+   mbc->MBChi = 0;
+   mbc->MBClo = 1;
+   mbc->rom_bank = 1;
+   mbc->ram_bank = 0;
    wram_bank = 1;
    vram_bank = 0;
-   RTCIO = 0;
+   mbc->RTCIO = 0;
 
    if(gbc_mode)
    {
@@ -286,17 +286,17 @@ void gb_system::mem_reset(bool mini)
 void gb_system::memory_variables_reset()
 {
    mbc->bc_select = 0;
-     
-   cameraIO = 0;
-   RTC_latched = 0;   
-   
-   rtc.s = 0;
-   rtc.m = 0;
-   rtc.h = 0;
-   rtc.d = 0;
-   rtc.control = 0;
-   rtc.last_time = time(0);
-   rtc.cur_register = 0x08;
+
+   mbc->cameraIO = 0;
+   mbc->RTC_latched = 0;
+
+   mbc->rtc.s = 0;
+   mbc->rtc.m = 0;
+   mbc->rtc.h = 0;
+   mbc->rtc.d = 0;
+   mbc->rtc.control = 0;
+   mbc->rtc.last_time = time(0);
+   mbc->rtc.cur_register = 0x08;
 
    mbc->tama_flag = 0;
    mbc->tama_time = 0;
@@ -389,12 +389,12 @@ bool gb_system::write_save()
 
    if(rom->RTC || rom->bankType==TAMA5)
    {
-      fwrite(&rtc.s, sizeof(int),1,savefile);
-      fwrite(&rtc.m, sizeof(int),1,savefile);
-      fwrite(&rtc.h, sizeof(int),1,savefile);     
-      fwrite(&rtc.d, sizeof(int),1,savefile);   
-      fwrite(&rtc.control, sizeof(int),1,savefile); 
-      fwrite(&rtc.last_time, sizeof(time_t),1,savefile);               
+      fwrite(&(mbc->rtc).s, sizeof(int),1,savefile);
+      fwrite(&(mbc->rtc).m, sizeof(int),1,savefile);
+      fwrite(&(mbc->rtc).h, sizeof(int),1,savefile);
+      fwrite(&(mbc->rtc).d, sizeof(int),1,savefile);
+      fwrite(&(mbc->rtc).control, sizeof(int),1,savefile);
+      fwrite(&(mbc->rtc).last_time, sizeof(time_t),1,savefile);
    }   
    
    if(rom->bankType==TAMA5)
@@ -404,7 +404,7 @@ bool gb_system::write_save()
    {
       fwrite(&(mbc->HuC3_time), sizeof(unsigned int),1,savefile);
       fwrite(&(mbc->HuC3_last_time), sizeof(time_t),1,savefile);
-      fwrite(&rtc.s, sizeof(int),1,savefile);      
+      fwrite(&(mbc->rtc).s, sizeof(int),1,savefile);
    }
    
    fclose(savefile);
@@ -487,13 +487,13 @@ bool gb_system::load_save(bool loading_GB1_save_to_GB2)
    
    if(rom->RTC || rom->bankType==TAMA5)
    {
-      fread(&rtc.s, sizeof(int),1,savefile);
-      fread(&rtc.m, sizeof(int),1,savefile);
-      fread(&rtc.h, sizeof(int),1,savefile);     
-      fread(&rtc.d, sizeof(int),1,savefile);   
-      fread(&rtc.control, sizeof(int),1,savefile); 
-      fread(&rtc.last_time, sizeof(time_t),1,savefile);    
-      rtc_latch = rtc;              
+      fread(&(mbc->rtc).s, sizeof(int),1,savefile);
+      fread(&(mbc->rtc).m, sizeof(int),1,savefile);
+      fread(&(mbc->rtc).h, sizeof(int),1,savefile);
+      fread(&(mbc->rtc).d, sizeof(int),1,savefile);
+      fread(&(mbc->rtc).control, sizeof(int),1,savefile);
+      fread(&(mbc->rtc).last_time, sizeof(time_t),1,savefile);
+      mbc->rtc_latch = mbc->rtc;
    }
    
    if(rom->bankType==TAMA5)
@@ -503,7 +503,7 @@ bool gb_system::load_save(bool loading_GB1_save_to_GB2)
    {
       fread(&(mbc->HuC3_time), sizeof(unsigned int),1,savefile);
       fread(&(mbc->HuC3_last_time), sizeof(time_t),1,savefile);
-      fread(&rtc.s, sizeof(int),1,savefile);            
+      fread(&(mbc->rtc).s, sizeof(int),1,savefile);
    }
 
    fclose(savefile);
