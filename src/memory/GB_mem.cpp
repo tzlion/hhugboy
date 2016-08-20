@@ -88,6 +88,8 @@ void gb_system::mem_reset(bool mini)
    
    memory[0xc100] = 0xff;// fix for Minesweeper for 'Windows'
 
+   rom_bank_xor = 0;
+
    if ( !mini ) {
       mbc->superaddroffset = 0; // Comment this out for in-emu resets to reset the one game, which makes it work. pfft
    }

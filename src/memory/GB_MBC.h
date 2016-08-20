@@ -44,12 +44,6 @@ public:
     time_t HuC3_last_time;
     unsigned int HuC3_time;
 
-    byte sintax_mode;
-    byte sintax_xor2;
-    byte sintax_xor3;
-    byte sintax_xor4;
-    byte sintax_xor5;
-
     int rom_bank;
     int ram_bank;
     unsigned short MBChi;
@@ -91,6 +85,12 @@ private:
     int RTC_latched;
 
     int cameraIO;
+
+    byte sintax_mode;
+    byte sintax_xor2;
+    byte sintax_xor3;
+    byte sintax_xor4;
+    byte sintax_xor5;
 
     int HuC3_register[8];
     int HuC3_RAMvalue;

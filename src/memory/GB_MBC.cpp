@@ -166,6 +166,9 @@ void gb_mbc::resetMbcVariables()
 
     HuC3_flag = HUC3_NONE;
     HuC3_RAMvalue = 1;
+
+    sintax_mode = 0;
+    sintax_xor2 = sintax_xor3 = sintax_xor4 = sintax_xor5 = 0;
 }
 
 byte gb_mbc::readmemory_cart(register unsigned short address) {
