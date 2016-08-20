@@ -25,8 +25,7 @@
 #include "types.h"
 #include "rom.h"
 #include "cheats.h"
-
-class gb_mbc;
+#include "memory/GB_MBC.h"
 
 class gb_system
 {
@@ -38,7 +37,6 @@ public:
    void reset(bool change_mode = true, bool mini = false);
    void mem_reset(bool mini = false);
    void cpu_reset();
-   void memory_variables_reset();
 
     gb_mbc* mbc;
 

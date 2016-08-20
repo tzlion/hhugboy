@@ -196,14 +196,8 @@ void gb_system::mem_reset(bool mini)
    OBP0[0]=OBP0[1]=OBP0[2]=OBP0[3]=3;
    OBP1[0]=OBP1[1]=OBP1[2]=OBP1[3]=3;
 
-   mbc->MBC1memorymodel = 0;
-   mbc->MBChi = 0;
-   mbc->MBClo = 1;
-   mbc->rom_bank = 1;
-   mbc->ram_bank = 0;
    wram_bank = 1;
    vram_bank = 0;
-   mbc->RTCIO = 0;
 
    if(gbc_mode)
    {
@@ -280,35 +274,6 @@ void gb_system::mem_reset(bool mini)
    }
 
    memset(VRAM,0,16384);
-}
-
-void gb_system::memory_variables_reset()
-{
-   mbc->bc_select = 0;
-
-   mbc->cameraIO = 0;
-   mbc->RTC_latched = 0;
-
-   mbc->rtc.s = 0;
-   mbc->rtc.m = 0;
-   mbc->rtc.h = 0;
-   mbc->rtc.d = 0;
-   mbc->rtc.control = 0;
-   mbc->rtc.last_time = time(0);
-   mbc->rtc.cur_register = 0x08;
-
-   mbc->tama_flag = 0;
-   mbc->tama_time = 0;
-   mbc->tama_val6 = 0;
-   mbc->tama_val7 = 0;
-   mbc->tama_val4 = 0;
-   mbc->tama_val5 = 0;
-   mbc->tama_count = 0;
-   mbc->tama_month = 0;
-   mbc->tama_change_clock = 0;
-
-   mbc->HuC3_flag = HUC3_NONE;
-   mbc->HuC3_RAMvalue = 1;
 }
 
 ///////////////////////////////////////////////////////

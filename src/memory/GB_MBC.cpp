@@ -21,6 +21,9 @@
    along with this program; if not, write to the Free Software Foundation, Inc.,
    51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
+#include "../config.h"
+#include "../GB_gfx.h"
+#include "../debug.h"
 #include "../mainloop.h"
 #include <time.h>
 
@@ -66,10 +69,8 @@ unsigned int cart_address = 0;
 //int RTCIO = 0;
 //int RTC_latched = 0;
 
-// todo so there are much fewer things needed from the GB now
-// maybe itd be nice if this just takes in references to those things rather than the entire GB
 // Eventually GB should contain cart and cart should contain MBC
-gb_mbc::gb_mbc(gb_system* inGB, byte** gbMemMap, byte** gbCartridge, GBrom** gbRom, byte** gbCartRam):
+gb_mbc::gb_mbc(byte** gbMemMap, byte** gbCartridge, GBrom** gbRom, byte** gbCartRam, byte* gbRomBankXor, int* gbRumbleCounter, byte** gbMemory):
         HuC3_RAMvalue(0),
         HuC3_RAMaddress(0),
         HuC3_address(0),
@@ -122,11 +123,49 @@ gb_mbc::gb_mbc(gb_system* inGB, byte** gbMemMap, byte** gbCartridge, GBrom** gbR
         cameraIO(0)
 
 {
-    aGB = inGB;
     this->gbCartridge = gbCartridge;
     this->gbMemMap = gbMemMap;
     this->gbRom = gbRom;
     this->gbCartRam = gbCartRam;
+    this->gbRomBankXor = gbRomBankXor;
+    this->gbRumbleCounter = gbRumbleCounter;
+    this->gbMemory = gbMemory;
+}
+
+void gb_mbc::memory_variables_reset()
+{
+    MBC1memorymodel = 0;
+    MBChi = 0;
+    MBClo = 1;
+    rom_bank = 1;
+    ram_bank = 0;
+    RTCIO = 0;
+
+    bc_select = 0;
+
+    cameraIO = 0;
+    RTC_latched = 0;
+
+    rtc.s = 0;
+    rtc.m = 0;
+    rtc.h = 0;
+    rtc.d = 0;
+    rtc.control = 0;
+    rtc.last_time = time(0);
+    rtc.cur_register = 0x08;
+
+    tama_flag = 0;
+    tama_time = 0;
+    tama_val6 = 0;
+    tama_val7 = 0;
+    tama_val4 = 0;
+    tama_val5 = 0;
+    tama_count = 0;
+    tama_month = 0;
+    tama_change_clock = 0;
+
+    HuC3_flag = HUC3_NONE;
+    HuC3_RAMvalue = 1;
 }
 
 byte gb_mbc::readmemory_cart(register unsigned short address) {
@@ -228,16 +267,16 @@ void gb_mbc::setXorForBank(byte bankNo)
 {
   	switch(bankNo & 0x0F) {
 	case 0x00: case 0x04: case 0x08: case 0x0C:
-		aGB->rom_bank_xor = sintax_xor2;
+		*gbRomBankXor = sintax_xor2;
 		break;
 	case 0x01: case 0x05: case 0x09: case 0x0D:
-		aGB->rom_bank_xor = sintax_xor3;
+		*gbRomBankXor = sintax_xor3;
 		break;
 	case 0x02: case 0x06: case 0x0A: case 0x0E:
-		aGB->rom_bank_xor = sintax_xor4;
+		*gbRomBankXor = sintax_xor4;
 		break;
 	case 0x03: case 0x07: case 0x0B: case 0x0F:
-		aGB->rom_bank_xor = sintax_xor5;
+		*gbRomBankXor = sintax_xor5;
 		break;
   	}
   	
@@ -291,7 +330,7 @@ byte gb_mbc::readmemory_sintax(register unsigned short address)
 	//sprintf(buff,"MBCLo %X Addr %X Data %X XOR %X XOR'd data %X",MBClo,address,data,rom_bank_xor, data ^ rom_bank_xor);
 	//debug_print(buff);
    	
-     return  data ^ aGB->rom_bank_xor;
+     return  data ^ *gbRomBankXor;
    }
 
    return gbMemMap[address>>12][address&0x0FFF];
@@ -390,32 +429,32 @@ void gb_mbc::writememory_default(register unsigned short address,register byte d
       int madr = data<<13;
       gbMemMap[0xA] = &(*gbCartRam)[madr];
       gbMemMap[0xB] = &(*gbCartRam)[madr+0x1000];
-      return;  
-   } 
-   
+      return;
+   }
+
    if(address < 0x8000) // BHGOS multicart
-   {           
+   {
       if(++bc_select == 2 && (*gbRom)->ROMsize>1)
       {
          MBChi = (data&0xFF);
 
          cart_address = (MBChi<<1)<<14;
-         
+
          gbMemMap[0x0] = &(*gbCartridge)[cart_address];
          gbMemMap[0x1] = &(*gbCartridge)[cart_address+0x1000];
          gbMemMap[0x2] = &(*gbCartridge)[cart_address+0x2000];
          gbMemMap[0x3] = &(*gbCartridge)[cart_address+0x3000];
-         
+
          gbMemMap[0x4] = &(*gbCartridge)[cart_address+0x4000];
          gbMemMap[0x5] = &(*gbCartridge)[cart_address+0x5000];
          gbMemMap[0x6] = &(*gbCartridge)[cart_address+0x6000];
          gbMemMap[0x7] = &(*gbCartridge)[cart_address+0x7000];
       }
-      return;      
+      return;
    }
 
    // Always allow RAM writes.
-   
+
    gbMemMap[address>>12][address&0x0FFF] = data;
 }
 
@@ -426,33 +465,33 @@ void gb_mbc::writememory_default(register unsigned short address,register byte d
 void gb_mbc::writememory_8in1(register unsigned short address,register byte data)
 {
    if(address < 0x2000)
-      return;  
-   
+      return;
+
    if(address < 0x4000) // Is it a ROM bank switch?
-   { 
+   {
       data &= 0x1f;
       if(data == 0)
          data = 1;
-         
+
       rom_bank = data;
-         
+
       int cadr = (data<<14)+(MBChi<<14);
       cadr &= rom_size_mask[(*gbRom)->ROMsize];
       gbMemMap[0x4] = &(*gbCartridge)[cadr];
       gbMemMap[0x5] = &(*gbCartridge)[cadr+0x1000];
       gbMemMap[0x6] = &(*gbCartridge)[cadr+0x2000];
       gbMemMap[0x7] = &(*gbCartridge)[cadr+0x3000];
-      return; 
+      return;
    }
-      
+
    if(address < 0x6000) // Is it a RAM bank switch?
-   {      
+   {
       if(address == 0x4000 && bc_select < 3) // game select
       {
          ++bc_select;
-         
+
          MBClo = 0;
-         
+
          MBChi = (data&0x1f);
 
          cart_address = MBChi<<14;
@@ -460,26 +499,26 @@ void gb_mbc::writememory_8in1(register unsigned short address,register byte data
          gbMemMap[0x1] = &(*gbCartridge)[cart_address+0x1000];
          gbMemMap[0x2] = &(*gbCartridge)[cart_address+0x2000];
          gbMemMap[0x3] = &(*gbCartridge)[cart_address+0x3000];
-         
+
          gbMemMap[0x4] = &(*gbCartridge)[cart_address+0x4000];
          gbMemMap[0x5] = &(*gbCartridge)[cart_address+0x5000];
          gbMemMap[0x6] = &(*gbCartridge)[cart_address+0x6000];
          gbMemMap[0x7] = &(*gbCartridge)[cart_address+0x7000];
-         return;      
-      }    
+         return;
+      }
 
       data &= 0x03;
-              
+
       ram_bank = data;
-      
+
       int madr = data<<13;
       gbMemMap[0xA] = &(*gbCartRam)[madr];
       gbMemMap[0xB] = &(*gbCartRam)[madr+0x1000];
-      return;  
-   } 
-   
-   if(address < 0x8000)       
-      return;      
+      return;
+   }
+
+   if(address < 0x8000)
+      return;
 
    // Always allow RAM writes.
 
@@ -495,40 +534,40 @@ void gb_mbc::writememory_MBC1(register unsigned short address,register byte data
    if(address < 0x2000)// Is it a RAM bank enable/disable?
    {
        RAMenable = ( (data&0x0A) == 0x0A ? 1 : 0);
-      return;  
+      return;
    }
-   
+
    if(address < 0x4000) // Is it a ROM bank switch?
-   {      
+   {
       if(MBC1memorymodel == 0)
       {
          if(data == 0)
             data = 1;
 
          MBClo = data;
-         
+
          rom_bank = MBClo|(MBChi<<5);
-          
+
          cart_address = MBClo<<14;
          cart_address |= (MBChi<<19);
-         
+
          cart_address &= rom_size_mask[(*gbRom)->ROMsize];
 
          gbMemMap[0x4] = &(*gbCartridge)[cart_address];
          gbMemMap[0x5] = &(*gbCartridge)[cart_address+0x1000];
          gbMemMap[0x6] = &(*gbCartridge)[cart_address+0x2000];
          gbMemMap[0x7] = &(*gbCartridge)[cart_address+0x3000];
-      } else 
+      } else
       {
          if(data == 0)
             data = 1;
-      
+
          rom_bank = data;
-         
+
          int cadr = rom_bank<<14;
-         
+
          cadr &= rom_size_mask[(*gbRom)->ROMsize];
-         
+
          gbMemMap[0x4] = &(*gbCartridge)[cadr];
          gbMemMap[0x5] = &(*gbCartridge)[cadr+0x1000];
          gbMemMap[0x6] = &(*gbCartridge)[cadr+0x2000];
@@ -536,21 +575,21 @@ void gb_mbc::writememory_MBC1(register unsigned short address,register byte data
       }
       return;
    }
-   
+
    if(address < 0x6000) // Is it a RAM bank switch?
-   {          
+   {
       if(MBC1memorymodel == 0)
-      {  
+      {
          if((((data&0x03)<<5)|MBClo) > maxROMbank[(*gbRom)->ROMsize])
             return;
-         
+
          MBChi = (data&0x03);
-         
+
          rom_bank = MBClo|(MBChi<<5);
-         
+
          cart_address = MBClo<<14;
          cart_address |= (MBChi<<19);
-         
+
          cart_address &= rom_size_mask[(*gbRom)->ROMsize];
 
          gbMemMap[0x4] = &(*gbCartridge)[cart_address];
@@ -564,24 +603,24 @@ void gb_mbc::writememory_MBC1(register unsigned short address,register byte data
          return;
 
       data &= 0x03;
-         
+
       if(data > maxRAMbank[(*gbRom)->RAMsize])
          data = maxRAMbank[(*gbRom)->RAMsize];
-      
+
       ram_bank = data;
-      
+
       int madr = data<<13;
       gbMemMap[0xA] = &(*gbCartRam)[madr];
       gbMemMap[0xB] = &(*gbCartRam)[madr+0x1000];
-      return;  
+      return;
    }
-   
+
    if(address < 0x8000) // Is it a MBC1 max memory model change?
    {
        MBC1memorymodel = (data&0x01);
       return;
    }
-   
+
 /*   if(address >= 0xA000 && address < 0xC000)
    {
       if((!RAMenable || !rom->RAMsize) && !RAM_always_enable)
@@ -592,77 +631,77 @@ void gb_mbc::writememory_MBC1(register unsigned short address,register byte data
 }
 
 //-------------------------------------------------------------------------
-// writememory_MMM01: 
-// for MMM01 
+// writememory_MMM01:
+// for MMM01
 // Only game with MBC set as MMM01 in header I've seen is
 // Momotarou Collection 2, which is propably a bad dump?
 //-------------------------------------------------------------------------
 void gb_mbc::writememory_MMM01(register unsigned short address,register byte data)
 {
    if(address < 0x2000)
-      return;  
-   
+      return;
+
    if(address < 0x4000) // Is it a ROM bank switch?
-   {            
+   {
       if(data == 0)
          data = 1;
-        
+
       rom_bank = data;
-         
+
       int cadr = (rom_bank<<14)+(MBChi<<14);
-         
+
       cadr &= rom_size_mask[(*gbRom)->ROMsize];
-         
+
       gbMemMap[0x4] = &(*gbCartridge)[cadr];
       gbMemMap[0x5] = &(*gbCartridge)[cadr+0x1000];
       gbMemMap[0x6] = &(*gbCartridge)[cadr+0x2000];
       gbMemMap[0x7] = &(*gbCartridge)[cadr+0x3000];
       return;
    }
-   
+
    if(address < 0x6000) // Is it a RAM bank switch?
-   {                 
+   {
       if(address == 0x5fff && !bc_select)
       {
          bc_select = 1;
-         
+
          data &= 0x2f;
          MBClo = 0;
-      
+
          MBChi = data;
          cart_address = MBChi<<14;
-         
+
          gbMemMap[0x0] = &(*gbCartridge)[cart_address];
          gbMemMap[0x1] = &(*gbCartridge)[cart_address+0x1000];
          gbMemMap[0x2] = &(*gbCartridge)[cart_address+0x2000];
          gbMemMap[0x3] = &(*gbCartridge)[cart_address+0x3000];
-         
+
          gbMemMap[0x4] = &(*gbCartridge)[cart_address+0x4000];
          gbMemMap[0x5] = &(*gbCartridge)[cart_address+0x5000];
          gbMemMap[0x6] = &(*gbCartridge)[cart_address+0x6000];
          gbMemMap[0x7] = &(*gbCartridge)[cart_address+0x7000];
-         return;      
+         return;
       }
-         
+
       if((*gbRom)->RAMsize <= 2) // no need to change it if there isn't over 8KB ram
          return;
 
       data &= 0x03;
-         
+
       if(data > maxRAMbank[(*gbRom)->RAMsize])
          data = maxRAMbank[(*gbRom)->RAMsize];
-      
+
       ram_bank = data;
-      
+
       int madr = data<<13;
       gbMemMap[0xA] = &(*gbCartRam)[madr];
       gbMemMap[0xB] = &(*gbCartRam)[madr+0x1000];
-      return;  
-   }
-   
-   if(address < 0x8000) 
       return;
-   
+   }
+
+   if(address < 0x8000)
+      return;
+
    // Always allow RAM writes.
 
    gbMemMap[address>>12][address&0x0FFF] = data;
@@ -677,58 +716,58 @@ void gb_mbc::writememory_BC(register unsigned short address,register byte data)
    if(address < 0x2000)// Is it a RAM bank enable/disable?
    {
       RAMenable = ( (data&0x0A) == 0x0A ? 1 : 0);
-      return;  
+      return;
    }
-   
+
    if(address < 0x4000) // Is it a ROM bank switch?
-   { 
+   {
       data &= 0x0F;
-            
+
       if(data == 0)
          data = 1;
-        
+
       rom_bank = data|(MBChi<<4);
-       
+
       int cadr = rom_bank<<14;
-         
+
       cadr &= rom_size_mask[(*gbRom)->ROMsize];
-         
+
       gbMemMap[0x4] = &(*gbCartridge)[cadr];
       gbMemMap[0x5] = &(*gbCartridge)[cadr+0x1000];
       gbMemMap[0x6] = &(*gbCartridge)[cadr+0x2000];
       gbMemMap[0x7] = &(*gbCartridge)[cadr+0x3000];
       return;
    }
- 
-   if(address < 0x6000) 
-   {                   
+
+   if(address < 0x6000)
+   {
       if(address == 0x4000 || address == 0x5fff) // game select
-      { 
+      {
          MBClo = 0;
          MBChi = (data&0x03);
-                  
+
          cart_address = (MBChi<<4)<<14;
-         
+
          gbMemMap[0x0] = &(*gbCartridge)[cart_address];
          gbMemMap[0x1] = &(*gbCartridge)[cart_address+0x1000];
          gbMemMap[0x2] = &(*gbCartridge)[cart_address+0x2000];
          gbMemMap[0x3] = &(*gbCartridge)[cart_address+0x3000];
-         
+
          gbMemMap[0x4] = &(*gbCartridge)[cart_address+0x4000];
          gbMemMap[0x5] = &(*gbCartridge)[cart_address+0x5000];
          gbMemMap[0x6] = &(*gbCartridge)[cart_address+0x6000];
          gbMemMap[0x7] = &(*gbCartridge)[cart_address+0x7000];
-         return;      
+         return;
       }
-      return;  
+      return;
    }
-   
-   if(address < 0x8000) 
+
+   if(address < 0x8000)
    {
       MBC1memorymodel = (data&0x01);
       return;
    }
-   
+
   /* if(address >= 0xA000 && address < 0xC000)
    {
       if((!RAMenable || !rom->RAMsize) && !RAM_always_enable)
@@ -747,59 +786,59 @@ void gb_mbc::writememory_MK12(register unsigned short address,register byte data
    if(address < 0x2000)// Is it a RAM bank enable/disable?
    {
       RAMenable = ( (data&0x0A) == 0x0A ? 1 : 0);
-      return;  
+      return;
    }
-   
+
    if(address < 0x4000) // Is it a ROM bank switch?
-   { 
+   {
       data &= 0x0F;
-            
+
       if(data == 0)
          data = 1;
-        
+
       rom_bank = data+MBChi;
-       
+
       int cadr = rom_bank<<14;
-        
+
       cadr &= rom_size_mask[(*gbRom)->ROMsize];
-         
+
       gbMemMap[0x4] = &(*gbCartridge)[cadr];
       gbMemMap[0x5] = &(*gbCartridge)[cadr+0x1000];
       gbMemMap[0x6] = &(*gbCartridge)[cadr+0x2000];
       gbMemMap[0x7] = &(*gbCartridge)[cadr+0x3000];
       return;
    }
- 
-   if(address < 0x6000) 
-   {                   
+
+   if(address < 0x6000)
+   {
       if(address == 0x5000) // game select
-      {         
+      {
          MBClo = 0;
          MBChi = (data&0x03);
          if(MBChi==2) MBChi = 17;
-                  
+
          cart_address = MBChi<<14;
 
          gbMemMap[0x0] = &(*gbCartridge)[cart_address];
          gbMemMap[0x1] = &(*gbCartridge)[cart_address+0x1000];
          gbMemMap[0x2] = &(*gbCartridge)[cart_address+0x2000];
          gbMemMap[0x3] = &(*gbCartridge)[cart_address+0x3000];
-         
+
          gbMemMap[0x4] = &(*gbCartridge)[cart_address+0x4000];
          gbMemMap[0x5] = &(*gbCartridge)[cart_address+0x5000];
          gbMemMap[0x6] = &(*gbCartridge)[cart_address+0x6000];
          gbMemMap[0x7] = &(*gbCartridge)[cart_address+0x7000];
-         return;      
+         return;
       }
-      return;  
+      return;
    }
-   
-   if(address < 0x8000) 
+
+   if(address < 0x8000)
    {
       MBC1memorymodel = (data&0x01);
       return;
    }
-   
+
   /* if(address >= 0xA000 && address < 0xC000)
    {
       if((!RAMenable || !rom->RAMsize) && !RAM_always_enable)
@@ -816,35 +855,35 @@ void gb_mbc::writememory_MK12(register unsigned short address,register byte data
 void gb_mbc::writememory_Rockman8(register unsigned short address,register byte data)
 {
    if(address < 0x2000)
-      return;  
-   
+      return;
+
    if(address < 0x4000) // Is it a ROM bank switch?
-   { 
+   {
       data &= 0x1F;
-         
+
       if(data == 0)
          data = 1;
 
       if(data > maxROMbank[(*gbRom)->ROMsize])
          data -= 8; // <--- MAKE IT WORK!!!
-         
+
       rom_bank = data;
-          
+
       cart_address = data<<14;
-         
+
       cart_address &= rom_size_mask[(*gbRom)->ROMsize];
 
       gbMemMap[0x4] = &(*gbCartridge)[cart_address];
       gbMemMap[0x5] = &(*gbCartridge)[cart_address+0x1000];
       gbMemMap[0x6] = &(*gbCartridge)[cart_address+0x2000];
       gbMemMap[0x7] = &(*gbCartridge)[cart_address+0x3000];
-              
+
       return;
    }
-     
-   if(address < 0x8000) 
+
+   if(address < 0x8000)
       return;
-   
+
    // Always allow RAM writes.
 
    gbMemMap[address>>12][address&0x0FFF] = data;
@@ -860,21 +899,21 @@ void gb_mbc::writememory_MBC2(register unsigned short address,register byte data
    {
       if(!(address&0x0100))
          RAMenable =  (data&0x0F) == 0x0A;
-      return;  
+      return;
    }
-   
+
    if(address < 0x4000) // Is it a ROM bank switch?
-   { 
+   {
       //if(address&0x0100)
       {
          data &= 0x0F;
-         if(data==0) 
+         if(data==0)
             data=1;
          if(data > maxROMbank[(*gbRom)->ROMsize])
             data = maxROMbank[(*gbRom)->ROMsize];
-         
+
          rom_bank = data;
-         
+
          int cadr = data<<14;
          gbMemMap[0x4] = &(*gbCartridge)[cadr];
          gbMemMap[0x5] = &(*gbCartridge)[cadr+0x1000];
@@ -883,19 +922,19 @@ void gb_mbc::writememory_MBC2(register unsigned short address,register byte data
       }
       return;
    }
-   
-   if(address < 0x6000) // Is it a RAM bank switch?         
-      return;  
-   
+
+   if(address < 0x6000) // Is it a RAM bank switch?
+      return;
+
    if(address < 0x8000)
       return;
-   
+
  /*  if(address >= 0xA000 && address < 0xC000)
    {
       if(!RAMenable || !rom->battery)
          return;
    }*/
-   
+
    gbMemMap[address>>12][address&0x0FFF] = data;
 }
 
@@ -906,7 +945,7 @@ void gb_mbc::rtc_update()
        rtc.last_time = time(0);
       return;
    }
-   
+
    time_t now = time(0);
    time_t diff = now-rtc.last_time;
    if(diff > 0)
@@ -963,18 +1002,18 @@ void gb_mbc::writememory_poke(register unsigned short address,register byte data
    {
       RAMenable = ( (data&0x0A) == 0x0A ? 1 : 0);
       bank0_change = ( (data&0xC0) == 0xC0 ? 1 : 0);
-      return;  
+      return;
    }
-   
+
    if(address < 0x4000) // Is it a ROM bank switch?
-   {      
-      data &= 0x7F;  
-      if(data==0) 
+   {
+      data &= 0x7F;
+      if(data==0)
          data=1;
       data += MBChi;
-         
+
       rom_bank = data;
-         
+
       int cadr = data<<14;
       cadr &= rom_size_mask[(*gbRom)->ROMsize];
       gbMemMap[0x4] = &(*gbCartridge)[cadr];
@@ -983,50 +1022,50 @@ void gb_mbc::writememory_poke(register unsigned short address,register byte data
       gbMemMap[0x7] = &(*gbCartridge)[cadr+0x3000];
       return;
    }
-   
+
    if(address < 0x6000) // Is it a RAM bank switch?
-   {                 
+   {
       if((*gbRom)->RAMsize <= 2) // no need to change it if there isn't over 8KB ram
          return;
 
       data &= 0x03;
-         
+
       if(data > maxRAMbank[(*gbRom)->RAMsize])
          data = maxRAMbank[(*gbRom)->RAMsize];
-      
+
       ram_bank = data;
-      
+
       int madr = data<<13;
       gbMemMap[0xA] = &(*gbCartRam)[madr];
       gbMemMap[0xB] = &(*gbCartRam)[madr+0x1000];
-      return;  
+      return;
    }
-   
+
    if(address < 0x8000)
    {
       return;
    }
-   
+
    if(address >= 0xA000 && address < 0xC000)
-   { 
+   {
       if(bank0_change && address==0xA100 && !bc_select)
       {
          MBClo = 0;
          if(data==1)
             MBChi = 2;
-         else 
+         else
          if(data!=0xc0)
             MBChi = 66;
          else
             bc_select = 1;
-                  
+
          cart_address = MBChi<<14;
 
          gbMemMap[0x0] = &(*gbCartridge)[cart_address];
          gbMemMap[0x1] = &(*gbCartridge)[cart_address+0x1000];
          gbMemMap[0x2] = &(*gbCartridge)[cart_address+0x2000];
          gbMemMap[0x3] = &(*gbCartridge)[cart_address+0x3000];
-         
+
          gbMemMap[0x4] = &(*gbCartridge)[cart_address+0x4000];
          gbMemMap[0x5] = &(*gbCartridge)[cart_address+0x5000];
          gbMemMap[0x6] = &(*gbCartridge)[cart_address+0x6000];
@@ -1036,7 +1075,7 @@ void gb_mbc::writememory_poke(register unsigned short address,register byte data
       //if(!RAMenable || !rom->RAMsize)
       //   return;
    }
-   
+
    gbMemMap[address>>12][address&0x0FFF] = data;
 }
 
@@ -1050,15 +1089,15 @@ void gb_mbc::writememory_MBC3(register unsigned short address,register byte data
    if(address < 0x2000)// Is it a RAM bank enable/disable?
    {
       RAMenable = ( (data&0x0A) == 0x0A ? 1 : 0);
-      return;  
+      return;
    }
-   
+
    if(address < 0x4000) // Is it a ROM bank switch?
-   {  
-      data &= 0x7F;  
-      if(data==0) 
+   {
+      data &= 0x7F;
+      if(data==0)
          data=1;
-         
+
       rom_bank = data;
 
       int cadr = data<<14;
@@ -1069,9 +1108,9 @@ void gb_mbc::writememory_MBC3(register unsigned short address,register byte data
       gbMemMap[0x7] = &(*gbCartridge)[cadr+0x3000];
       return;
    }
-   
+
    if(address < 0x6000) // Is it a RAM bank switch?
-   {                
+   {
       if((*gbRom)->RTC && data>8)
       {
          RTCIO = 1;
@@ -1079,25 +1118,25 @@ void gb_mbc::writememory_MBC3(register unsigned short address,register byte data
 
          return;
       } else RTCIO = 0;
-      
+
       if((*gbRom)->RAMsize <= 2) // no need to change it if there isn't over 8KB ram
          return;
 
       data &= 0x03;
-         
+
       if(data > maxRAMbank[(*gbRom)->RAMsize])
          data = maxRAMbank[(*gbRom)->RAMsize];
-      
+
       ram_bank = data;
-      
+
       int madr = data<<13;
       gbMemMap[0xA] = &(*gbCartRam)[madr];
       gbMemMap[0xB] = &(*gbCartRam)[madr+0x1000];
-      return;  
+      return;
    }
-   
+
    if(address < 0x8000)
-   {   
+   {
       if(data == 1)
       {
          rtc_update();
@@ -1106,9 +1145,9 @@ void gb_mbc::writememory_MBC3(register unsigned short address,register byte data
       }
       return;
    }
-   
+
    if(address >= 0xA000 && address < 0xC000)
-   {  
+   {
       if(RAMenable && (*gbRom)->RTC && RTCIO)
       {
          time(&(rtc).last_time);
@@ -1119,23 +1158,23 @@ void gb_mbc::writememory_MBC3(register unsigned short address,register byte data
             break;
             case 0x09:
                rtc.m = data;
-            break;            
+            break;
             case 0x0A:
                rtc.h = data;
-            break;            
+            break;
             case 0x0B:
                rtc.d = data;
-            break;            
+            break;
             case 0x0C:
                rtc.control = data;
                rtc.d |= (data&1)<<8;
-            break;            
+            break;
          }
       }
       //if(!RAMenable || !rom->RAMsize)
       //   return;
    }
-   
+
    gbMemMap[address>>12][address&0x0FFF] = data;
 }
 
@@ -1147,7 +1186,7 @@ void gb_mbc::writememory_MBC5(register unsigned short address,register byte data
 {
     bool vfmulti = true;
     if ( vfmulti && !bc_select ) {
-            
+
         if ( /*address & 0xF000 == 0x5000*/ address >= 0x5000 && address <= 0x5FFF ) {
             vfmultimode = data;
         }
@@ -1170,29 +1209,29 @@ void gb_mbc::writememory_MBC5(register unsigned short address,register byte data
                     break;
             }
             if ( effectChange ) {
-                    
+
                 byte size = vfmultifinal & 0x07;
                 byte eightMegBankNo = ( vfmultifinal & 0x08 ) >> 3; // 0 or 1
                 byte doReset = ( vfmultifinal & 0x80 ) >> 7; // 0 or 1 again
-                
+
                 int addroffset = vfmultibank << 15;
                 addroffset += (eightMegBankNo << 0x17);
                 superaddroffset = addroffset;
-                
+
                 wchar_t wrmessage[50];
                 wsprintf(wrmessage,L"MM %X %X",superaddroffset,vfmultibank);
                 renderer.showMessage(wrmessage,60,GB1);
-                
+
                 gbMemMap[0x0] = &(*gbCartridge)[addroffset];
                 gbMemMap[0x1] = &(*gbCartridge)[addroffset+0x1000];
                 gbMemMap[0x2] = &(*gbCartridge)[addroffset+0x2000];
                 gbMemMap[0x3] = &(*gbCartridge)[addroffset+0x3000];
-                
+
                 gbMemMap[0x4] = &(*gbCartridge)[addroffset+0x4000];
                 gbMemMap[0x5] = &(*gbCartridge)[addroffset+0x5000];
                 gbMemMap[0x6] = &(*gbCartridge)[addroffset+0x6000];
                 gbMemMap[0x7] = &(*gbCartridge)[addroffset+0x7000];
-                
+
                 // todo: Do the bank switch, changes the effective ROM..
                 // todo: Do the memory switch
                 if ( doReset ) {
@@ -1201,27 +1240,27 @@ void gb_mbc::writememory_MBC5(register unsigned short address,register byte data
                       superaddroffset = 0;
                       GB1->reset();
                     */
-                  // IT SEEMS that if we do a reset here it just doesnt fuck work properly anyway? 
+                  // IT SEEMS that if we do a reset here it just doesnt fuck work properly anyway?
                   // Need to re-reset thru the menu (assuming superaddroffset not changed) & then it works
                 }
-                
+
                if ( vfmultifinal>0) bc_select = 1;
-                
+
                 vfmultimode=0; vfmultibank=0; vfmultimem=0; vfmultifinal = 0;
-            
+
                 return;
             }
         }
     }
-    
+
    if(address < 0x2000)// Is it a RAM bank enable/disable?
    {
       RAMenable = ( (data&0x0A) == 0x0A ? 1 : 0);
-      return;  
+      return;
    }
-   
+
    if(address < 0x3000)
-   {    
+   {
 	   	// 2100 needs to be not-ignored (for Cannon Fodder's sound)
 	   	// but 2180 DOES need to be ignored (for FF DX3)
 	   	// Determined to find the right number here
@@ -1229,7 +1268,7 @@ void gb_mbc::writememory_MBC5(register unsigned short address,register byte data
       	return;
       }
       byte origData = data;
-      
+
       if (isSintax) {
       	switch(sintax_mode & 0x0f) {
       		// Maybe these could go in a config file, so new ones can be added easily?
@@ -1251,25 +1290,25 @@ void gb_mbc::writememory_MBC5(register unsigned short address,register byte data
       			data = switchOrder( data, flips );
       			break;
       		}
-      		
+
       		case 0x01: {
       			byte flips[] = {7,6,1,0,3,2,5,4};
       			data = switchOrder( data, flips );
       			break;
       		}
-      		      		
+
       		case 0x05: {
       			byte flips[] = {0,1,6,7,4,5,2,3}; // Not 100% on this one
       			data = switchOrder( data, flips );
       			break;
       		}
-      		
+
       		case 0x07: {
       			byte flips[] = {5,7,4,6,2,3,0,1}; // 5 and 7 unconfirmed
       			data = switchOrder( data, flips );
       			break;
       		}
-      		
+
       		case 0x0B: {
       			byte flips[] = {5,4,7,6,1,0,3,2}; // 5 and 6 unconfirmed
       			data = switchOrder( data, flips );
@@ -1277,69 +1316,69 @@ void gb_mbc::writememory_MBC5(register unsigned short address,register byte data
       		}
 
       	}
-      	
+
       	setXorForBank(origData);
-    
+
       }
-    
-	
+
+
       // Set current xor so we dont have to figure it out on every read
-      
+
       rom_bank = data|(MBChi<<8);
       cart_address = rom_bank<<14;
-      
+
       cart_address &= rom_size_mask[(*gbRom)->ROMsize];
-     
+
       cart_address += superaddroffset;
-      
+
       MBClo = data;
 
       gbMemMap[0x4] = &(*gbCartridge)[cart_address];
       gbMemMap[0x5] = &(*gbCartridge)[cart_address+0x1000];
       gbMemMap[0x6] = &(*gbCartridge)[cart_address+0x2000];
       gbMemMap[0x7] = &(*gbCartridge)[cart_address+0x3000];
-      
-    //  if(origData == 0x69) {   
+
+    //  if(origData == 0x69) {
 	//    	char buff[100];
 	//		sprintf(buff,"%X %X %X",origData,data,cart_address);
 	//		debug_print(buff);
     //  }
 
-	
-      
+
+
       return;
    }
-   
+
    if(address < 0x4000) // Is it a ROM bank switch?
-   { 
+   {
       data = data&1;
-                 
+
       rom_bank = MBClo|(data<<8);
-         
+
       cart_address = rom_bank<<14;
-    
+
       cart_address &= rom_size_mask[(*gbRom)->ROMsize];
-      
+
       cart_address += superaddroffset;
-      
+
       MBChi = data;
 
       gbMemMap[0x4] = &(*gbCartridge)[cart_address];
       gbMemMap[0x5] = &(*gbCartridge)[cart_address+0x1000];
       gbMemMap[0x6] = &(*gbCartridge)[cart_address+0x2000];
       gbMemMap[0x7] = &(*gbCartridge)[cart_address+0x3000];
-      
+
       return;
    }
-   
-   if(address < 0x6000) // Is it a RAM bank switch?
-   {        
 
-   		// sintaxs not entirely understood addressing thing hi  
-   		
+   if(address < 0x6000) // Is it a RAM bank switch?
+   {
+
+   		// sintaxs not entirely understood addressing thing hi
+
    		// check sintax_mode was not already set; if it was, ignore it (otherwise Metal Max breaks)
    		if (isSintax && sintax_mode ==0 && address >= 0x5000 ) {
-   					
+
    		 switch(0x0F & data) {
    		 	case 0x0D: // old
    		 	case 0x09: // ???
@@ -1358,36 +1397,36 @@ void gb_mbc::writememory_MBC5(register unsigned short address,register byte data
    			break;
    		 }
    		 sintax_mode=data;
-   		 
+
    		 writememory_MBC5(0x2000,01,false,true); // force a fake bank switch
-   		 
+
    		 return;
 
    		}
-   
+
       if((*gbRom)->rumble)
       {
          if(data&0x08)
-            aGB->rumble_counter = 4;
+            *gbRumbleCounter = 4;
          data &= 0x07;
       }
-      
+
       if((*gbRom)->RAMsize <= 2) // no need to change it if there isn't over 8KB ram
          return;
-         
+
       data &= 0x0F;
-         
+
       if(data > maxRAMbank[(*gbRom)->RAMsize])
          data = maxRAMbank[(*gbRom)->RAMsize];
-      
+
       ram_bank = data;
-      
+
       int madr = data<<13;
       gbMemMap[0xA] = &(*gbCartRam)[madr];
       gbMemMap[0xB] = &(*gbCartRam)[madr+0x1000];
-      return;  
+      return;
    }
-   
+
    if(address<0x8000)
    {
    		if ( isSintax && address >= 0x7000 ) {
@@ -1407,28 +1446,28 @@ void gb_mbc::writememory_MBC5(register unsigned short address,register byte data
 					sintax_xor5 = data;
    				break;
    			}
-   			
-   			if (aGB->rom_bank_xor == 0 ) {
+
+   			if (*gbRomBankXor == 0 ) {
    				setXorForBank(4);
    			}
-   	   	    
-   			
+
+
    			return;
-   			
+
    		}
-   	
-   	
-    /*  if(++bc_select == 2 && rom->ROMsize>1) 
+
+
+    /*  if(++bc_select == 2 && rom->ROMsize>1)
       {
          MBChi = (data&0xFF);
 
          cart_address = (MBChi<<1)<<14;
-         
+
          mem_map[0x0] = &cartridge[cart_address];
          mem_map[0x1] = &cartridge[cart_address+0x1000];
          mem_map[0x2] = &cartridge[cart_address+0x2000];
          mem_map[0x3] = &cartridge[cart_address+0x3000];
-         
+
          mem_map[0x4] = &cartridge[cart_address+0x4000];
          mem_map[0x5] = &cartridge[cart_address+0x5000];
          mem_map[0x6] = &cartridge[cart_address+0x6000];
@@ -1436,13 +1475,13 @@ void gb_mbc::writememory_MBC5(register unsigned short address,register byte data
       }*/
       return;
    }
-               
+
  /*  if(address >= 0xA000 && address < 0xC000)
    {
-      if(!RAMenable || !rom->RAMsize)     
+      if(!RAMenable || !rom->RAMsize)
          return;
    }*/
-   
+
    gbMemMap[address>>12][address&0x0FFF] = data;
 }
 
@@ -1455,28 +1494,28 @@ void gb_mbc::writememory_Camera(register unsigned short address,register byte da
    if(address < 0x2000)// Is it a RAM bank enable/disable?
    {
       RAMenable = ( (data&0x0A) == 0x0A ? 1 : 0);
-      return;  
+      return;
    }
-      
+
    if(address < 0x4000) // Is it a ROM bank switch?
-   { 
+   {
       if(data == 0)
          data = 1;
       if(data > maxROMbank[(*gbRom)->ROMsize])
          data = maxROMbank[(*gbRom)->ROMsize];
-         
+
       rom_bank = data;
-         
+
       int cadr = data<<14;
       gbMemMap[0x4] = &(*gbCartridge)[cadr];
       gbMemMap[0x5] = &(*gbCartridge)[cadr+0x1000];
       gbMemMap[0x6] = &(*gbCartridge)[cadr+0x2000];
       gbMemMap[0x7] = &(*gbCartridge)[cadr+0x3000];
-      return; 
+      return;
    }
-   
+
    if(address < 0x6000) // Is it a RAM bank switch?
-   {               
+   {
       if(data == 0x10)
       {
          cameraIO = 1;
@@ -1484,35 +1523,35 @@ void gb_mbc::writememory_Camera(register unsigned short address,register byte da
       }
       else
          cameraIO = 0;
-         
+
       data &= 0x0F;
-         
+
       if(data > maxRAMbank[(*gbRom)->RAMsize])
          data = maxRAMbank[(*gbRom)->RAMsize];
-      
+
       ram_bank = data;
-      
+
       int madr = data<<13;
       gbMemMap[0xA] = &(*gbCartRam)[madr];
       gbMemMap[0xB] = &(*gbCartRam)[madr+0x1000];
-      return;  
+      return;
 
    }
-   
+
    if(address<0x8000)
       return;
-   
+
  /*  if(address >= 0xA000 && address < 0xC000)
    {
       if(!RAMenable)
          return;
    }*/
-   
+
    gbMemMap[address>>12][address&0x0FFF] = data;
 }
 
 void gb_mbc::update_HuC3time()
-{  
+{
    time_t now = time(0);
    time_t diff = now-HuC3_last_time;
    if(diff > 0)
@@ -1527,16 +1566,16 @@ void gb_mbc::update_HuC3time()
       diff /= 60;
 
       HuC3_time += diff % 60;
-      if((HuC3_time&0xFFF) > 1439) 
+      if((HuC3_time&0xFFF) > 1439)
       {
          HuC3_time = (HuC3_time&0xFFFF000)|((HuC3_time&0xFFF)-1440);
          HuC3_time += 0x1000; // day counter ?
       }
-      
+
       diff /= 60;
 
       HuC3_time += (diff % 24)*60;
-      if((HuC3_time&0xFFF) > 1439) 
+      if((HuC3_time&0xFFF) > 1439)
       {
          HuC3_time = (HuC3_time&0xFFFF000)|((HuC3_time&0xFFF)-1440);
          HuC3_time += 0x1000; // day counter ?
@@ -1545,13 +1584,13 @@ void gb_mbc::update_HuC3time()
       diff /= 24;
 
       HuC3_time += (diff<<12);
-      if(((HuC3_time&0xFFF000)>>12) > 356) 
+      if(((HuC3_time&0xFFF000)>>12) > 356)
       {
          HuC3_time = HuC3_time&0xF000FFF;
          HuC3_time += 0x1000000; // year counter ????
       }
    }
-   HuC3_last_time = now;   
+   HuC3_last_time = now;
 }
 
 //-------------------------------------------------------------------------
@@ -1559,19 +1598,19 @@ void gb_mbc::update_HuC3time()
 // for HuC3
 //-------------------------------------------------------------------------
 byte gb_mbc::readmemory_HuC3(register unsigned short address)
-{            
+{
    if(address >= 0xA000 && address < 0xC000)
    {
       if(HuC3_RAMflag >= 0x0b && HuC3_RAMflag < 0x0e)
-      {        
+      {
          if(HuC3_RAMflag == 0x0D)
-            return 1;            
+            return 1;
          return HuC3_RAMvalue;
       }
       if(!(*gbRom)->RAMsize)
          return 0xFF;
    }
-   
+
    return gbMemMap[address>>12][address&0x0FFF];
 }
 
@@ -1585,55 +1624,55 @@ void gb_mbc::writememory_HuC3(register unsigned short address,register byte data
    {
       RAMenable = ( (data&0x0A) == 0x0A ? 1 : 0);
       HuC3_RAMflag = data;
-      return;  
+      return;
    }
-      
+
    if(address < 0x4000) // Is it a ROM bank switch?
-   { 
+   {
       if(data == 0)
          data = 1;
       if(data > maxROMbank[(*gbRom)->ROMsize])
          data = maxROMbank[(*gbRom)->ROMsize];
-         
+
       rom_bank = data;
-         
+
       int cadr = data<<14;
       gbMemMap[0x4] = &(*gbCartridge)[cadr];
       gbMemMap[0x5] = &(*gbCartridge)[cadr+0x1000];
       gbMemMap[0x6] = &(*gbCartridge)[cadr+0x2000];
       gbMemMap[0x7] = &(*gbCartridge)[cadr+0x3000];
-      return; 
+      return;
    }
-   
+
    if(address < 0x6000) // Is it a RAM bank switch?
-   {                        
+   {
       data &= 0x0F;
-         
+
       if(data > maxRAMbank[(*gbRom)->RAMsize])
          data = maxRAMbank[(*gbRom)->RAMsize];
-      
+
       ram_bank = data;
-      
+
       int madr = data<<13;
       gbMemMap[0xA] = &(*gbCartRam)[madr];
       gbMemMap[0xB] = &(*gbCartRam)[madr+0x1000];
-      return;  
+      return;
    }
-   
+
    if(address < 0x8000) // programs will write 1 here
       return;
-   
+
    if(address >= 0xA000 && address < 0xC000)
-   { 
+   {
       if(HuC3_RAMflag < 0x0b || HuC3_RAMflag > 0x0e) // write to RAM
       {
          if(!RAMenable || !(*gbRom)->RAMsize)
             return;
-      } else 
+      } else
       {
          if(HuC3_RAMflag == 0x0B) // send command ?
          {
-            switch(data & 0xf0) 
+            switch(data & 0xf0)
             {
             case 0x10: // read time
                update_HuC3time();
@@ -1645,9 +1684,9 @@ void gb_mbc::writememory_HuC3(register unsigned short address,register byte data
                      HuC3_shift = 0;
                }
             break;
-            case 0x30: // write to registers (minute,day and year(?) counters)    
+            case 0x30: // write to registers (minute,day and year(?) counters)
                // to write time 23:59 program will send commands
-               // 3F 39 35 30 30 30 31 
+               // 3F 39 35 30 30 30 31
                // HuC3_time will then be 59F = 1439 = 23*60+59 minutes
                if(HuC3_flag == HUC3_WRITE)
                {
@@ -1660,13 +1699,13 @@ void gb_mbc::writememory_HuC3(register unsigned short address,register byte data
                      if(HuC3_shift == 24)
                         HuC3_flag = HUC3_READ;
                   }
-               }                          
+               }
             break;
             case 0x40: // special command ?
                switch(data&0x0F)
                {
                case 0x00: //  ?
-                  //HuC3_flag = HUC3_READ; 
+                  //HuC3_flag = HUC3_READ;
                   HuC3_shift = 0;
                break;
                case 0x03: // write time mode ?
@@ -1687,32 +1726,32 @@ void gb_mbc::writememory_HuC3(register unsigned short address,register byte data
                default:
                   //char buffer[100];
                   //sprintf(buffer,"HuC3-command:%x",data);
-                  //debug_print(buffer);                 
+                  //debug_print(buffer);
                break;
-               }                                                                           
+               }
             break;
-            case 0x50: // ?   
+            case 0x50: // ?
             {
-               //HuC3_register[0] = (HuC3_register[0] & 0x0f) | ((data << 4)&0x0f);                                  
+               //HuC3_register[0] = (HuC3_register[0] & 0x0f) | ((data << 4)&0x0f);
             }
-            break; 
-            case 0x60: // ? 
-            {                            
+            break;
+            case 0x60: // ?
+            {
                //HuC3_RAMvalue = 1;
                HuC3_flag = HUC3_READ;
-            }              
-            break; 
+            }
+            break;
             }
          } else if(HuC3_RAMflag == 0x0C) // not used ?
          {
             // ?
          } else if(HuC3_RAMflag == 0x0D) // programs will write 0xFE here
-         {          
+         {
             // maybe a execute command function ?
-         } 
+         }
       }
    }
-   
+
    gbMemMap[address>>12][address&0x0FFF] = data;
 }
 
@@ -1723,10 +1762,10 @@ void gb_mbc::writememory_HuC3(register unsigned short address,register byte data
 void gb_mbc::writememory_MBC7(register unsigned short address,register byte data)
 {
    if(address < 0x2000)
-      return;  
-   
+      return;
+
    if(address < 0x4000) // Is it a ROM bank switch?
-   { 
+   {
       data = data&0x7F;
 
       if(data==0)
@@ -1734,7 +1773,7 @@ void gb_mbc::writememory_MBC7(register unsigned short address,register byte data
 
 
        rom_bank = data;
-         
+
       cart_address = data<<14;
 
       cart_address &= rom_size_mask[(*gbRom)->ROMsize];
@@ -1745,23 +1784,23 @@ void gb_mbc::writememory_MBC7(register unsigned short address,register byte data
        gbMemMap[0x7] = &(*gbCartridge)[cart_address+0x3000];
       return;
    }
-   
+
    if(address < 0x6000) // Is it a RAM bank switch?
-   {               
+   {
       if(data<8)
       {
           RAMenable = 0;
-         
+
          if((*gbRom)->RAMsize <= 2) // no need to change it if there isn't over 8KB ram
             return;
-         
+
          data &= 0x03;
-         
+
          if(data > maxRAMbank[(*gbRom)->RAMsize])
             data = maxRAMbank[(*gbRom)->RAMsize];
 
           ram_bank = data;
-      
+
          int madr = data<<13;
           gbMemMap[0xA] = &(*gbCartRam)[madr];
           gbMemMap[0xB] = &(*gbCartRam)[madr+0x1000];
@@ -1793,8 +1832,8 @@ void gb_mbc::writememory_MBC7(register unsigned short address,register byte data
             {
                if(MBC7_writeEnable)
                {
-                   aGB->memory[0xa000+MBC7_address*2] = MBC7_buffer>>8;
-                   aGB->memory[0xa000+MBC7_address*2+1] = MBC7_buffer&0xff;
+                   (*gbMemory)[0xa000+MBC7_address*2] = MBC7_buffer>>8;
+                   (*gbMemory)[0xa000+MBC7_address*2+1] = MBC7_buffer&0xff;
                }
                 MBC7_state = 0;
                 MBC7_value = 1;
@@ -1877,8 +1916,8 @@ void gb_mbc::writememory_MBC7(register unsigned short address,register byte data
                           {
                              for(int i=0;i<256;i++) 
                              {
-                                 aGB->memory[0xa000+i*2] = MBC7_buffer >> 8;
-                                 aGB->memory[0xa000+i*2+1] = MBC7_buffer & 0xff;
+                                 (*gbMemory)[0xa000+i*2] = MBC7_buffer >> 8;
+                                 (*gbMemory)[0xa000+i*2+1] = MBC7_buffer & 0xff;
                              }
                           }
                           MBC7_state = 5;
@@ -1887,7 +1926,7 @@ void gb_mbc::writememory_MBC7(register unsigned short address,register byte data
                           if(MBC7_writeEnable)
                           {
                              for(int i=0;i<256;i++)
-                                *((unsigned short *)&(aGB->memory)[0xa000+i*2]) = 0xffff;
+                                *((unsigned short *)&((*gbMemory))[0xa000+i*2]) = 0xffff;
                           }
                           MBC7_state = 5;
                        } else if((MBC7_address>>6) == 3)
@@ -1911,7 +1950,7 @@ void gb_mbc::writememory_MBC7(register unsigned short address,register byte data
                     {
                        MBC7_state = 4;
                        MBC7_count = 0;
-                       MBC7_buffer = (aGB->memory[0xa000+MBC7_address*2]<<8)|(aGB->memory[0xa000+MBC7_address*2+1]);
+                       MBC7_buffer = ((*gbMemory)[0xa000+MBC7_address*2]<<8)|((*gbMemory)[0xa000+MBC7_address*2+1]);
                     }
                  break;
                  case 3:
@@ -2087,7 +2126,7 @@ byte gb_mbc::readmemory_TAMA5(register unsigned short address)
                } 
             } else
             { // read memory ?
-               read = aGB->memory[0xA000|(tama_val6<<4)|tama_val7];
+               read = (*gbMemory)[0xA000|(tama_val6<<4)|tama_val7];
             } 
             return read;
          }   
@@ -2227,7 +2266,7 @@ void gb_mbc::writememory_TAMA5(register unsigned short address,register byte dat
             if(tama_count==2 && data == 1) tama_change_clock |= 1;
             if(tama_change_clock == 3) rtc.last_time = time(0);
 
-             aGB->memory[0xA000+(tama_val6<<4)+tama_val7] = tama_val4|(data<<4);
+             (*gbMemory)[0xA000+(tama_val6<<4)+tama_val7] = tama_val4|(data<<4);
             
             //which time counter is changed?
             if(tama_count==6 && tama_change_clock==3)
@@ -2282,4 +2321,152 @@ void gb_mbc::writememory_TAMA5(register unsigned short address,register byte dat
    } 
 
     gbMemMap[address>>12][address&0x0FFF] = data;
+}
+
+void gb_mbc::writeMoreTama5VarsToStateFile(FILE *statefile) {
+    fwrite(&(rtc).s, sizeof(int), 1, statefile);
+    fwrite(&(rtc).m, sizeof(int), 1, statefile);
+    fwrite(&(rtc).h, sizeof(int), 1, statefile);
+    fwrite(&(rtc).d, sizeof(int), 1, statefile);
+    fwrite(&(rtc).control, sizeof(int), 1, statefile);
+    fwrite(&(rtc).last_time, sizeof(time_t), 1, statefile);
+
+    fwrite(&(tama_time), sizeof(byte), 1, statefile);
+    fwrite(&(tama_val6), sizeof(int), 1, statefile);
+    fwrite(&(tama_val7), sizeof(int), 1, statefile);
+    fwrite(&(tama_val4), sizeof(int), 1, statefile);
+    fwrite(&(tama_val5), sizeof(int), 1, statefile);
+    fwrite(&(tama_count), sizeof(int), 1, statefile);
+    fwrite(&(tama_month), sizeof(int), 1, statefile);
+    fwrite(&(tama_change_clock), sizeof(int), 1, statefile);
+}
+
+void gb_mbc::writeTama5VarsToStateFile(FILE *statefile) { fwrite(&(tama_flag), sizeof(int), 1, statefile); }
+
+void gb_mbc::writeMbc7VarsToStateFile(FILE *statefile) {
+    fwrite(&(MBC7_cs), sizeof(int), 1, statefile);
+    fwrite(&(MBC7_sk), sizeof(int), 1, statefile);
+    fwrite(&(MBC7_state), sizeof(int), 1, statefile);
+    fwrite(&(MBC7_buffer), sizeof(int), 1, statefile);
+    fwrite(&(MBC7_idle), sizeof(int), 1, statefile);
+    fwrite(&(MBC7_count), sizeof(int), 1, statefile);
+    fwrite(&(MBC7_code), sizeof(int), 1, statefile);
+    fwrite(&(MBC7_address), sizeof(int), 1, statefile);
+    fwrite(&(MBC7_writeEnable), sizeof(int), 1, statefile);
+    fwrite(&(MBC7_value), sizeof(int), 1, statefile);
+    fwrite(&sensorX,sizeof(int),1,statefile);
+    fwrite(&sensorY,sizeof(int),1,statefile);
+}
+
+void gb_mbc::writeHuc3VarsToStateFile(FILE *statefile) {
+    fwrite(&(HuC3_time), sizeof(unsigned int), 1, statefile);
+    fwrite(&(HuC3_last_time), sizeof(time_t), 1, statefile);
+    fwrite(&(rtc).s, sizeof(int), 1, statefile);
+
+    //fwrite(HuC3_register,sizeof(int),8,statefile);
+    fwrite(&(HuC3_RAMvalue), sizeof(int), 1, statefile);
+    //fwrite(&HuC3_address,sizeof(int),1,statefile);
+    fwrite(&(HuC3_RAMflag), sizeof(int), 1, statefile);
+}
+
+void gb_mbc::writeRtcVarsToStateFile(FILE *statefile) {
+    fwrite(&(rtc).s, sizeof(int), 1, statefile);
+    fwrite(&(rtc).m, sizeof(int), 1, statefile);
+    fwrite(&(rtc).h, sizeof(int), 1, statefile);
+    fwrite(&(rtc).d, sizeof(int), 1, statefile);
+    fwrite(&(rtc).control, sizeof(int), 1, statefile);
+    fwrite(&(rtc).last_time, sizeof(time_t), 1, statefile);
+
+    fwrite(&(rtc_latch).s, sizeof(int), 1, statefile);
+    fwrite(&(rtc_latch).m, sizeof(int), 1, statefile);
+    fwrite(&(rtc_latch).h, sizeof(int), 1, statefile);
+    fwrite(&(rtc_latch).d, sizeof(int), 1, statefile);
+    fwrite(&(rtc_latch).control, sizeof(int), 1, statefile);
+    fwrite(&(rtc_latch).last_time, sizeof(time_t), 1, statefile);
+}
+
+void gb_mbc::writeMbcOtherStuffToStateFile(FILE *statefile) {
+    fwrite(&(MBC1memorymodel), sizeof(int), 1, statefile);
+    fwrite(&(RAMenable), sizeof(int), 1, statefile);
+    fwrite(&(MBChi), sizeof(unsigned int), 1, statefile);
+    fwrite(&(MBClo), sizeof(unsigned int), 1, statefile);
+}
+
+void gb_mbc::writeMbcBanksToStateFile(FILE *statefile) {
+    fwrite(&(rom_bank), sizeof(int), 1, statefile);
+    fwrite(&(ram_bank), sizeof(int), 1, statefile);
+}
+
+void gb_mbc::readMbcMoreCrapFromStateFile(FILE *statefile) {
+    fread(&(MBC1memorymodel), sizeof(int), 1, statefile);
+    fread(&(RAMenable), sizeof(int), 1, statefile);
+    fread(&(MBChi), sizeof(unsigned int), 1, statefile);
+    fread(&(MBClo), sizeof(unsigned int), 1, statefile);
+}
+
+void gb_mbc::readMbcBanksFromStateFile(FILE *statefile) {
+    fread(&(rom_bank), sizeof(int), 1, statefile);
+    fread(&(ram_bank), sizeof(int), 1, statefile);
+}
+
+void gb_mbc::readMoreTama5VarsFromStateFile(FILE *statefile) {
+    fread(&(rtc).s, sizeof(int), 1, statefile);
+    fread(&(rtc).m, sizeof(int), 1, statefile);
+    fread(&(rtc).h, sizeof(int), 1, statefile);
+    fread(&(rtc).d, sizeof(int), 1, statefile);
+    fread(&(rtc).control, sizeof(int), 1, statefile);
+    fread(&(rtc).last_time, sizeof(time_t), 1, statefile);
+
+    fread(&(tama_time), sizeof(byte), 1, statefile);
+    fread(&(tama_val6), sizeof(int), 1, statefile);
+    fread(&(tama_val7), sizeof(int), 1, statefile);
+    fread(&(tama_val4), sizeof(int), 1, statefile);
+    fread(&(tama_val5), sizeof(int), 1, statefile);
+    fread(&(tama_count), sizeof(int), 1, statefile);
+    fread(&(tama_month), sizeof(int), 1, statefile);
+    fread(&(tama_change_clock), sizeof(int), 1, statefile);
+}
+
+void gb_mbc::readTama5VarsFromStateFile(FILE *statefile) { fread(&(tama_flag), sizeof(int), 1, statefile); }
+
+void gb_mbc::readMbc7VarsFromStateFile(FILE *statefile) {
+    fread(&(MBC7_cs), sizeof(int), 1, statefile);
+    fread(&(MBC7_sk), sizeof(int), 1, statefile);
+    fread(&(MBC7_state), sizeof(int), 1, statefile);
+    fread(&(MBC7_buffer), sizeof(int), 1, statefile);
+    fread(&(MBC7_idle), sizeof(int), 1, statefile);
+    fread(&(MBC7_count), sizeof(int), 1, statefile);
+    fread(&(MBC7_code), sizeof(int), 1, statefile);
+    fread(&(MBC7_address), sizeof(int), 1, statefile);
+    fread(&(MBC7_writeEnable), sizeof(int), 1, statefile);
+    fread(&(MBC7_value), sizeof(int), 1, statefile);
+    fread(&sensorX,sizeof(int),1,statefile);
+    fread(&sensorY,sizeof(int),1,statefile);
+}
+
+void gb_mbc::readHuc3VarsFromStateFile(FILE *statefile) {
+    fread(&(HuC3_time), sizeof(unsigned int), 1, statefile);
+    fread(&(HuC3_last_time), sizeof(time_t), 1, statefile);
+    fread(&(rtc).s, sizeof(int), 1, statefile);
+
+    //fread(HuC3_register,sizeof(int),8,statefile);
+    fread(&(HuC3_RAMvalue), sizeof(int), 1, statefile);
+    //fread(&HuC3_address,sizeof(int),1,statefile);
+    fread(&(HuC3_RAMflag), sizeof(int), 1, statefile);
+}
+
+void gb_mbc::readRtcVarsFromStateFile(FILE *statefile) {
+    fread(&(rtc).s, sizeof(int), 1, statefile);
+    fread(&(rtc).m, sizeof(int), 1, statefile);
+    fread(&(rtc).h, sizeof(int), 1, statefile);
+    fread(&(rtc).d, sizeof(int), 1, statefile);
+    fread(&(rtc).control, sizeof(int), 1, statefile);
+    fread(&(rtc).last_time, sizeof(time_t), 1, statefile);
+
+    fread(&(rtc_latch).s, sizeof(int), 1, statefile);
+    fread(&(rtc_latch).m, sizeof(int), 1, statefile);
+    fread(&(rtc_latch).h, sizeof(int), 1, statefile);
+    fread(&(rtc_latch).d, sizeof(int), 1, statefile);
+    fread(&(rtc_latch).control, sizeof(int), 1, statefile);
+    fread(&(rtc_latch).last_time, sizeof(time_t), 1, statefile);
 }

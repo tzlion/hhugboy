@@ -4,8 +4,6 @@
 #ifndef HHUGBOY_GB_MBC_H_H
 #define HHUGBOY_GB_MBC_H_H
 
-class gb_system;
-
 enum memoryaccess
 {
     MEMORY_DEFAULT = 0,
@@ -37,12 +35,7 @@ enum
 class gb_mbc {
 
 public:
-    gb_mbc(gb_system* inGB, byte** gbMemMap, byte** gbSuperCart, GBrom** gbRom, byte** gbCartRam);
-
-    byte** gbMemMap;
-    GBrom** gbRom;
-    byte** gbCartRam;
-    byte** gbCartridge;
+    gb_mbc(byte** gbMemMap, byte** gbCartridge, GBrom** gbRom, byte** gbCartRam, byte* romBankXor, int* rumbleCounter, byte** gbMemory);
 
     int HuC3_register[8];
     int HuC3_RAMvalue;
@@ -103,16 +96,39 @@ public:
 
     int cameraIO;
 
-    int rumble_counter;
+    byte readmemory_cart(register unsigned short address);
+    void writememory_cart(unsigned short address,register byte data);
+    void memory_variables_reset();
+
+    void readRtcVarsFromStateFile(FILE *statefile);
+    void readHuc3VarsFromStateFile(FILE *statefile);
+    void readMbc7VarsFromStateFile(FILE *statefile);
+    void readTama5VarsFromStateFile(FILE *statefile);
+    void readMoreTama5VarsFromStateFile(FILE *statefile);
+    void readMbcBanksFromStateFile(FILE *statefile);
+    void readMbcMoreCrapFromStateFile(FILE *statefile);
+    void writeMbcBanksToStateFile(FILE *statefile);
+    void writeMbcOtherStuffToStateFile(FILE *statefile);
+    void writeRtcVarsToStateFile(FILE *statefile);
+    void writeHuc3VarsToStateFile(FILE *statefile);
+    void writeMbc7VarsToStateFile(FILE *statefile);
+    void writeTama5VarsToStateFile(FILE *statefile);
+    void writeMoreTama5VarsToStateFile(FILE *statefile);
+
+private:
+
+    byte** gbMemMap;
+    GBrom** gbRom;
+    byte** gbCartRam;
+    byte** gbCartridge;
+    byte* gbRomBankXor;
+    int* gbRumbleCounter;
+    byte** gbMemory;
 
     void rtc_update();
     void update_HuC3time();
     void update_tama_RTC();
 
-    byte readmemory_cart(register unsigned short address);
-    void writememory_cart(unsigned short address,register byte data);
-
-//private:
     // MBC R/W methods
     byte readmemory_default(register unsigned short address);
     byte readmemory_MBC3(register unsigned short address);
@@ -138,8 +154,6 @@ public:
     void writememory_poke(register unsigned short address,register byte data);
     void setXorForBank(byte bankNo);
 
-private:
-    gb_system* aGB;
 };
 
 #endif //HHUGBOY_GB_MBC_H_H

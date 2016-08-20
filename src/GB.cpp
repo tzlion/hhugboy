@@ -39,7 +39,7 @@
 int gb_system::gfx_bit_count = 16;
 
 gb_system::gb_system():
-        mbc(new gb_mbc(this,mem_map,&cartridge,&rom,&cartRAM)),
+        mbc(new gb_mbc(mem_map,&cartridge,&rom,&cartRAM,&rom_bank_xor,&rumble_counter,&memory)),
         frames(0),
         LCD_clear_needed(false),
         skip_frame(0),
@@ -430,7 +430,7 @@ void gb_system::reset(bool change_mode, bool mini)
 
    sound_reset();
 
-   memory_variables_reset();
+   mbc->memory_variables_reset();
 
    reset_devices();
 
