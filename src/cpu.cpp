@@ -514,7 +514,7 @@ bool gb_system::load_state()
 
     mbc->readNewerCartSpecificVarsFromStateFile(statefile);
 
-    int cadr = mbc->rom_bank<<14;
+    int cadr = (mbc->getRomBank())<<14;
    mem_map[0x4] = &cartridge[cadr];
    mem_map[0x5] = &cartridge[cadr+0x1000];
    mem_map[0x6] = &cartridge[cadr+0x2000];
@@ -522,7 +522,7 @@ bool gb_system::load_state()
    
    if(rom->RAMsize > 2)
    {
-      int madr = mbc->ram_bank<<13;
+      int madr = (mbc->getRamBank())<<13;
       mem_map[0xA] = &cartRAM[madr];
       mem_map[0xB] = &cartRAM[madr+0x1000];          
    }

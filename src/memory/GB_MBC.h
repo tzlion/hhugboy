@@ -37,19 +37,16 @@ class gb_mbc {
 public:
     gb_mbc(byte** gbMemMap, byte** gbCartridge, GBrom** gbRom, byte** gbCartRam, byte* romBankXor, int* rumbleCounter, byte** gbMemory);
 
-    memoryaccess memory_read;
-    memoryaccess memory_write;
+    void setMemoryRead(memoryaccess memory_read);
+    void setMemoryWrite(memoryaccess memory_write);
 
-    int rom_bank;
-    int ram_bank;
-    unsigned short MBChi;
-    unsigned short MBClo; // Used by cpucore but only for debug msgs so eh
-
-    int superaddroffset;
+    int getRomBank();
+    int getRamBank();
 
     byte readmemory_cart(register unsigned short address);
     void writememory_cart(unsigned short address,register byte data);
     void resetMbcVariables();
+    void resetRomMemoryMap(bool resetOffset);
 
     void writeMbcSpecificStuffToSaveFile(FILE *savefile);
     void readMbcSpecificStuffFromSaveFile(FILE *savefile);
@@ -74,6 +71,15 @@ private:
     int* gbRumbleCounter;
     byte** gbMemory;
 
+    memoryaccess memory_read;
+    memoryaccess memory_write;
+
+    int rom_bank;
+    int ram_bank;
+
+    unsigned short MBChi;
+    unsigned short MBClo;
+
     int MBC1memorymodel;
     int RAMenable;
 
@@ -93,6 +99,8 @@ private:
     byte sintax_xor3;
     byte sintax_xor4;
     byte sintax_xor5;
+
+    int superaddroffset;
 
     int HuC3_register[8];
     int HuC3_RAMvalue;

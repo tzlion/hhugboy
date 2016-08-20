@@ -90,18 +90,8 @@ void gb_system::mem_reset(bool mini)
 
    rom_bank_xor = 0;
 
-   if ( !mini ) {
-      mbc->superaddroffset = 0; // Comment this out for in-emu resets to reset the one game, which makes it work. pfft
-   }
-
-    mem_map[0x0] = &cartridge[mbc->superaddroffset+0x0000];
-    mem_map[0x1] = &cartridge[mbc->superaddroffset+0x1000];
-    mem_map[0x2] = &cartridge[mbc->superaddroffset+0x2000];
-    mem_map[0x3] = &cartridge[mbc->superaddroffset+0x3000];
-    mem_map[0x4] = &cartridge[mbc->superaddroffset+0x4000];
-    mem_map[0x5] = &cartridge[mbc->superaddroffset+0x5000];
-    mem_map[0x6] = &cartridge[mbc->superaddroffset+0x6000];
-    mem_map[0x7] = &cartridge[mbc->superaddroffset+0x7000];
+    // Always pass in false for in-emu resets to reset the one game, which makes it work. pfft
+    mbc->resetRomMemoryMap(!mini);
 
    if(gbc_mode)
    {

@@ -2579,3 +2579,33 @@ void gb_mbc::readRtcVarsFromStateFile(FILE *statefile) {
     fread(&(rtc_latch).control, sizeof(int), 1, statefile);
     fread(&(rtc_latch).last_time, sizeof(time_t), 1, statefile);
 }
+
+void gb_mbc::resetRomMemoryMap(bool resetOffset=false) {
+    if ( resetOffset ) {
+        superaddroffset = 0;
+    }
+    gbMemMap[0x0] = &(*gbCartridge)[superaddroffset+0x0000];
+    gbMemMap[0x1] = &(*gbCartridge)[superaddroffset+0x1000];
+    gbMemMap[0x2] = &(*gbCartridge)[superaddroffset+0x2000];
+    gbMemMap[0x3] = &(*gbCartridge)[superaddroffset+0x3000];
+    gbMemMap[0x4] = &(*gbCartridge)[superaddroffset+0x4000];
+    gbMemMap[0x5] = &(*gbCartridge)[superaddroffset+0x5000];
+    gbMemMap[0x6] = &(*gbCartridge)[superaddroffset+0x6000];
+    gbMemMap[0x7] = &(*gbCartridge)[superaddroffset+0x7000];
+}
+
+int gb_mbc::getRomBank() {
+    return rom_bank;
+}
+
+int gb_mbc::getRamBank() {
+    return ram_bank;
+}
+
+void gb_mbc::setMemoryRead(memoryaccess memory_read) {
+    gb_mbc::memory_read = memory_read;
+}
+
+void gb_mbc::setMemoryWrite(memoryaccess memory_write) {
+    gb_mbc::memory_write = memory_write;
+}
