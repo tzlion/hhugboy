@@ -37,7 +37,12 @@ enum
 class gb_mbc {
 
 public:
-    gb_mbc(gb_system* inGB);
+    gb_mbc(gb_system* inGB, byte** gbMemMap, byte** gbCartridge, GBrom* gbRom, byte* gbCartRam);
+
+    byte** gbMemMap;
+    byte** gbCartridge;
+    GBrom* gbRom;
+    byte* gbCartRam;
 
     int HuC3_register[8];
     int HuC3_RAMvalue;

@@ -69,7 +69,7 @@ unsigned int cart_address = 0;
 // todo so there are much fewer things needed from the GB now
 // maybe itd be nice if this just takes in references to those things rather than the entire GB
 // Eventually GB should contain cart and cart should contain MBC
-gb_mbc::gb_mbc(gb_system* inGB):
+gb_mbc::gb_mbc(gb_system* inGB, byte** gbMemMap, byte** gbCartridge, GBrom* gbRom, byte* gbCartRam):
         HuC3_RAMvalue(0),
         HuC3_RAMaddress(0),
         HuC3_address(0),
@@ -123,6 +123,10 @@ gb_mbc::gb_mbc(gb_system* inGB):
 
 {
     aGB = inGB;
+    this->gbMemMap = gbMemMap;
+    this->gbCartridge = gbCartridge;
+    this->gbRom = gbRom;
+    this->gbCartRam = gbCartRam;
 }
 
 byte gb_mbc::readmemory_cart(register unsigned short address) {
@@ -147,6 +151,7 @@ byte gb_mbc::readmemory_cart(register unsigned short address) {
 }
 
 void gb_mbc::writememory_cart(unsigned short address, register byte data) {
+    gbCartridge = &(aGB->cartridge);
     switch(memory_write)
     {
         case MEMORY_MBC1:
@@ -268,7 +273,7 @@ byte gb_mbc::readmemory_default(register unsigned short address)
     mem_map[0x6] = &cartridge[superaddroffset+0x6000];
     mem_map[0x7] = &cartridge[superaddroffset+0x7000];    */
 
-   return aGB->mem_map[address>>12][address&0x0FFF];
+   return gbMemMap[address>>12][address&0x0FFF];
 }
 
 //-------------------------------------------------------------------------
@@ -280,7 +285,7 @@ byte gb_mbc::readmemory_sintax(register unsigned short address)
 
    if(address >= 0x4000 && address < 0x8000)
    {
-   	byte data = aGB->mem_map[address>>12][address&0x0FFF];
+   	byte data = gbMemMap[address>>12][address&0x0FFF];
 
    	
    	//char buff[100];
@@ -290,7 +295,7 @@ byte gb_mbc::readmemory_sintax(register unsigned short address)
      return  data ^ aGB->rom_bank_xor;
    }
 
-   return aGB->mem_map[address>>12][address&0x0FFF];
+   return gbMemMap[address>>12][address&0x0FFF];
 }
 
 
@@ -322,7 +327,7 @@ byte gb_mbc::readmemory_MBC3(register unsigned short address)
       //   return 0xFF; 
    }
 
-   return aGB->mem_map[address>>12][address&0x0FFF];
+   return gbMemMap[address>>12][address&0x0FFF];
 }
 
 //-------------------------------------------------------------------------
@@ -342,7 +347,7 @@ byte gb_mbc::readmemory_Camera(register unsigned short address)
       }
    }
    
-   return aGB->mem_map[address>>12][address&0x0FFF];
+   return gbMemMap[address>>12][address&0x0FFF];
 }
       
 //-------------------------------------------------------------------------
@@ -369,10 +374,10 @@ void gb_mbc::writememory_default(register unsigned short address,register byte d
          rom_bank = data;
          
          int cadr = (data<<14)+((MBChi<<1)<<14);
-         aGB->mem_map[0x4] = &(aGB->cartridge)[cadr];
-         aGB->mem_map[0x5] = &(aGB->cartridge)[cadr+0x1000];
-         aGB->mem_map[0x6] = &(aGB->cartridge)[cadr+0x2000];
-         aGB->mem_map[0x7] = &(aGB->cartridge)[cadr+0x3000];
+         gbMemMap[0x4] = &(aGB->cartridge)[cadr];
+         gbMemMap[0x5] = &(aGB->cartridge)[cadr+0x1000];
+         gbMemMap[0x6] = &(aGB->cartridge)[cadr+0x2000];
+         gbMemMap[0x7] = &(aGB->cartridge)[cadr+0x3000];
          return; 
       }
    }
@@ -384,8 +389,8 @@ void gb_mbc::writememory_default(register unsigned short address,register byte d
       ram_bank = data;
       
       int madr = data<<13;
-      aGB->mem_map[0xA] = &(aGB->cartRAM)[madr];
-      aGB->mem_map[0xB] = &(aGB->cartRAM)[madr+0x1000];
+      gbMemMap[0xA] = &(aGB->cartRAM)[madr];
+      gbMemMap[0xB] = &(aGB->cartRAM)[madr+0x1000];
       return;  
    } 
    
@@ -397,22 +402,22 @@ void gb_mbc::writememory_default(register unsigned short address,register byte d
 
          cart_address = (MBChi<<1)<<14;
          
-         aGB->mem_map[0x0] = &(aGB->cartridge)[cart_address];
-         aGB->mem_map[0x1] = &(aGB->cartridge)[cart_address+0x1000];
-         aGB->mem_map[0x2] = &(aGB->cartridge)[cart_address+0x2000];
-         aGB->mem_map[0x3] = &(aGB->cartridge)[cart_address+0x3000];
+         gbMemMap[0x0] = &(aGB->cartridge)[cart_address];
+         gbMemMap[0x1] = &(aGB->cartridge)[cart_address+0x1000];
+         gbMemMap[0x2] = &(aGB->cartridge)[cart_address+0x2000];
+         gbMemMap[0x3] = &(aGB->cartridge)[cart_address+0x3000];
          
-         aGB->mem_map[0x4] = &(aGB->cartridge)[cart_address+0x4000];
-         aGB->mem_map[0x5] = &(aGB->cartridge)[cart_address+0x5000];
-         aGB->mem_map[0x6] = &(aGB->cartridge)[cart_address+0x6000];
-         aGB->mem_map[0x7] = &(aGB->cartridge)[cart_address+0x7000];
+         gbMemMap[0x4] = &(aGB->cartridge)[cart_address+0x4000];
+         gbMemMap[0x5] = &(aGB->cartridge)[cart_address+0x5000];
+         gbMemMap[0x6] = &(aGB->cartridge)[cart_address+0x6000];
+         gbMemMap[0x7] = &(aGB->cartridge)[cart_address+0x7000];
       }
       return;      
    }
 
    // Always allow RAM writes.
    
-   aGB->mem_map[address>>12][address&0x0FFF] = data;
+   gbMemMap[address>>12][address&0x0FFF] = data;
 }
 
 //-------------------------------------------------------------------------
@@ -434,10 +439,10 @@ void gb_mbc::writememory_8in1(register unsigned short address,register byte data
          
       int cadr = (data<<14)+(MBChi<<14);
       cadr &= rom_size_mask[aGB->rom->ROMsize];
-      aGB->mem_map[0x4] = &(aGB->cartridge)[cadr];
-      aGB->mem_map[0x5] = &(aGB->cartridge)[cadr+0x1000];
-      aGB->mem_map[0x6] = &(aGB->cartridge)[cadr+0x2000];
-      aGB->mem_map[0x7] = &(aGB->cartridge)[cadr+0x3000];
+      gbMemMap[0x4] = &(aGB->cartridge)[cadr];
+      gbMemMap[0x5] = &(aGB->cartridge)[cadr+0x1000];
+      gbMemMap[0x6] = &(aGB->cartridge)[cadr+0x2000];
+      gbMemMap[0x7] = &(aGB->cartridge)[cadr+0x3000];
       return; 
    }
       
@@ -452,15 +457,15 @@ void gb_mbc::writememory_8in1(register unsigned short address,register byte data
          MBChi = (data&0x1f);
 
          cart_address = MBChi<<14;
-         aGB->mem_map[0x0] = &(aGB->cartridge)[cart_address];
-         aGB->mem_map[0x1] = &(aGB->cartridge)[cart_address+0x1000];
-         aGB->mem_map[0x2] = &(aGB->cartridge)[cart_address+0x2000];
-         aGB->mem_map[0x3] = &(aGB->cartridge)[cart_address+0x3000];
+         gbMemMap[0x0] = &(aGB->cartridge)[cart_address];
+         gbMemMap[0x1] = &(aGB->cartridge)[cart_address+0x1000];
+         gbMemMap[0x2] = &(aGB->cartridge)[cart_address+0x2000];
+         gbMemMap[0x3] = &(aGB->cartridge)[cart_address+0x3000];
          
-         aGB->mem_map[0x4] = &(aGB->cartridge)[cart_address+0x4000];
-         aGB->mem_map[0x5] = &(aGB->cartridge)[cart_address+0x5000];
-         aGB->mem_map[0x6] = &(aGB->cartridge)[cart_address+0x6000];
-         aGB->mem_map[0x7] = &(aGB->cartridge)[cart_address+0x7000];
+         gbMemMap[0x4] = &(aGB->cartridge)[cart_address+0x4000];
+         gbMemMap[0x5] = &(aGB->cartridge)[cart_address+0x5000];
+         gbMemMap[0x6] = &(aGB->cartridge)[cart_address+0x6000];
+         gbMemMap[0x7] = &(aGB->cartridge)[cart_address+0x7000];
          return;      
       }    
 
@@ -469,8 +474,8 @@ void gb_mbc::writememory_8in1(register unsigned short address,register byte data
       ram_bank = data;
       
       int madr = data<<13;
-      aGB->mem_map[0xA] = &(aGB->cartRAM)[madr];
-      aGB->mem_map[0xB] = &(aGB->cartRAM)[madr+0x1000];
+      gbMemMap[0xA] = &(aGB->cartRAM)[madr];
+      gbMemMap[0xB] = &(aGB->cartRAM)[madr+0x1000];
       return;  
    } 
    
@@ -479,7 +484,7 @@ void gb_mbc::writememory_8in1(register unsigned short address,register byte data
 
    // Always allow RAM writes.
 
-   aGB->mem_map[address>>12][address&0x0FFF] = data;
+   gbMemMap[address>>12][address&0x0FFF] = data;
 }
 
 //-------------------------------------------------------------------------
@@ -510,10 +515,10 @@ void gb_mbc::writememory_MBC1(register unsigned short address,register byte data
          
          cart_address &= rom_size_mask[aGB->rom->ROMsize];
 
-         aGB->mem_map[0x4] = &(aGB->cartridge)[cart_address];
-         aGB->mem_map[0x5] = &(aGB->cartridge)[cart_address+0x1000];
-         aGB->mem_map[0x6] = &(aGB->cartridge)[cart_address+0x2000];
-         aGB->mem_map[0x7] = &(aGB->cartridge)[cart_address+0x3000];
+         gbMemMap[0x4] = &(aGB->cartridge)[cart_address];
+         gbMemMap[0x5] = &(aGB->cartridge)[cart_address+0x1000];
+         gbMemMap[0x6] = &(aGB->cartridge)[cart_address+0x2000];
+         gbMemMap[0x7] = &(aGB->cartridge)[cart_address+0x3000];
       } else 
       {
          if(data == 0)
@@ -525,10 +530,10 @@ void gb_mbc::writememory_MBC1(register unsigned short address,register byte data
          
          cadr &= rom_size_mask[aGB->rom->ROMsize];
          
-         aGB->mem_map[0x4] = &(aGB->cartridge)[cadr];
-         aGB->mem_map[0x5] = &(aGB->cartridge)[cadr+0x1000];
-         aGB->mem_map[0x6] = &(aGB->cartridge)[cadr+0x2000];
-         aGB->mem_map[0x7] = &(aGB->cartridge)[cadr+0x3000];
+         gbMemMap[0x4] = &(aGB->cartridge)[cadr];
+         gbMemMap[0x5] = &(aGB->cartridge)[cadr+0x1000];
+         gbMemMap[0x6] = &(aGB->cartridge)[cadr+0x2000];
+         gbMemMap[0x7] = &(aGB->cartridge)[cadr+0x3000];
       }
       return;
    }
@@ -549,10 +554,10 @@ void gb_mbc::writememory_MBC1(register unsigned short address,register byte data
          
          cart_address &= rom_size_mask[aGB->rom->ROMsize];
 
-         aGB->mem_map[0x4] = &(aGB->cartridge)[cart_address];
-         aGB->mem_map[0x5] = &(aGB->cartridge)[cart_address+0x1000];
-         aGB->mem_map[0x6] = &(aGB->cartridge)[cart_address+0x2000];
-         aGB->mem_map[0x7] = &(aGB->cartridge)[cart_address+0x3000];
+         gbMemMap[0x4] = &(aGB->cartridge)[cart_address];
+         gbMemMap[0x5] = &(aGB->cartridge)[cart_address+0x1000];
+         gbMemMap[0x6] = &(aGB->cartridge)[cart_address+0x2000];
+         gbMemMap[0x7] = &(aGB->cartridge)[cart_address+0x3000];
          return;
       }
 
@@ -567,8 +572,8 @@ void gb_mbc::writememory_MBC1(register unsigned short address,register byte data
       ram_bank = data;
       
       int madr = data<<13;
-      aGB->mem_map[0xA] = &(aGB->cartRAM)[madr];
-      aGB->mem_map[0xB] = &(aGB->cartRAM)[madr+0x1000];
+      gbMemMap[0xA] = &(aGB->cartRAM)[madr];
+      gbMemMap[0xB] = &(aGB->cartRAM)[madr+0x1000];
       return;  
    }
    
@@ -584,7 +589,7 @@ void gb_mbc::writememory_MBC1(register unsigned short address,register byte data
          return;
    }*/
 
-   aGB->mem_map[address>>12][address&0x0FFF] = data;
+   gbMemMap[address>>12][address&0x0FFF] = data;
 }
 
 //-------------------------------------------------------------------------
@@ -609,10 +614,10 @@ void gb_mbc::writememory_MMM01(register unsigned short address,register byte dat
          
       cadr &= rom_size_mask[aGB->rom->ROMsize];
          
-      aGB->mem_map[0x4] = &(aGB->cartridge)[cadr];
-      aGB->mem_map[0x5] = &(aGB->cartridge)[cadr+0x1000];
-      aGB->mem_map[0x6] = &(aGB->cartridge)[cadr+0x2000];
-      aGB->mem_map[0x7] = &(aGB->cartridge)[cadr+0x3000];
+      gbMemMap[0x4] = &(aGB->cartridge)[cadr];
+      gbMemMap[0x5] = &(aGB->cartridge)[cadr+0x1000];
+      gbMemMap[0x6] = &(aGB->cartridge)[cadr+0x2000];
+      gbMemMap[0x7] = &(aGB->cartridge)[cadr+0x3000];
       return;
    }
    
@@ -628,15 +633,15 @@ void gb_mbc::writememory_MMM01(register unsigned short address,register byte dat
          MBChi = data;
          cart_address = MBChi<<14;
          
-         aGB->mem_map[0x0] = &(aGB->cartridge)[cart_address];
-         aGB->mem_map[0x1] = &(aGB->cartridge)[cart_address+0x1000];
-         aGB->mem_map[0x2] = &(aGB->cartridge)[cart_address+0x2000];
-         aGB->mem_map[0x3] = &(aGB->cartridge)[cart_address+0x3000];
+         gbMemMap[0x0] = &(aGB->cartridge)[cart_address];
+         gbMemMap[0x1] = &(aGB->cartridge)[cart_address+0x1000];
+         gbMemMap[0x2] = &(aGB->cartridge)[cart_address+0x2000];
+         gbMemMap[0x3] = &(aGB->cartridge)[cart_address+0x3000];
          
-         aGB->mem_map[0x4] = &(aGB->cartridge)[cart_address+0x4000];
-         aGB->mem_map[0x5] = &(aGB->cartridge)[cart_address+0x5000];
-         aGB->mem_map[0x6] = &(aGB->cartridge)[cart_address+0x6000];
-         aGB->mem_map[0x7] = &(aGB->cartridge)[cart_address+0x7000];
+         gbMemMap[0x4] = &(aGB->cartridge)[cart_address+0x4000];
+         gbMemMap[0x5] = &(aGB->cartridge)[cart_address+0x5000];
+         gbMemMap[0x6] = &(aGB->cartridge)[cart_address+0x6000];
+         gbMemMap[0x7] = &(aGB->cartridge)[cart_address+0x7000];
          return;      
       }
          
@@ -651,8 +656,8 @@ void gb_mbc::writememory_MMM01(register unsigned short address,register byte dat
       ram_bank = data;
       
       int madr = data<<13;
-      aGB->mem_map[0xA] = &(aGB->cartRAM)[madr];
-      aGB->mem_map[0xB] = &(aGB->cartRAM)[madr+0x1000];
+      gbMemMap[0xA] = &(aGB->cartRAM)[madr];
+      gbMemMap[0xB] = &(aGB->cartRAM)[madr+0x1000];
       return;  
    }
    
@@ -661,7 +666,7 @@ void gb_mbc::writememory_MMM01(register unsigned short address,register byte dat
    
    // Always allow RAM writes.
 
-   aGB->mem_map[address>>12][address&0x0FFF] = data;
+   gbMemMap[address>>12][address&0x0FFF] = data;
 }
 
 //-------------------------------------------------------------------------
@@ -689,10 +694,10 @@ void gb_mbc::writememory_BC(register unsigned short address,register byte data)
          
       cadr &= rom_size_mask[aGB->rom->ROMsize];
          
-      aGB->mem_map[0x4] = &(aGB->cartridge)[cadr];
-      aGB->mem_map[0x5] = &(aGB->cartridge)[cadr+0x1000];
-      aGB->mem_map[0x6] = &(aGB->cartridge)[cadr+0x2000];
-      aGB->mem_map[0x7] = &(aGB->cartridge)[cadr+0x3000];
+      gbMemMap[0x4] = &(aGB->cartridge)[cadr];
+      gbMemMap[0x5] = &(aGB->cartridge)[cadr+0x1000];
+      gbMemMap[0x6] = &(aGB->cartridge)[cadr+0x2000];
+      gbMemMap[0x7] = &(aGB->cartridge)[cadr+0x3000];
       return;
    }
  
@@ -705,15 +710,15 @@ void gb_mbc::writememory_BC(register unsigned short address,register byte data)
                   
          cart_address = (MBChi<<4)<<14;
          
-         aGB->mem_map[0x0] = &(aGB->cartridge)[cart_address];
-         aGB->mem_map[0x1] = &(aGB->cartridge)[cart_address+0x1000];
-         aGB->mem_map[0x2] = &(aGB->cartridge)[cart_address+0x2000];
-         aGB->mem_map[0x3] = &(aGB->cartridge)[cart_address+0x3000];
+         gbMemMap[0x0] = &(aGB->cartridge)[cart_address];
+         gbMemMap[0x1] = &(aGB->cartridge)[cart_address+0x1000];
+         gbMemMap[0x2] = &(aGB->cartridge)[cart_address+0x2000];
+         gbMemMap[0x3] = &(aGB->cartridge)[cart_address+0x3000];
          
-         aGB->mem_map[0x4] = &(aGB->cartridge)[cart_address+0x4000];
-         aGB->mem_map[0x5] = &(aGB->cartridge)[cart_address+0x5000];
-         aGB->mem_map[0x6] = &(aGB->cartridge)[cart_address+0x6000];
-         aGB->mem_map[0x7] = &(aGB->cartridge)[cart_address+0x7000];
+         gbMemMap[0x4] = &(aGB->cartridge)[cart_address+0x4000];
+         gbMemMap[0x5] = &(aGB->cartridge)[cart_address+0x5000];
+         gbMemMap[0x6] = &(aGB->cartridge)[cart_address+0x6000];
+         gbMemMap[0x7] = &(aGB->cartridge)[cart_address+0x7000];
          return;      
       }
       return;  
@@ -731,7 +736,7 @@ void gb_mbc::writememory_BC(register unsigned short address,register byte data)
          return;
    }*/
 
-   aGB->mem_map[address>>12][address&0x0FFF] = data;
+   gbMemMap[address>>12][address&0x0FFF] = data;
 }
 
 //-------------------------------------------------------------------------
@@ -759,10 +764,10 @@ void gb_mbc::writememory_MK12(register unsigned short address,register byte data
         
       cadr &= rom_size_mask[aGB->rom->ROMsize];
          
-      aGB->mem_map[0x4] = &(aGB->cartridge)[cadr];
-      aGB->mem_map[0x5] = &(aGB->cartridge)[cadr+0x1000];
-      aGB->mem_map[0x6] = &(aGB->cartridge)[cadr+0x2000];
-      aGB->mem_map[0x7] = &(aGB->cartridge)[cadr+0x3000];
+      gbMemMap[0x4] = &(aGB->cartridge)[cadr];
+      gbMemMap[0x5] = &(aGB->cartridge)[cadr+0x1000];
+      gbMemMap[0x6] = &(aGB->cartridge)[cadr+0x2000];
+      gbMemMap[0x7] = &(aGB->cartridge)[cadr+0x3000];
       return;
    }
  
@@ -776,15 +781,15 @@ void gb_mbc::writememory_MK12(register unsigned short address,register byte data
                   
          cart_address = MBChi<<14;
 
-         aGB->mem_map[0x0] = &(aGB->cartridge)[cart_address];
-         aGB->mem_map[0x1] = &(aGB->cartridge)[cart_address+0x1000];
-         aGB->mem_map[0x2] = &(aGB->cartridge)[cart_address+0x2000];
-         aGB->mem_map[0x3] = &(aGB->cartridge)[cart_address+0x3000];
+         gbMemMap[0x0] = &(aGB->cartridge)[cart_address];
+         gbMemMap[0x1] = &(aGB->cartridge)[cart_address+0x1000];
+         gbMemMap[0x2] = &(aGB->cartridge)[cart_address+0x2000];
+         gbMemMap[0x3] = &(aGB->cartridge)[cart_address+0x3000];
          
-         aGB->mem_map[0x4] = &(aGB->cartridge)[cart_address+0x4000];
-         aGB->mem_map[0x5] = &(aGB->cartridge)[cart_address+0x5000];
-         aGB->mem_map[0x6] = &(aGB->cartridge)[cart_address+0x6000];
-         aGB->mem_map[0x7] = &(aGB->cartridge)[cart_address+0x7000];
+         gbMemMap[0x4] = &(aGB->cartridge)[cart_address+0x4000];
+         gbMemMap[0x5] = &(aGB->cartridge)[cart_address+0x5000];
+         gbMemMap[0x6] = &(aGB->cartridge)[cart_address+0x6000];
+         gbMemMap[0x7] = &(aGB->cartridge)[cart_address+0x7000];
          return;      
       }
       return;  
@@ -802,7 +807,7 @@ void gb_mbc::writememory_MK12(register unsigned short address,register byte data
          return;
    }*/
 
-   aGB->mem_map[address>>12][address&0x0FFF] = data;
+   gbMemMap[address>>12][address&0x0FFF] = data;
 }
 //-------------------------------------------------------------------------
 // writememory_Rockman8:
@@ -830,10 +835,10 @@ void gb_mbc::writememory_Rockman8(register unsigned short address,register byte 
          
       cart_address &= rom_size_mask[aGB->rom->ROMsize];
 
-      aGB->mem_map[0x4] = &(aGB->cartridge)[cart_address];
-      aGB->mem_map[0x5] = &(aGB->cartridge)[cart_address+0x1000];
-      aGB->mem_map[0x6] = &(aGB->cartridge)[cart_address+0x2000];
-      aGB->mem_map[0x7] = &(aGB->cartridge)[cart_address+0x3000];
+      gbMemMap[0x4] = &(aGB->cartridge)[cart_address];
+      gbMemMap[0x5] = &(aGB->cartridge)[cart_address+0x1000];
+      gbMemMap[0x6] = &(aGB->cartridge)[cart_address+0x2000];
+      gbMemMap[0x7] = &(aGB->cartridge)[cart_address+0x3000];
               
       return;
    }
@@ -843,7 +848,7 @@ void gb_mbc::writememory_Rockman8(register unsigned short address,register byte 
    
    // Always allow RAM writes.
 
-   aGB->mem_map[address>>12][address&0x0FFF] = data;
+   gbMemMap[address>>12][address&0x0FFF] = data;
 }
 
 //-------------------------------------------------------------------------
@@ -872,10 +877,10 @@ void gb_mbc::writememory_MBC2(register unsigned short address,register byte data
          rom_bank = data;
          
          int cadr = data<<14;
-         aGB->mem_map[0x4] = &(aGB->cartridge)[cadr];
-         aGB->mem_map[0x5] = &(aGB->cartridge)[cadr+0x1000];
-         aGB->mem_map[0x6] = &(aGB->cartridge)[cadr+0x2000];
-         aGB->mem_map[0x7] = &(aGB->cartridge)[cadr+0x3000];
+         gbMemMap[0x4] = &(aGB->cartridge)[cadr];
+         gbMemMap[0x5] = &(aGB->cartridge)[cadr+0x1000];
+         gbMemMap[0x6] = &(aGB->cartridge)[cadr+0x2000];
+         gbMemMap[0x7] = &(aGB->cartridge)[cadr+0x3000];
       }
       return;
    }
@@ -892,7 +897,7 @@ void gb_mbc::writememory_MBC2(register unsigned short address,register byte data
          return;
    }*/
    
-   aGB->mem_map[address>>12][address&0x0FFF] = data;
+   gbMemMap[address>>12][address&0x0FFF] = data;
 }
 
 void gb_mbc::rtc_update()
@@ -973,10 +978,10 @@ void gb_mbc::writememory_poke(register unsigned short address,register byte data
          
       int cadr = data<<14;
       cadr &= rom_size_mask[aGB->rom->ROMsize];
-      aGB->mem_map[0x4] = &(aGB->cartridge)[cadr];
-      aGB->mem_map[0x5] = &(aGB->cartridge)[cadr+0x1000];
-      aGB->mem_map[0x6] = &(aGB->cartridge)[cadr+0x2000];
-      aGB->mem_map[0x7] = &(aGB->cartridge)[cadr+0x3000];
+      gbMemMap[0x4] = &(aGB->cartridge)[cadr];
+      gbMemMap[0x5] = &(aGB->cartridge)[cadr+0x1000];
+      gbMemMap[0x6] = &(aGB->cartridge)[cadr+0x2000];
+      gbMemMap[0x7] = &(aGB->cartridge)[cadr+0x3000];
       return;
    }
    
@@ -993,8 +998,8 @@ void gb_mbc::writememory_poke(register unsigned short address,register byte data
       ram_bank = data;
       
       int madr = data<<13;
-      aGB->mem_map[0xA] = &(aGB->cartRAM)[madr];
-      aGB->mem_map[0xB] = &(aGB->cartRAM)[madr+0x1000];
+      gbMemMap[0xA] = &(aGB->cartRAM)[madr];
+      gbMemMap[0xB] = &(aGB->cartRAM)[madr+0x1000];
       return;  
    }
    
@@ -1018,22 +1023,22 @@ void gb_mbc::writememory_poke(register unsigned short address,register byte data
                   
          cart_address = MBChi<<14;
 
-         aGB->mem_map[0x0] = &(aGB->cartridge)[cart_address];
-         aGB->mem_map[0x1] = &(aGB->cartridge)[cart_address+0x1000];
-         aGB->mem_map[0x2] = &(aGB->cartridge)[cart_address+0x2000];
-         aGB->mem_map[0x3] = &(aGB->cartridge)[cart_address+0x3000];
+         gbMemMap[0x0] = &(aGB->cartridge)[cart_address];
+         gbMemMap[0x1] = &(aGB->cartridge)[cart_address+0x1000];
+         gbMemMap[0x2] = &(aGB->cartridge)[cart_address+0x2000];
+         gbMemMap[0x3] = &(aGB->cartridge)[cart_address+0x3000];
          
-         aGB->mem_map[0x4] = &(aGB->cartridge)[cart_address+0x4000];
-         aGB->mem_map[0x5] = &(aGB->cartridge)[cart_address+0x5000];
-         aGB->mem_map[0x6] = &(aGB->cartridge)[cart_address+0x6000];
-         aGB->mem_map[0x7] = &(aGB->cartridge)[cart_address+0x7000];
+         gbMemMap[0x4] = &(aGB->cartridge)[cart_address+0x4000];
+         gbMemMap[0x5] = &(aGB->cartridge)[cart_address+0x5000];
+         gbMemMap[0x6] = &(aGB->cartridge)[cart_address+0x6000];
+         gbMemMap[0x7] = &(aGB->cartridge)[cart_address+0x7000];
          return;
       }
       //if(!RAMenable || !rom->RAMsize)
       //   return;
    }
    
-   aGB->mem_map[address>>12][address&0x0FFF] = data;
+   gbMemMap[address>>12][address&0x0FFF] = data;
 }
 
 //-------------------------------------------------------------------------
@@ -1058,10 +1063,10 @@ void gb_mbc::writememory_MBC3(register unsigned short address,register byte data
          
       int cadr = data<<14;
       cadr &= rom_size_mask[aGB->rom->ROMsize];
-      aGB->mem_map[0x4] = &(aGB->cartridge)[cadr];
-      aGB->mem_map[0x5] = &(aGB->cartridge)[cadr+0x1000];
-      aGB->mem_map[0x6] = &(aGB->cartridge)[cadr+0x2000];
-      aGB->mem_map[0x7] = &(aGB->cartridge)[cadr+0x3000];
+      gbMemMap[0x4] = &(aGB->cartridge)[cadr];
+      gbMemMap[0x5] = &(aGB->cartridge)[cadr+0x1000];
+      gbMemMap[0x6] = &(aGB->cartridge)[cadr+0x2000];
+      gbMemMap[0x7] = &(aGB->cartridge)[cadr+0x3000];
       return;
    }
    
@@ -1086,8 +1091,8 @@ void gb_mbc::writememory_MBC3(register unsigned short address,register byte data
       ram_bank = data;
       
       int madr = data<<13;
-      aGB->mem_map[0xA] = &(aGB->cartRAM)[madr];
-      aGB->mem_map[0xB] = &(aGB->cartRAM)[madr+0x1000];
+      gbMemMap[0xA] = &(aGB->cartRAM)[madr];
+      gbMemMap[0xB] = &(aGB->cartRAM)[madr+0x1000];
       return;  
    }
    
@@ -1131,7 +1136,7 @@ void gb_mbc::writememory_MBC3(register unsigned short address,register byte data
       //   return;
    }
    
-   aGB->mem_map[address>>12][address&0x0FFF] = data;
+   gbMemMap[address>>12][address&0x0FFF] = data;
 }
 
 //-------------------------------------------------------------------------
@@ -1178,15 +1183,15 @@ void gb_mbc::writememory_MBC5(register unsigned short address,register byte data
                 wsprintf(wrmessage,L"MM %X %X",superaddroffset,vfmultibank);
                 renderer.showMessage(wrmessage,60,GB1);
                 
-                aGB->mem_map[0x0] = &(aGB->cartridge)[addroffset];
-                aGB->mem_map[0x1] = &(aGB->cartridge)[addroffset+0x1000];
-                aGB->mem_map[0x2] = &(aGB->cartridge)[addroffset+0x2000];
-                aGB->mem_map[0x3] = &(aGB->cartridge)[addroffset+0x3000];
+                gbMemMap[0x0] = &(aGB->cartridge)[addroffset];
+                gbMemMap[0x1] = &(aGB->cartridge)[addroffset+0x1000];
+                gbMemMap[0x2] = &(aGB->cartridge)[addroffset+0x2000];
+                gbMemMap[0x3] = &(aGB->cartridge)[addroffset+0x3000];
                 
-                aGB->mem_map[0x4] = &(aGB->cartridge)[addroffset+0x4000];
-                aGB->mem_map[0x5] = &(aGB->cartridge)[addroffset+0x5000];
-                aGB->mem_map[0x6] = &(aGB->cartridge)[addroffset+0x6000];
-                aGB->mem_map[0x7] = &(aGB->cartridge)[addroffset+0x7000];
+                gbMemMap[0x4] = &(aGB->cartridge)[addroffset+0x4000];
+                gbMemMap[0x5] = &(aGB->cartridge)[addroffset+0x5000];
+                gbMemMap[0x6] = &(aGB->cartridge)[addroffset+0x6000];
+                gbMemMap[0x7] = &(aGB->cartridge)[addroffset+0x7000];
                 
                 // todo: Do the bank switch, changes the effective ROM..
                 // todo: Do the memory switch
@@ -1289,10 +1294,10 @@ void gb_mbc::writememory_MBC5(register unsigned short address,register byte data
       
       MBClo = data;
 
-      aGB->mem_map[0x4] = &(aGB->cartridge)[cart_address];
-      aGB->mem_map[0x5] = &(aGB->cartridge)[cart_address+0x1000];
-      aGB->mem_map[0x6] = &(aGB->cartridge)[cart_address+0x2000];
-      aGB->mem_map[0x7] = &(aGB->cartridge)[cart_address+0x3000];
+      gbMemMap[0x4] = &(aGB->cartridge)[cart_address];
+      gbMemMap[0x5] = &(aGB->cartridge)[cart_address+0x1000];
+      gbMemMap[0x6] = &(aGB->cartridge)[cart_address+0x2000];
+      gbMemMap[0x7] = &(aGB->cartridge)[cart_address+0x3000];
       
     //  if(origData == 0x69) {   
 	//    	char buff[100];
@@ -1319,10 +1324,10 @@ void gb_mbc::writememory_MBC5(register unsigned short address,register byte data
       
       MBChi = data;
 
-      aGB->mem_map[0x4] = &(aGB->cartridge)[cart_address];
-      aGB->mem_map[0x5] = &(aGB->cartridge)[cart_address+0x1000];
-      aGB->mem_map[0x6] = &(aGB->cartridge)[cart_address+0x2000];
-      aGB->mem_map[0x7] = &(aGB->cartridge)[cart_address+0x3000];
+      gbMemMap[0x4] = &(aGB->cartridge)[cart_address];
+      gbMemMap[0x5] = &(aGB->cartridge)[cart_address+0x1000];
+      gbMemMap[0x6] = &(aGB->cartridge)[cart_address+0x2000];
+      gbMemMap[0x7] = &(aGB->cartridge)[cart_address+0x3000];
       
       return;
    }
@@ -1378,8 +1383,8 @@ void gb_mbc::writememory_MBC5(register unsigned short address,register byte data
       ram_bank = data;
       
       int madr = data<<13;
-      aGB->mem_map[0xA] = &(aGB->cartRAM)[madr];
-      aGB->mem_map[0xB] = &(aGB->cartRAM)[madr+0x1000];
+      gbMemMap[0xA] = &(aGB->cartRAM)[madr];
+      gbMemMap[0xB] = &(aGB->cartRAM)[madr+0x1000];
       return;  
    }
    
@@ -1438,7 +1443,7 @@ void gb_mbc::writememory_MBC5(register unsigned short address,register byte data
          return;
    }*/
    
-   aGB->mem_map[address>>12][address&0x0FFF] = data;
+   gbMemMap[address>>12][address&0x0FFF] = data;
 }
 
 //-------------------------------------------------------------------------
@@ -1463,10 +1468,10 @@ void gb_mbc::writememory_Camera(register unsigned short address,register byte da
       rom_bank = data;
          
       int cadr = data<<14;
-      aGB->mem_map[0x4] = &(aGB->cartridge)[cadr];
-      aGB->mem_map[0x5] = &(aGB->cartridge)[cadr+0x1000];
-      aGB->mem_map[0x6] = &(aGB->cartridge)[cadr+0x2000];
-      aGB->mem_map[0x7] = &(aGB->cartridge)[cadr+0x3000];
+      gbMemMap[0x4] = &(aGB->cartridge)[cadr];
+      gbMemMap[0x5] = &(aGB->cartridge)[cadr+0x1000];
+      gbMemMap[0x6] = &(aGB->cartridge)[cadr+0x2000];
+      gbMemMap[0x7] = &(aGB->cartridge)[cadr+0x3000];
       return; 
    }
    
@@ -1488,8 +1493,8 @@ void gb_mbc::writememory_Camera(register unsigned short address,register byte da
       ram_bank = data;
       
       int madr = data<<13;
-      aGB->mem_map[0xA] = &(aGB->cartRAM)[madr];
-      aGB->mem_map[0xB] = &(aGB->cartRAM)[madr+0x1000];
+      gbMemMap[0xA] = &(aGB->cartRAM)[madr];
+      gbMemMap[0xB] = &(aGB->cartRAM)[madr+0x1000];
       return;  
 
    }
@@ -1503,7 +1508,7 @@ void gb_mbc::writememory_Camera(register unsigned short address,register byte da
          return;
    }*/
    
-   aGB->mem_map[address>>12][address&0x0FFF] = data;
+   gbMemMap[address>>12][address&0x0FFF] = data;
 }
 
 void gb_mbc::update_HuC3time()
@@ -1567,7 +1572,7 @@ byte gb_mbc::readmemory_HuC3(register unsigned short address)
          return 0xFF;
    }
    
-   return aGB->mem_map[address>>12][address&0x0FFF];
+   return gbMemMap[address>>12][address&0x0FFF];
 }
 
 //-------------------------------------------------------------------------
@@ -1593,10 +1598,10 @@ void gb_mbc::writememory_HuC3(register unsigned short address,register byte data
       rom_bank = data;
          
       int cadr = data<<14;
-      aGB->mem_map[0x4] = &(aGB->cartridge)[cadr];
-      aGB->mem_map[0x5] = &(aGB->cartridge)[cadr+0x1000];
-      aGB->mem_map[0x6] = &(aGB->cartridge)[cadr+0x2000];
-      aGB->mem_map[0x7] = &(aGB->cartridge)[cadr+0x3000];
+      gbMemMap[0x4] = &(aGB->cartridge)[cadr];
+      gbMemMap[0x5] = &(aGB->cartridge)[cadr+0x1000];
+      gbMemMap[0x6] = &(aGB->cartridge)[cadr+0x2000];
+      gbMemMap[0x7] = &(aGB->cartridge)[cadr+0x3000];
       return; 
    }
    
@@ -1610,8 +1615,8 @@ void gb_mbc::writememory_HuC3(register unsigned short address,register byte data
       ram_bank = data;
       
       int madr = data<<13;
-      aGB->mem_map[0xA] = &(aGB->cartRAM)[madr];
-      aGB->mem_map[0xB] = &(aGB->cartRAM)[madr+0x1000];
+      gbMemMap[0xA] = &(aGB->cartRAM)[madr];
+      gbMemMap[0xB] = &(aGB->cartRAM)[madr+0x1000];
       return;  
    }
    
@@ -1708,7 +1713,7 @@ void gb_mbc::writememory_HuC3(register unsigned short address,register byte data
       }
    }
    
-   aGB->mem_map[address>>12][address&0x0FFF] = data;
+   gbMemMap[address>>12][address&0x0FFF] = data;
 }
 
 //-------------------------------------------------------------------------
@@ -1734,10 +1739,10 @@ void gb_mbc::writememory_MBC7(register unsigned short address,register byte data
 
       cart_address &= rom_size_mask[aGB->rom->ROMsize];
 
-       aGB->mem_map[0x4] = &(aGB->cartridge)[cart_address];
-       aGB->mem_map[0x5] = &(aGB->cartridge)[cart_address+0x1000];
-       aGB->mem_map[0x6] = &(aGB->cartridge)[cart_address+0x2000];
-       aGB->mem_map[0x7] = &(aGB->cartridge)[cart_address+0x3000];
+       gbMemMap[0x4] = &(aGB->cartridge)[cart_address];
+       gbMemMap[0x5] = &(aGB->cartridge)[cart_address+0x1000];
+       gbMemMap[0x6] = &(aGB->cartridge)[cart_address+0x2000];
+       gbMemMap[0x7] = &(aGB->cartridge)[cart_address+0x3000];
       return;
    }
    
@@ -1758,8 +1763,8 @@ void gb_mbc::writememory_MBC7(register unsigned short address,register byte data
           ram_bank = data;
       
          int madr = data<<13;
-          aGB->mem_map[0xA] = &(aGB->cartRAM)[madr];
-          aGB->mem_map[0xB] = &(aGB->cartRAM)[madr+0x1000];
+          gbMemMap[0xA] = &(aGB->cartRAM)[madr];
+          gbMemMap[0xB] = &(aGB->cartRAM)[madr+0x1000];
          return;  
       } else
       {
@@ -1942,7 +1947,7 @@ void gb_mbc::writememory_MBC7(register unsigned short address,register byte data
       return;
    }
    
-    aGB->mem_map[address>>12][address&0x0FFF] = data;
+    gbMemMap[address>>12][address&0x0FFF] = data;
 }
 
 //-------------------------------------------------------------------------
@@ -1978,7 +1983,7 @@ byte gb_mbc::readmemory_MBC7(register unsigned short address)
       return 0xff;
    }
    
-   return aGB->mem_map[address>>12][address&0x0FFF];
+   return gbMemMap[address>>12][address&0x0FFF];
 }
 
 //-------------------------------------------------------------------------
@@ -2163,7 +2168,7 @@ byte gb_mbc::readmemory_TAMA5(register unsigned short address)
       }
    }
    
-   return aGB->mem_map[address>>12][address&0x0FFF];
+   return gbMemMap[address>>12][address&0x0FFF];
 }
 
 //-------------------------------------------------------------------------
@@ -2191,10 +2196,10 @@ void gb_mbc::writememory_TAMA5(register unsigned short address,register byte dat
              rom_bank = MBClo|(MBChi<<4);
        
             int cadr = rom_bank<<14;
-             aGB->mem_map[0x4] = &(aGB->cartridge)[cadr];
-             aGB->mem_map[0x5] = &(aGB->cartridge)[cadr+0x1000];
-             aGB->mem_map[0x6] = &(aGB->cartridge)[cadr+0x2000];
-             aGB->mem_map[0x7] = &(aGB->cartridge)[cadr+0x3000];
+             gbMemMap[0x4] = &(aGB->cartridge)[cadr];
+             gbMemMap[0x5] = &(aGB->cartridge)[cadr+0x1000];
+             gbMemMap[0x6] = &(aGB->cartridge)[cadr+0x2000];
+             gbMemMap[0x7] = &(aGB->cartridge)[cadr+0x3000];
          }
          return;
          case 1: // rom bank high bit
@@ -2206,10 +2211,10 @@ void gb_mbc::writememory_TAMA5(register unsigned short address,register byte dat
             rom_bank = MBClo|(MBChi<<4);
        
             int cadr = rom_bank<<14;
-            aGB->mem_map[0x4] = &(aGB->cartridge)[cadr];
-            aGB->mem_map[0x5] = &(aGB->cartridge)[cadr+0x1000];
-            aGB->mem_map[0x6] = &(aGB->cartridge)[cadr+0x2000];
-            aGB->mem_map[0x7] = &(aGB->cartridge)[cadr+0x3000];
+            gbMemMap[0x4] = &(aGB->cartridge)[cadr];
+            gbMemMap[0x5] = &(aGB->cartridge)[cadr+0x1000];
+            gbMemMap[0x6] = &(aGB->cartridge)[cadr+0x2000];
+            gbMemMap[0x7] = &(aGB->cartridge)[cadr+0x3000];
          }
          return;
          case 4: // RTC controls
@@ -2276,5 +2281,5 @@ void gb_mbc::writememory_TAMA5(register unsigned short address,register byte dat
       } 
    } 
 
-    aGB->mem_map[address>>12][address&0x0FFF] = data;
+    gbMemMap[address>>12][address&0x0FFF] = data;
 }
