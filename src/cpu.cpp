@@ -291,30 +291,10 @@ bool gb_system::save_state()
    {
       fwrite(cartRAM,sizeof(byte),ramsize[rom->RAMsize]*1024,statefile);
    }
-   
-   if(rom->RTC)
-   {
-       mbc->writeRtcVarsToStateFile(statefile);
 
-   }
-   
-   if(rom->bankType == HuC3)
-   {
-       mbc->writeHuc3VarsToStateFile(statefile);
+    mbc->writeCartSpecificVarsToStateFile(statefile);
 
-   }
-
-   if(rom->bankType == MBC7)
-   {
-       mbc->writeMbc7VarsToStateFile(statefile);
-   }
-   
-   if(rom->bankType == TAMA5)
-   {
-       mbc->writeTama5VarsToStateFile(statefile);
-   }
-      
-   if(sgb_mode)
+    if(sgb_mode)
    {
       fputc((byte)sgb_mode,statefile);
       fwrite(&bit_received,sizeof(int),1,statefile);
@@ -338,15 +318,11 @@ bool gb_system::save_state()
       fwrite(sgb_borderchar,sizeof(byte),32*256,statefile);
       fwrite(sgb_border_buffer,sizeof(unsigned short),256*224,statefile);
       
-   }   
-   
-   if(rom->bankType == TAMA5)
-   {
-       mbc->writeMoreTama5VarsToStateFile(statefile);
-
    }
-    
-   fclose(statefile);
+
+    mbc->writeNewerCartSpecificVarsToStateFile(statefile);
+
+    fclose(statefile);
    
    wchar_t dx_message[50];
    wsprintf(dx_message,L"%s %d %s",str_table[SAVE_TO_SLOT],save_state_slot,str_table[SAVE_OK]);
@@ -504,30 +480,10 @@ bool gb_system::load_state()
    {
       fread(cartRAM,sizeof(byte),ramsize[rom->RAMsize]*1024,statefile);
    }
-   
-   if(rom->RTC)
-   {
-       mbc->readRtcVarsFromStateFile(statefile);
 
-   }
-   
-   if(rom->bankType == HuC3)
-   {
-       mbc->readHuc3VarsFromStateFile(statefile);
+    mbc->readCartSpecificVarsFromStateFile(statefile);
 
-   }
-   
-   if(rom->bankType == MBC7)
-   {
-       mbc->readMbc7VarsFromStateFile(statefile);
-   }
-
-   if(rom->bankType == TAMA5)
-   {
-       mbc->readTama5VarsFromStateFile(statefile);
-   }
-      
-   char c = fgetc(statefile);
+    char c = fgetc(statefile);
    
    if(c != EOF)
    {
@@ -555,14 +511,10 @@ bool gb_system::load_state()
       
       (renderer.*renderer.drawBorder)();   
    }
-     
-   if(rom->bankType == TAMA5)
-   {
-       mbc->readMoreTama5VarsFromStateFile(statefile);
 
-   }
-   
-   int cadr = mbc->rom_bank<<14;
+    mbc->readNewerCartSpecificVarsFromStateFile(statefile);
+
+    int cadr = mbc->rom_bank<<14;
    mem_map[0x4] = &cartridge[cadr];
    mem_map[0x5] = &cartridge[cadr+0x1000];
    mem_map[0x6] = &cartridge[cadr+0x2000];
@@ -606,4 +558,3 @@ bool gb_system::load_state()
    
    return true;
 }
-

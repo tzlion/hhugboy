@@ -430,7 +430,7 @@ void gb_system::reset(bool change_mode, bool mini)
 
    sound_reset();
 
-   mbc->memory_variables_reset();
+    mbc->resetMbcVariables();
 
    reset_devices();
 

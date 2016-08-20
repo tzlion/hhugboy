@@ -132,7 +132,7 @@ gb_mbc::gb_mbc(byte** gbMemMap, byte** gbCartridge, GBrom** gbRom, byte** gbCart
     this->gbMemory = gbMemory;
 }
 
-void gb_mbc::memory_variables_reset()
+void gb_mbc::resetMbcVariables()
 {
     MBC1memorymodel = 0;
     MBChi = 0;
@@ -2321,6 +2321,68 @@ void gb_mbc::writememory_TAMA5(register unsigned short address,register byte dat
    } 
 
     gbMemMap[address>>12][address&0x0FFF] = data;
+}
+
+
+void gb_mbc::readNewerCartSpecificVarsFromStateFile(FILE *statefile) {
+    if((*gbRom)->bankType == TAMA5)
+    {
+        readMoreTama5VarsFromStateFile(statefile);
+    }
+}
+
+void gb_mbc::readCartSpecificVarsFromStateFile(FILE *statefile){
+    if((*gbRom)->RTC)
+    {
+        readRtcVarsFromStateFile(statefile);
+    }
+
+    if((*gbRom)->bankType == HuC3)
+    {
+        readHuc3VarsFromStateFile(statefile);
+
+    }
+
+    if((*gbRom)->bankType == MBC7)
+    {
+        readMbc7VarsFromStateFile(statefile);
+    }
+
+    if((*gbRom)->bankType == TAMA5)
+    {
+        readTama5VarsFromStateFile(statefile);
+    }
+}
+
+
+
+void gb_mbc::writeCartSpecificVarsToStateFile(FILE *statefile) {
+    if((*gbRom)->RTC)
+    {
+        writeRtcVarsToStateFile(statefile);
+    }
+
+    if((*gbRom)->bankType == HuC3)
+    {
+        writeHuc3VarsToStateFile(statefile);
+    }
+
+    if((*gbRom)->bankType == MBC7)
+    {
+        writeMbc7VarsToStateFile(statefile);
+    }
+
+    if((*gbRom)->bankType == TAMA5)
+    {
+        writeTama5VarsToStateFile(statefile);
+    }
+}
+
+void gb_mbc::writeNewerCartSpecificVarsToStateFile(FILE *statefile) {
+    if((*gbRom)->bankType == TAMA5)
+    {
+        writeMoreTama5VarsToStateFile(statefile);
+    }
 }
 
 void gb_mbc::writeMoreTama5VarsToStateFile(FILE *statefile) {

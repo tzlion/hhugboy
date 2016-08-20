@@ -37,15 +37,68 @@ class gb_mbc {
 public:
     gb_mbc(byte** gbMemMap, byte** gbCartridge, GBrom** gbRom, byte** gbCartRam, byte* romBankXor, int* rumbleCounter, byte** gbMemory);
 
+    memoryaccess memory_read;
+    memoryaccess memory_write;
+
+    int tama_month;
+    time_t HuC3_last_time;
+    unsigned int HuC3_time;
+
+    byte sintax_mode;
+    byte sintax_xor2;
+    byte sintax_xor3;
+    byte sintax_xor4;
+    byte sintax_xor5;
+
+    int rom_bank;
+    int ram_bank;
+    unsigned short MBChi;
+    unsigned short MBClo; // Used by cpucore but only for debug msgs so eh
+
+    int superaddroffset;
+
+    rtc_clock rtc;
+    rtc_clock rtc_latch;
+
+    byte readmemory_cart(register unsigned short address);
+    void writememory_cart(unsigned short address,register byte data);
+    void resetMbcVariables();
+
+    void readMbcBanksFromStateFile(FILE *statefile);
+    void readMbcMoreCrapFromStateFile(FILE *statefile);
+    void writeMbcBanksToStateFile(FILE *statefile);
+    void writeMbcOtherStuffToStateFile(FILE *statefile);
+
+    void writeNewerCartSpecificVarsToStateFile(FILE *statefile);
+    void writeCartSpecificVarsToStateFile(FILE *statefile);
+    void readCartSpecificVarsFromStateFile(FILE *statefile);
+    void readNewerCartSpecificVarsFromStateFile(FILE *statefile);
+
+private:
+
+    byte** gbMemMap;
+    GBrom** gbRom;
+    byte** gbCartRam;
+    byte** gbCartridge;
+    byte* gbRomBankXor;
+    int* gbRumbleCounter;
+    byte** gbMemory;
+
+    int MBC1memorymodel;
+    int RAMenable;
+
+    int RTCIO;
+    int RTC_latched;
+
+    int cameraIO;
+
     int HuC3_register[8];
     int HuC3_RAMvalue;
     int HuC3_RAMaddress;
     int HuC3_address;
     int HuC3_RAMflag;
 
-    time_t HuC3_last_time;
     int HuC3_flag;
-    unsigned int HuC3_time;
     int HuC3_shift;
 
     int MBC7_cs; // chip select
@@ -68,62 +121,7 @@ public:
     int tama_val6;
     int tama_val7;
     int tama_count;
-    int tama_month;
     int tama_change_clock;
-
-    memoryaccess memory_read;
-    memoryaccess memory_write;
-
-    byte sintax_mode;
-    byte sintax_xor2;
-    byte sintax_xor3;
-    byte sintax_xor4;
-    byte sintax_xor5;
-
-    int MBC1memorymodel;
-    int RAMenable;
-    int rom_bank;
-    int ram_bank;
-    unsigned short MBChi;
-    unsigned short MBClo;
-    int RTCIO;
-
-    int superaddroffset;
-
-    rtc_clock rtc;
-    rtc_clock rtc_latch;
-    int RTC_latched;
-
-    int cameraIO;
-
-    byte readmemory_cart(register unsigned short address);
-    void writememory_cart(unsigned short address,register byte data);
-    void memory_variables_reset();
-
-    void readRtcVarsFromStateFile(FILE *statefile);
-    void readHuc3VarsFromStateFile(FILE *statefile);
-    void readMbc7VarsFromStateFile(FILE *statefile);
-    void readTama5VarsFromStateFile(FILE *statefile);
-    void readMoreTama5VarsFromStateFile(FILE *statefile);
-    void readMbcBanksFromStateFile(FILE *statefile);
-    void readMbcMoreCrapFromStateFile(FILE *statefile);
-    void writeMbcBanksToStateFile(FILE *statefile);
-    void writeMbcOtherStuffToStateFile(FILE *statefile);
-    void writeRtcVarsToStateFile(FILE *statefile);
-    void writeHuc3VarsToStateFile(FILE *statefile);
-    void writeMbc7VarsToStateFile(FILE *statefile);
-    void writeTama5VarsToStateFile(FILE *statefile);
-    void writeMoreTama5VarsToStateFile(FILE *statefile);
-
-private:
-
-    byte** gbMemMap;
-    GBrom** gbRom;
-    byte** gbCartRam;
-    byte** gbCartridge;
-    byte* gbRomBankXor;
-    int* gbRumbleCounter;
-    byte** gbMemory;
 
     void rtc_update();
     void update_HuC3time();
@@ -153,6 +151,17 @@ private:
     void writememory_MK12(register unsigned short address,register byte data);
     void writememory_poke(register unsigned short address,register byte data);
     void setXorForBank(byte bankNo);
+
+    void readRtcVarsFromStateFile(FILE *statefile);
+    void readHuc3VarsFromStateFile(FILE *statefile);
+    void readMbc7VarsFromStateFile(FILE *statefile);
+    void readTama5VarsFromStateFile(FILE *statefile);
+    void readMoreTama5VarsFromStateFile(FILE *statefile);
+    void writeRtcVarsToStateFile(FILE *statefile);
+    void writeHuc3VarsToStateFile(FILE *statefile);
+    void writeMbc7VarsToStateFile(FILE *statefile);
+    void writeTama5VarsToStateFile(FILE *statefile);
+    void writeMoreTama5VarsToStateFile(FILE *statefile);
 
 };
 
