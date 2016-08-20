@@ -40,10 +40,6 @@ public:
     memoryaccess memory_read;
     memoryaccess memory_write;
 
-    int tama_month;
-    time_t HuC3_last_time;
-    unsigned int HuC3_time;
-
     int rom_bank;
     int ram_bank;
     unsigned short MBChi;
@@ -51,12 +47,12 @@ public:
 
     int superaddroffset;
 
-    rtc_clock rtc;
-    rtc_clock rtc_latch;
-
     byte readmemory_cart(register unsigned short address);
     void writememory_cart(unsigned short address,register byte data);
     void resetMbcVariables();
+
+    void writeMbcSpecificStuffToSaveFile(FILE *savefile);
+    void readMbcSpecificStuffFromSaveFile(FILE *savefile);
 
     void readMbcBanksFromStateFile(FILE *statefile);
     void readMbcMoreCrapFromStateFile(FILE *statefile);
@@ -85,6 +81,12 @@ private:
     int RTC_latched;
 
     int cameraIO;
+
+    int tama_month;
+    time_t HuC3_last_time;
+    unsigned int HuC3_time;
+    rtc_clock rtc;
+    rtc_clock rtc_latch;
 
     byte sintax_mode;
     byte sintax_xor2;

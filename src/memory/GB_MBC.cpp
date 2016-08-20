@@ -2326,6 +2326,50 @@ void gb_mbc::writememory_TAMA5(register unsigned short address,register byte dat
     gbMemMap[address>>12][address&0x0FFF] = data;
 }
 
+void gb_mbc::readMbcSpecificStuffFromSaveFile(FILE *savefile) {
+    if((*gbRom)->RTC || (*gbRom)->bankType == TAMA5)
+    {
+        fwrite(&(rtc).s, sizeof(int), 1, savefile);
+        fwrite(&(rtc).m, sizeof(int), 1, savefile);
+        fwrite(&(rtc).h, sizeof(int), 1, savefile);
+        fwrite(&(rtc).d, sizeof(int), 1, savefile);
+        fwrite(&(rtc).control, sizeof(int), 1, savefile);
+        fwrite(&(rtc).last_time, sizeof(time_t), 1, savefile);
+    }
+
+    if((*gbRom)->bankType == TAMA5)
+        fwrite(&(tama_month), sizeof(int), 1, savefile);
+
+    if((*gbRom)->bankType == HuC3)
+    {
+        fwrite(&(HuC3_time), sizeof(unsigned int), 1, savefile);
+        fwrite(&(HuC3_last_time), sizeof(time_t), 1, savefile);
+        fwrite(&(rtc).s, sizeof(int), 1, savefile);
+    }
+}
+
+void gb_mbc::writeMbcSpecificStuffToSaveFile(FILE *savefile){
+    if((*gbRom)->RTC || (*gbRom)->bankType == TAMA5)
+    {
+        fread(&(rtc).s, sizeof(int), 1, savefile);
+        fread(&(rtc).m, sizeof(int), 1, savefile);
+        fread(&(rtc).h, sizeof(int), 1, savefile);
+        fread(&(rtc).d, sizeof(int), 1, savefile);
+        fread(&(rtc).control, sizeof(int), 1, savefile);
+        fread(&(rtc).last_time, sizeof(time_t), 1, savefile);
+        rtc_latch = rtc;
+    }
+
+    if((*gbRom)->bankType == TAMA5)
+        fread(&(tama_month), sizeof(int), 1, savefile);
+
+    if((*gbRom)->bankType == HuC3)
+    {
+        fread(&(HuC3_time), sizeof(unsigned int), 1, savefile);
+        fread(&(HuC3_last_time), sizeof(time_t), 1, savefile);
+        fread(&(rtc).s, sizeof(int), 1, savefile);
+    }
+}
 
 void gb_mbc::readNewerCartSpecificVarsFromStateFile(FILE *statefile) {
     if((*gbRom)->bankType == TAMA5)

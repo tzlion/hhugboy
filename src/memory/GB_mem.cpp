@@ -353,33 +353,14 @@ bool gb_system::write_save()
       }
    }
 
-   if(rom->RTC || rom->bankType==TAMA5)
-   {
-      fwrite(&(mbc->rtc).s, sizeof(int),1,savefile);
-      fwrite(&(mbc->rtc).m, sizeof(int),1,savefile);
-      fwrite(&(mbc->rtc).h, sizeof(int),1,savefile);
-      fwrite(&(mbc->rtc).d, sizeof(int),1,savefile);
-      fwrite(&(mbc->rtc).control, sizeof(int),1,savefile);
-      fwrite(&(mbc->rtc).last_time, sizeof(time_t),1,savefile);
-   }   
-   
-   if(rom->bankType==TAMA5)
-      fwrite(&(mbc->tama_month), sizeof(int),1,savefile);
-      
-   if(rom->bankType == HuC3)
-   {
-      fwrite(&(mbc->HuC3_time), sizeof(unsigned int),1,savefile);
-      fwrite(&(mbc->HuC3_last_time), sizeof(time_t),1,savefile);
-      fwrite(&(mbc->rtc).s, sizeof(int),1,savefile);
-   }
-   
-   fclose(savefile);
+    mbc->readMbcSpecificStuffFromSaveFile(savefile);
+
+    fclose(savefile);
 
    SetCurrentDirectory(old_directory);
    
    return true;
 }
-
 bool gb_system::load_save(bool loading_GB1_save_to_GB2)
 {
    if(rom->RAMsize == 0) return true;
@@ -450,29 +431,10 @@ bool gb_system::load_save(bool loading_GB1_save_to_GB2)
          return false;
       }
    }
-   
-   if(rom->RTC || rom->bankType==TAMA5)
-   {
-      fread(&(mbc->rtc).s, sizeof(int),1,savefile);
-      fread(&(mbc->rtc).m, sizeof(int),1,savefile);
-      fread(&(mbc->rtc).h, sizeof(int),1,savefile);
-      fread(&(mbc->rtc).d, sizeof(int),1,savefile);
-      fread(&(mbc->rtc).control, sizeof(int),1,savefile);
-      fread(&(mbc->rtc).last_time, sizeof(time_t),1,savefile);
-      mbc->rtc_latch = mbc->rtc;
-   }
-   
-   if(rom->bankType==TAMA5)
-      fread(&(mbc->tama_month), sizeof(int),1,savefile);
 
-   if(rom->bankType == HuC3)
-   {
-      fread(&(mbc->HuC3_time), sizeof(unsigned int),1,savefile);
-      fread(&(mbc->HuC3_last_time), sizeof(time_t),1,savefile);
-      fread(&(mbc->rtc).s, sizeof(int),1,savefile);
-   }
+    mbc->writeMbcSpecificStuffToSaveFile(savefile);
 
-   fclose(savefile);
+    fclose(savefile);
    SetCurrentDirectory(old_directory);
    
    return true;

@@ -369,7 +369,6 @@ public:
    }
    
    void mainloop();
-
 };
 
 extern gb_system *GB;
