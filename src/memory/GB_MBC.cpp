@@ -66,6 +66,9 @@ unsigned int cart_address = 0;
 //int RTCIO = 0;
 //int RTC_latched = 0;
 
+// todo so there are much fewer things needed from the GB now
+// maybe itd be nice if this just takes in references to those things rather than the entire GB
+// Eventually GB should contain cart and cart should contain MBC
 gb_mbc::gb_mbc(gb_system* inGB):
         HuC3_RAMvalue(0),
         HuC3_RAMaddress(0),
@@ -221,21 +224,21 @@ void gb_mbc::setXorForBank(byte bankNo)
 {
   	switch(bankNo & 0x0F) {
 	case 0x00: case 0x04: case 0x08: case 0x0C:
-		aGB->sintax_currentxor = sintax_xor2;
+		aGB->rom_bank_xor = sintax_xor2;
 		break;
 	case 0x01: case 0x05: case 0x09: case 0x0D:
-		aGB->sintax_currentxor = sintax_xor3;
+		aGB->rom_bank_xor = sintax_xor3;
 		break;
 	case 0x02: case 0x06: case 0x0A: case 0x0E:
-		aGB->sintax_currentxor = sintax_xor4;
+		aGB->rom_bank_xor = sintax_xor4;
 		break;
 	case 0x03: case 0x07: case 0x0B: case 0x0F:
-		aGB->sintax_currentxor = sintax_xor5;
+		aGB->rom_bank_xor = sintax_xor5;
 		break;
   	}
   	
   	//char buff[200];
-  //	sprintf(buff,"bank no %x abbr %x xor %x",bankNo,bankNo&0x0F,sintax_currentxor);
+  //	sprintf(buff,"bank no %x abbr %x xor %x",bankNo,bankNo&0x0F,rom_bank_xor);
   //	debug_print(buff);
 }
 
@@ -265,7 +268,7 @@ byte gb_mbc::readmemory_default(register unsigned short address)
     mem_map[0x6] = &cartridge[superaddroffset+0x6000];
     mem_map[0x7] = &cartridge[superaddroffset+0x7000];    */
 
-   return aGB->io_reg_read(address);
+   return aGB->mem_map[address>>12][address&0x0FFF];
 }
 
 //-------------------------------------------------------------------------
@@ -277,17 +280,17 @@ byte gb_mbc::readmemory_sintax(register unsigned short address)
 
    if(address >= 0x4000 && address < 0x8000)
    {
-   	byte data = aGB->io_reg_read(address);
+   	byte data = aGB->mem_map[address>>12][address&0x0FFF];
 
    	
    	//char buff[100];
-	//sprintf(buff,"MBCLo %X Addr %X Data %X XOR %X XOR'd data %X",MBClo,address,data,sintax_currentxor, data ^ sintax_currentxor);
+	//sprintf(buff,"MBCLo %X Addr %X Data %X XOR %X XOR'd data %X",MBClo,address,data,rom_bank_xor, data ^ rom_bank_xor);
 	//debug_print(buff);
    	
-     return  data ^ aGB->sintax_currentxor;
+     return  data ^ aGB->rom_bank_xor;
    }
 
-   return aGB->io_reg_read(address);
+   return aGB->mem_map[address>>12][address&0x0FFF];
 }
 
 
@@ -319,7 +322,7 @@ byte gb_mbc::readmemory_MBC3(register unsigned short address)
       //   return 0xFF; 
    }
 
-   return aGB->io_reg_read(address);
+   return aGB->mem_map[address>>12][address&0x0FFF];
 }
 
 //-------------------------------------------------------------------------
@@ -339,7 +342,7 @@ byte gb_mbc::readmemory_Camera(register unsigned short address)
       }
    }
    
-   return aGB->io_reg_read(address);
+   return aGB->mem_map[address>>12][address&0x0FFF];
 }
       
 //-------------------------------------------------------------------------
@@ -409,8 +412,6 @@ void gb_mbc::writememory_default(register unsigned short address,register byte d
 
    // Always allow RAM writes.
    
-   if(aGB->io_reg_write(address,data)) return;
-
    aGB->mem_map[address>>12][address&0x0FFF] = data;
 }
 
@@ -477,8 +478,6 @@ void gb_mbc::writememory_8in1(register unsigned short address,register byte data
       return;      
 
    // Always allow RAM writes.
-   
-   if(aGB->io_reg_write(address,data)) return;
 
    aGB->mem_map[address>>12][address&0x0FFF] = data;
 }
@@ -584,9 +583,7 @@ void gb_mbc::writememory_MBC1(register unsigned short address,register byte data
       if((!RAMenable || !rom->RAMsize) && !RAM_always_enable)
          return;
    }*/
-   
-   if(aGB->io_reg_write(address,data)) return;
-   
+
    aGB->mem_map[address>>12][address&0x0FFF] = data;
 }
 
@@ -663,9 +660,7 @@ void gb_mbc::writememory_MMM01(register unsigned short address,register byte dat
       return;
    
    // Always allow RAM writes.
-   
-   if(aGB->io_reg_write(address,data)) return;
-   
+
    aGB->mem_map[address>>12][address&0x0FFF] = data;
 }
 
@@ -735,9 +730,7 @@ void gb_mbc::writememory_BC(register unsigned short address,register byte data)
       if((!RAMenable || !rom->RAMsize) && !RAM_always_enable)
          return;
    }*/
-   
-   if(aGB->io_reg_write(address,data)) return;
-   
+
    aGB->mem_map[address>>12][address&0x0FFF] = data;
 }
 
@@ -808,9 +801,7 @@ void gb_mbc::writememory_MK12(register unsigned short address,register byte data
       if((!RAMenable || !rom->RAMsize) && !RAM_always_enable)
          return;
    }*/
-   
-   if(aGB->io_reg_write(address,data)) return;
-   
+
    aGB->mem_map[address>>12][address&0x0FFF] = data;
 }
 //-------------------------------------------------------------------------
@@ -851,9 +842,7 @@ void gb_mbc::writememory_Rockman8(register unsigned short address,register byte 
       return;
    
    // Always allow RAM writes.
-         
-   if(aGB->io_reg_write(address,data)) return;
-   
+
    aGB->mem_map[address>>12][address&0x0FFF] = data;
 }
 
@@ -902,8 +891,6 @@ void gb_mbc::writememory_MBC2(register unsigned short address,register byte data
       if(!RAMenable || !rom->battery)
          return;
    }*/
-   
-   if(aGB->io_reg_write(address,data)) return;
    
    aGB->mem_map[address>>12][address&0x0FFF] = data;
 }
@@ -1046,8 +1033,6 @@ void gb_mbc::writememory_poke(register unsigned short address,register byte data
       //   return;
    }
    
-   if(aGB->io_reg_write(address,data)) return;
-   
    aGB->mem_map[address>>12][address&0x0FFF] = data;
 }
 
@@ -1145,8 +1130,6 @@ void gb_mbc::writememory_MBC3(register unsigned short address,register byte data
       //if(!RAMenable || !rom->RAMsize)
       //   return;
    }
-   
-   if(aGB->io_reg_write(address,data)) return;
    
    aGB->mem_map[address>>12][address&0x0FFF] = data;
 }
@@ -1420,7 +1403,7 @@ void gb_mbc::writememory_MBC5(register unsigned short address,register byte data
    				break;
    			}
    			
-   			if (aGB->sintax_currentxor == 0 ) {
+   			if (aGB->rom_bank_xor == 0 ) {
    				setXorForBank(4);
    			}
    	   	    
@@ -1454,8 +1437,6 @@ void gb_mbc::writememory_MBC5(register unsigned short address,register byte data
       if(!RAMenable || !rom->RAMsize)     
          return;
    }*/
-   
-   if(aGB->io_reg_write(address,data)) return;
    
    aGB->mem_map[address>>12][address&0x0FFF] = data;
 }
@@ -1522,8 +1503,6 @@ void gb_mbc::writememory_Camera(register unsigned short address,register byte da
          return;
    }*/
    
-   if(aGB->io_reg_write(address,data)) return;
-   
    aGB->mem_map[address>>12][address&0x0FFF] = data;
 }
 
@@ -1588,7 +1567,7 @@ byte gb_mbc::readmemory_HuC3(register unsigned short address)
          return 0xFF;
    }
    
-   return aGB->io_reg_read(address);
+   return aGB->mem_map[address>>12][address&0x0FFF];
 }
 
 //-------------------------------------------------------------------------
@@ -1728,8 +1707,6 @@ void gb_mbc::writememory_HuC3(register unsigned short address,register byte data
          } 
       }
    }
-   
-   if(aGB->io_reg_write(address,data)) return;
    
    aGB->mem_map[address>>12][address&0x0FFF] = data;
 }
@@ -1965,8 +1942,6 @@ void gb_mbc::writememory_MBC7(register unsigned short address,register byte data
       return;
    }
    
-   if(aGB->io_reg_write(address,data)) return;
-
     aGB->mem_map[address>>12][address&0x0FFF] = data;
 }
 
@@ -2003,7 +1978,7 @@ byte gb_mbc::readmemory_MBC7(register unsigned short address)
       return 0xff;
    }
    
-   return aGB->io_reg_read(address);
+   return aGB->mem_map[address>>12][address&0x0FFF];
 }
 
 //-------------------------------------------------------------------------
@@ -2188,7 +2163,7 @@ byte gb_mbc::readmemory_TAMA5(register unsigned short address)
       }
    }
    
-   return aGB->io_reg_read(address);
+   return aGB->mem_map[address>>12][address&0x0FFF];
 }
 
 //-------------------------------------------------------------------------
@@ -2300,8 +2275,6 @@ void gb_mbc::writememory_TAMA5(register unsigned short address,register byte dat
          return;
       } 
    } 
-
-   if(aGB->io_reg_write(address,data)) return;
 
     aGB->mem_map[address>>12][address&0x0FFF] = data;
 }

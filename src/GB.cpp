@@ -159,7 +159,7 @@ gb_system::gb_system():
 
         rumble_counter(0),
 
-        sintax_currentxor(0)
+        rom_bank_xor(0)
 {
    button_pressed[B_LEFT]=button_pressed[B_RIGHT]=button_pressed[B_DOWN]=button_pressed[B_UP]=1;
    button_pressed[B_START]=button_pressed[B_SELECT]=button_pressed[B_A]=button_pressed[B_B]=1;

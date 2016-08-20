@@ -65,7 +65,6 @@ void gb_system::writememory(unsigned short address,byte data)
         if(io_reg_write(address,data)) return;
         mem_map[address>>12][address&0x0FFF] = data;
     }
-    // Todo; these should only call the MBC if its in ROM area
 }
 
 void gb_system::mem_reset(bool mini)
