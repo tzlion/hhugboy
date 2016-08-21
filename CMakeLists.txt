@@ -86,6 +86,10 @@ set(SOURCE_FILES
         src/memory/mbc/MbcNinCamera.h
         src/memory/mbc/RomOnly.cpp
         src/memory/mbc/RomOnly.h
+        src/memory/mbc/MbcNin5.cpp
+        src/memory/mbc/MbcNin5.h
+        src/memory/mbc/MbcUnlLiCheng.cpp
+        src/memory/mbc/MbcUnlLiCheng.h
         )
 
 include_directories(includes includes/zlib includes/libpng12 includes/fmod "C:\\png\\png++-0.2.5\\png++-0.2.5" "C:\\Program Files (x86)\\Microsoft DirectX SDK (August 2009)\\Include")

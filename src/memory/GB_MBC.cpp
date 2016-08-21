@@ -41,11 +41,7 @@
 #include "mbc/MbcLicHuc3.h"
 #include "mbc/MbcLicTama5.h"
 #include "mbc/MbcUnlSintax.h"
-
-byte vfmultimode=0;
-byte vfmultibank=0;
-byte vfmultimem=0;
-byte vfmultifinal=0;
+#include "mbc/MbcUnlLiCheng.h"
 
 //int RTCIO = 0;
 //int RTC_latched = 0;
@@ -125,10 +121,6 @@ void gb_mbc::writememory_cart(unsigned short address, register byte data) {
             writememory_MBC3(address,data);
             break;
 
-        case MEMORY_MBC5:
-            writememory_MBC5(address,data,false,false);
-            break;
-
         case MEMORY_ROCKMAN8:
             writememory_Rockman8(address,data);
             break;
@@ -154,13 +146,8 @@ void gb_mbc::writememory_cart(unsigned short address, register byte data) {
             break;
 
         case MEMORY_NIUTOUDE:
-            writememory_MBC5(address,data,true,false);
-            break;
-
         case MEMORY_SINTAX:
-            writememory_MBC5(address,data,false,true);
-            break;
-
+        case MEMORY_MBC5:
         case MEMORY_CAMERA:
         case MEMORY_TAMA5:
         case MEMORY_HUC3:
@@ -171,28 +158,6 @@ void gb_mbc::writememory_cart(unsigned short address, register byte data) {
             mbc->writeMemory(address,data);
             break;
     }
-}
-
-void gb_mbc::setXorForBank(byte bankNo)
-{
-  	switch(bankNo & 0x0F) {
-	case 0x00: case 0x04: case 0x08: case 0x0C:
-		*gbRomBankXor = mbc->sintax_xor2;
-		break;
-	case 0x01: case 0x05: case 0x09: case 0x0D:
-		*gbRomBankXor = mbc->sintax_xor3;
-		break;
-	case 0x02: case 0x06: case 0x0A: case 0x0E:
-		*gbRomBankXor = mbc->sintax_xor4;
-		break;
-	case 0x03: case 0x07: case 0x0B: case 0x0F:
-		*gbRomBankXor = mbc->sintax_xor5;
-		break;
-  	}
-
-  	//char buff[200];
-  //	sprintf(buff,"bank no %x abbr %x xor %x",bankNo,bankNo&0x0F,mbc->rom_bank_xor);
-  //	debug_print(buff);
 }
 
 //-------------------------------------------------------------------------
@@ -915,313 +880,6 @@ void gb_mbc::writememory_MBC3(register unsigned short address,register byte data
    gbMemMap[address>>12][address&0x0FFF] = data;
 }
 
-//-------------------------------------------------------------------------
-// writememory_MBC5:
-// for MBC5 and MBC5 rumble
-//-------------------------------------------------------------------------
-void gb_mbc::writememory_MBC5(register unsigned short address,register byte data,bool isNiutoude,bool isSintax)
-{
-    bool vfmulti = true;
-    if ( vfmulti && !mbc->bc_select ) {
-
-        if ( /*address & 0xF000 == 0x5000*/ address >= 0x5000 && address <= 0x5FFF ) {
-            vfmultimode = data;
-        }
-        if ( /*address & 0xF000 == 0x7000*/ address >= 0x7000 && address <= 0x7FFF ) {
-            bool effectChange = false;
-            switch( vfmultimode ) {
-                case 0xAA:
-                    if ( vfmultibank == 0 ) {
-                        vfmultibank = data;
-                    } else {
-                        effectChange = true;
-                    }
-                    break;
-                case 0xBB:
-                    vfmultimem = data;
-                    break;
-                case 0x55:
-                    vfmultifinal = data;
-                    effectChange = true;
-                    break;
-            }
-            if ( effectChange ) {
-
-                byte size = vfmultifinal & 0x07;
-                byte eightMegBankNo = ( vfmultifinal & 0x08 ) >> 3; // 0 or 1
-                byte doReset = ( vfmultifinal & 0x80 ) >> 7; // 0 or 1 again
-
-                int addroffset = vfmultibank << 15;
-                addroffset += (eightMegBankNo << 0x17);
-                superaddroffset = addroffset;
-
-                wchar_t wrmessage[50];
-                wsprintf(wrmessage,L"MM %X %X",superaddroffset,vfmultibank);
-                renderer.showMessage(wrmessage,60,GB1);
-
-                gbMemMap[0x0] = &(*gbCartridge)[addroffset];
-                gbMemMap[0x1] = &(*gbCartridge)[addroffset+0x1000];
-                gbMemMap[0x2] = &(*gbCartridge)[addroffset+0x2000];
-                gbMemMap[0x3] = &(*gbCartridge)[addroffset+0x3000];
-
-                gbMemMap[0x4] = &(*gbCartridge)[addroffset+0x4000];
-                gbMemMap[0x5] = &(*gbCartridge)[addroffset+0x5000];
-                gbMemMap[0x6] = &(*gbCartridge)[addroffset+0x6000];
-                gbMemMap[0x7] = &(*gbCartridge)[addroffset+0x7000];
-
-                // todo: Do the bank switch, changes the effective ROM..
-                // todo: Do the memory switch
-                if ( doReset ) {
-                      GB1->reset(true,true);
-                  /*  GB1->load_rom(L"dodgy-hardcoded-path",superaddroffset); // reload the ROM from a new offset
-                      superaddroffset = 0;
-                      GB1->reset();
-                    */
-                  // IT SEEMS that if we do a reset here it just doesnt fuck work properly anyway?
-                  // Need to re-reset thru the menu (assuming superaddroffset not changed) & then it works
-                }
-
-               if ( vfmultifinal>0) mbc->bc_select = 1;
-
-                vfmultimode=0; vfmultibank=0; vfmultimem=0; vfmultifinal = 0;
-
-                return;
-            }
-        }
-    }
-
-   if(address < 0x2000)// Is it a RAM bank enable/disable?
-   {
-      mbc->RAMenable = ( (data&0x0A) == 0x0A ? 1 : 0);
-      return;
-   }
-
-   if(address < 0x3000)
-   {
-	   	// 2100 needs to be not-ignored (for Cannon Fodder's sound)
-	   	// but 2180 DOES need to be ignored (for FF DX3)
-	   	// Determined to find the right number here
-      if (isNiutoude && address > 0x2100) {
-      	return;
-      }
-      byte origData = data;
-
-      if (isSintax) {
-      	switch(mbc->sintax_mode & 0x0f) {
-      		// Maybe these could go in a config file, so new ones can be added easily?
-      		case 0x0D: {
-      			byte flips[] = {6,7,0,1,2,3,4,5};
-      			data = switchOrder( data, flips );
-      			//data = ((data & 0x03) << 6 ) + ( data >> 2 );
-      			break;
-      		}
-      		case 0x09: {
-      		//	byte flips[] = {4,5,2,3,7,6,1,0}; // Monkey..no
-      			byte flips[] = {3,2,5,4,7,6,1,0};
-      			data = switchOrder( data, flips );
-      			break;
-      		}
-
-      		case 0x00: { // 0x10=lion 0x00 hmmmmm // 1 and 0 unconfirmed
-      			byte flips[] = {0,7,2,1,4,3,6,5};
-      			data = switchOrder( data, flips );
-      			break;
-      		}
-
-      		case 0x01: {
-      			byte flips[] = {7,6,1,0,3,2,5,4};
-      			data = switchOrder( data, flips );
-      			break;
-      		}
-
-      		case 0x05: {
-      			byte flips[] = {0,1,6,7,4,5,2,3}; // Not 100% on this one
-      			data = switchOrder( data, flips );
-      			break;
-      		}
-
-      		case 0x07: {
-      			byte flips[] = {5,7,4,6,2,3,0,1}; // 5 and 7 unconfirmed
-      			data = switchOrder( data, flips );
-      			break;
-      		}
-
-      		case 0x0B: {
-      			byte flips[] = {5,4,7,6,1,0,3,2}; // 5 and 6 unconfirmed
-      			data = switchOrder( data, flips );
-      			break;
-      		}
-
-      	}
-
-      	setXorForBank(origData);
-
-      }
-
-
-      // Set current xor so we dont have to figure it out on every read
-
-      mbc->rom_bank = data|(mbc->MBChi<<8);
-      mbc->cart_address = mbc->rom_bank<<14;
-
-      mbc->cart_address &= mbc->rom_size_mask[(*gbRom)->ROMsize];
-
-      mbc->cart_address += superaddroffset;
-
-      mbc->MBClo = data;
-
-      gbMemMap[0x4] = &(*gbCartridge)[mbc->cart_address];
-      gbMemMap[0x5] = &(*gbCartridge)[mbc->cart_address+0x1000];
-      gbMemMap[0x6] = &(*gbCartridge)[mbc->cart_address+0x2000];
-      gbMemMap[0x7] = &(*gbCartridge)[mbc->cart_address+0x3000];
-
-    //  if(origData == 0x69) {
-	//    	char buff[100];
-	//		sprintf(buff,"%X %X %X",origData,data,mbc->cart_address);
-	//		debug_print(buff);
-    //  }
-
-
-
-      return;
-   }
-
-   if(address < 0x4000) // Is it a ROM bank switch?
-   {
-      data = data&1;
-
-      mbc->rom_bank = mbc->MBClo|(data<<8);
-
-      mbc->cart_address = mbc->rom_bank<<14;
-
-      mbc->cart_address &= mbc->rom_size_mask[(*gbRom)->ROMsize];
-
-      mbc->cart_address += superaddroffset;
-
-      mbc->MBChi = data;
-
-      gbMemMap[0x4] = &(*gbCartridge)[mbc->cart_address];
-      gbMemMap[0x5] = &(*gbCartridge)[mbc->cart_address+0x1000];
-      gbMemMap[0x6] = &(*gbCartridge)[mbc->cart_address+0x2000];
-      gbMemMap[0x7] = &(*gbCartridge)[mbc->cart_address+0x3000];
-
-      return;
-   }
-
-   if(address < 0x6000) // Is it a RAM bank switch?
-   {
-
-   		// sintaxs not entirely understood addressing thing hi
-
-   		// check sintax_mode was not already set; if it was, ignore it (otherwise Metal Max breaks)
-   		if (isSintax && mbc->sintax_mode ==0 && address >= 0x5000 ) {
-
-   		 switch(0x0F & data) {
-   		 	case 0x0D: // old
-   		 	case 0x09: // ???
-   		 	case 0x00:// case 0x10: // LiON, GoldenSun
-   		 	case 0x01: // LANGRISSER
-   		 	case 0x05: // Maple, PK Platinum
-   		 	case 0x07: // Bynasty5
-   		 	case 0x0B: // Shaolin
-   		 		// These are all supported
-   		 	break;
-
-   		 	default:
-	 			char buff[100];
-   		 		sprintf(buff,"Unknown Sintax Mode %X Addr %X - probably won't work!",data,address);
-   		 		debug_print(buff);
-   			break;
-   		 }
-   		 mbc->sintax_mode=data;
-
-   		 writememory_MBC5(0x2000,01,false,true); // force a fake bank switch
-
-   		 return;
-
-   		}
-
-      if((*gbRom)->rumble)
-      {
-         if(data&0x08)
-            *gbRumbleCounter = 4;
-         data &= 0x07;
-      }
-
-      if((*gbRom)->RAMsize <= 2) // no need to change it if there isn't over 8KB ram
-         return;
-
-      data &= 0x0F;
-
-      if(data > mbc->maxRAMbank[(*gbRom)->RAMsize])
-         data = mbc->maxRAMbank[(*gbRom)->RAMsize];
-
-      mbc->ram_bank = data;
-
-      int madr = data<<13;
-      gbMemMap[0xA] = &(*gbCartRam)[madr];
-      gbMemMap[0xB] = &(*gbCartRam)[madr+0x1000];
-      return;
-   }
-
-   if(address<0x8000)
-   {
-   		if ( isSintax && address >= 0x7000 ) {
-
-   			int xorNo = ( address & 0x00F0 ) >> 4;
-   			switch (xorNo) {
-   				case 2:
-   					mbc->sintax_xor2 = data;
-   				break;
-   				case 3:
-   					mbc->sintax_xor3 = data;
-   				break;
-   				case 4:
-   					mbc->sintax_xor4 = data;
-   				break;
-   				case 5:
-					mbc->sintax_xor5 = data;
-   				break;
-   			}
-
-   			if (*gbRomBankXor == 0 ) {
-   				setXorForBank(4);
-   			}
-
-
-   			return;
-
-   		}
-
-
-    /*  if(++mbc->bc_select == 2 && rom->ROMsize>1)
-      {
-         mbc->MBChi = (data&0xFF);
-
-         mbc->cart_address = (mbc->MBChi<<1)<<14;
-
-         mem_map[0x0] = &cartridge[mbc->cart_address];
-         mem_map[0x1] = &cartridge[mbc->cart_address+0x1000];
-         mem_map[0x2] = &cartridge[mbc->cart_address+0x2000];
-         mem_map[0x3] = &cartridge[mbc->cart_address+0x3000];
-
-         mem_map[0x4] = &cartridge[mbc->cart_address+0x4000];
-         mem_map[0x5] = &cartridge[mbc->cart_address+0x5000];
-         mem_map[0x6] = &cartridge[mbc->cart_address+0x6000];
-         mem_map[0x7] = &cartridge[mbc->cart_address+0x7000];
-      }*/
-      return;
-   }
-
- /*  if(address >= 0xA000 && address < 0xC000)
-   {
-      if(!mbc->RAMenable || !rom->RAMsize)
-         return;
-   }*/
-
-   gbMemMap[address>>12][address&0x0FFF] = data;
-}
-
 void gb_mbc::readMbcSpecificStuffFromSaveFile(FILE *savefile) {
     if((*gbRom)->RTC || (*gbRom)->bankType == TAMA5)
     {
@@ -1310,16 +968,16 @@ void gb_mbc::readMbcBanksFromStateFile(FILE *statefile) {
 
 void gb_mbc::resetRomMemoryMap(bool resetOffset=false) {
     if ( resetOffset ) {
-        superaddroffset = 0;
+        mbc->superaddroffset = 0;
     }
-    gbMemMap[0x0] = &(*gbCartridge)[superaddroffset+0x0000];
-    gbMemMap[0x1] = &(*gbCartridge)[superaddroffset+0x1000];
-    gbMemMap[0x2] = &(*gbCartridge)[superaddroffset+0x2000];
-    gbMemMap[0x3] = &(*gbCartridge)[superaddroffset+0x3000];
-    gbMemMap[0x4] = &(*gbCartridge)[superaddroffset+0x4000];
-    gbMemMap[0x5] = &(*gbCartridge)[superaddroffset+0x5000];
-    gbMemMap[0x6] = &(*gbCartridge)[superaddroffset+0x6000];
-    gbMemMap[0x7] = &(*gbCartridge)[superaddroffset+0x7000];
+    gbMemMap[0x0] = &(*gbCartridge)[mbc->superaddroffset+0x0000];
+    gbMemMap[0x1] = &(*gbCartridge)[mbc->superaddroffset+0x1000];
+    gbMemMap[0x2] = &(*gbCartridge)[mbc->superaddroffset+0x2000];
+    gbMemMap[0x3] = &(*gbCartridge)[mbc->superaddroffset+0x3000];
+    gbMemMap[0x4] = &(*gbCartridge)[mbc->superaddroffset+0x4000];
+    gbMemMap[0x5] = &(*gbCartridge)[mbc->superaddroffset+0x5000];
+    gbMemMap[0x6] = &(*gbCartridge)[mbc->superaddroffset+0x6000];
+    gbMemMap[0x7] = &(*gbCartridge)[mbc->superaddroffset+0x7000];
 }
 
 int gb_mbc::getRomBank() {
@@ -1353,6 +1011,12 @@ void gb_mbc::setMemoryReadWrite(memoryaccess memory_type) {
         case MEMORY_SINTAX:
             mbc = new MbcUnlSintax();
             break;
+        case MEMORY_NIUTOUDE:
+            mbc = new MbcUnlLiCheng();
+            break;
+        case MEMORY_MBC5:
+            mbc = new MbcNin5();
+            break;
         case MEMORY_ROMONLY:
             mbc = new RomOnly();
             break;
@@ -1362,5 +1026,5 @@ void gb_mbc::setMemoryReadWrite(memoryaccess memory_type) {
             break;
     }
 
-    mbc->init( gbMemMap, gbRom, gbMemory, gbRomBankXor, gbCartridge, gbCartRam );
+    mbc->init( gbMemMap, gbRom, gbMemory, gbRomBankXor, gbCartridge, gbCartRam, gbRumbleCounter );
 }

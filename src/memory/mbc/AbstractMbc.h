@@ -89,6 +89,8 @@ public:
     byte sintax_xor4;
     byte sintax_xor5;
 
+    int superaddroffset;
+
 /*** BAD PUBLICS END ***/
 
 /*** THESE SHOULD BE PROTECTED IN THIS CLASS BUT NOT PUBLIC ***/
@@ -109,7 +111,7 @@ public:
 
     AbstractMbc();
 
-    void init(byte** gbMemMap, GBrom** gbRom, byte** gbMemory, byte* gbRomBankXor, byte** gbCartridge, byte** gbCartRam);
+    void init(byte** gbMemMap, GBrom** gbRom, byte** gbMemory, byte* gbRomBankXor, byte** gbCartridge, byte** gbCartRam, int* gbRumbleCounter);
     virtual byte readMemory(register unsigned short address) = 0;
     virtual void writeMemory(unsigned short address, register byte data) = 0;
     virtual void resetVars();
@@ -124,6 +126,7 @@ protected:
     byte* gbRomBankXor;
     byte** gbCartridge;
     byte** gbCartRam;
+    int* gbRumbleCounter;
 };
 
 

@@ -7,11 +7,16 @@
 
 
 #include "BasicMbc.h"
+#include "MbcNin5.h"
+
 //-------------------------------------------------------------------------
 // for SiNTAX
 //-------------------------------------------------------------------------
-class MbcUnlSintax : public BasicMbc {
+class MbcUnlSintax : public MbcNin5 {
     byte readMemory(register unsigned short address) override;
+
+public:
+    virtual void writeMemory(unsigned short address, register byte data) override;
 };
 
 

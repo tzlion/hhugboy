@@ -19,3 +19,7 @@ byte MbcUnlSintax::readMemory(register unsigned short address) {
 
     return gbMemMap[address>>12][address&0x0FFF];
 }
+
+void MbcUnlSintax::writeMemory(unsigned short address, register byte data) {
+    mbc5Write(address,data,false,true);
+}

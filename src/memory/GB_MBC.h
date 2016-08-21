@@ -71,22 +71,18 @@ private:
 
     memoryaccess mbcType;
 
-    int superaddroffset;
-
     void rtc_update();
 
     // MBC R/W methods
     void writememory_MBC1(unsigned short address,register byte data);
     void writememory_MBC2(unsigned short address,register byte data);
     void writememory_MBC3(unsigned short address,register byte data);
-    void writememory_MBC5(unsigned short address,register byte data, bool isNiutoude, bool isSintax);
     void writememory_Rockman8(register unsigned short address,register byte data);
     void writememory_BC(register unsigned short address,register byte data);
     void writememory_8in1(register unsigned short address,register byte data);
     void writememory_MMM01(register unsigned short address,register byte data);
     void writememory_MK12(register unsigned short address,register byte data);
     void writememory_poke(register unsigned short address,register byte data);
-    void setXorForBank(byte bankNo);
 
 };
 
