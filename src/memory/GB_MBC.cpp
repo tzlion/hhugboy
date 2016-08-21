@@ -65,41 +65,7 @@ gb_mbc::gb_mbc(byte** gbMemMap, byte** gbCartridge, GBrom** gbRom, byte** gbCart
 
 void gb_mbc::resetMbcVariables()
 {
-    mbc->MBC1memorymodel = 0;
-    mbc->MBChi = 0;
-    mbc->MBClo = 1;
-    mbc->rom_bank = 1;
-    mbc->ram_bank = 0;
-    mbc->RTCIO = 0;
-
-    mbc->bc_select = 0;
-
-    mbc->cameraIO = 0;
-    mbc->RTC_latched = 0;
-
-    mbc->rtc.s = 0;
-    mbc->rtc.m = 0;
-    mbc->rtc.h = 0;
-    mbc->rtc.d = 0;
-    mbc->rtc.control = 0;
-    mbc->rtc.last_time = time(0);
-    mbc->rtc.cur_register = 0x08;
-
-    mbc->tama_flag = 0;
-    mbc->tama_time = 0;
-    mbc->tama_val6 = 0;
-    mbc->tama_val7 = 0;
-    mbc->tama_val4 = 0;
-    mbc->tama_val5 = 0;
-    mbc->tama_count = 0;
-    mbc->tama_month = 0;
-    mbc->tama_change_clock = 0;
-
-    mbc->HuC3_flag = HUC3_NONE;
-    mbc->HuC3_RAMvalue = 1;
-
-    mbc->sintax_mode = 0;
-    mbc->sintax_xor2 = mbc->sintax_xor3 = mbc->sintax_xor4 = mbc->sintax_xor5 = 0;
+    mbc->resetVars();
 }
 
 byte gb_mbc::readmemory_cart(register unsigned short address) {
@@ -726,49 +692,12 @@ void gb_mbc::writememory_poke(register unsigned short address,register byte data
    gbMemMap[address>>12][address&0x0FFF] = data;
 }
 
-void gb_mbc::readMbcSpecificStuffFromSaveFile(FILE *savefile) {
-    if((*gbRom)->RTC || (*gbRom)->bankType == TAMA5)
-    {
-        fwrite(&(mbc->rtc).s, sizeof(int), 1, savefile);
-        fwrite(&(mbc->rtc).m, sizeof(int), 1, savefile);
-        fwrite(&(mbc->rtc).h, sizeof(int), 1, savefile);
-        fwrite(&(mbc->rtc).d, sizeof(int), 1, savefile);
-        fwrite(&(mbc->rtc).control, sizeof(int), 1, savefile);
-        fwrite(&(mbc->rtc).last_time, sizeof(time_t), 1, savefile);
-    }
-
-    if((*gbRom)->bankType == TAMA5)
-        fwrite(&(mbc->tama_month), sizeof(int), 1, savefile);
-
-    if((*gbRom)->bankType == HuC3)
-    {
-        fwrite(&(mbc->HuC3_time), sizeof(unsigned int), 1, savefile);
-        fwrite(&(mbc->HuC3_last_time), sizeof(time_t), 1, savefile);
-        fwrite(&(mbc->rtc).s, sizeof(int), 1, savefile);
-    }
+void gb_mbc::writeMbcSpecificStuffToSaveFile(FILE *savefile) {
+    mbc->writeMbcSpecificVarsToSaveFile(savefile);
 }
 
-void gb_mbc::writeMbcSpecificStuffToSaveFile(FILE *savefile){
-    if((*gbRom)->RTC || (*gbRom)->bankType == TAMA5)
-    {
-        fread(&(mbc->rtc).s, sizeof(int), 1, savefile);
-        fread(&(mbc->rtc).m, sizeof(int), 1, savefile);
-        fread(&(mbc->rtc).h, sizeof(int), 1, savefile);
-        fread(&(mbc->rtc).d, sizeof(int), 1, savefile);
-        fread(&(mbc->rtc).control, sizeof(int), 1, savefile);
-        fread(&(mbc->rtc).last_time, sizeof(time_t), 1, savefile);
-        mbc->rtc_latch = mbc->rtc;
-    }
-
-    if((*gbRom)->bankType == TAMA5)
-        fread(&(mbc->tama_month), sizeof(int), 1, savefile);
-
-    if((*gbRom)->bankType == HuC3)
-    {
-        fread(&(mbc->HuC3_time), sizeof(unsigned int), 1, savefile);
-        fread(&(mbc->HuC3_last_time), sizeof(time_t), 1, savefile);
-        fread(&(mbc->rtc).s, sizeof(int), 1, savefile);
-    }
+void gb_mbc::readMbcSpecificStuffFromSaveFile(FILE *savefile){
+    mbc->readMbcSpecificVarsFromSaveFile(savefile);
 }
 
 void gb_mbc::readNewerCartSpecificVarsFromStateFile(FILE *statefile) {
@@ -789,41 +718,23 @@ void gb_mbc::writeNewerCartSpecificVarsToStateFile(FILE *statefile) {
 
 
 void gb_mbc::writeMbcOtherStuffToStateFile(FILE *statefile) {
-    fwrite(&( mbc->MBC1memorymodel), sizeof(int), 1, statefile);
-    fwrite(&(mbc->RAMenable), sizeof(int), 1, statefile);
-    fwrite(&(mbc->MBChi), sizeof(unsigned int), 1, statefile);
-    fwrite(&(mbc->MBClo), sizeof(unsigned int), 1, statefile);
+    mbc->writeMbcOtherStuffToStateFile(statefile);
 }
 
 void gb_mbc::writeMbcBanksToStateFile(FILE *statefile) {
-    fwrite(&(mbc->rom_bank), sizeof(int), 1, statefile);
-    fwrite(&(mbc->ram_bank), sizeof(int), 1, statefile);
+    mbc->writeMbcBanksToStateFile(statefile);
 }
 
 void gb_mbc::readMbcMoreCrapFromStateFile(FILE *statefile) {
-    fread(&( mbc->MBC1memorymodel), sizeof(int), 1, statefile);
-    fread(&(mbc->RAMenable), sizeof(int), 1, statefile);
-    fread(&(mbc->MBChi), sizeof(unsigned int), 1, statefile);
-    fread(&(mbc->MBClo), sizeof(unsigned int), 1, statefile);
+    mbc->readMbcOtherStuffFromStateFile(statefile);
 }
 
 void gb_mbc::readMbcBanksFromStateFile(FILE *statefile) {
-    fread(&(mbc->rom_bank), sizeof(int), 1, statefile);
-    fread(&(mbc->ram_bank), sizeof(int), 1, statefile);
+    mbc->readMbcBanksFromStateFile(statefile);
 }
 
 void gb_mbc::resetRomMemoryMap(bool resetOffset=false) {
-    if ( resetOffset ) {
-        mbc->superaddroffset = 0;
-    }
-    gbMemMap[0x0] = &(*gbCartridge)[mbc->superaddroffset+0x0000];
-    gbMemMap[0x1] = &(*gbCartridge)[mbc->superaddroffset+0x1000];
-    gbMemMap[0x2] = &(*gbCartridge)[mbc->superaddroffset+0x2000];
-    gbMemMap[0x3] = &(*gbCartridge)[mbc->superaddroffset+0x3000];
-    gbMemMap[0x4] = &(*gbCartridge)[mbc->superaddroffset+0x4000];
-    gbMemMap[0x5] = &(*gbCartridge)[mbc->superaddroffset+0x5000];
-    gbMemMap[0x6] = &(*gbCartridge)[mbc->superaddroffset+0x6000];
-    gbMemMap[0x7] = &(*gbCartridge)[mbc->superaddroffset+0x7000];
+    mbc->resetRomMemoryMap(resetOffset);
 }
 
 int gb_mbc::getRomBank() {

@@ -343,7 +343,7 @@ bool gb_system::write_save()
       }
    }
 
-    mbc->readMbcSpecificStuffFromSaveFile(savefile);
+   mbc->writeMbcSpecificStuffToSaveFile(savefile);
 
     fclose(savefile);
 
@@ -422,7 +422,7 @@ bool gb_system::load_save(bool loading_GB1_save_to_GB2)
       }
    }
 
-    mbc->writeMbcSpecificStuffToSaveFile(savefile);
+   mbc->readMbcSpecificStuffFromSaveFile(savefile);
 
     fclose(savefile);
    SetCurrentDirectory(old_directory);

@@ -44,8 +44,8 @@ public:
     void resetMbcVariables();
     void resetRomMemoryMap(bool resetOffset);
 
-    void writeMbcSpecificStuffToSaveFile(FILE *savefile);
     void readMbcSpecificStuffFromSaveFile(FILE *savefile);
+    void writeMbcSpecificStuffToSaveFile(FILE *savefile);
 
     void readMbcBanksFromStateFile(FILE *statefile);
     void readMbcMoreCrapFromStateFile(FILE *statefile);

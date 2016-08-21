@@ -119,6 +119,14 @@ public:
     virtual void writeNewMbcSpecificVarsToStateFile(FILE *statefile);
     virtual void readOldMbcSpecificVarsFromStateFile(FILE *statefile);
     virtual void readNewMbcSpecificVarsFromStateFile(FILE *statefile);
+    virtual void readMbcSpecificVarsFromSaveFile(FILE *savefile);
+    virtual void writeMbcSpecificVarsToSaveFile(FILE *savefile);
+
+    void readMbcBanksFromStateFile(FILE *statefile);
+    void writeMbcBanksToStateFile(FILE *statefile);
+    void readMbcOtherStuffFromStateFile(FILE *statefile);
+    void writeMbcOtherStuffToStateFile(FILE *statefile);
+    void resetRomMemoryMap(bool resetOffset=false);
 protected:
     byte** gbMemMap;
     byte** gbMemory;
