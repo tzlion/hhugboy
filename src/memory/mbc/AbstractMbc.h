@@ -72,12 +72,29 @@ public:
     byte sintax_xor4;
     byte sintax_xor5;
 
-    AbstractMbc();
-
 /*** BAD PUBLICS END ***/
 
-    void init(byte** gbMemMap, GBrom** gbRom, byte** gbMemory, byte* gbRomBankXor);
+/*** THESE SHOULD BE PROTECTED IN THIS CLASS BUT NOT PUBLIC ***/
+    int rom_bank;
+    int ram_bank;
+
+    unsigned short MBChi;
+    unsigned short MBClo;
+
+    int RAMenable;
+/** MORE BAD PUBLICS END **/
+/*** THESE SHOULD GO SOMEWHERE ELSE ***/
+    unsigned int cart_address = 0; // this is dodgy just get rid of it eventually kthx
+    int maxROMbank[9] = { 1, 3, 7, 15, 31, 63, 127, 255, 511 };
+    int maxRAMbank[6] = { 0, 0, 0, 4, 15, 7 };
+    int rom_size_mask[9] = { 0x00007fff, 0x0000ffff, 0x0001ffff, 0x0003ffff, 0x0007ffff, 0x000fffff, 0x001fffff, 0x003fffff, 0x007fffff };
+/** MORE BAD PUBLICS END **/
+
+    AbstractMbc();
+
+    void init(byte** gbMemMap, GBrom** gbRom, byte** gbMemory, byte* gbRomBankXor, byte** gbCartridge, byte** gbCartRam);
     virtual byte readMemory(register unsigned short address) = 0;
+    virtual void writeMemory(unsigned short address, register byte data) = 0;
     virtual void resetVars() = 0;
     virtual void writeOldMbcSpecificVarsToStateFile(FILE *statefile) = 0;
     virtual void writeNewMbcSpecificVarsToStateFile(FILE *statefile) = 0;
@@ -88,6 +105,8 @@ protected:
     byte** gbMemory;
     GBrom** gbRom;
     byte* gbRomBankXor;
+    byte** gbCartridge;
+    byte** gbCartRam;
 };
 
 

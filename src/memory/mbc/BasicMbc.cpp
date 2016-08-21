@@ -48,3 +48,7 @@ void BasicMbc::writeNewMbcSpecificVarsToStateFile(FILE *statefile) {
 void BasicMbc::writeOldMbcSpecificVarsToStateFile(FILE *statefile) {
 
 }
+
+void BasicMbc::writeMemory(unsigned short address, register byte data) {
+
+}

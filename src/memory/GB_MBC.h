@@ -70,14 +70,6 @@ private:
 
     memoryaccess mbcType;
 
-    int rom_bank;
-    int ram_bank;
-
-    unsigned short MBChi;
-    unsigned short MBClo;
-
-    int RAMenable;
-
     int superaddroffset;
 
     void rtc_update();

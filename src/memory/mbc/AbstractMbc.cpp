@@ -4,14 +4,23 @@
 
 #include "AbstractMbc.h"
 
-void AbstractMbc::init(byte** gbMemMap, GBrom** gbRom, byte** gbMemory, byte* gbRomBankXor) {
+void AbstractMbc::init(byte** gbMemMap, GBrom** gbRom, byte** gbMemory, byte* gbRomBankXor, byte** gbCartridge, byte** gbCartRam) {
     this->gbMemMap = gbMemMap;
     this->gbRom = gbRom;
     this->gbMemory = gbMemory;
     this->gbRomBankXor = gbRomBankXor;
+    this->gbCartridge = gbCartridge;
+    this->gbCartRam = gbCartRam;
 }
 
 AbstractMbc::AbstractMbc():
+        rom_bank(1),
+        ram_bank(0),
+
+        RAMenable(0),
+        MBChi(0),
+        MBClo(0),
+
         bc_select(0),
 
         HuC3_RAMvalue(0),
