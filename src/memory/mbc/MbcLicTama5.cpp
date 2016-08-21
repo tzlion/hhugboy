@@ -227,3 +227,111 @@ void MbcLicTama5::writeNewMbcSpecificVarsToStateFile(FILE *statefile) {
 void MbcLicTama5::writeOldMbcSpecificVarsToStateFile(FILE *statefile) {
     fwrite(&(tama_flag), sizeof(int), 1, statefile);
 }
+
+void MbcLicTama5::writeMemory(unsigned short address, register byte data) {
+    if(address < 0x8000) // ?
+    {
+        return;
+    }
+
+    if(address >= 0xA000 && address < 0xC000)
+    {
+        if(address == 0xA000)
+        {
+            switch(tama_flag)
+            {
+                case 0: // rom bank lower nibble
+                {
+                    data &= 0x0F;
+
+                    MBClo = data;
+                    rom_bank = MBClo|(MBChi<<4);
+
+                    int cadr = rom_bank<<14;
+                    gbMemMap[0x4] = &(*gbCartridge)[cadr];
+                    gbMemMap[0x5] = &(*gbCartridge)[cadr+0x1000];
+                    gbMemMap[0x6] = &(*gbCartridge)[cadr+0x2000];
+                    gbMemMap[0x7] = &(*gbCartridge)[cadr+0x3000];
+                }
+                    return;
+                case 1: // rom bank high bit
+                {
+                    data &= 0x01;
+
+                    MBChi = data;
+
+                    rom_bank = MBClo|(MBChi<<4);
+
+                    int cadr = rom_bank<<14;
+                    gbMemMap[0x4] = &(*gbCartridge)[cadr];
+                    gbMemMap[0x5] = &(*gbCartridge)[cadr+0x1000];
+                    gbMemMap[0x6] = &(*gbCartridge)[cadr+0x2000];
+                    gbMemMap[0x7] = &(*gbCartridge)[cadr+0x3000];
+                }
+                    return;
+                case 4: // RTC controls
+                    tama_val4 = data;
+                    return;
+                case 5: // write time (and write memory????)
+                    tama_val5 = data;
+                    ++tama_count;
+                    if(tama_count==1 && data == 0) tama_change_clock |= 2;
+                    if(tama_count==2 && data == 1) tama_change_clock |= 1;
+                    if(tama_change_clock == 3) rtc.last_time = time(0);
+
+                    (*gbMemory)[0xA000+(tama_val6<<4)+tama_val7] = tama_val4|(data<<4);
+
+                    //which time counter is changed?
+                    if(tama_count==6 && tama_change_clock==3)
+                    {
+                        tama_month = data;
+                    } else
+                    if(tama_count==7 && tama_change_clock==3)
+                    {
+                        tama_month += data*10;
+                    } else
+                    if(tama_count==8 && tama_change_clock==3)
+                    {
+                        rtc.d = data;
+                    } else
+                    if(tama_count==9 && tama_change_clock==3)
+                    {
+                        rtc.d += data*10;
+                    } else
+                    if(tama_count==10 && tama_change_clock==3)
+                    {
+                        rtc.m = data*10;
+                    } else
+                    if(tama_count==11 && tama_change_clock==3)
+                    {
+                        rtc.h = data*10;
+                    } else
+                    if(tama_change_clock==3 && tama_count >= 13)
+                    {
+                        tama_count = 0;
+                        tama_change_clock = 0;
+                    } else
+                    if(tama_change_clock!=3 && tama_count >= 2)
+                    {
+                        tama_count=0;
+                        tama_change_clock = 0;
+                    }
+                    return;
+                case 6: // RTC controls
+                    tama_val6 = data;
+                    return;
+                case 7: // RTC controls
+                    tama_val7 = data;
+                    return;
+            }
+        } else
+        if(address == 0xA001)
+        {
+            tama_flag = data;
+
+            return;
+        }
+    }
+
+    gbMemMap[address>>12][address&0x0FFF] = data;
+}

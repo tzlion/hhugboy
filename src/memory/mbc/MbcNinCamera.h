@@ -8,10 +8,13 @@
 
 #include "BasicMbc.h"
 //-------------------------------------------------------------------------
-// for GB Pocket Camera
+// for the Gameboy Pocket Camera
 //-------------------------------------------------------------------------
 class MbcNinCamera : public BasicMbc {
     byte readMemory(register unsigned short address) override;
+
+public:
+    virtual void writeMemory(unsigned short address, register byte data) override;
 };
 
 

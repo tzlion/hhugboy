@@ -129,14 +129,6 @@ void gb_mbc::writememory_cart(unsigned short address, register byte data) {
             writememory_MBC5(address,data,false,false);
             break;
 
-        case MEMORY_CAMERA:
-            writememory_Camera(address,data);
-            break;
-
-        case MEMORY_TAMA5:
-            writememory_TAMA5(address,data);
-            break;
-
         case MEMORY_ROCKMAN8:
             writememory_Rockman8(address,data);
             break;
@@ -169,6 +161,8 @@ void gb_mbc::writememory_cart(unsigned short address, register byte data) {
             writememory_MBC5(address,data,false,true);
             break;
 
+        case MEMORY_CAMERA:
+        case MEMORY_TAMA5:
         case MEMORY_HUC3:
         case MEMORY_ROMONLY:
         case MEMORY_MBC7:
@@ -195,7 +189,7 @@ void gb_mbc::setXorForBank(byte bankNo)
 		*gbRomBankXor = mbc->sintax_xor5;
 		break;
   	}
-  	
+
   	//char buff[200];
   //	sprintf(buff,"bank no %x abbr %x xor %x",bankNo,bankNo&0x0F,mbc->rom_bank_xor);
   //	debug_print(buff);
@@ -1226,184 +1220,6 @@ void gb_mbc::writememory_MBC5(register unsigned short address,register byte data
    }*/
 
    gbMemMap[address>>12][address&0x0FFF] = data;
-}
-
-//-------------------------------------------------------------------------
-// writememory_Camera:
-// for the Gameboy Pocket Camera
-//-------------------------------------------------------------------------
-void gb_mbc::writememory_Camera(register unsigned short address,register byte data)
-{
-   if(address < 0x2000)// Is it a RAM bank enable/disable?
-   {
-      mbc->RAMenable = ( (data&0x0A) == 0x0A ? 1 : 0);
-      return;
-   }
-
-   if(address < 0x4000) // Is it a ROM bank switch?
-   {
-      if(data == 0)
-         data = 1;
-      if(data > mbc->maxROMbank[(*gbRom)->ROMsize])
-         data = mbc->maxROMbank[(*gbRom)->ROMsize];
-
-      mbc->rom_bank = data;
-
-      int cadr = data<<14;
-      gbMemMap[0x4] = &(*gbCartridge)[cadr];
-      gbMemMap[0x5] = &(*gbCartridge)[cadr+0x1000];
-      gbMemMap[0x6] = &(*gbCartridge)[cadr+0x2000];
-      gbMemMap[0x7] = &(*gbCartridge)[cadr+0x3000];
-      return;
-   }
-
-   if(address < 0x6000) // Is it a RAM bank switch?
-   {
-      if(data == 0x10)
-      {
-         mbc->cameraIO = 1;
-         return;
-      }
-      else
-         mbc->cameraIO = 0;
-
-      data &= 0x0F;
-
-      if(data > mbc->maxRAMbank[(*gbRom)->RAMsize])
-         data = mbc->maxRAMbank[(*gbRom)->RAMsize];
-
-      mbc->ram_bank = data;
-
-      int madr = data<<13;
-      gbMemMap[0xA] = &(*gbCartRam)[madr];
-      gbMemMap[0xB] = &(*gbCartRam)[madr+0x1000];
-      return;
-
-   }
-
-   if(address<0x8000)
-      return;
-
- /*  if(address >= 0xA000 && address < 0xC000)
-   {
-      if(!mbc->RAMenable)
-         return;
-   }*/
-
-   gbMemMap[address>>12][address&0x0FFF] = data;
-}
-
-//-------------------------------------------------------------------------
-// writememory_TAMA5:
-// for Bandai TAMA5 (Tamagotchi3)
-//-------------------------------------------------------------------------
-void gb_mbc::writememory_TAMA5(register unsigned short address,register byte data)
-{   
-   if(address < 0x8000) // ?
-   {  
-      return;   
-   }
-   
-   if(address >= 0xA000 && address < 0xC000)
-   {       
-      if(address == 0xA000)
-      {                 
-         switch(mbc->tama_flag)
-         {
-         case 0: // rom bank lower nibble
-         {
-            data &= 0x0F;
-
-             mbc->MBClo = data;
-             mbc->rom_bank = mbc->MBClo|(mbc->MBChi<<4);
-       
-            int cadr = mbc->rom_bank<<14;
-             gbMemMap[0x4] = &(*gbCartridge)[cadr];
-             gbMemMap[0x5] = &(*gbCartridge)[cadr+0x1000];
-             gbMemMap[0x6] = &(*gbCartridge)[cadr+0x2000];
-             gbMemMap[0x7] = &(*gbCartridge)[cadr+0x3000];
-         }
-         return;
-         case 1: // rom bank high bit
-         {
-            data &= 0x01;
-            
-            mbc->MBChi = data;
-            
-            mbc->rom_bank = mbc->MBClo|(mbc->MBChi<<4);
-       
-            int cadr = mbc->rom_bank<<14;
-            gbMemMap[0x4] = &(*gbCartridge)[cadr];
-            gbMemMap[0x5] = &(*gbCartridge)[cadr+0x1000];
-            gbMemMap[0x6] = &(*gbCartridge)[cadr+0x2000];
-            gbMemMap[0x7] = &(*gbCartridge)[cadr+0x3000];
-         }
-         return;
-         case 4: // RTC controls
-            mbc->tama_val4 = data;
-         return;
-         case 5: // write time (and write memory????)
-            mbc->tama_val5 = data;
-            ++mbc->tama_count;
-            if(mbc->tama_count==1 && data == 0) mbc->tama_change_clock |= 2;
-            if(mbc->tama_count==2 && data == 1) mbc->tama_change_clock |= 1;
-            if(mbc->tama_change_clock == 3) mbc->rtc.last_time = time(0);
-
-             (*gbMemory)[0xA000+(mbc->tama_val6<<4)+mbc->tama_val7] = mbc->tama_val4|(data<<4);
-            
-            //which time counter is changed?
-            if(mbc->tama_count==6 && mbc->tama_change_clock==3)
-            {
-               mbc->tama_month = data;
-            } else
-            if(mbc->tama_count==7 && mbc->tama_change_clock==3)
-            {
-               mbc->tama_month += data*10;
-            } else
-            if(mbc->tama_count==8 && mbc->tama_change_clock==3)
-            {
-               mbc->rtc.d = data;
-            } else
-            if(mbc->tama_count==9 && mbc->tama_change_clock==3)
-            {
-                mbc->rtc.d += data*10;
-            } else
-            if(mbc->tama_count==10 && mbc->tama_change_clock==3)
-            {
-                mbc->rtc.m = data*10;
-            } else
-            if(mbc->tama_count==11 && mbc->tama_change_clock==3)
-            {
-                mbc->rtc.h = data*10;
-            } else
-            if(mbc->tama_change_clock==3 && mbc->tama_count >= 13)
-            {
-                mbc->tama_count = 0;
-                mbc->tama_change_clock = 0;
-            } else
-            if(mbc->tama_change_clock!=3 && mbc->tama_count >= 2)
-            {
-                mbc->tama_count=0;
-                mbc->tama_change_clock = 0;
-            }
-         return;         
-         case 6: // RTC controls
-             mbc->tama_val6 = data;
-         return;         
-         case 7: // RTC controls
-             mbc->tama_val7 = data;
-         return;
-         }
-      } else
-      if(address == 0xA001)
-      {
-          mbc->tama_flag = data;
-                  
-         return;
-      } 
-   } 
-
-    gbMemMap[address>>12][address&0x0FFF] = data;
 }
 
 void gb_mbc::readMbcSpecificStuffFromSaveFile(FILE *savefile) {

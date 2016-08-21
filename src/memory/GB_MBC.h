@@ -80,8 +80,6 @@ private:
     void writememory_MBC2(unsigned short address,register byte data);
     void writememory_MBC3(unsigned short address,register byte data);
     void writememory_MBC5(unsigned short address,register byte data, bool isNiutoude, bool isSintax);
-    void writememory_Camera(unsigned short address,register byte data);
-    void writememory_TAMA5(register unsigned short address,register byte data);
     void writememory_Rockman8(register unsigned short address,register byte data);
     void writememory_BC(register unsigned short address,register byte data);
     void writememory_8in1(register unsigned short address,register byte data);

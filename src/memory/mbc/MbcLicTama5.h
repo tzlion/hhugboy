@@ -20,6 +20,9 @@ public:
     virtual void readNewMbcSpecificVarsFromStateFile(FILE *statefile) override;
     virtual void readOldMbcSpecificVarsFromStateFile(FILE *statefile) override;
     virtual void writeNewMbcSpecificVarsToStateFile(FILE *statefile) override;
+
+    virtual void writeMemory(unsigned short address, register byte data) override;
+
     virtual void writeOldMbcSpecificVarsToStateFile(FILE *statefile) override;
 };
 
