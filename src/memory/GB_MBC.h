@@ -71,12 +71,9 @@ private:
 
     memoryaccess mbcType;
 
-    void rtc_update();
-
     // MBC R/W methods
     void writememory_MBC1(unsigned short address,register byte data);
     void writememory_MBC2(unsigned short address,register byte data);
-    void writememory_MBC3(unsigned short address,register byte data);
     void writememory_Rockman8(register unsigned short address,register byte data);
     void writememory_BC(register unsigned short address,register byte data);
     void writememory_8in1(register unsigned short address,register byte data);

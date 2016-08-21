@@ -11,9 +11,8 @@
 // for the Gameboy Pocket Camera
 //-------------------------------------------------------------------------
 class MbcNinCamera : public BasicMbc {
-    byte readMemory(register unsigned short address) override;
-
 public:
+    virtual byte readMemory(register unsigned short address) override;
     virtual void writeMemory(unsigned short address, register byte data) override;
 };
 

@@ -11,7 +11,6 @@
 // for MBC5 and MBC5 rumble
 //-------------------------------------------------------------------------
 class MbcNin5 : public BasicMbc {
-protected:
 public:
     virtual void writeMemory(unsigned short address, register byte data) override;
 

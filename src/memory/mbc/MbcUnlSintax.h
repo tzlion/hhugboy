@@ -13,9 +13,8 @@
 // for SiNTAX
 //-------------------------------------------------------------------------
 class MbcUnlSintax : public MbcNin5 {
-    byte readMemory(register unsigned short address) override;
-
 public:
+    virtual byte readMemory(register unsigned short address) override;
     virtual void writeMemory(unsigned short address, register byte data) override;
 };
 

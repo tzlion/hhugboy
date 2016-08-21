@@ -14,11 +14,8 @@ class MbcNin7 : public BasicMbc {
 public:
     virtual void readOldMbcSpecificVarsFromStateFile(FILE *statefile) override;
     virtual void writeOldMbcSpecificVarsToStateFile(FILE *statefile) override;
-
     virtual void writeMemory(unsigned short address, register byte data) override;
-
-private:
-    byte readMemory(register unsigned short address) override;
+    virtual byte readMemory(register unsigned short address) override;
 };
 
 

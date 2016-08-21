@@ -117,10 +117,6 @@ void gb_mbc::writememory_cart(unsigned short address, register byte data) {
             writememory_MBC2(address,data);
             break;
 
-        case MEMORY_MBC3:
-            writememory_MBC3(address,data);
-            break;
-
         case MEMORY_ROCKMAN8:
             writememory_Rockman8(address,data);
             break;
@@ -145,6 +141,7 @@ void gb_mbc::writememory_cart(unsigned short address, register byte data) {
             writememory_MK12(address,data);
             break;
 
+        case MEMORY_MBC3:
         case MEMORY_NIUTOUDE:
         case MEMORY_SINTAX:
         case MEMORY_MBC5:
@@ -640,58 +637,6 @@ void gb_mbc::writememory_MBC2(register unsigned short address,register byte data
    gbMemMap[address>>12][address&0x0FFF] = data;
 }
 
-void gb_mbc::rtc_update()
-{
-   if(mbc->rtc.control&0x40)
-   {
-       mbc->rtc.last_time = time(0);
-      return;
-   }
-
-   time_t now = time(0);
-   time_t diff = now-mbc->rtc.last_time;
-   if(diff > 0)
-   {
-    mbc->rtc.s += diff % 60;
-    if(mbc->rtc.s > 59)
-    {
-      mbc->rtc.s -= 60;
-      mbc->rtc.m++;
-    }
-
-    diff /= 60;
-
-    mbc->rtc.m += diff % 60;
-    if(mbc->rtc.m > 59)
-    {
-      mbc->rtc.m -= 60;
-      mbc->rtc.h++;
-    }
-
-    diff /= 60;
-
-    mbc->rtc.h += diff % 24;
-    if(mbc->rtc.h > 24)
-    {
-      mbc->rtc.h -= 24;
-      mbc->rtc.d++;
-    }
-    diff /= 24;
-
-    mbc->rtc.d += diff;
-    if(mbc->rtc.d > 255)
-    {
-      if(mbc->rtc.d > 511)
-      {
-         mbc->rtc.d %= 512;
-         mbc->rtc.control |= 0x80;
-      }
-      mbc->rtc.control = (mbc->rtc.control & 0xfe) | (mbc->rtc.d>255 ? 1 : 0);
-    }
-  }
-  mbc->rtc.last_time = now;
-}
-
 //-------------------------------------------------------------------------
 // writememory_poke:
 // for Pokemon Red & Blue 2-in-1
@@ -773,105 +718,6 @@ void gb_mbc::writememory_poke(register unsigned short address,register byte data
          gbMemMap[0x6] = &(*gbCartridge)[mbc->cart_address+0x6000];
          gbMemMap[0x7] = &(*gbCartridge)[mbc->cart_address+0x7000];
          return;
-      }
-      //if(!mbc->RAMenable || !rom->RAMsize)
-      //   return;
-   }
-
-   gbMemMap[address>>12][address&0x0FFF] = data;
-}
-
-//-------------------------------------------------------------------------
-// writememory_MBC3:
-// for MBC3
-//-------------------------------------------------------------------------
-void gb_mbc::writememory_MBC3(register unsigned short address,register byte data)
-{
-
-   if(address < 0x2000)// Is it a RAM bank enable/disable?
-   {
-      mbc->RAMenable = ( (data&0x0A) == 0x0A ? 1 : 0);
-      return;
-   }
-
-   if(address < 0x4000) // Is it a ROM bank switch?
-   {
-      data &= 0x7F;
-      if(data==0)
-         data=1;
-
-      mbc->rom_bank = data;
-
-      int cadr = data<<14;
-      cadr &= mbc->rom_size_mask[(*gbRom)->ROMsize];
-      gbMemMap[0x4] = &(*gbCartridge)[cadr];
-      gbMemMap[0x5] = &(*gbCartridge)[cadr+0x1000];
-      gbMemMap[0x6] = &(*gbCartridge)[cadr+0x2000];
-      gbMemMap[0x7] = &(*gbCartridge)[cadr+0x3000];
-      return;
-   }
-
-   if(address < 0x6000) // Is it a RAM bank switch?
-   {
-      if((*gbRom)->RTC && data>8)
-      {
-         mbc->RTCIO = 1;
-         mbc->rtc.cur_register = data;
-
-         return;
-      } else mbc->RTCIO = 0;
-
-      if((*gbRom)->RAMsize <= 2) // no need to change it if there isn't over 8KB ram
-         return;
-
-      data &= 0x03;
-
-      if(data > mbc->maxRAMbank[(*gbRom)->RAMsize])
-         data = mbc->maxRAMbank[(*gbRom)->RAMsize];
-
-      mbc->ram_bank = data;
-
-      int madr = data<<13;
-      gbMemMap[0xA] = &(*gbCartRam)[madr];
-      gbMemMap[0xB] = &(*gbCartRam)[madr+0x1000];
-      return;
-   }
-
-   if(address < 0x8000)
-   {
-      if(data == 1)
-      {
-         rtc_update();
-         mbc->RTC_latched = !mbc->RTC_latched;
-         mbc->rtc_latch = mbc->rtc;
-      }
-      return;
-   }
-
-   if(address >= 0xA000 && address < 0xC000)
-   {
-      if(mbc->RAMenable && (*gbRom)->RTC && mbc->RTCIO)
-      {
-         time(&(mbc->rtc).last_time);
-         switch(mbc->rtc.cur_register)
-         {
-            case 0x08:
-               mbc->rtc.s = data;
-            break;
-            case 0x09:
-               mbc->rtc.m = data;
-            break;
-            case 0x0A:
-               mbc->rtc.h = data;
-            break;
-            case 0x0B:
-               mbc->rtc.d = data;
-            break;
-            case 0x0C:
-               mbc->rtc.control = data;
-               mbc->rtc.d |= (data&1)<<8;
-            break;
-         }
       }
       //if(!mbc->RAMenable || !rom->RAMsize)
       //   return;
@@ -1020,8 +866,16 @@ void gb_mbc::setMemoryReadWrite(memoryaccess memory_type) {
         case MEMORY_ROMONLY:
             mbc = new RomOnly();
             break;
-        default:
+        case MEMORY_MBC1:
+        case MEMORY_MBC2:
+        case MEMORY_ROCKMAN8:
+        case MEMORY_BC:
+        case MEMORY_MMM01:
+        case MEMORY_POKE:
+        case MEMORY_8IN1:
+        case MEMORY_MK12:
         case MEMORY_DEFAULT:
+        default:
             mbc = new BasicMbc();
             break;
     }

@@ -12,18 +12,17 @@
 //-------------------------------------------------------------------------
 
 class MbcLicTama5 : public BasicMbc {
-    byte readMemory(register unsigned short address);
-private:
-    void updateTamaRtc();
 
 public:
     virtual void readNewMbcSpecificVarsFromStateFile(FILE *statefile) override;
     virtual void readOldMbcSpecificVarsFromStateFile(FILE *statefile) override;
     virtual void writeNewMbcSpecificVarsToStateFile(FILE *statefile) override;
-
     virtual void writeMemory(unsigned short address, register byte data) override;
-
     virtual void writeOldMbcSpecificVarsToStateFile(FILE *statefile) override;
+    virtual byte readMemory(register unsigned short address);
+private:
+    void updateTamaRtc();
+
 };
 
 
