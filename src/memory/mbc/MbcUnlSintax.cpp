@@ -2,9 +2,9 @@
 // Created by Alex on 20/08/2016.
 //
 
-#include "Sintax.h"
+#include "MbcUnlSintax.h"
 
-byte Sintax::readMemory(register unsigned short address) {
+byte MbcUnlSintax::readMemory(register unsigned short address) {
 
     if(address >= 0x4000 && address < 0x8000)
     {

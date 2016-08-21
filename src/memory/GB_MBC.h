@@ -4,8 +4,8 @@
 #ifndef HHUGBOY_GB_MBC_H_H
 #define HHUGBOY_GB_MBC_H_H
 
-#include "mbc/Mbc.h"
-#include "mbc/Huc3.h"
+#include "mbc/AbstractMbc.h"
+#include "mbc/MbcLicHuc3.h"
 
 enum memoryaccess
 {
@@ -58,7 +58,7 @@ public:
 
 private:
 
-    Mbc *mbc;
+    AbstractMbc *mbc;
 
     byte** gbMemMap;
     GBrom** gbRom;
@@ -100,17 +100,6 @@ private:
     void writememory_MK12(register unsigned short address,register byte data);
     void writememory_poke(register unsigned short address,register byte data);
     void setXorForBank(byte bankNo);
-
-    void readRtcVarsFromStateFile(FILE *statefile);
-    void readHuc3VarsFromStateFile(FILE *statefile);
-    void readMbc7VarsFromStateFile(FILE *statefile);
-    void readTama5VarsFromStateFile(FILE *statefile);
-    void readMoreTama5VarsFromStateFile(FILE *statefile);
-    void writeRtcVarsToStateFile(FILE *statefile);
-    void writeHuc3VarsToStateFile(FILE *statefile);
-    void writeMbc7VarsToStateFile(FILE *statefile);
-    void writeTama5VarsToStateFile(FILE *statefile);
-    void writeMoreTama5VarsToStateFile(FILE *statefile);
 
 };
 

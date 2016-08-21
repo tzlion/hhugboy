@@ -2,16 +2,16 @@
 // Created by Alex on 20/08/2016.
 //
 
-#include "Mbc.h"
+#include "AbstractMbc.h"
 
-void Mbc::init(byte** gbMemMap, GBrom** gbRom, byte** gbMemory, byte* gbRomBankXor) {
+void AbstractMbc::init(byte** gbMemMap, GBrom** gbRom, byte** gbMemory, byte* gbRomBankXor) {
     this->gbMemMap = gbMemMap;
     this->gbRom = gbRom;
     this->gbMemory = gbMemory;
     this->gbRomBankXor = gbRomBankXor;
 }
 
-Mbc::Mbc():
+AbstractMbc::AbstractMbc():
         bc_select(0),
 
         HuC3_RAMvalue(0),

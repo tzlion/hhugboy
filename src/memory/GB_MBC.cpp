@@ -35,12 +35,12 @@
 #include <stdio.h>
 
 #include "../main.h"
-#include "mbc/Mbc3.h"
-#include "mbc/MbcCamera.h"
-#include "mbc/Mbc7.h"
-#include "mbc/Huc3.h"
-#include "mbc/Tama5.h"
-#include "mbc/Sintax.h"
+#include "mbc/MbcNin3.h"
+#include "mbc/MbcNinCamera.h"
+#include "mbc/MbcNin7.h"
+#include "mbc/MbcLicHuc3.h"
+#include "mbc/MbcLicTama5.h"
+#include "mbc/MbcUnlSintax.h"
 
 byte vfmultimode=0;
 byte vfmultibank=0;
@@ -1976,127 +1976,21 @@ void gb_mbc::writeMbcSpecificStuffToSaveFile(FILE *savefile){
 }
 
 void gb_mbc::readNewerCartSpecificVarsFromStateFile(FILE *statefile) {
-    if((*gbRom)->bankType == TAMA5)
-    {
-        readMoreTama5VarsFromStateFile(statefile);
-    }
+    mbc->readNewMbcSpecificVarsFromStateFile(statefile);
 }
 
 void gb_mbc::readCartSpecificVarsFromStateFile(FILE *statefile){
-    if((*gbRom)->RTC)
-    {
-        readRtcVarsFromStateFile(statefile);
-    }
-
-    if((*gbRom)->bankType == HuC3)
-    {
-        readHuc3VarsFromStateFile(statefile);
-
-    }
-
-    if((*gbRom)->bankType == MBC7)
-    {
-        readMbc7VarsFromStateFile(statefile);
-    }
-
-    if((*gbRom)->bankType == TAMA5)
-    {
-        readTama5VarsFromStateFile(statefile);
-    }
+    mbc->readOldMbcSpecificVarsFromStateFile(statefile);
 }
 
-
-
 void gb_mbc::writeCartSpecificVarsToStateFile(FILE *statefile) {
-    if((*gbRom)->RTC)
-    {
-        writeRtcVarsToStateFile(statefile);
-    }
-
-    if((*gbRom)->bankType == HuC3)
-    {
-        writeHuc3VarsToStateFile(statefile);
-    }
-
-    if((*gbRom)->bankType == MBC7)
-    {
-        writeMbc7VarsToStateFile(statefile);
-    }
-
-    if((*gbRom)->bankType == TAMA5)
-    {
-        writeTama5VarsToStateFile(statefile);
-    }
+    mbc->writeOldMbcSpecificVarsToStateFile(statefile);
 }
 
 void gb_mbc::writeNewerCartSpecificVarsToStateFile(FILE *statefile) {
-    if((*gbRom)->bankType == TAMA5)
-    {
-        writeMoreTama5VarsToStateFile(statefile);
-    }
+    mbc->writeNewMbcSpecificVarsToStateFile(statefile);
 }
 
-void gb_mbc::writeMoreTama5VarsToStateFile(FILE *statefile) {
-    fwrite(&(mbc->rtc).s, sizeof(int), 1, statefile);
-    fwrite(&(mbc->rtc).m, sizeof(int), 1, statefile);
-    fwrite(&(mbc->rtc).h, sizeof(int), 1, statefile);
-    fwrite(&(mbc->rtc).d, sizeof(int), 1, statefile);
-    fwrite(&(mbc->rtc).control, sizeof(int), 1, statefile);
-    fwrite(&(mbc->rtc).last_time, sizeof(time_t), 1, statefile);
-
-    fwrite(&(mbc->tama_time), sizeof(byte), 1, statefile);
-    fwrite(&(mbc->tama_val6), sizeof(int), 1, statefile);
-    fwrite(&(mbc->tama_val7), sizeof(int), 1, statefile);
-    fwrite(&(mbc->tama_val4), sizeof(int), 1, statefile);
-    fwrite(&(mbc->tama_val5), sizeof(int), 1, statefile);
-    fwrite(&(mbc->tama_count), sizeof(int), 1, statefile);
-    fwrite(&(mbc->tama_month), sizeof(int), 1, statefile);
-    fwrite(&(mbc->tama_change_clock), sizeof(int), 1, statefile);
-}
-
-void gb_mbc::writeTama5VarsToStateFile(FILE *statefile) { fwrite(&(mbc->tama_flag), sizeof(int), 1, statefile); }
-
-void gb_mbc::writeMbc7VarsToStateFile(FILE *statefile) {
-    fwrite(&(mbc->MBC7_cs), sizeof(int), 1, statefile);
-    fwrite(&(mbc->MBC7_sk), sizeof(int), 1, statefile);
-    fwrite(&(mbc->MBC7_state), sizeof(int), 1, statefile);
-    fwrite(&(mbc->MBC7_buffer), sizeof(int), 1, statefile);
-    fwrite(&(mbc->MBC7_idle), sizeof(int), 1, statefile);
-    fwrite(&(mbc->MBC7_count), sizeof(int), 1, statefile);
-    fwrite(&(mbc->MBC7_code), sizeof(int), 1, statefile);
-    fwrite(&(mbc->MBC7_address), sizeof(int), 1, statefile);
-    fwrite(&(mbc->MBC7_writeEnable), sizeof(int), 1, statefile);
-    fwrite(&(mbc->MBC7_value), sizeof(int), 1, statefile);
-    fwrite(&sensorX,sizeof(int),1,statefile);
-    fwrite(&sensorY,sizeof(int),1,statefile);
-}
-
-void gb_mbc::writeHuc3VarsToStateFile(FILE *statefile) {
-    fwrite(&(mbc->HuC3_time), sizeof(unsigned int), 1, statefile);
-    fwrite(&(mbc->HuC3_last_time), sizeof(time_t), 1, statefile);
-    fwrite(&(mbc->rtc).s, sizeof(int), 1, statefile);
-
-    //fwrite(mbc->HuC3_register,sizeof(int),8,statefile);
-    fwrite(&(mbc->HuC3_RAMvalue), sizeof(int), 1, statefile);
-    //fwrite(&mbc->HuC3_address,sizeof(int),1,statefile);
-    fwrite(&(mbc->HuC3_RAMflag), sizeof(int), 1, statefile);
-}
-
-void gb_mbc::writeRtcVarsToStateFile(FILE *statefile) {
-    fwrite(&(mbc->rtc).s, sizeof(int), 1, statefile);
-    fwrite(&(mbc->rtc).m, sizeof(int), 1, statefile);
-    fwrite(&(mbc->rtc).h, sizeof(int), 1, statefile);
-    fwrite(&(mbc->rtc).d, sizeof(int), 1, statefile);
-    fwrite(&(mbc->rtc).control, sizeof(int), 1, statefile);
-    fwrite(&(mbc->rtc).last_time, sizeof(time_t), 1, statefile);
-
-    fwrite(&(mbc->rtc_latch).s, sizeof(int), 1, statefile);
-    fwrite(&(mbc->rtc_latch).m, sizeof(int), 1, statefile);
-    fwrite(&(mbc->rtc_latch).h, sizeof(int), 1, statefile);
-    fwrite(&(mbc->rtc_latch).d, sizeof(int), 1, statefile);
-    fwrite(&(mbc->rtc_latch).control, sizeof(int), 1, statefile);
-    fwrite(&(mbc->rtc_latch).last_time, sizeof(time_t), 1, statefile);
-}
 
 void gb_mbc::writeMbcOtherStuffToStateFile(FILE *statefile) {
     fwrite(&( mbc->MBC1memorymodel), sizeof(int), 1, statefile);
@@ -2120,68 +2014,6 @@ void gb_mbc::readMbcMoreCrapFromStateFile(FILE *statefile) {
 void gb_mbc::readMbcBanksFromStateFile(FILE *statefile) {
     fread(&(rom_bank), sizeof(int), 1, statefile);
     fread(&(ram_bank), sizeof(int), 1, statefile);
-}
-
-void gb_mbc::readMoreTama5VarsFromStateFile(FILE *statefile) {
-    fread(&(mbc->rtc).s, sizeof(int), 1, statefile);
-    fread(&(mbc->rtc).m, sizeof(int), 1, statefile);
-    fread(&(mbc->rtc).h, sizeof(int), 1, statefile);
-    fread(&(mbc->rtc).d, sizeof(int), 1, statefile);
-    fread(&(mbc->rtc).control, sizeof(int), 1, statefile);
-    fread(&(mbc->rtc).last_time, sizeof(time_t), 1, statefile);
-
-    fread(&(mbc->tama_time), sizeof(byte), 1, statefile);
-    fread(&(mbc->tama_val6), sizeof(int), 1, statefile);
-    fread(&(mbc->tama_val7), sizeof(int), 1, statefile);
-    fread(&(mbc->tama_val4), sizeof(int), 1, statefile);
-    fread(&(mbc->tama_val5), sizeof(int), 1, statefile);
-    fread(&(mbc->tama_count), sizeof(int), 1, statefile);
-    fread(&(mbc->tama_month), sizeof(int), 1, statefile);
-    fread(&(mbc->tama_change_clock), sizeof(int), 1, statefile);
-}
-
-void gb_mbc::readTama5VarsFromStateFile(FILE *statefile) { fread(&(mbc->tama_flag), sizeof(int), 1, statefile); }
-
-void gb_mbc::readMbc7VarsFromStateFile(FILE *statefile) {
-    fread(&(mbc->MBC7_cs), sizeof(int), 1, statefile);
-    fread(&(mbc->MBC7_sk), sizeof(int), 1, statefile);
-    fread(&(mbc->MBC7_state), sizeof(int), 1, statefile);
-    fread(&(mbc->MBC7_buffer), sizeof(int), 1, statefile);
-    fread(&(mbc->MBC7_idle), sizeof(int), 1, statefile);
-    fread(&(mbc->MBC7_count), sizeof(int), 1, statefile);
-    fread(&(mbc->MBC7_code), sizeof(int), 1, statefile);
-    fread(&(mbc->MBC7_address), sizeof(int), 1, statefile);
-    fread(&(mbc->MBC7_writeEnable), sizeof(int), 1, statefile);
-    fread(&(mbc->MBC7_value), sizeof(int), 1, statefile);
-    fread(&sensorX,sizeof(int),1,statefile);
-    fread(&sensorY,sizeof(int),1,statefile);
-}
-
-void gb_mbc::readHuc3VarsFromStateFile(FILE *statefile) {
-    fread(&(mbc->HuC3_time), sizeof(unsigned int), 1, statefile);
-    fread(&(mbc->HuC3_last_time), sizeof(time_t), 1, statefile);
-    fread(&(mbc->rtc).s, sizeof(int), 1, statefile);
-
-    //fread(mbc->HuC3_register,sizeof(int),8,statefile);
-    fread(&(mbc->HuC3_RAMvalue), sizeof(int), 1, statefile);
-    //fread(&mbc->HuC3_address,sizeof(int),1,statefile);
-    fread(&(mbc->HuC3_RAMflag), sizeof(int), 1, statefile);
-}
-
-void gb_mbc::readRtcVarsFromStateFile(FILE *statefile) {
-    fread(&(mbc->rtc).s, sizeof(int), 1, statefile);
-    fread(&(mbc->rtc).m, sizeof(int), 1, statefile);
-    fread(&(mbc->rtc).h, sizeof(int), 1, statefile);
-    fread(&(mbc->rtc).d, sizeof(int), 1, statefile);
-    fread(&(mbc->rtc).control, sizeof(int), 1, statefile);
-    fread(&(mbc->rtc).last_time, sizeof(time_t), 1, statefile);
-
-    fread(&(mbc->rtc_latch).s, sizeof(int), 1, statefile);
-    fread(&(mbc->rtc_latch).m, sizeof(int), 1, statefile);
-    fread(&(mbc->rtc_latch).h, sizeof(int), 1, statefile);
-    fread(&(mbc->rtc_latch).d, sizeof(int), 1, statefile);
-    fread(&(mbc->rtc_latch).control, sizeof(int), 1, statefile);
-    fread(&(mbc->rtc_latch).last_time, sizeof(time_t), 1, statefile);
 }
 
 void gb_mbc::resetRomMemoryMap(bool resetOffset=false) {
@@ -2212,26 +2044,26 @@ void gb_mbc::setMemoryReadWrite(memoryaccess memory_type) {
     switch(mbcType)
     {
         case MEMORY_MBC3:
-            mbc = new Mbc3();
+            mbc = new MbcNin3();
             break;
         case MEMORY_CAMERA:
-            mbc = new MbcCamera();
+            mbc = new MbcNinCamera();
             break;
         case MEMORY_MBC7:
-            mbc = new Mbc7();
+            mbc = new MbcNin7();
             break;
         case MEMORY_HUC3:
-            mbc = new Huc3();
+            mbc = new MbcLicHuc3();
             break;
         case MEMORY_TAMA5:
-            mbc = new Tama5();
+            mbc = new MbcLicTama5();
             break;
         case MEMORY_SINTAX:
-            mbc = new Sintax();
+            mbc = new MbcUnlSintax();
             break;
         default:
         case MEMORY_DEFAULT:
-            mbc = new Default();
+            mbc = new BasicMbc();
             break;
     }
 

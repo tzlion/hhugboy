@@ -2,17 +2,17 @@
 // Created by Alex on 20/08/2016.
 //
 
-#ifndef HHUGBOY_MBCCAMERA_H
-#define HHUGBOY_MBCCAMERA_H
+#ifndef HHUGBOY_MBCNINCAMERA_H
+#define HHUGBOY_MBCNINCAMERA_H
 
 
-#include "Default.h"
+#include "BasicMbc.h"
 //-------------------------------------------------------------------------
 // for GB Pocket Camera
 //-------------------------------------------------------------------------
-class MbcCamera : public Default {
-    byte readMemory(register unsigned short address);
+class MbcNinCamera : public BasicMbc {
+    byte readMemory(register unsigned short address) override;
 };
 
 
-#endif //HHUGBOY_MBCCAMERA_H
+#endif //HHUGBOY_MBCNINCAMERA_H

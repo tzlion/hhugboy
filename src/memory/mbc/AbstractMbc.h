@@ -2,10 +2,11 @@
 // Created by Alex on 20/08/2016.
 //
 
-#ifndef HHUGBOY_MBCBASE_H
-#define HHUGBOY_MBCBASE_H
+#ifndef HHUGBOY_ABSTRACTMBC_H
+#define HHUGBOY_ABSTRACTMBC_H
 
 
+#include <wchar.h>
 #include "../../types.h"
 #include "../../rom.h"
 
@@ -16,7 +17,7 @@ enum
     HUC3_NONE = 2
 };
 
-class Mbc {
+class AbstractMbc {
 public:
 
     /*** BAD PUBLICS START - SHOULD BE MAPPER SPECIFIC AND PRIVATE (OR PROTECTED SOMETIMES) ***/
@@ -71,13 +72,17 @@ public:
     byte sintax_xor4;
     byte sintax_xor5;
 
-    Mbc();
+    AbstractMbc();
 
 /*** BAD PUBLICS END ***/
 
     void init(byte** gbMemMap, GBrom** gbRom, byte** gbMemory, byte* gbRomBankXor);
     virtual byte readMemory(register unsigned short address) = 0;
     virtual void resetVars() = 0;
+    virtual void writeOldMbcSpecificVarsToStateFile(FILE *statefile) = 0;
+    virtual void writeNewMbcSpecificVarsToStateFile(FILE *statefile) = 0;
+    virtual void readOldMbcSpecificVarsFromStateFile(FILE *statefile) = 0;
+    virtual void readNewMbcSpecificVarsFromStateFile(FILE *statefile) = 0;
 protected:
     byte** gbMemMap;
     byte** gbMemory;
@@ -86,4 +91,4 @@ protected:
 };
 
 
-#endif //HHUGBOY_MBCBASE_H
+#endif //HHUGBOY_ABSTRACTMBC_H

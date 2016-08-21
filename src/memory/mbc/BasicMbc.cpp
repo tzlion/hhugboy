@@ -2,9 +2,9 @@
 // Created by Alex on 20/08/2016.
 //
 
-#include "Default.h"
+#include "BasicMbc.h"
 
-byte Default::readMemory(register unsigned short address) {
+byte BasicMbc::readMemory(register unsigned short address) {
 
     /* if(address >= 0xA000 && address < 0xC000)
      {
@@ -29,6 +29,22 @@ byte Default::readMemory(register unsigned short address) {
     return gbMemMap[address>>12][address&0x0FFF];
 }
 
-void Default::resetVars() {
+void BasicMbc::resetVars() {
     // nothin
+}
+
+void BasicMbc::readNewMbcSpecificVarsFromStateFile(FILE *statefile) {
+
+}
+
+void BasicMbc::readOldMbcSpecificVarsFromStateFile(FILE *statefile) {
+
+}
+
+void BasicMbc::writeNewMbcSpecificVarsToStateFile(FILE *statefile) {
+
+}
+
+void BasicMbc::writeOldMbcSpecificVarsToStateFile(FILE *statefile) {
+
 }

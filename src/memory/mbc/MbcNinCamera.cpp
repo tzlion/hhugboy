@@ -2,9 +2,9 @@
 // Created by Alex on 20/08/2016.
 //
 
-#include "MbcCamera.h"
+#include "MbcNinCamera.h"
 
-byte MbcCamera::readMemory(register unsigned short address) {
+byte MbcNinCamera::readMemory(register unsigned short address) {
     if(address >= 0xA000 && address < 0xC000)
     {
         if(cameraIO) // Camera I/O register in cart RAM area
@@ -16,5 +16,5 @@ byte MbcCamera::readMemory(register unsigned short address) {
         }
     }
 
-    return Default::readMemory(address);
+    return BasicMbc::readMemory(address);
 }
