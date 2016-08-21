@@ -42,6 +42,14 @@
 #include "mbc/MbcLicTama5.h"
 #include "mbc/MbcUnlSintax.h"
 #include "mbc/MbcUnlLiCheng.h"
+#include "mbc/MbcNin1.h"
+#include "mbc/MbcNin2.h"
+#include "mbc/MbcUnlRockman8.h"
+#include "mbc/MbcLicHuColl.h"
+#include "mbc/MbcLicMmm01.h"
+#include "mbc/MbcUnlPoke2in1.h"
+#include "mbc/MbcUnlSachen8in1.h"
+#include "mbc/MbcLicMk12.h"
 
 //int RTCIO = 0;
 //int RTC_latched = 0;
@@ -83,10 +91,6 @@ void gb_mbc::writememory_cart(unsigned short address, register byte data) {
             writememory_MBC2(address,data);
             break;
 
-        case MEMORY_ROCKMAN8:
-            writememory_Rockman8(address,data);
-            break;
-
         case MEMORY_BC:
             writememory_BC(address,data);
             break;
@@ -95,99 +99,14 @@ void gb_mbc::writememory_cart(unsigned short address, register byte data) {
             writememory_MMM01(address,data);
             break;
 
-        case MEMORY_POKE:
-            writememory_poke(address,data);
-            break;
-
-        case MEMORY_8IN1:
-            writememory_8in1(address,data);
-            break;
-
         case MEMORY_MK12:
             writememory_MK12(address,data);
             break;
 
-        case MEMORY_MBC3:
-        case MEMORY_NIUTOUDE:
-        case MEMORY_SINTAX:
-        case MEMORY_MBC5:
-        case MEMORY_CAMERA:
-        case MEMORY_TAMA5:
-        case MEMORY_HUC3:
-        case MEMORY_ROMONLY:
-        case MEMORY_MBC7:
-        case MEMORY_DEFAULT:
         default:
             mbc->writeMemory(address,data);
             break;
     }
-}
-
-//-------------------------------------------------------------------------
-// writememory_8in1:
-// for Sachen 8in1
-//-------------------------------------------------------------------------
-void gb_mbc::writememory_8in1(register unsigned short address,register byte data)
-{
-   if(address < 0x2000)
-      return;
-
-   if(address < 0x4000) // Is it a ROM bank switch?
-   {
-      data &= 0x1f;
-      if(data == 0)
-         data = 1;
-
-      mbc->rom_bank = data;
-
-      int cadr = (data<<14)+(mbc->MBChi<<14);
-      cadr &= mbc->rom_size_mask[(*gbRom)->ROMsize];
-      gbMemMap[0x4] = &(*gbCartridge)[cadr];
-      gbMemMap[0x5] = &(*gbCartridge)[cadr+0x1000];
-      gbMemMap[0x6] = &(*gbCartridge)[cadr+0x2000];
-      gbMemMap[0x7] = &(*gbCartridge)[cadr+0x3000];
-      return;
-   }
-
-   if(address < 0x6000) // Is it a RAM bank switch?
-   {
-      if(address == 0x4000 && mbc->bc_select < 3) // game select
-      {
-         ++mbc->bc_select;
-
-         mbc->MBClo = 0;
-
-         mbc->MBChi = (data&0x1f);
-
-         mbc->cart_address = mbc->MBChi<<14;
-         gbMemMap[0x0] = &(*gbCartridge)[mbc->cart_address];
-         gbMemMap[0x1] = &(*gbCartridge)[mbc->cart_address+0x1000];
-         gbMemMap[0x2] = &(*gbCartridge)[mbc->cart_address+0x2000];
-         gbMemMap[0x3] = &(*gbCartridge)[mbc->cart_address+0x3000];
-
-         gbMemMap[0x4] = &(*gbCartridge)[mbc->cart_address+0x4000];
-         gbMemMap[0x5] = &(*gbCartridge)[mbc->cart_address+0x5000];
-         gbMemMap[0x6] = &(*gbCartridge)[mbc->cart_address+0x6000];
-         gbMemMap[0x7] = &(*gbCartridge)[mbc->cart_address+0x7000];
-         return;
-      }
-
-      data &= 0x03;
-
-      mbc->ram_bank = data;
-
-      int madr = data<<13;
-      gbMemMap[0xA] = &(*gbCartRam)[madr];
-      gbMemMap[0xB] = &(*gbCartRam)[madr+0x1000];
-      return;
-   }
-
-   if(address < 0x8000)
-      return;
-
-   // Always allow RAM writes.
-
-   gbMemMap[address>>12][address&0x0FFF] = data;
 }
 
 //-------------------------------------------------------------------------
@@ -512,47 +431,6 @@ void gb_mbc::writememory_MK12(register unsigned short address,register byte data
 
    gbMemMap[address>>12][address&0x0FFF] = data;
 }
-//-------------------------------------------------------------------------
-// writememory_Rockman8:
-// for Rockman8
-// only game that requires memory echo emulation ?
-//-------------------------------------------------------------------------
-void gb_mbc::writememory_Rockman8(register unsigned short address,register byte data)
-{
-   if(address < 0x2000)
-      return;
-
-   if(address < 0x4000) // Is it a ROM bank switch?
-   {
-      data &= 0x1F;
-
-      if(data == 0)
-         data = 1;
-
-      if(data > mbc->maxROMbank[(*gbRom)->ROMsize])
-         data -= 8; // <--- MAKE IT WORK!!!
-
-      mbc->rom_bank = data;
-
-      mbc->cart_address = data<<14;
-
-      mbc->cart_address &= mbc->rom_size_mask[(*gbRom)->ROMsize];
-
-      gbMemMap[0x4] = &(*gbCartridge)[mbc->cart_address];
-      gbMemMap[0x5] = &(*gbCartridge)[mbc->cart_address+0x1000];
-      gbMemMap[0x6] = &(*gbCartridge)[mbc->cart_address+0x2000];
-      gbMemMap[0x7] = &(*gbCartridge)[mbc->cart_address+0x3000];
-
-      return;
-   }
-
-   if(address < 0x8000)
-      return;
-
-   // Always allow RAM writes.
-
-   gbMemMap[address>>12][address&0x0FFF] = data;
-}
 
 //-------------------------------------------------------------------------
 // writememory_MBC2:
@@ -599,95 +477,6 @@ void gb_mbc::writememory_MBC2(register unsigned short address,register byte data
       if(!mbc->RAMenable || !rom->battery)
          return;
    }*/
-
-   gbMemMap[address>>12][address&0x0FFF] = data;
-}
-
-//-------------------------------------------------------------------------
-// writememory_poke:
-// for Pokemon Red & Blue 2-in-1
-//-------------------------------------------------------------------------
-int bank0_change = 0;
-
-void gb_mbc::writememory_poke(register unsigned short address,register byte data)
-{
-   if(address < 0x2000)// Is it a RAM bank enable/disable?
-   {
-      mbc->RAMenable = ( (data&0x0A) == 0x0A ? 1 : 0);
-      bank0_change = ( (data&0xC0) == 0xC0 ? 1 : 0);
-      return;
-   }
-
-   if(address < 0x4000) // Is it a ROM bank switch?
-   {
-      data &= 0x7F;
-      if(data==0)
-         data=1;
-      data += mbc->MBChi;
-
-      mbc->rom_bank = data;
-
-      int cadr = data<<14;
-      cadr &= mbc->rom_size_mask[(*gbRom)->ROMsize];
-      gbMemMap[0x4] = &(*gbCartridge)[cadr];
-      gbMemMap[0x5] = &(*gbCartridge)[cadr+0x1000];
-      gbMemMap[0x6] = &(*gbCartridge)[cadr+0x2000];
-      gbMemMap[0x7] = &(*gbCartridge)[cadr+0x3000];
-      return;
-   }
-
-   if(address < 0x6000) // Is it a RAM bank switch?
-   {
-      if((*gbRom)->RAMsize <= 2) // no need to change it if there isn't over 8KB ram
-         return;
-
-      data &= 0x03;
-
-      if(data > mbc->maxRAMbank[(*gbRom)->RAMsize])
-         data = mbc->maxRAMbank[(*gbRom)->RAMsize];
-
-      mbc->ram_bank = data;
-
-      int madr = data<<13;
-      gbMemMap[0xA] = &(*gbCartRam)[madr];
-      gbMemMap[0xB] = &(*gbCartRam)[madr+0x1000];
-      return;
-   }
-
-   if(address < 0x8000)
-   {
-      return;
-   }
-
-   if(address >= 0xA000 && address < 0xC000)
-   {
-      if(bank0_change && address==0xA100 && !mbc->bc_select)
-      {
-         mbc->MBClo = 0;
-         if(data==1)
-            mbc->MBChi = 2;
-         else
-         if(data!=0xc0)
-            mbc->MBChi = 66;
-         else
-            mbc->bc_select = 1;
-
-         mbc->cart_address = mbc->MBChi<<14;
-
-         gbMemMap[0x0] = &(*gbCartridge)[mbc->cart_address];
-         gbMemMap[0x1] = &(*gbCartridge)[mbc->cart_address+0x1000];
-         gbMemMap[0x2] = &(*gbCartridge)[mbc->cart_address+0x2000];
-         gbMemMap[0x3] = &(*gbCartridge)[mbc->cart_address+0x3000];
-
-         gbMemMap[0x4] = &(*gbCartridge)[mbc->cart_address+0x4000];
-         gbMemMap[0x5] = &(*gbCartridge)[mbc->cart_address+0x5000];
-         gbMemMap[0x6] = &(*gbCartridge)[mbc->cart_address+0x6000];
-         gbMemMap[0x7] = &(*gbCartridge)[mbc->cart_address+0x7000];
-         return;
-      }
-      //if(!mbc->RAMenable || !rom->RAMsize)
-      //   return;
-   }
 
    gbMemMap[address>>12][address&0x0FFF] = data;
 }
@@ -778,13 +567,29 @@ void gb_mbc::setMemoryReadWrite(memoryaccess memory_type) {
             mbc = new RomOnly();
             break;
         case MEMORY_MBC1:
+            mbc = new MbcNin1();
+            break;
         case MEMORY_MBC2:
+            mbc = new MbcNin2();
+            break;
         case MEMORY_ROCKMAN8:
+            mbc = new MbcUnlRockman8();
+            break;
         case MEMORY_BC:
+            mbc = new MbcLicHuColl();
+            break;
         case MEMORY_MMM01:
+            mbc = new MbcLicMmm01();
+            break;
         case MEMORY_POKE:
+            mbc = new MbcUnlPoke2in1();
+            break;
         case MEMORY_8IN1:
+            mbc = new MbcUnlSachen8in1();
+            break;
         case MEMORY_MK12:
+            mbc = new MbcLicMk12();
+            break;
         case MEMORY_DEFAULT:
         default:
             mbc = new BasicMbc();

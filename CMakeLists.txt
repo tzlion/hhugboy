@@ -90,7 +90,7 @@ set(SOURCE_FILES
         src/memory/mbc/MbcNin5.h
         src/memory/mbc/MbcUnlLiCheng.cpp
         src/memory/mbc/MbcUnlLiCheng.h
-        )
+        src/memory/mbc/MbcUnlPoke2in1.cpp src/memory/mbc/MbcUnlPoke2in1.h src/memory/mbc/MbcNin2.cpp src/memory/mbc/MbcNin2.h src/memory/mbc/MbcUnlRockman8.cpp src/memory/mbc/MbcUnlRockman8.h src/memory/mbc/MbcLicMk12.cpp src/memory/mbc/MbcLicMk12.h src/memory/mbc/MbcLicHuColl.cpp src/memory/mbc/MbcLicHuColl.h src/memory/mbc/MbcLicMmm01.cpp src/memory/mbc/MbcLicMmm01.h src/memory/mbc/MbcNin1.cpp src/memory/mbc/MbcNin1.h src/memory/mbc/MbcUnlSachen8in1.cpp src/memory/mbc/MbcUnlSachen8in1.h)
 
 include_directories(includes includes/zlib includes/libpng12 includes/fmod "C:\\png\\png++-0.2.5\\png++-0.2.5" "C:\\Program Files (x86)\\Microsoft DirectX SDK (August 2009)\\Include")
 
