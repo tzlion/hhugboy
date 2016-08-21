@@ -68,3 +68,23 @@ AbstractMbc::AbstractMbc():
 {
 
 }
+
+void AbstractMbc::resetVars() {
+    // nothin
+}
+
+void AbstractMbc::readNewMbcSpecificVarsFromStateFile(FILE *statefile) {
+
+}
+
+void AbstractMbc::readOldMbcSpecificVarsFromStateFile(FILE *statefile) {
+
+}
+
+void AbstractMbc::writeNewMbcSpecificVarsToStateFile(FILE *statefile) {
+
+}
+
+void AbstractMbc::writeOldMbcSpecificVarsToStateFile(FILE *statefile) {
+
+}

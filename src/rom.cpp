@@ -57,6 +57,7 @@ void gb_system::crdtype(byte value,byte romsize,byte ramsize)
    case 0x00: //"ROM"
        rom->battery = false;
        rom->bankType = ROM;
+       mbc->setMemoryReadWrite(MEMORY_ROMONLY);
    break;
    
    case 0x01: //"MBC1"
@@ -92,11 +93,13 @@ void gb_system::crdtype(byte value,byte romsize,byte ramsize)
    case 0x08: //"ROM+RAM";
        rom->battery = false;
        rom->bankType = ROM;
+       mbc->setMemoryReadWrite(MEMORY_ROMONLY);
    break;
 
    case 0x09: //"ROM+RAM+BATTERY"
        rom->battery = true;
        rom->bankType = ROM;
+       mbc->setMemoryReadWrite(MEMORY_ROMONLY);
    break;
 
    case 0x0B: //"MMM01"

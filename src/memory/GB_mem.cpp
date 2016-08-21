@@ -72,7 +72,7 @@ void gb_system::mem_reset(bool mini)
    memset(memory+0x8000,0x00,0x1FFF);
    memset(memory+0xFE00,0x00,0xA0);
 
-   if(rom->bankType==MBC2)
+   if(rom->bankType==MBC2) // Should be done on the MBC
       for(int a=0xa000;a<0xc000;++a)
          memory[a] = 0x0F;
    else
@@ -307,7 +307,7 @@ bool gb_system::write_save()
       return false;
    }
    
-   if(rom->bankType == MBC7 || rom->bankType == TAMA5)
+   if(rom->bankType == MBC7 || rom->bankType == TAMA5) // SHould be done on the MBC
    {
       if(fwrite(&memory[0xA000],sizeof(byte),256,savefile) < 256)
       {
@@ -386,7 +386,7 @@ bool gb_system::load_save(bool loading_GB1_save_to_GB2)
       return true;
    }
    
-   if(rom->bankType == MBC7 || rom->bankType == TAMA5)
+   if(rom->bankType == MBC7 || rom->bankType == TAMA5) // Should be done on the MBC
    {
       if(fread(&memory[0xA000],sizeof(byte),256,savefile) < 256)
       {

@@ -1,22 +1,21 @@
 //
-// Created by Alex on 20/08/2016.
+// Created by Alex on 21/08/2016.
 //
 
-#ifndef HHUGBOY_BASICMBC_H
-#define HHUGBOY_BASICMBC_H
+#ifndef HHUGBOY_ROMONLY_H
+#define HHUGBOY_ROMONLY_H
 
 
-#include "../../types.h"
 #include "AbstractMbc.h"
-#include "RomOnly.h"
-
 //-------------------------------------------------------------------------
-// Write: for undocumented/unknown MBCs
+// Read: for most MBCs
+// Write: for ROM only only
 //-------------------------------------------------------------------------
-class BasicMbc : public RomOnly {
+class RomOnly : public AbstractMbc {
 public:
+    virtual byte readMemory(register unsigned short address) override;
     virtual void writeMemory(unsigned short address, register byte data) override;
 };
 
 
-#endif //HHUGBOY_BASICMBC_H
+#endif //HHUGBOY_ROMONLY_H

@@ -25,7 +25,8 @@ enum memoryaccess
     MEMORY_MK12,
     MEMORY_POKE,
     MEMORY_NIUTOUDE,
-    MEMORY_SINTAX
+    MEMORY_SINTAX,
+    MEMORY_ROMONLY
 };
 
 class gb_mbc {
@@ -73,17 +74,13 @@ private:
     int superaddroffset;
 
     void rtc_update();
-    void update_HuC3time();
 
     // MBC R/W methods
-    void writememory_default(unsigned short address,register byte data);
     void writememory_MBC1(unsigned short address,register byte data);
     void writememory_MBC2(unsigned short address,register byte data);
     void writememory_MBC3(unsigned short address,register byte data);
     void writememory_MBC5(unsigned short address,register byte data, bool isNiutoude, bool isSintax);
     void writememory_Camera(unsigned short address,register byte data);
-    void writememory_HuC3(register unsigned short address,register byte data);
-    void writememory_MBC7(unsigned short address,register byte data);
     void writememory_TAMA5(register unsigned short address,register byte data);
     void writememory_Rockman8(register unsigned short address,register byte data);
     void writememory_BC(register unsigned short address,register byte data);

@@ -17,6 +17,23 @@ enum
     HUC3_NONE = 2
 };
 
+/**
+ * Something to not forget
+ * For things that used to vary based on BANK TYPE e.g. Save states did this
+ * The Bank type may be something more standard even if the MBC type is set to something weird
+ * See rom.cpp
+ * Savestates should be fine since the only MBCs that save their own shit are mostly weird ones
+ * The most "standard" one is MBC3 as used by Pokemon G/S.. And only saves the RTC shit
+ * HOPEFULLY no one is overriding an MBC3 RTC ROM with their own business
+ * There are also some banktypes like MBC4 which is set w/o any MBC selected (so it just falls back to Default)
+ * The "Unknown Cart" case should fall back to MBC5 tbh, would prob fix some pirates or at least make them boot
+ * Oh actually the "Default" case is basically like an MBC lol. It varies only when BankType == ROM then it does shit all on bankswitches
+ * Hey and I don't want MBC to start knowing too much that actually should be under cart I guess
+ * E.g. stuff that is currently in the "rom" object like ramsize,romsize,...
+ * Maybe our current GB_MBC could become Cartridge or CartWrangler or sth
+ * ROM should then belong to IT.
+ */
+
 class AbstractMbc {
 public:
 
@@ -95,11 +112,11 @@ public:
     void init(byte** gbMemMap, GBrom** gbRom, byte** gbMemory, byte* gbRomBankXor, byte** gbCartridge, byte** gbCartRam);
     virtual byte readMemory(register unsigned short address) = 0;
     virtual void writeMemory(unsigned short address, register byte data) = 0;
-    virtual void resetVars() = 0;
-    virtual void writeOldMbcSpecificVarsToStateFile(FILE *statefile) = 0;
-    virtual void writeNewMbcSpecificVarsToStateFile(FILE *statefile) = 0;
-    virtual void readOldMbcSpecificVarsFromStateFile(FILE *statefile) = 0;
-    virtual void readNewMbcSpecificVarsFromStateFile(FILE *statefile) = 0;
+    virtual void resetVars();
+    virtual void writeOldMbcSpecificVarsToStateFile(FILE *statefile);
+    virtual void writeNewMbcSpecificVarsToStateFile(FILE *statefile);
+    virtual void readOldMbcSpecificVarsFromStateFile(FILE *statefile);
+    virtual void readNewMbcSpecificVarsFromStateFile(FILE *statefile);
 protected:
     byte** gbMemMap;
     byte** gbMemory;

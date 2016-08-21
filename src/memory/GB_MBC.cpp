@@ -129,16 +129,8 @@ void gb_mbc::writememory_cart(unsigned short address, register byte data) {
             writememory_MBC5(address,data,false,false);
             break;
 
-        case MEMORY_MBC7:
-            mbc->writeMemory(address,data);
-            break;
-
         case MEMORY_CAMERA:
             writememory_Camera(address,data);
-            break;
-
-        case MEMORY_HUC3:
-            writememory_HuC3(address,data);
             break;
 
         case MEMORY_TAMA5:
@@ -177,9 +169,12 @@ void gb_mbc::writememory_cart(unsigned short address, register byte data) {
             writememory_MBC5(address,data,false,true);
             break;
 
-        default:
+        case MEMORY_HUC3:
+        case MEMORY_ROMONLY:
+        case MEMORY_MBC7:
         case MEMORY_DEFAULT:
-            writememory_default(address,data);
+        default:
+            mbc->writeMemory(address,data);
             break;
     }
 }
@@ -204,76 +199,6 @@ void gb_mbc::setXorForBank(byte bankNo)
   	//char buff[200];
   //	sprintf(buff,"bank no %x abbr %x xor %x",bankNo,bankNo&0x0F,mbc->rom_bank_xor);
   //	debug_print(buff);
-}
-
-//-------------------------------------------------------------------------
-// writememory_default:
-// for ROM only and for undocumented/unknown MBCs
-//-------------------------------------------------------------------------
-void gb_mbc::writememory_default(register unsigned short address,register byte data)
-{
-   if(address < 0x2000)// Is it a RAM bank enable/disable?
-   {
-      mbc->RAMenable = ( (data&0x0A) == 0x0A ? 1 : 0);
-      return;  
-   } 
-   
-   if(address < 0x4000) // Is it a ROM bank switch?
-   {  
-      if((*gbRom)->bankType == ROM)
-         return;
-      else
-      {
-         if(data == 0)
-            data = 1;
-         
-         mbc->rom_bank = data;
-         
-         int cadr = (data<<14)+((mbc->MBChi<<1)<<14);
-         gbMemMap[0x4] = &(*gbCartridge)[cadr];
-         gbMemMap[0x5] = &(*gbCartridge)[cadr+0x1000];
-         gbMemMap[0x6] = &(*gbCartridge)[cadr+0x2000];
-         gbMemMap[0x7] = &(*gbCartridge)[cadr+0x3000];
-         return; 
-      }
-   }
-
-   if(address < 0x6000) // Is it a RAM bank switch?
-   {          
-      data &= 0x03;
-              
-      mbc->ram_bank = data;
-      
-      int madr = data<<13;
-      gbMemMap[0xA] = &(*gbCartRam)[madr];
-      gbMemMap[0xB] = &(*gbCartRam)[madr+0x1000];
-      return;
-   }
-
-   if(address < 0x8000) // BHGOS multicart
-   {
-      if(++mbc->bc_select == 2 && (*gbRom)->ROMsize>1)
-      {
-         mbc->MBChi = (data&0xFF);
-
-         mbc->cart_address = (mbc->MBChi<<1)<<14;
-
-         gbMemMap[0x0] = &(*gbCartridge)[mbc->cart_address];
-         gbMemMap[0x1] = &(*gbCartridge)[mbc->cart_address+0x1000];
-         gbMemMap[0x2] = &(*gbCartridge)[mbc->cart_address+0x2000];
-         gbMemMap[0x3] = &(*gbCartridge)[mbc->cart_address+0x3000];
-
-         gbMemMap[0x4] = &(*gbCartridge)[mbc->cart_address+0x4000];
-         gbMemMap[0x5] = &(*gbCartridge)[mbc->cart_address+0x5000];
-         gbMemMap[0x6] = &(*gbCartridge)[mbc->cart_address+0x6000];
-         gbMemMap[0x7] = &(*gbCartridge)[mbc->cart_address+0x7000];
-      }
-      return;
-   }
-
-   // Always allow RAM writes.
-
-   gbMemMap[address>>12][address&0x0FFF] = data;
 }
 
 //-------------------------------------------------------------------------
@@ -1368,190 +1293,6 @@ void gb_mbc::writememory_Camera(register unsigned short address,register byte da
    gbMemMap[address>>12][address&0x0FFF] = data;
 }
 
-void gb_mbc::update_HuC3time()
-{
-   time_t now = time(0);
-   time_t diff = now-mbc->HuC3_last_time;
-   if(diff > 0)
-   {
-      mbc->rtc.s += diff % 60; // use mbc->rtc.s to store seconds
-      if(mbc->rtc.s > 59)
-      {
-          mbc->rtc.s -= 60;
-         mbc->HuC3_time++;
-      }
-
-      diff /= 60;
-
-      mbc->HuC3_time += diff % 60;
-      if((mbc->HuC3_time&0xFFF) > 1439)
-      {
-         mbc->HuC3_time = (mbc->HuC3_time&0xFFFF000)|((mbc->HuC3_time&0xFFF)-1440);
-         mbc->HuC3_time += 0x1000; // day counter ?
-      }
-
-      diff /= 60;
-
-      mbc->HuC3_time += (diff % 24)*60;
-      if((mbc->HuC3_time&0xFFF) > 1439)
-      {
-         mbc->HuC3_time = (mbc->HuC3_time&0xFFFF000)|((mbc->HuC3_time&0xFFF)-1440);
-         mbc->HuC3_time += 0x1000; // day counter ?
-      }
-
-      diff /= 24;
-
-      mbc->HuC3_time += (diff<<12);
-      if(((mbc->HuC3_time&0xFFF000)>>12) > 356)
-      {
-         mbc->HuC3_time = mbc->HuC3_time&0xF000FFF;
-         mbc->HuC3_time += 0x1000000; // year counter ????
-      }
-   }
-   mbc->HuC3_last_time = now;
-}
-
-//-------------------------------------------------------------------------
-// writememory_HuC3:
-// for HuC-3
-//-------------------------------------------------------------------------
-void gb_mbc::writememory_HuC3(register unsigned short address,register byte data)
-{
-   if(address < 0x2000)// Is it a RAM bank enable/disable?
-   {
-      mbc->RAMenable = ( (data&0x0A) == 0x0A ? 1 : 0);
-      mbc->HuC3_RAMflag = data;
-      return;
-   }
-
-   if(address < 0x4000) // Is it a ROM bank switch?
-   {
-      if(data == 0)
-         data = 1;
-      if(data > mbc->maxROMbank[(*gbRom)->ROMsize])
-         data = mbc->maxROMbank[(*gbRom)->ROMsize];
-
-      mbc->rom_bank = data;
-
-      int cadr = data<<14;
-      gbMemMap[0x4] = &(*gbCartridge)[cadr];
-      gbMemMap[0x5] = &(*gbCartridge)[cadr+0x1000];
-      gbMemMap[0x6] = &(*gbCartridge)[cadr+0x2000];
-      gbMemMap[0x7] = &(*gbCartridge)[cadr+0x3000];
-      return;
-   }
-
-   if(address < 0x6000) // Is it a RAM bank switch?
-   {
-      data &= 0x0F;
-
-      if(data > mbc->maxRAMbank[(*gbRom)->RAMsize])
-         data = mbc->maxRAMbank[(*gbRom)->RAMsize];
-
-      mbc->ram_bank = data;
-
-      int madr = data<<13;
-      gbMemMap[0xA] = &(*gbCartRam)[madr];
-      gbMemMap[0xB] = &(*gbCartRam)[madr+0x1000];
-      return;
-   }
-
-   if(address < 0x8000) // programs will write 1 here
-      return;
-
-   if(address >= 0xA000 && address < 0xC000)
-   {
-      if(mbc->HuC3_RAMflag < 0x0b || mbc->HuC3_RAMflag > 0x0e) // write to RAM
-      {
-         if(!mbc->RAMenable || !(*gbRom)->RAMsize)
-            return;
-      } else
-      {
-         if(mbc->HuC3_RAMflag == 0x0B) // send command ?
-         {
-            switch(data & 0xf0)
-            {
-            case 0x10: // read time
-               update_HuC3time();
-               if(mbc->HuC3_flag == HUC3_READ)
-               {
-                  mbc->HuC3_RAMvalue = ((mbc->HuC3_time>>mbc->HuC3_shift)&0x0F);
-                  mbc->HuC3_shift += 4;
-                  if(mbc->HuC3_shift > 24)
-                     mbc->HuC3_shift = 0;
-               }
-            break;
-            case 0x30: // write to registers (minute,day and year(?) counters)
-               // to write time 23:59 program will send commands
-               // 3F 39 35 30 30 30 31
-               // mbc->HuC3_time will then be 59F = 1439 = 23*60+59 minutes
-               if(mbc->HuC3_flag == HUC3_WRITE)
-               {
-                  if(mbc->HuC3_shift == 0)
-                     mbc->HuC3_time = 0;
-                  if(mbc->HuC3_shift < 24)
-                  {
-                     mbc->HuC3_time |= ((data&0x0F)<<mbc->HuC3_shift);
-                     mbc->HuC3_shift += 4;
-                     if(mbc->HuC3_shift == 24)
-                        mbc->HuC3_flag = HUC3_READ;
-                  }
-               }
-            break;
-            case 0x40: // special command ?
-               switch(data&0x0F)
-               {
-               case 0x00: //  ?
-                  //HuC3_flag = HUC3_READ;
-                  mbc->HuC3_shift = 0;
-               break;
-               case 0x03: // write time mode ?
-                  mbc->HuC3_flag = HUC3_WRITE;
-                  mbc->HuC3_shift = 0;
-               break;
-               case 0x07: // read time mode ?
-                  mbc->HuC3_flag = HUC3_READ;
-                  mbc->HuC3_shift = 0;
-               break;
-               case 0x06: // alarm clock sound test
-               break;
-               case 0x08: // set alarm clock time ?
-                  //HuC3_flag = HUC3_NONE;
-               break;
-               case 0x0F: // yobidashi (call) ?
-               break;
-               default:
-                  //char buffer[100];
-                  //sprintf(buffer,"HuC3-command:%x",data);
-                  //debug_print(buffer);
-               break;
-               }
-            break;
-            case 0x50: // ?
-            {
-               //HuC3_register[0] = (HuC3_register[0] & 0x0f) | ((data << 4)&0x0f);
-            }
-            break;
-            case 0x60: // ?
-            {
-               //mbc->HuC3_RAMvalue = 1;
-               mbc->HuC3_flag = HUC3_READ;
-            }
-            break;
-            }
-         } else if(mbc->HuC3_RAMflag == 0x0C) // not used ?
-         {
-            // ?
-         } else if(mbc->HuC3_RAMflag == 0x0D) // programs will write 0xFE here
-         {
-            // maybe a execute command function ?
-         }
-      }
-   }
-
-   gbMemMap[address>>12][address&0x0FFF] = data;
-}
-
 //-------------------------------------------------------------------------
 // writememory_TAMA5:
 // for Bandai TAMA5 (Tamagotchi3)
@@ -1795,6 +1536,9 @@ void gb_mbc::setMemoryReadWrite(memoryaccess memory_type) {
             break;
         case MEMORY_SINTAX:
             mbc = new MbcUnlSintax();
+            break;
+        case MEMORY_ROMONLY:
+            mbc = new RomOnly();
             break;
         default:
         case MEMORY_DEFAULT:

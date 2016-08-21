@@ -292,7 +292,7 @@ void gb_system::mainloop()
         
                IWait = 0;
 			   
-               if(rom->bankType == MBC7)
+               if(rom->bankType == MBC7) // So this can replace with some input handling method on the mbc
                   check_sensor();
 			   
                break;

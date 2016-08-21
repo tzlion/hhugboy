@@ -8,7 +8,7 @@
 
 #include "BasicMbc.h"
 //-------------------------------------------------------------------------
-// for HuC3
+// for HuC-3
 //-------------------------------------------------------------------------
 class MbcLicHuc3 : public BasicMbc {
     byte readMemory(register unsigned short address);
@@ -16,6 +16,11 @@ class MbcLicHuc3 : public BasicMbc {
 public:
     virtual void readOldMbcSpecificVarsFromStateFile(FILE *statefile) override;
     virtual void writeOldMbcSpecificVarsToStateFile(FILE *statefile) override;
+
+    virtual void writeMemory(unsigned short address, register byte data) override;
+
+private:
+    void updateHuc3Time();
 };
 
 
