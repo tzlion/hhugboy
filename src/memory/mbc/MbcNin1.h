@@ -7,8 +7,12 @@
 
 
 #include "BasicMbc.h"
-
+//-------------------------------------------------------------------------
+// for MBC1 and HuC1 (is that okay? what's the difference?)
+//-------------------------------------------------------------------------
 class MbcNin1 : public BasicMbc {
+public:
+    virtual void writeMemory(unsigned short address, register byte data) override;
 
 };
 

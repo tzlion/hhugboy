@@ -7,8 +7,12 @@
 
 
 #include "BasicMbc.h"
-
+//-------------------------------------------------------------------------
+// for MBC2
+//-------------------------------------------------------------------------
 class MbcNin2 : public BasicMbc {
+public:
+    virtual void writeMemory(unsigned short address, register byte data) override;
 
 };
 

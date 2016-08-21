@@ -470,6 +470,7 @@ int gb_system::process_rom_info(byte *rominfo,byte *logo1, byte *logo2)
    if(!strcmp(rom->name,"ROCKMAN 99"))
        mbc->setMemoryReadWrite(MEMORY_ROCKMAN8);
    else
+
    // Collection Carts
    if(!strcmp(rom->name,"BOMCOL") || !strcmp(rom->name,"GENCOL") || strstr(rom->name,"MOMOCOL") || strstr(rom->name,"SUPERCHINESE 12"))
    {
@@ -478,7 +479,7 @@ int gb_system::process_rom_info(byte *rominfo,byte *logo1, byte *logo2)
           mbc->setMemoryReadWrite(MEMORY_MMM01);
    }
    else
-   if(!strcmp(rom->name,"MORTALKOMBATI&I"))
+   if(strstr(rom->name,"MORTALKOMBATI&I"))
    {
        mbc->setMemoryReadWrite(MEMORY_MK12);
    }
