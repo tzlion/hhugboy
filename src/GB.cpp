@@ -317,6 +317,7 @@ void gb_system::reset(bool change_mode, bool preserveMulticartState)
    emulating = true;
 
     int cgbState = rom->CGB;
+    int sgbState = rom->SGB;
 
    
    //change mode according to user selection
@@ -325,7 +326,7 @@ void gb_system::reset(bool change_mode, bool preserveMulticartState)
      ; // do nothing
    } else {
 
-       if ( preserveMulticartState ) {
+       if ( preserveMulticartState ) { // It's a multicart resetting so we may need to change modes..
            byte cgbFlag = mbc->readmemory_cart( 0x0143 );
            if(cgbFlag == 0x80)
                cgbState = 1;
@@ -333,6 +334,11 @@ void gb_system::reset(bool change_mode, bool preserveMulticartState)
                cgbState = 2; // gbc only
            else
                cgbState = 0;
+           byte sgbFlag = mbc->readmemory_cart( 0x0146 );
+           if(sgbFlag == 0x03)
+               sgbState = 1;
+           else
+               sgbState = 0;
        }
 
        if(system_type == SYS_GBP || system_type == SYS_GB)
@@ -342,19 +348,19 @@ void gb_system::reset(bool change_mode, bool preserveMulticartState)
        {
            gbc_mode = 1;
            sgb_mode = 0;
-           if(options->GBC_SGB_border == GBC_WITH_SGB_BORDER && rom->SGB)
+           if(options->GBC_SGB_border == GBC_WITH_SGB_BORDER && sgbState)
            {
                sgb_mode = 1;
                gbc_mode = 1;
            } else
-           if(options->GBC_SGB_border == GBC_WITH_INITIAL_SGB_BORDER && rom->SGB)
+           if(options->GBC_SGB_border == GBC_WITH_INITIAL_SGB_BORDER && sgbState)
            {
                sgb_mode = 1;
                gbc_mode = 0;
            }
        }
        else
-       if((system_type == SYS_SGB || system_type == SYS_SGB2) || (options->GBC_SGB_border && cgbState && rom->SGB))
+       if((system_type == SYS_SGB || system_type == SYS_SGB2) || (options->GBC_SGB_border && cgbState && sgbState))
        {
            sgb_mode = 1;
            gbc_mode = 0;
@@ -368,7 +374,7 @@ void gb_system::reset(bool change_mode, bool preserveMulticartState)
            if(cgbState)
                gbc_mode = 1;
 
-           if(rom->SGB && !gbc_mode)
+           if(sgbState && !gbc_mode)
                sgb_mode = 1;
        }
 
