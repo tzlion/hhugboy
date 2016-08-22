@@ -71,7 +71,7 @@ AbstractMbc::AbstractMbc():
 
 }
 
-void AbstractMbc::resetVars() {
+void AbstractMbc::resetVars(bool preserveMulticartState = false) {
     // todo: move to respective mappers
     MBC1memorymodel = 0;
     MBChi = 0;
@@ -80,7 +80,9 @@ void AbstractMbc::resetVars() {
     ram_bank = 0;
     RTCIO = 0;
 
-    bc_select = 0;
+    if ( !preserveMulticartState ) {
+        bc_select = 0;
+    }
 
     cameraIO = 0;
     RTC_latched = 0;
@@ -198,16 +200,16 @@ void AbstractMbc::readMbcBanksFromStateFile(FILE *statefile) {
     fread(&(ram_bank), sizeof(int), 1, statefile);
 }
 
-void AbstractMbc::resetRomMemoryMap(bool resetOffset) {
-    if ( resetOffset ) {
-        superaddroffset = 0;
+void AbstractMbc::resetRomMemoryMap(bool preserveMulticartState) {
+    if ( !preserveMulticartState ) {
+        multicartOffset = 0;
     }
-    gbMemMap[0x0] = &(*gbCartridge)[superaddroffset+0x0000];
-    gbMemMap[0x1] = &(*gbCartridge)[superaddroffset+0x1000];
-    gbMemMap[0x2] = &(*gbCartridge)[superaddroffset+0x2000];
-    gbMemMap[0x3] = &(*gbCartridge)[superaddroffset+0x3000];
-    gbMemMap[0x4] = &(*gbCartridge)[superaddroffset+0x4000];
-    gbMemMap[0x5] = &(*gbCartridge)[superaddroffset+0x5000];
-    gbMemMap[0x6] = &(*gbCartridge)[superaddroffset+0x6000];
-    gbMemMap[0x7] = &(*gbCartridge)[superaddroffset+0x7000];
+    gbMemMap[0x0] = &(*gbCartridge)[multicartOffset+0x0000];
+    gbMemMap[0x1] = &(*gbCartridge)[multicartOffset+0x1000];
+    gbMemMap[0x2] = &(*gbCartridge)[multicartOffset+0x2000];
+    gbMemMap[0x3] = &(*gbCartridge)[multicartOffset+0x3000];
+    gbMemMap[0x4] = &(*gbCartridge)[multicartOffset+0x4000];
+    gbMemMap[0x5] = &(*gbCartridge)[multicartOffset+0x5000];
+    gbMemMap[0x6] = &(*gbCartridge)[multicartOffset+0x6000];
+    gbMemMap[0x7] = &(*gbCartridge)[multicartOffset+0x7000];
 }

@@ -34,8 +34,8 @@ public:
    ~gb_system();
    
    bool init();
-   void reset(bool change_mode = true, bool mini = false);
-   void mem_reset(bool mini = false);
+   void reset(bool change_mode = true, bool preserveMulticartState = false);
+   void mem_reset(bool preserveMulticartState = false);
    void cpu_reset();
 
     gb_mbc* mbc;

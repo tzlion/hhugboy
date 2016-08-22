@@ -132,6 +132,9 @@ void gb_system::crdtype(byte value,byte romsize,byte ramsize)
        rom->bankType = MBC3;
        rom->RTC = true;
        mbc->setMemoryReadWrite(MEMORY_MBC3);
+       // Bad override for chinese PK Gold multi
+       rom->bankType = MBC5;
+       mbc->setMemoryReadWrite(MEMORY_MBC5);
    break;
 
    case 0x11: //"MBC3"

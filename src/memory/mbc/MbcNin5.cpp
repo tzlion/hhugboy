@@ -48,10 +48,10 @@ void MbcNin5::mbc5Write(register unsigned short address, register byte data, boo
 
                 int addroffset = vfmultibank << 15;
                 addroffset += (eightMegBankNo << 0x17);
-                superaddroffset = addroffset;
+                multicartOffset = addroffset;
 
                 wchar_t wrmessage[50];
-                wsprintf(wrmessage,L"MM %X %X",superaddroffset,vfmultibank);
+                wsprintf(wrmessage,L"MM %X %X",multicartOffset,vfmultibank);
                 renderer.showMessage(wrmessage,60,GB1);
 
                 gbMemMap[0x0] = &(*gbCartridge)[addroffset];
@@ -67,13 +67,16 @@ void MbcNin5::mbc5Write(register unsigned short address, register byte data, boo
                 // todo: Do the bank switch, changes the effective ROM..
                 // todo: Do the memory switch
                 if ( doReset ) {
-                    GB1->reset(true,true);
-                    /*  GB1->load_rom(L"dodgy-hardcoded-path",superaddroffset); // reload the ROM from a new offset
-                        superaddroffset = 0;
+                    //GB1->reset();
+
+                    deferredReset = true; // Todo: affect the current GB only hmm
+                    //GB1->reset(true,true);
+                    /*  GB1->load_rom(L"dodgy-hardcoded-path",multicartOffset); // reload the ROM from a new offset
+                        multicartOffset = 0;
                         GB1->reset();
                       */
                     // IT SEEMS that if we do a reset here it just doesnt fuck work properly anyway?
-                    // Need to re-reset thru the menu (assuming superaddroffset not changed) & then it works
+                    // Need to re-reset thru the menu (assuming multicartOffset not changed) & then it works
                 }
 
                 if ( vfmultifinal>0) bc_select = 1;
@@ -161,7 +164,7 @@ void MbcNin5::mbc5Write(register unsigned short address, register byte data, boo
 
         cart_address &= rom_size_mask[(*gbRom)->ROMsize];
 
-        cart_address += superaddroffset;
+        cart_address += multicartOffset;
 
         MBClo = data;
 
@@ -191,7 +194,7 @@ void MbcNin5::mbc5Write(register unsigned short address, register byte data, boo
 
         cart_address &= rom_size_mask[(*gbRom)->ROMsize];
 
-        cart_address += superaddroffset;
+        cart_address += multicartOffset;
 
         MBChi = data;
 

@@ -67,7 +67,7 @@ void gb_system::writememory(unsigned short address,byte data)
     }
 }
 
-void gb_system::mem_reset(bool mini)
+void gb_system::mem_reset(bool preserveMulticartState)
 {
    memset(memory+0x8000,0x00,0x1FFF);
    memset(memory+0xFE00,0x00,0xA0);
@@ -91,7 +91,7 @@ void gb_system::mem_reset(bool mini)
    rom_bank_xor = 0;
 
     // Always pass in false for in-emu resets to reset the one game, which makes it work. pfft
-    mbc->resetRomMemoryMap(!mini);
+    mbc->resetRomMemoryMap(preserveMulticartState);
 
    if(gbc_mode)
    {

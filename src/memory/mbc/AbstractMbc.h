@@ -89,11 +89,13 @@ public:
     byte sintax_xor4;
     byte sintax_xor5;
 
-    int superaddroffset;
+    int multicartOffset;
 
 /*** BAD PUBLICS END ***/
 
 /*** THESE SHOULD BE PROTECTED IN THIS CLASS BUT NOT PUBLIC ***/
+    bool deferredReset = false;
+
     int rom_bank;
     int ram_bank;
 
@@ -114,7 +116,7 @@ public:
     void init(byte** gbMemMap, GBrom** gbRom, byte** gbMemory, byte* gbRomBankXor, byte** gbCartridge, byte** gbCartRam, int* gbRumbleCounter);
     virtual byte readMemory(register unsigned short address) = 0;
     virtual void writeMemory(unsigned short address, register byte data) = 0;
-    virtual void resetVars();
+    virtual void resetVars(bool preserveMulticartState);
     virtual void writeOldMbcSpecificVarsToStateFile(FILE *statefile);
     virtual void writeNewMbcSpecificVarsToStateFile(FILE *statefile);
     virtual void readOldMbcSpecificVarsFromStateFile(FILE *statefile);
@@ -126,7 +128,7 @@ public:
     void writeMbcBanksToStateFile(FILE *statefile);
     void readMbcOtherStuffFromStateFile(FILE *statefile);
     void writeMbcOtherStuffToStateFile(FILE *statefile);
-    void resetRomMemoryMap(bool resetOffset=false);
+    void resetRomMemoryMap(bool preserveMulticartState=false);
 protected:
     byte** gbMemMap;
     byte** gbMemory;

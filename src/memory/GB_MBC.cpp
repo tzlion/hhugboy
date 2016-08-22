@@ -51,6 +51,8 @@
 #include "mbc/MbcUnlSachen8in1.h"
 #include "mbc/MbcLicMk12.h"
 
+// So maybe this should be "cart" and a lot of whats in rom.cpp now e.g. autodetection should go in here..
+
 //int RTCIO = 0;
 //int RTC_latched = 0;
 
@@ -71,9 +73,9 @@ gb_mbc::gb_mbc(byte** gbMemMap, byte** gbCartridge, GBrom** gbRom, byte** gbCart
     setMemoryReadWrite(mbcType);
 }
 
-void gb_mbc::resetMbcVariables()
+void gb_mbc::resetMbcVariables(bool preserveMulticartState = false)
 {
-    mbc->resetVars();
+    mbc->resetVars(preserveMulticartState);
 }
 
 byte gb_mbc::readmemory_cart(register unsigned short address) {
@@ -125,8 +127,8 @@ void gb_mbc::readMbcBanksFromStateFile(FILE *statefile) {
     mbc->readMbcBanksFromStateFile(statefile);
 }
 
-void gb_mbc::resetRomMemoryMap(bool resetOffset=false) {
-    mbc->resetRomMemoryMap(resetOffset);
+void gb_mbc::resetRomMemoryMap(bool preserveMulticartState = false) {
+    mbc->resetRomMemoryMap(preserveMulticartState);
 }
 
 int gb_mbc::getRomBank() {
@@ -201,3 +203,12 @@ void gb_mbc::setMemoryReadWrite(memoryaccess memory_type) {
 
     mbc->init( gbMemMap, gbRom, gbMemory, gbRomBankXor, gbCartridge, gbCartRam, gbRumbleCounter );
 }
+
+bool gb_mbc::shouldReset() {
+    if ( mbc->deferredReset ) {
+        mbc->deferredReset = false;
+        return true;
+    }
+    return false;
+}
+

@@ -19,3 +19,4 @@ bin/*.cfg
 bin/*.png
 *.depend
 .idea/*
+Thumbs.db

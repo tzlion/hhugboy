@@ -41,8 +41,8 @@ public:
 
     byte readmemory_cart(register unsigned short address);
     void writememory_cart(unsigned short address,register byte data);
-    void resetMbcVariables();
-    void resetRomMemoryMap(bool resetOffset);
+    void resetMbcVariables(bool preserveMulticartState);
+    void resetRomMemoryMap(bool preserveMulticartState);
 
     void readMbcSpecificStuffFromSaveFile(FILE *savefile);
     void writeMbcSpecificStuffToSaveFile(FILE *savefile);
@@ -56,6 +56,8 @@ public:
     void writeCartSpecificVarsToStateFile(FILE *statefile);
     void readCartSpecificVarsFromStateFile(FILE *statefile);
     void readNewerCartSpecificVarsFromStateFile(FILE *statefile);
+
+    bool shouldReset();
 
 private:
 

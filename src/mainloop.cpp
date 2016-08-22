@@ -530,7 +530,7 @@ void gb_system::mainloop()
    if(cycles_sound <= 0)
    {
       cycles_sound += CYCLES_SOUND;
-      
+
       sound_event();
    }
  
@@ -541,5 +541,9 @@ void gb_system::mainloop()
    {
       IME = 1;
       EI_count = 0;
-   }     
+   }
+
+   if ( mbc->shouldReset() ) {
+       reset(true,true);
+   }
 }
