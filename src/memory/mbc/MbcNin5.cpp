@@ -8,85 +8,8 @@
 #include "../../main.h"
 // ^ can we not
 
-// dodgy & belongs to the multicart really
-byte vfmultimode=0;
-byte vfmultibank=0;
-byte vfmultimem=0;
-byte vfmultifinal=0;
-
 // todo: ugh @ this
 void MbcNin5::mbc5Write(register unsigned short address, register byte data, bool isNiutoude, bool isSintax) {
-    bool vfmulti = true;
-    if ( vfmulti && !bc_select ) {
-
-        if ( /*address & 0xF000 == 0x5000*/ address >= 0x5000 && address <= 0x5FFF ) {
-            vfmultimode = data;
-        }
-        if ( /*address & 0xF000 == 0x7000*/ address >= 0x7000 && address <= 0x7FFF ) {
-            bool effectChange = false;
-            switch( vfmultimode ) {
-                case 0xAA:
-                    if ( vfmultibank == 0 ) {
-                        vfmultibank = data;
-                    } else {
-                        effectChange = true;
-                    }
-                    break;
-                case 0xBB:
-                    vfmultimem = data;
-                    break;
-                case 0x55:
-                    vfmultifinal = data;
-                    effectChange = true;
-                    break;
-            }
-            if ( effectChange ) {
-
-                byte size = vfmultifinal & 0x07;
-                byte eightMegBankNo = ( vfmultifinal & 0x08 ) >> 3; // 0 or 1
-                byte doReset = ( vfmultifinal & 0x80 ) >> 7; // 0 or 1 again
-
-                int addroffset = vfmultibank << 15;
-                addroffset += (eightMegBankNo << 0x17);
-                multicartOffset = addroffset;
-
-                wchar_t wrmessage[50];
-                wsprintf(wrmessage,L"MM %X %X",multicartOffset,vfmultibank);
-                renderer.showMessage(wrmessage,60,GB1);
-
-                gbMemMap[0x0] = &(*gbCartridge)[addroffset];
-                gbMemMap[0x1] = &(*gbCartridge)[addroffset+0x1000];
-                gbMemMap[0x2] = &(*gbCartridge)[addroffset+0x2000];
-                gbMemMap[0x3] = &(*gbCartridge)[addroffset+0x3000];
-
-                gbMemMap[0x4] = &(*gbCartridge)[addroffset+0x4000];
-                gbMemMap[0x5] = &(*gbCartridge)[addroffset+0x5000];
-                gbMemMap[0x6] = &(*gbCartridge)[addroffset+0x6000];
-                gbMemMap[0x7] = &(*gbCartridge)[addroffset+0x7000];
-
-                // todo: Do the bank switch, changes the effective ROM..
-                // todo: Do the memory switch
-                if ( doReset ) {
-                    //GB1->reset();
-
-                    deferredReset = true; // Todo: affect the current GB only hmm
-                    //GB1->reset(true,true);
-                    /*  GB1->load_rom(L"dodgy-hardcoded-path",multicartOffset); // reload the ROM from a new offset
-                        multicartOffset = 0;
-                        GB1->reset();
-                      */
-                    // IT SEEMS that if we do a reset here it just doesnt fuck work properly anyway?
-                    // Need to re-reset thru the menu (assuming multicartOffset not changed) & then it works
-                }
-
-                if ( vfmultifinal>0) bc_select = 1;
-
-                vfmultimode=0; vfmultibank=0; vfmultimem=0; vfmultifinal = 0;
-
-                return;
-            }
-        }
-    }
 
     if(address < 0x2000)// Is it a RAM bank enable/disable?
     {

@@ -26,7 +26,8 @@ enum memoryaccess
     MEMORY_POKE,
     MEMORY_NIUTOUDE,
     MEMORY_SINTAX,
-    MEMORY_ROMONLY
+    MEMORY_ROMONLY,
+    MEMORY_LBMULTI,
 };
 
 class gb_mbc {

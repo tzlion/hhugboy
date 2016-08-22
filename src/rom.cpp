@@ -132,9 +132,6 @@ void gb_system::crdtype(byte value,byte romsize,byte ramsize)
        rom->bankType = MBC3;
        rom->RTC = true;
        mbc->setMemoryReadWrite(MEMORY_MBC3);
-       // Bad override for chinese PK Gold multi
-       rom->bankType = MBC5;
-       mbc->setMemoryReadWrite(MEMORY_MBC5);
    break;
 
    case 0x11: //"MBC3"
@@ -369,8 +366,7 @@ int gb_system::process_rom_info(byte *rominfo,byte *logo1, byte *logo2)
    if(!strcmp(rom->newlic,"MK")||!strcmp(rom->newlic,"GC"))
    {
       rom->rumble = 1;
-   }     
-   
+   }
       
    if(!strcmp(rom->name,"GB SMART CARD"))
    {
@@ -550,6 +546,15 @@ int get_size(int real_size) // return good size to use
       return real_size;                                 
 }
 
+void gb_system::checkForMulticart(int fileSize)
+{
+    if ( (strstr(rom->name,"POKEMON_GLDAAUJ")&&fileSize==4194304) || (strstr(rom->name,"TIMER MONSTER")&&fileSize==16777216||fileSize==(8388608) )
+    ) {
+        rom->bankType = MBC5;
+        mbc->setMemoryReadWrite(MEMORY_LBMULTI);
+    }
+}
+
 bool gb_system::loadrom_zip(const wchar_t* filename)
 {
 	
@@ -671,7 +676,7 @@ bool gb_system::loadrom_zip(const wchar_t* filename)
   
    process_rom_info(rominfo,logo1,logo2);
    
-   
+   checkForMulticart(size);
    
    if(!strcmp(rom->name,"TETRIS") && size > 32768 && rom->ROMsize==0)
    {
@@ -759,8 +764,10 @@ bool gb_system::load_rom(const wchar_t* filename,int offset)
    if(_wstat(filename,&file_stat) == 0)
    {
       file_size = file_stat.st_size;
-      
-      // Captain Knick Knack
+
+       checkForMulticart(file_size);
+
+       // Captain Knick Knack
       if(!strcmp(rom->name,"TETRIS") && file_size > 32768 && rom->ROMsize == 0)
       {
           mbc->setMemoryReadWrite(MEMORY_MBC1);

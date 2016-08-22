@@ -369,6 +369,10 @@ public:
    }
    
    void mainloop();
+
+private:
+    void checkForMulticart(int fileSize);
+
 };
 
 extern gb_system *GB;
