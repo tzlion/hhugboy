@@ -13,6 +13,15 @@
 class MbcUnlLbMulti : public MbcNin5 {
 public:
     virtual void writeMemory(unsigned short address, register byte data) override;
+    virtual void resetVars(bool preserveMulticartState) override;
+    virtual void writeMbcSpecificVarsToStateFile(FILE *statefile) override;
+    virtual void readMbcSpecificVarsFromStateFile(FILE *statefile) override;
+
+private:
+    byte vfmultimode=0;
+    byte vfmultibank=0;
+    byte vfmultimem=0;
+    byte vfmultifinal=0;
 };
 
 

@@ -38,7 +38,7 @@ byte MbcNin7::readMemory(register unsigned short address) {
     return BasicMbc::readMemory(address);
 }
 
-void MbcNin7::readOldMbcSpecificVarsFromStateFile(FILE *statefile) {
+void MbcNin7::readMbcSpecificVarsFromStateFile(FILE *statefile) {
     fread(&(MBC7_cs), sizeof(int), 1, statefile);
     fread(&(MBC7_sk), sizeof(int), 1, statefile);
     fread(&(MBC7_state), sizeof(int), 1, statefile);
@@ -53,7 +53,7 @@ void MbcNin7::readOldMbcSpecificVarsFromStateFile(FILE *statefile) {
     fread(&sensorY,sizeof(int),1,statefile);
 }
 
-void MbcNin7::writeOldMbcSpecificVarsToStateFile(FILE *statefile) {
+void MbcNin7::writeMbcSpecificVarsToStateFile(FILE *statefile) {
     fwrite(&(MBC7_cs), sizeof(int), 1, statefile);
     fwrite(&(MBC7_sk), sizeof(int), 1, statefile);
     fwrite(&(MBC7_state), sizeof(int), 1, statefile);

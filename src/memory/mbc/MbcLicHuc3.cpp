@@ -21,7 +21,7 @@ byte MbcLicHuc3::readMemory(register unsigned short address) {
     return BasicMbc::readMemory(address);
 }
 
-void MbcLicHuc3::readOldMbcSpecificVarsFromStateFile(FILE *statefile) {
+void MbcLicHuc3::readMbcSpecificVarsFromStateFile(FILE *statefile) {
     fread(&(HuC3_time), sizeof(unsigned int), 1, statefile);
     fread(&(HuC3_last_time), sizeof(time_t), 1, statefile);
     fread(&(rtc).s, sizeof(int), 1, statefile);
@@ -32,7 +32,7 @@ void MbcLicHuc3::readOldMbcSpecificVarsFromStateFile(FILE *statefile) {
     fread(&(HuC3_RAMflag), sizeof(int), 1, statefile);
 }
 
-void MbcLicHuc3::writeOldMbcSpecificVarsToStateFile(FILE *statefile) {
+void MbcLicHuc3::writeMbcSpecificVarsToStateFile(FILE *statefile) {
     fwrite(&(HuC3_time), sizeof(unsigned int), 1, statefile);
     fwrite(&(HuC3_last_time), sizeof(time_t), 1, statefile);
     fwrite(&(rtc).s, sizeof(int), 1, statefile);

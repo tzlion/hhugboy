@@ -117,10 +117,10 @@ public:
     virtual byte readMemory(register unsigned short address) = 0;
     virtual void writeMemory(unsigned short address, register byte data) = 0;
     virtual void resetVars(bool preserveMulticartState);
-    virtual void writeOldMbcSpecificVarsToStateFile(FILE *statefile);
-    virtual void writeNewMbcSpecificVarsToStateFile(FILE *statefile);
-    virtual void readOldMbcSpecificVarsFromStateFile(FILE *statefile);
-    virtual void readNewMbcSpecificVarsFromStateFile(FILE *statefile);
+    virtual void writeMbcSpecificVarsToStateFile(FILE *statefile);
+    virtual void writeSgbMbcSpecificVarsToStateFile(FILE *statefile);
+    virtual void readMbcSpecificVarsFromStateFile(FILE *statefile);
+    virtual void readSgbMbcSpecificVarsFromStateFile(FILE *statefile);
     virtual void readMbcSpecificVarsFromSaveFile(FILE *savefile);
     virtual void writeMbcSpecificVarsToSaveFile(FILE *savefile);
 

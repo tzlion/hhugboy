@@ -112,19 +112,19 @@ void AbstractMbc::resetVars(bool preserveMulticartState = false) {
     sintax_xor2 = sintax_xor3 = sintax_xor4 = sintax_xor5 = 0;
 }
 
-void AbstractMbc::readNewMbcSpecificVarsFromStateFile(FILE *statefile) {
+void AbstractMbc::readSgbMbcSpecificVarsFromStateFile(FILE *statefile) {
 
 }
 
-void AbstractMbc::readOldMbcSpecificVarsFromStateFile(FILE *statefile) {
+void AbstractMbc::readMbcSpecificVarsFromStateFile(FILE *statefile) {
 
 }
 
-void AbstractMbc::writeNewMbcSpecificVarsToStateFile(FILE *statefile) {
+void AbstractMbc::writeSgbMbcSpecificVarsToStateFile(FILE *statefile) {
 
 }
 
-void AbstractMbc::writeOldMbcSpecificVarsToStateFile(FILE *statefile) {
+void AbstractMbc::writeMbcSpecificVarsToStateFile(FILE *statefile) {
 
 }
 

@@ -96,19 +96,19 @@ void gb_mbc::readMbcSpecificStuffFromSaveFile(FILE *savefile){
 }
 
 void gb_mbc::readNewerCartSpecificVarsFromStateFile(FILE *statefile) {
-    mbc->readNewMbcSpecificVarsFromStateFile(statefile);
+    mbc->readSgbMbcSpecificVarsFromStateFile(statefile);
 }
 
 void gb_mbc::readCartSpecificVarsFromStateFile(FILE *statefile){
-    mbc->readOldMbcSpecificVarsFromStateFile(statefile);
+    mbc->readMbcSpecificVarsFromStateFile(statefile);
 }
 
 void gb_mbc::writeCartSpecificVarsToStateFile(FILE *statefile) {
-    mbc->writeOldMbcSpecificVarsToStateFile(statefile);
+    mbc->writeMbcSpecificVarsToStateFile(statefile);
 }
 
 void gb_mbc::writeNewerCartSpecificVarsToStateFile(FILE *statefile) {
-    mbc->writeNewMbcSpecificVarsToStateFile(statefile);
+    mbc->writeSgbMbcSpecificVarsToStateFile(statefile);
 }
 
 
@@ -214,5 +214,9 @@ bool gb_mbc::shouldReset() {
         return true;
     }
     return false;
+}
+
+int gb_mbc::getOffset() {
+    return mbc->multicartOffset;
 }
 

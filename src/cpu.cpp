@@ -514,7 +514,7 @@ bool gb_system::load_state()
 
     mbc->readNewerCartSpecificVarsFromStateFile(statefile);
 
-    int cadr = (mbc->getRomBank())<<14;
+    int cadr = ((mbc->getRomBank())<<14) + mbc->getOffset();
    mem_map[0x4] = &cartridge[cadr];
    mem_map[0x5] = &cartridge[cadr+0x1000];
    mem_map[0x6] = &cartridge[cadr+0x2000];

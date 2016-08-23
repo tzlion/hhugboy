@@ -60,6 +60,8 @@ public:
 
     bool shouldReset();
 
+    int getOffset();
+
 private:
 
     AbstractMbc *mbc;

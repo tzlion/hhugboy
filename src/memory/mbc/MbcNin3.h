@@ -12,9 +12,9 @@
 //-------------------------------------------------------------------------
 class MbcNin3 : public BasicMbc {
 public:
-    virtual void readOldMbcSpecificVarsFromStateFile(FILE *statefile) override;
+    virtual void readMbcSpecificVarsFromStateFile(FILE *statefile) override;
     virtual void writeMemory(unsigned short address, register byte data) override;
-    virtual void writeOldMbcSpecificVarsToStateFile(FILE *statefile) override;
+    virtual void writeMbcSpecificVarsToStateFile(FILE *statefile) override;
     virtual byte readMemory(register unsigned short address) override;
 private:
     void rtcUpdate();

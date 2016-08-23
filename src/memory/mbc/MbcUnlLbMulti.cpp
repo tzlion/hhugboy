@@ -8,11 +8,7 @@
 #include "../../main.h"
 // ^ can we not
 
-// dodgy
-byte vfmultimode=0;
-byte vfmultibank=0;
-byte vfmultimem=0;
-byte vfmultifinal=0;
+#include <cstdio>
 
 
 void MbcUnlLbMulti::writeMemory(unsigned short address, register byte data) {
@@ -81,4 +77,36 @@ void MbcUnlLbMulti::writeMemory(unsigned short address, register byte data) {
 
 
     MbcNin5::writeMemory(address, data);
+}
+
+void MbcUnlLbMulti::resetVars(bool preserveMulticartState) {
+
+    if ( !preserveMulticartState ) {
+        vfmultimode=0;
+        vfmultibank=0;
+        vfmultimem=0;
+        vfmultifinal=0;
+    }
+
+    AbstractMbc::resetVars(preserveMulticartState);
+}
+
+void MbcUnlLbMulti::writeMbcSpecificVarsToStateFile(FILE *statefile) {
+    fwrite(&(vfmultimode), sizeof(byte), 1, statefile);
+    fwrite(&(vfmultibank), sizeof(byte), 1, statefile);
+    fwrite(&(vfmultimem), sizeof(byte), 1, statefile);
+    fwrite(&(vfmultifinal), sizeof(byte), 1, statefile);
+    fwrite(&(multicartOffset),sizeof(int),1,statefile);
+    fwrite(&(bc_select),sizeof(int),1,statefile);
+}
+
+void MbcUnlLbMulti::readMbcSpecificVarsFromStateFile(FILE *statefile) {
+    fread(&(vfmultimode), sizeof(byte), 1, statefile);
+    fread(&(vfmultibank), sizeof(byte), 1, statefile);
+    fread(&(vfmultimem), sizeof(byte), 1, statefile);
+    fread(&(vfmultifinal), sizeof(byte), 1, statefile);
+    fread(&(multicartOffset),sizeof(int),1,statefile);
+    fread(&(bc_select),sizeof(int),1,statefile);
+
+    resetRomMemoryMap(true);
 }

@@ -32,7 +32,7 @@ byte MbcNin3::readMemory(register unsigned short address) {
     return BasicMbc::readMemory(address);
 }
 
-void MbcNin3::readOldMbcSpecificVarsFromStateFile(FILE *statefile) {
+void MbcNin3::readMbcSpecificVarsFromStateFile(FILE *statefile) {
     if((*gbRom)->RTC)
     {
         fread(&(rtc).s, sizeof(int), 1, statefile);
@@ -51,7 +51,7 @@ void MbcNin3::readOldMbcSpecificVarsFromStateFile(FILE *statefile) {
     }
 }
 
-void MbcNin3::writeOldMbcSpecificVarsToStateFile(FILE *statefile) {
+void MbcNin3::writeMbcSpecificVarsToStateFile(FILE *statefile) {
     if((*gbRom)->RTC)
     {
         fwrite(&(rtc).s, sizeof(int), 1, statefile);
