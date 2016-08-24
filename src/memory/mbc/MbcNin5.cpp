@@ -179,7 +179,7 @@ void MbcNin5::mbc5Write(register unsigned short address, register byte data, boo
 
         ram_bank = data;
 
-        int madr = data<<13;
+        int madr = (data<<13) + multicartRamOffset;
         gbMemMap[0xA] = &(*gbCartRam)[madr];
         gbMemMap[0xB] = &(*gbCartRam)[madr+0x1000];
         return;

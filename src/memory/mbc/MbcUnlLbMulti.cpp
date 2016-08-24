@@ -18,6 +18,7 @@ void MbcUnlLbMulti::writeMemory(unsigned short address, register byte data) {
 
         if ( /*address & 0xF000 == 0x5000*/ address >= 0x5000 && address <= 0x5FFF ) {
             vfmultimode = data;
+            return;
         }
         if ( /*address & 0xF000 == 0x7000*/ address >= 0x7000 && address <= 0x7FFF ) {
             bool effectChange = false;
@@ -39,7 +40,7 @@ void MbcUnlLbMulti::writeMemory(unsigned short address, register byte data) {
             }
             if ( effectChange ) {
 
-                byte size = vfmultifinal & 0x07;
+                byte size = vfmultifinal & 0x07; // COULD implement this but meh
                 byte eightMegBankNo = ( vfmultifinal & 0x08 ) >> 3; // 0 or 1
                 byte doReset = ( vfmultifinal & 0x80 ) >> 7; // 0 or 1 again
 
@@ -61,7 +62,16 @@ void MbcUnlLbMulti::writeMemory(unsigned short address, register byte data) {
                 gbMemMap[0x6] = &(*gbCartridge)[addroffset+0x6000];
                 gbMemMap[0x7] = &(*gbCartridge)[addroffset+0x7000];
 
-                // todo: Do the memory switch
+                // Should be no bankswitching for values 0x30-0x3F but meh
+                if ( vfmultimem >= 0x20 && vfmultimem <= 0x3F ) {
+                    multicartRamOffset = ( vfmultimem - 0x20 ) << 0x0D;
+                } else {
+                    multicartRamOffset = 0;
+                }
+
+                gbMemMap[0xA] = &(*gbCartRam)[multicartRamOffset];
+                gbMemMap[0xB] = &(*gbCartRam)[multicartRamOffset+0x1000];
+
                 if ( doReset ) {
                     deferredReset = true;
                 }
@@ -72,6 +82,8 @@ void MbcUnlLbMulti::writeMemory(unsigned short address, register byte data) {
 
                 return;
             }
+
+            return;
         }
     }
 
@@ -97,6 +109,7 @@ void MbcUnlLbMulti::writeMbcSpecificVarsToStateFile(FILE *statefile) {
     fwrite(&(vfmultimem), sizeof(byte), 1, statefile);
     fwrite(&(vfmultifinal), sizeof(byte), 1, statefile);
     fwrite(&(multicartOffset),sizeof(int),1,statefile);
+    fwrite(&(multicartRamOffset),sizeof(int),1,statefile);
     fwrite(&(bc_select),sizeof(int),1,statefile);
 }
 
@@ -106,6 +119,7 @@ void MbcUnlLbMulti::readMbcSpecificVarsFromStateFile(FILE *statefile) {
     fread(&(vfmultimem), sizeof(byte), 1, statefile);
     fread(&(vfmultifinal), sizeof(byte), 1, statefile);
     fread(&(multicartOffset),sizeof(int),1,statefile);
+    fread(&(multicartRamOffset),sizeof(int),1,statefile);
     fread(&(bc_select),sizeof(int),1,statefile);
 
     resetRomMemoryMap(true);

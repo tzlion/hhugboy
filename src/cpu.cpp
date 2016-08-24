@@ -522,7 +522,7 @@ bool gb_system::load_state()
    
    if(rom->RAMsize > 2)
    {
-      int madr = (mbc->getRamBank())<<13;
+      int madr = (mbc->getRamBank())<<13 + mbc->getRamOffset();
       mem_map[0xA] = &cartRAM[madr];
       mem_map[0xB] = &cartRAM[madr+0x1000];          
    }

@@ -66,7 +66,10 @@ AbstractMbc::AbstractMbc():
         RTCIO(0),
 
         RTC_latched(0),
-        cameraIO(0)
+        cameraIO(0),
+
+        multicartOffset(0),
+        multicartRamOffset(0)
 {
 
 }
@@ -203,6 +206,7 @@ void AbstractMbc::readMbcBanksFromStateFile(FILE *statefile) {
 void AbstractMbc::resetRomMemoryMap(bool preserveMulticartState) {
     if ( !preserveMulticartState ) {
         multicartOffset = 0;
+        multicartRamOffset = 0;
     }
     gbMemMap[0x0] = &(*gbCartridge)[multicartOffset+0x0000];
     gbMemMap[0x1] = &(*gbCartridge)[multicartOffset+0x1000];
@@ -212,4 +216,8 @@ void AbstractMbc::resetRomMemoryMap(bool preserveMulticartState) {
     gbMemMap[0x5] = &(*gbCartridge)[multicartOffset+0x5000];
     gbMemMap[0x6] = &(*gbCartridge)[multicartOffset+0x6000];
     gbMemMap[0x7] = &(*gbCartridge)[multicartOffset+0x7000];
+
+    //todo: do this on savestates too
+    gbMemMap[0xA] = &(*gbCartRam)[multicartRamOffset];
+    gbMemMap[0xB] = &(*gbCartRam)[multicartRamOffset+0x1000];
 }

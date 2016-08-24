@@ -220,3 +220,7 @@ int gb_mbc::getOffset() {
     return mbc->multicartOffset;
 }
 
+int gb_mbc::getRamOffset() {
+    return mbc->multicartOffset;
+}
+

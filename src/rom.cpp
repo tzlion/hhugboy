@@ -551,6 +551,7 @@ void gb_system::checkForMulticart(int fileSize)
     if ( (strstr(rom->name,"POKEMON_GLDAAUJ")&&fileSize==4194304) || (strstr(rom->name,"TIMER MONSTER")&&fileSize==16777216||fileSize==(8388608) )
     ) {
         rom->bankType = MBC5;
+        rom->RAMsize = 9; // Doesn't really exist shh
         mbc->setMemoryReadWrite(MEMORY_LBMULTI);
     }
 }

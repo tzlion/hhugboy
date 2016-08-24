@@ -110,7 +110,7 @@ bool debug = false;
 
 #include "licnames.h"
 
-int ramsize[9] = { 0, 2, 8, 32, 128, 64,64,64,8 }; // KBytes
+int ramsize[10] = { 0, 2, 8, 32, 128, 64,64,64,8, 256 }; // KBytes
 
 int romsize(int number)
 {

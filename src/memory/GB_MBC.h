@@ -61,6 +61,7 @@ public:
     bool shouldReset();
 
     int getOffset();
+    int getRamOffset();
 
 private:
 

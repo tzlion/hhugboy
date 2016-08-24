@@ -195,7 +195,7 @@ bool gb_system::init()
    if(!memory) 
       return false;
       
-   cartRAM = new byte[128*1024];
+   cartRAM = new byte[256*1024];
    if(!cartRAM) 
       return false;
    memset(cartRAM,0xFF,128*1024);
