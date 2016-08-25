@@ -48,9 +48,9 @@ void MbcUnlLbMulti::writeMemory(unsigned short address, register byte data) {
                 addroffset += (eightMegBankNo << 0x17);
                 multicartOffset = addroffset;
 
-                wchar_t wrmessage[50];
-                wsprintf(wrmessage,L"MM %X %X",multicartOffset,vfmultibank);
-                renderer.showMessage(wrmessage,60,GB1);
+                //wchar_t wrmessage[50];
+                //wsprintf(wrmessage,L"MM %X %X",multicartOffset,vfmultibank);
+                //renderer.showMessage(wrmessage,60,GB1);
 
                 gbMemMap[0x0] = &(*gbCartridge)[addroffset];
                 gbMemMap[0x1] = &(*gbCartridge)[addroffset+0x1000];
