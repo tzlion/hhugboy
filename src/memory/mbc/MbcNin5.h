@@ -13,9 +13,6 @@
 class MbcNin5 : public BasicMbc {
 public:
     virtual void writeMemory(unsigned short address, register byte data) override;
-
-protected:
-    void mbc5Write(register unsigned short address, register byte data, bool isNiutoude, bool isSintax);
 };
 
 

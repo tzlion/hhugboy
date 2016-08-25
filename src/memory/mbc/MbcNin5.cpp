@@ -8,8 +8,7 @@
 #include "../../main.h"
 // ^ can we not
 
-// todo: ugh @ this
-void MbcNin5::mbc5Write(register unsigned short address, register byte data, bool isNiutoude, bool isSintax) {
+void MbcNin5::writeMemory(unsigned short address, register byte data) {
 
     if(address < 0x2000)// Is it a RAM bank enable/disable?
     {
@@ -19,13 +18,6 @@ void MbcNin5::mbc5Write(register unsigned short address, register byte data, boo
 
     if(address < 0x3000)
     {
-        // 2100 needs to be not-ignored (for Cannon Fodder's sound)
-        // but 2180 DOES need to be ignored (for FF DX3)
-        // Determined to find the right number here
-        if (isNiutoude && address > 0x2100) {
-            return;
-        }
-
         rom_bank = data|(MBChi<<8);
         cart_address = rom_bank<<14;
 
@@ -127,8 +119,4 @@ void MbcNin5::mbc5Write(register unsigned short address, register byte data, boo
 
     gbMemMap[address>>12][address&0x0FFF] = data;
 
-}
-
-void MbcNin5::writeMemory(unsigned short address, register byte data) {
-    mbc5Write(address, data, false, false);
 }

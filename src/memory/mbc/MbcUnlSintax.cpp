@@ -106,7 +106,7 @@ void MbcUnlSintax::writeMemory(unsigned short address, register byte data) {
             }
             sintax_mode = data;
 
-            mbc5Write(0x2000, 01, false, true); // force a fake bank switch
+            writeMemory(0x2000, 01); // force a fake bank switch
 
             return;
 
@@ -140,7 +140,7 @@ void MbcUnlSintax::writeMemory(unsigned short address, register byte data) {
     }
 
 
-    mbc5Write(address, data, false, true);
+    MbcNin5::writeMemory(address, data);
 
 }
 
