@@ -16,7 +16,6 @@ public:
 
 protected:
     void mbc5Write(register unsigned short address, register byte data, bool isNiutoude, bool isSintax);
-    void setXorForBank(byte bankNo);
 };
 
 

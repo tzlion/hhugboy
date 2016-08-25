@@ -83,12 +83,6 @@ public:
     rtc_clock rtc;
     rtc_clock rtc_latch;
 
-    byte sintax_mode;
-    byte sintax_xor2;
-    byte sintax_xor3;
-    byte sintax_xor4;
-    byte sintax_xor5;
-
     int multicartOffset;
     int multicartRamOffset;
 

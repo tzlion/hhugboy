@@ -55,12 +55,6 @@ AbstractMbc::AbstractMbc():
         tama_month(0),
         tama_change_clock(0),
 
-        sintax_mode(0),
-        sintax_xor2(0),
-        sintax_xor3(0),
-        sintax_xor4(0),
-        sintax_xor5(0),
-
         MBC1memorymodel(0),
 
         RTCIO(0),
@@ -110,9 +104,6 @@ void AbstractMbc::resetVars(bool preserveMulticartState = false) {
 
     HuC3_flag = HUC3_NONE;
     HuC3_RAMvalue = 1;
-
-    sintax_mode = 0;
-    sintax_xor2 = sintax_xor3 = sintax_xor4 = sintax_xor5 = 0;
 }
 
 void AbstractMbc::readSgbMbcSpecificVarsFromStateFile(FILE *statefile) {
