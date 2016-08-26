@@ -6,68 +6,68 @@ set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++11 -U__STRICT_ANSI__ -mwindows")
 set(CMAKE_RUNTIME_OUTPUT_DIRECTORY "${CMAKE_SOURCE_DIR}/bin")
 
 set(SOURCE_FILES
-    src/rendering/filters/Filter.cpp
-    src/rendering/filters/Filter.h
-    src/rendering/filters/filters.cpp
-    src/rendering/filters/filters.h
-    src/rendering/filters/scale2x.cpp
-    src/rendering/filters/scale2x.h
-    src/rendering/filters/scale3x.cpp
-    src/rendering/filters/scale3x.h
-    src/rendering/directdraw.cpp
-    src/rendering/directdraw.h
-    src/rendering/palette.cpp
-    src/rendering/palette.h
-    src/rendering/render.cpp
-    src/rendering/render.h
-    src/rendering/renderer.cpp
-    src/rendering/renderer.h
-    src/zlib/unzip.c
-    src/zlib/unzip.h
-    src/cheats.cpp
-    src/cheats.h
-    src/config.cpp
-    src/config.h
-    src/cpu.cpp
-    src/cpu.h
-    src/cpucore.h
-    src/debug.cpp
-    src/debug.h
-    src/devices.cpp
-    src/devices.h
-    src/dialogs.cpp
-    src/dialogs.h
-    src/directinput.cpp
-    src/directinput.h
-    src/GB.cpp
-    src/GB.h
-    src/GB_gfx.cpp
-    src/GB_gfx.h
-    src/memory/GB_MBC.h
-    src/memory/GB_ioregs.cpp
-    src/memory/GB_MBC.cpp
-    src/memory/GB_mem.cpp
-    src/GB_sound.cpp
-    src/keynames.h
-    src/licnames.h
-    src/main.cpp
-    src/main.h
-    src/menu.cpp
-    src/menu.rc
-    src/mainloop.cpp
-    src/mainloop.h
-    src/menu.h
-    src/options.h
-    src/rom.cpp
-    src/rom.h
-    src/SGB.cpp
-    src/SGB.h
-    src/sound.h
-    src/strings.cpp
-    src/strings.h
-    src/types.h
-    src/version.rc
-    src/version.res
+        src/rendering/filters/Filter.cpp
+        src/rendering/filters/Filter.h
+        src/rendering/filters/filters.cpp
+        src/rendering/filters/filters.h
+        src/rendering/filters/scale2x.cpp
+        src/rendering/filters/scale2x.h
+        src/rendering/filters/scale3x.cpp
+        src/rendering/filters/scale3x.h
+        src/rendering/directdraw.cpp
+        src/rendering/directdraw.h
+        src/rendering/palette.cpp
+        src/rendering/palette.h
+        src/rendering/render.cpp
+        src/rendering/render.h
+        src/rendering/renderer.cpp
+        src/rendering/renderer.h
+        src/zlib/unzip.c
+        src/zlib/unzip.h
+        src/cheats.cpp
+        src/cheats.h
+        src/config.cpp
+        src/config.h
+        src/cpu.cpp
+        src/cpu.h
+        src/cpucore.h
+        src/debug.cpp
+        src/debug.h
+        src/devices.cpp
+        src/devices.h
+        src/dialogs.cpp
+        src/dialogs.h
+        src/directinput.cpp
+        src/directinput.h
+        src/GB.cpp
+        src/GB.h
+        src/GB_gfx.cpp
+        src/GB_gfx.h
+        src/memory/GB_MBC.h
+        src/memory/GB_ioregs.cpp
+        src/memory/GB_MBC.cpp
+        src/memory/GB_mem.cpp
+        src/GB_sound.cpp
+        src/keynames.h
+        src/licnames.h
+        src/main.cpp
+        src/main.h
+        src/menu.cpp
+        src/menu.rc
+        src/mainloop.cpp
+        src/mainloop.h
+        src/menu.h
+        src/options.h
+        src/rom.cpp
+        src/rom.h
+        src/SGB.cpp
+        src/SGB.h
+        src/sound.h
+        src/strings.cpp
+        src/strings.h
+        src/types.h
+        src/version.rc
+        src/version.res
         src/memory/mbc/BasicMbc.cpp
         src/memory/mbc/BasicMbc.h
         src/memory/mbc/MbcNin3.cpp
@@ -90,9 +90,34 @@ set(SOURCE_FILES
         src/memory/mbc/MbcNin5.h
         src/memory/mbc/MbcUnlLiCheng.cpp
         src/memory/mbc/MbcUnlLiCheng.h
-        src/memory/mbc/MbcUnlPoke2in1.cpp src/memory/mbc/MbcUnlPoke2in1.h src/memory/mbc/MbcNin2.cpp src/memory/mbc/MbcNin2.h src/memory/mbc/MbcUnlRockman8.cpp src/memory/mbc/MbcUnlRockman8.h src/memory/mbc/MbcLicMk12.cpp src/memory/mbc/MbcLicMk12.h src/memory/mbc/MbcLicHuColl.cpp src/memory/mbc/MbcLicHuColl.h src/memory/mbc/MbcLicMmm01.cpp src/memory/mbc/MbcLicMmm01.h src/memory/mbc/MbcNin1.cpp src/memory/mbc/MbcNin1.h src/memory/mbc/MbcUnlSachen8in1.cpp src/memory/mbc/MbcUnlSachen8in1.h src/memory/mbc/MbcUnlLbMulti.cpp src/memory/mbc/MbcUnlLbMulti.h)
+        src/memory/mbc/MbcUnlPoke2in1.cpp
+        src/memory/mbc/MbcUnlPoke2in1.h
+        src/memory/mbc/MbcNin2.cpp
+        src/memory/mbc/MbcNin2.h
+        src/memory/mbc/MbcUnlRockman8.cpp
+        src/memory/mbc/MbcUnlRockman8.h
+        src/memory/mbc/MbcLicMk12.cpp
+        src/memory/mbc/MbcLicMk12.h
+        src/memory/mbc/MbcLicHuColl.cpp
+        src/memory/mbc/MbcLicHuColl.h
+        src/memory/mbc/MbcLicMmm01.cpp
+        src/memory/mbc/MbcLicMmm01.h
+        src/memory/mbc/MbcNin1.cpp
+        src/memory/mbc/MbcNin1.h
+        src/memory/mbc/MbcUnlSachen8in1.cpp
+        src/memory/mbc/MbcUnlSachen8in1.h
+        src/memory/mbc/MbcUnlLbMulti.cpp
+        src/memory/mbc/MbcUnlLbMulti.h
+)
 
-include_directories(includes includes/zlib includes/libpng12 includes/fmod "C:\\png\\png++-0.2.5\\png++-0.2.5" "C:\\Program Files (x86)\\Microsoft DirectX SDK (August 2009)\\Include")
+include_directories(
+        includes
+        includes/zlib
+        includes/libpng12
+        includes/fmod
+        includes/directx-aug2009
+        includes/png++-0.2.5
+)
 
 link_libraries(
         "${CMAKE_SOURCE_DIR}/libs/libfmod.a"
