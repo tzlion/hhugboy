@@ -22,6 +22,7 @@ private:
     byte multiRomSelect=0;
     byte multiRamSelect=0;
     byte multiOtherStuff=0;
+    bool mbc1Mode = false;
 };
 
 

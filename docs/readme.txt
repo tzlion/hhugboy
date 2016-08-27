@@ -43,7 +43,7 @@ http://bitbucket.org/taizou/hhugboy
  * Support for certain multicarts is available in any mode - currently:
    - Vast Fame 12-in-1
    - Vast Fame 18-in-1
-   - 36-in-1 with Chinese Pokemon Gold & Silver (a few games don't work)
+   - SL 36-in-1 with Chinese Pokemon Gold & Silver
 
 [ KEYS ] - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 

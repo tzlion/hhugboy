@@ -43,32 +43,26 @@ void MbcUnlLbMulti::writeMemory(unsigned short address, register byte data) {
             }
 
             if ( effectChange ) {
-                byte romSize = multiOtherStuff & 0x07; // Inverse of Nintendo's sizes
-                // 00 = 4m, 01 = 2m, 02 = 1m, 03 = 512k, 04 = 256k, 05 = 128k, 06 = 64k, 07 = 32k
-                byte eightMegBankNo = ( multiOtherStuff & 0x08 ) >> 3; // 0 or 1 - haven't observed carts >16m yet
-                byte doReset = ( multiOtherStuff & 0x80 ) >> 7;
+                byte romSize = multiOtherStuff & (byte)0x07;
+                byte eightMegBankNo = ( multiOtherStuff & (byte)0x08 ) >> 3; // 0 or 1 - haven't observed carts >16m yet
+                bool doReset = ( (multiOtherStuff & 0x80) == 0x80 );
+
+                //  not sure if there are other potential mapper modes..
+                mbc1Mode = ( ( multiOtherStuff & 0x60 ) == 0x60 );
+
+                (*gbRom)->ROMsize = 7 - romSize; // Inverse of Nintendo's sizes e.g. 00 = 4m, 07 = 32k
 
                 multicartOffset = (multiRomSelect << 0x0F) + (eightMegBankNo << 0x17);
 
-                gbMemMap[0x0] = &(*gbCartridge)[multicartOffset];
-                gbMemMap[0x1] = &(*gbCartridge)[multicartOffset+0x1000];
-                gbMemMap[0x2] = &(*gbCartridge)[multicartOffset+0x2000];
-                gbMemMap[0x3] = &(*gbCartridge)[multicartOffset+0x3000];
-
-                gbMemMap[0x4] = &(*gbCartridge)[multicartOffset+0x4000];
-                gbMemMap[0x5] = &(*gbCartridge)[multicartOffset+0x5000];
-                gbMemMap[0x6] = &(*gbCartridge)[multicartOffset+0x6000];
-                gbMemMap[0x7] = &(*gbCartridge)[multicartOffset+0x7000];
-
                 // todo: RAM bankswitching should not really be allowed for values 0x30-0x3F
+                // Could set rom->RAMsize here but that's also used to determine save file size :(
                 if ( multiRamSelect >= 0x20 && multiRamSelect <= 0x3F ) {
                     multicartRamOffset = ( multiRamSelect - 0x20 ) << 0x0D;
                 } else {
                     multicartRamOffset = 0;
                 }
 
-                gbMemMap[0xA] = &(*gbCartRam)[multicartRamOffset];
-                gbMemMap[0xB] = &(*gbCartRam)[multicartRamOffset+0x1000];
+                resetRomMemoryMap(true);
 
                 if ( doReset ) {
                     deferredReset = true;
@@ -82,6 +76,17 @@ void MbcUnlLbMulti::writeMemory(unsigned short address, register byte data) {
         }
     }
 
+    if ( mbc1Mode ) {
+        // Convert MBC1 style ROM switch writes to MBC5 ones
+        // Won't work with MBC1 games >512k or using RAM if any carts contain games like that
+        if ( address >= 0x2000 && address < 0x4000 )
+        {
+            if ( address >= 0x3000 )
+                address -= 0x1000;
+            if ( data == 0 )
+                data = 1;
+        }
+    }
 
     MbcNin5::writeMemory(address, data);
 }
@@ -93,29 +98,32 @@ void MbcUnlLbMulti::resetVars(bool preserveMulticartState) {
         multiRomSelect=0;
         multiRamSelect=0;
         multiOtherStuff=0;
+        mbc1Mode =false;
     }
 
     AbstractMbc::resetVars(preserveMulticartState);
 }
 
 void MbcUnlLbMulti::writeMbcSpecificVarsToStateFile(FILE *statefile) {
+    fwrite(&(bc_select),sizeof(int),1,statefile);
     fwrite(&(multiCommand), sizeof(byte), 1, statefile);
     fwrite(&(multiRomSelect), sizeof(byte), 1, statefile);
     fwrite(&(multiRamSelect), sizeof(byte), 1, statefile);
     fwrite(&(multiOtherStuff), sizeof(byte), 1, statefile);
     fwrite(&(multicartOffset),sizeof(int),1,statefile);
     fwrite(&(multicartRamOffset),sizeof(int),1,statefile);
-    fwrite(&(bc_select),sizeof(int),1,statefile);
+    fwrite(&(mbc1Mode),sizeof(bool),1,statefile);
 }
 
 void MbcUnlLbMulti::readMbcSpecificVarsFromStateFile(FILE *statefile) {
+    fread(&(bc_select),sizeof(int),1,statefile);
     fread(&(multiCommand), sizeof(byte), 1, statefile);
     fread(&(multiRomSelect), sizeof(byte), 1, statefile);
     fread(&(multiRamSelect), sizeof(byte), 1, statefile);
     fread(&(multiOtherStuff), sizeof(byte), 1, statefile);
     fread(&(multicartOffset),sizeof(int),1,statefile);
     fread(&(multicartRamOffset),sizeof(int),1,statefile);
-    fread(&(bc_select),sizeof(int),1,statefile);
+    fread(&(mbc1Mode),sizeof(bool),1,statefile);
 
     resetRomMemoryMap(true);
 }
