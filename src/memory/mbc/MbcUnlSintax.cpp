@@ -11,11 +11,6 @@ byte MbcUnlSintax::readMemory(register unsigned short address) {
     if(address >= 0x4000 && address < 0x8000)
     {
         byte data = gbMemMap[address>>12][address&0x0FFF];
-
-        //char buff[100];
-        //sprintf(buff,"MBCLo %X Addr %X Data %X XOR %X XOR'd data %X",MBClo,address,data,rom_bank_xor, data ^ rom_bank_xor);
-        //debug_print(buff);
-
         return  data ^ *gbRomBankXor;
     }
 
@@ -28,76 +23,54 @@ void MbcUnlSintax::writeMemory(unsigned short address, register byte data) {
     {
         byte origData = data;
 
+        byte* romBankNoReordering;
+
         switch(sintax_mode & 0x0f) {
-            // Maybe these could go in a config file, so new ones can be added easily?
-            case 0x0D: {
-                byte flips[] = {6,7,0,1,2,3,4,5};
-                data = switchOrder( data, flips );
-                //data = ((data & 0x03) << 6 ) + ( data >> 2 );
+            case 0x0D:
+                romBankNoReordering = reordering0d;
                 break;
-            }
-            case 0x09: {
-                //	byte flips[] = {4,5,2,3,7,6,1,0}; // Monkey..no
-                byte flips[] = {3,2,5,4,7,6,1,0};
-                data = switchOrder( data, flips );
+            case 0x09:
+                romBankNoReordering = reordering09;
                 break;
-            }
-
-            case 0x00: { // 0x10=lion 0x00 hmmmmm // 1 and 0 unconfirmed
-                byte flips[] = {0,7,2,1,4,3,6,5};
-                data = switchOrder( data, flips );
+            case 0x00:
+                romBankNoReordering = reordering00;
                 break;
-            }
-
-            case 0x01: {
-                byte flips[] = {7,6,1,0,3,2,5,4};
-                data = switchOrder( data, flips );
+            case 0x01:
+                romBankNoReordering = reordering01;
                 break;
-            }
-
-            case 0x05: {
-                byte flips[] = {0,1,6,7,4,5,2,3}; // Not 100% on this one
-                data = switchOrder( data, flips );
+            case 0x05:
+                romBankNoReordering = reordering05;
                 break;
-            }
-
-            case 0x07: {
-                byte flips[] = {5,7,4,6,2,3,0,1}; // 5 and 7 unconfirmed
-                data = switchOrder( data, flips );
+            case 0x07:
+                romBankNoReordering = reordering07;
                 break;
-            }
-
-            case 0x0B: {
-                byte flips[] = {5,4,7,6,1,0,3,2}; // 5 and 6 unconfirmed
-                data = switchOrder( data, flips );
+            case 0x0B:
+                romBankNoReordering = reordering0b;
                 break;
-            }
-
+            default:
+                romBankNoReordering = noReordering;
         }
+
+        data = switchOrder(data, romBankNoReordering);
 
         setXorForBank(origData);
     }
 
-    // Set current xor so we dont have to figure it out on every read
-
     if(address >= 0x5000 && address < 0x6000) {
 
-        // sintaxs not entirely understood addressing thing hi
-
-        // check sintax_mode was not already set; if it was, ignore it (otherwise Metal Max breaks)
+        // check mode was not already set; if it was, ignore it (otherwise Metal Max breaks)
         if (sintax_mode == 0) {
 
             switch (0x0F & data) {
-                case 0x0D: // old
+                // Supported modes
+                case 0x00: // Lion King, Golden Sun
+                case 0x01: // Langrisser
+                case 0x05: // Maple Story, Pokemon Platinum
+                case 0x07: // Bynasty Warriors 5
                 case 0x09: // ???
-                case 0x00:// case 0x10: // LiON, GoldenSun
-                case 0x01: // LANGRISSER
-                case 0x05: // Maple, PK Platinum
-                case 0x07: // Bynasty5
-                case 0x0B: // Shaolin
-                    // These are all supported
+                case 0x0B: // Shaolin Legend
+                case 0x0D: // Older games
                     break;
-
                 default:
                     char buff[100];
                     sprintf(buff, "Unknown Sintax Mode %X Addr %X - probably won't work!", data, address);
@@ -106,10 +79,9 @@ void MbcUnlSintax::writeMemory(unsigned short address, register byte data) {
             }
             sintax_mode = data;
 
-            writeMemory(0x2000, 01); // force a fake bank switch
+            writeMemory(0x2000, 01); // fake a bank switch to select the correct bank 1
 
             return;
-
         }
     }
 
@@ -181,7 +153,6 @@ void MbcUnlSintax::writeMbcSpecificVarsToStateFile(FILE *statefile) {
     fwrite(&(*gbRomBankXor), sizeof(byte), 1, statefile);
 }
 
-// This should belong to sintax
 void MbcUnlSintax::setXorForBank(byte bankNo)
 {
     switch(bankNo & 0x0F) {
@@ -198,8 +169,4 @@ void MbcUnlSintax::setXorForBank(byte bankNo)
             *gbRomBankXor = sintax_xor5;
             break;
     }
-
-    //char buff[200];
-    //	sprintf(buff,"bank no %x abbr %x xor %x",bankNo,bankNo&0x0F,mbc->rom_bank_xor);
-    //	debug_print(buff);
 }

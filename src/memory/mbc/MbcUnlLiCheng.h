@@ -8,6 +8,9 @@
 
 #include "MbcNin5.h"
 
+//-------------------------------------------------------------------------
+// For Li Cheng/Xing Xing/Niutoude Chinese carts
+//-------------------------------------------------------------------------
 class MbcUnlLiCheng : public MbcNin5 {
 public:
     virtual void writeMemory(unsigned short address, register byte data) override;
