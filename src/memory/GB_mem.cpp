@@ -90,7 +90,6 @@ void gb_system::mem_reset(bool preserveMulticartState)
 
    rom_bank_xor = 0;
 
-    // Always pass in false for in-emu resets to reset the one game, which makes it work. pfft
     mbc->resetRomMemoryMap(preserveMulticartState);
 
    if(gbc_mode)
