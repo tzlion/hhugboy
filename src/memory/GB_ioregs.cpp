@@ -29,13 +29,13 @@
 
 //using namespace std;
 
-#include "devices.h"
-#include "cpu.h"
-#include "SGB.h"
-#include "directinput.h"
-#include "sound.h"
-#include "GB.h"
-#include "mainloop.h"
+#include "../devices.h"
+#include "../cpu.h"
+#include "../SGB.h"
+#include "../directinput.h"
+#include "../sound.h"
+#include "../GB.h"
+#include "../mainloop.h"
 
 // I/O Regs read common for all readmemory functions
 byte gb_system::io_reg_read(register unsigned short address)

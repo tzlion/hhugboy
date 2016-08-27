@@ -1,9 +1,10 @@
 /*
    hhugboy Game Boy emulator
-   copyright 2013 taizou
-
+   copyright 2013-2016 taizou
    Based on GEST
    Copyright (C) 2003-2010 TM
+   Incorporating code from VisualBoyAdvance
+   Copyright (C) 1999-2004 by Forgotten
 
    This program is free software; you can redistribute it and/or
    modify it under the terms of the GNU General Public License
@@ -20,29 +21,21 @@
    51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
 
-//#define ALLOW_DEBUG
-
-#include "menu.h"
-#include "rendering/directdraw.h"
-
-extern bool paused;
-extern bool menupause; 
-extern int sizen_w;
-extern int sizen_h;
-
-extern int timer_id;
-extern HWND hwndCtrl;    
-
-extern menu emuMenu;
-
-extern DirectDraw renderer;
-extern Palette palette;
-
-extern int current_controller;
-
-void menuAction(int menuOption);
-void keyAction(int key);
-
-void setWinSize(int width, int height);
+#ifndef HHUGBOY_MBCLICMMM01_H
+#define HHUGBOY_MBCLICMMM01_H
 
 
+#include "BasicMbc.h"
+//-------------------------------------------------------------------------
+// for MMM01
+// Momotarou Collection 2, Taito Variety Pack, Mani collections..
+// Support doesn't seem to be implemented properly tho (and many existent roms are in the wrong order)
+//-------------------------------------------------------------------------
+class MbcLicMmm01 : public BasicMbc {
+public:
+    virtual void writeMemory(unsigned short address, register byte data) override;
+
+};
+
+
+#endif //HHUGBOY_MBCLICMMM01_H

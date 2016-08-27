@@ -38,6 +38,7 @@ using namespace std;
 #include "sound.h"
 #include "devices.h"
 #include "GB.h"
+#include "memory/GB_MBC.h"
 #include "directinput.h"
 //#include "directdraw.h"
 #include "config.h"
@@ -291,7 +292,7 @@ void gb_system::mainloop()
         
                IWait = 0;
 			   
-               if(rom->bankType == MBC7)
+               if(rom->bankType == MBC7) // So this can replace with some input handling method on the mbc
                   check_sensor();
 			   
                break;
@@ -529,7 +530,7 @@ void gb_system::mainloop()
    if(cycles_sound <= 0)
    {
       cycles_sound += CYCLES_SOUND;
-      
+
       sound_event();
    }
  
@@ -540,5 +541,9 @@ void gb_system::mainloop()
    {
       IME = 1;
       EI_count = 0;
-   }     
+   }
+
+   if ( mbc->shouldReset() ) {
+       reset(true,true);
+   }
 }

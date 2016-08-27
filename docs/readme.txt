@@ -1,4 +1,4 @@
-hhugboy v1.0.5
+hhugboy v1.1.0
 a Game Boy/Game Boy Color emulator for Windows
 by taizou (cactusgunman@gmail.com)
 http://hhug.me/
@@ -8,6 +8,7 @@ http://bitbucket.org/taizou/hhugboy
  with the following additions:
   * Unicode filename support!
   * Unlicensed Mapper support! (Sintax & Li Cheng)
+  * Support for Vast Fame and some other multicarts!
   * Screenshots!
   * Recent ROM list
   * Support for simple cheat format
@@ -38,6 +39,11 @@ http://bitbucket.org/taizou/hhugboy
            generic release from another company, it won't work.
 
  Disabled  No compatibility mode
+
+ * Support for certain multicarts is available in any mode - currently:
+   - Vast Fame 12-in-1
+   - Vast Fame 18-in-1
+   - SL 36-in-1 with Chinese Pokemon Gold & Silver
 
 [ KEYS ] - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 
@@ -108,6 +114,13 @@ http://bitbucket.org/taizou/hhugboy
  * Other language translations
 
 [ RELEASE HISTORY ]- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+
+ v1.1.0 ?????????
+ * Adds support for 'Last Bible' multicart mapper, with detection for three
+   carts on that mapper: V.Fame 18 in 1, V.Fame 12 in 1, SL Pokemon 36 in 1
+ * Fixed savestates in Sintax games
+ * Fixes Mortal Kombat 1&2 ([a1] only)
+ * Way more code refactoring to make it easier to add new mappers in future
 
  v1.0.5 3rd January 2016
  * Adds support for simple address=value hex cheat format

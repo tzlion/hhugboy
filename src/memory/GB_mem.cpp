@@ -34,20 +34,45 @@
 
 using namespace std;
 
-#include "debug.h"
-#include "config.h"
-#include "rendering/render.h"
+#include "../debug.h"
+#include "../config.h"
+#include "../rendering/render.h"
 
-#include "GB.h"
+#include "../GB.h"
+#include "GB_MBC.h"
 
 extern int ramsize[9];
 
-void gb_system::mem_reset()
+byte gb_system::readmemory(unsigned short address)
+{
+    if(number_of_cheats)
+        for(int i=0;i<number_of_cheats;++i)
+            if(address == cheat[i].address && (!(cheat[i].long_code) || (cheat[i].old_value == mem_map[address>>12][address&0x0fff])))
+                return cheat[i].new_value;
+
+    if ( address <= 0x7FFF || ( address >= 0xA000 && address <= 0xBFFF ) ) {
+        return mbc->readmemory_cart(address);
+    } else {
+        return io_reg_read(address);
+    }
+}
+
+void gb_system::writememory(unsigned short address,byte data)
+{
+    if ( address <= 0x7FFF || ( address >= 0xA000 && address <= 0xBFFF ) ) {
+        mbc->writememory_cart(address,data);
+    } else {
+        if(io_reg_write(address,data)) return;
+        mem_map[address>>12][address&0x0FFF] = data;
+    }
+}
+
+void gb_system::mem_reset(bool preserveMulticartState)
 {
    memset(memory+0x8000,0x00,0x1FFF);
    memset(memory+0xFE00,0x00,0xA0);
 
-   if(rom->bankType==MBC2)
+   if(rom->bankType==MBC2) // Should be done on the MBC
       for(int a=0xa000;a<0xc000;++a)
          memory[a] = 0x0F;
    else
@@ -63,14 +88,9 @@ void gb_system::mem_reset()
    
    memory[0xc100] = 0xff;// fix for Minesweeper for 'Windows'
 
-   mem_map[0x0] = &cartridge[0x0000];
-   mem_map[0x1] = &cartridge[0x1000];
-   mem_map[0x2] = &cartridge[0x2000];
-   mem_map[0x3] = &cartridge[0x3000];
-   mem_map[0x4] = &cartridge[0x4000];
-   mem_map[0x5] = &cartridge[0x5000];
-   mem_map[0x6] = &cartridge[0x6000];
-   mem_map[0x7] = &cartridge[0x7000];
+   rom_bank_xor = 0;
+
+    mbc->resetRomMemoryMap(preserveMulticartState);
 
    if(gbc_mode)
    {
@@ -167,14 +187,8 @@ void gb_system::mem_reset()
    OBP0[0]=OBP0[1]=OBP0[2]=OBP0[3]=3;
    OBP1[0]=OBP1[1]=OBP1[2]=OBP1[3]=3;
 
-   MBC1memorymodel = 0;
-   MBChi = 0;
-   MBClo = 1;
-   rom_bank = 1;
-   ram_bank = 0;
    wram_bank = 1;
    vram_bank = 0;
-   RTCIO = 0;
 
    if(gbc_mode)
    {
@@ -253,35 +267,6 @@ void gb_system::mem_reset()
    memset(VRAM,0,16384);
 }
 
-void gb_system::memory_variables_reset()
-{                                          
-   bc_select = 0;       
-     
-   cameraIO = 0;
-   RTC_latched = 0;   
-   
-   rtc.s = 0;
-   rtc.m = 0;
-   rtc.h = 0;
-   rtc.d = 0;
-   rtc.control = 0;
-   rtc.last_time = time(0);
-   rtc.cur_register = 0x08;
-
-   tama_flag = 0;
-   tama_time = 0;
-   tama_val6 = 0;
-   tama_val7 = 0;
-   tama_val4 = 0;
-   tama_val5 = 0;
-   tama_count = 0;
-   tama_month = 0;
-   tama_change_clock = 0;
-   
-   HuC3_flag = HUC3_NONE;
-   HuC3_RAMvalue = 1;
-}
-
 ///////////////////////////////////////////////////////
 // Saving                                            //
 ///////////////////////////////////////////////////////
@@ -321,7 +306,7 @@ bool gb_system::write_save()
       return false;
    }
    
-   if(rom->bankType == MBC7 || rom->bankType == TAMA5)
+   if(rom->bankType == MBC7 || rom->bankType == TAMA5) // SHould be done on the MBC
    {
       if(fwrite(&memory[0xA000],sizeof(byte),256,savefile) < 256)
       {
@@ -357,33 +342,14 @@ bool gb_system::write_save()
       }
    }
 
-   if(rom->RTC || rom->bankType==TAMA5)
-   {
-      fwrite(&rtc.s, sizeof(int),1,savefile);
-      fwrite(&rtc.m, sizeof(int),1,savefile);
-      fwrite(&rtc.h, sizeof(int),1,savefile);     
-      fwrite(&rtc.d, sizeof(int),1,savefile);   
-      fwrite(&rtc.control, sizeof(int),1,savefile); 
-      fwrite(&rtc.last_time, sizeof(time_t),1,savefile);               
-   }   
-   
-   if(rom->bankType==TAMA5)
-      fwrite(&tama_month, sizeof(int),1,savefile);    
-      
-   if(rom->bankType == HuC3)
-   {
-      fwrite(&HuC3_time, sizeof(unsigned int),1,savefile);
-      fwrite(&HuC3_last_time, sizeof(time_t),1,savefile); 
-      fwrite(&rtc.s, sizeof(int),1,savefile);      
-   }
-   
-   fclose(savefile);
+   mbc->writeMbcSpecificStuffToSaveFile(savefile);
+
+    fclose(savefile);
 
    SetCurrentDirectory(old_directory);
    
    return true;
 }
-
 bool gb_system::load_save(bool loading_GB1_save_to_GB2)
 {
    if(rom->RAMsize == 0) return true;
@@ -419,7 +385,7 @@ bool gb_system::load_save(bool loading_GB1_save_to_GB2)
       return true;
    }
    
-   if(rom->bankType == MBC7 || rom->bankType == TAMA5)
+   if(rom->bankType == MBC7 || rom->bankType == TAMA5) // Should be done on the MBC
    {
       if(fread(&memory[0xA000],sizeof(byte),256,savefile) < 256)
       {
@@ -454,29 +420,10 @@ bool gb_system::load_save(bool loading_GB1_save_to_GB2)
          return false;
       }
    }
-   
-   if(rom->RTC || rom->bankType==TAMA5)
-   {
-      fread(&rtc.s, sizeof(int),1,savefile);
-      fread(&rtc.m, sizeof(int),1,savefile);
-      fread(&rtc.h, sizeof(int),1,savefile);     
-      fread(&rtc.d, sizeof(int),1,savefile);   
-      fread(&rtc.control, sizeof(int),1,savefile); 
-      fread(&rtc.last_time, sizeof(time_t),1,savefile);    
-      rtc_latch = rtc;              
-   }
-   
-   if(rom->bankType==TAMA5)
-      fread(&tama_month, sizeof(int),1,savefile);       
 
-   if(rom->bankType == HuC3)
-   {
-      fread(&HuC3_time, sizeof(unsigned int),1,savefile);
-      fread(&HuC3_last_time, sizeof(time_t),1,savefile);
-      fread(&rtc.s, sizeof(int),1,savefile);            
-   }
+   mbc->readMbcSpecificStuffFromSaveFile(savefile);
 
-   fclose(savefile);
+    fclose(savefile);
    SetCurrentDirectory(old_directory);
    
    return true;

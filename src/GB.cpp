@@ -34,10 +34,12 @@
 #include "sound.h"
 #include "devices.h"
 #include "main.h"
+#include "memory/GB_MBC.h"
 
 int gb_system::gfx_bit_count = 16;
 
 gb_system::gb_system():
+        mbc(new gb_mbc(mem_map,&cartridge,&rom,&cartRAM,&rom_bank_xor,&rumble_counter,&memory)),
         frames(0),
         LCD_clear_needed(false),
         skip_frame(0),
@@ -94,17 +96,8 @@ gb_system::gb_system():
         NFLAG(1),
         //flags(0x5100),
         CYCLES_SERIAL(CYCLES_SERIAL_GB),
-        MBC1memorymodel(0),
-        RAMenable(0),
-        rom_bank(1),
-        ram_bank(0),
         wram_bank(1),
         vram_bank(0),
-        MBChi(0),
-        MBClo(0),
-        RTCIO(0),
-        memory_read(MEMORY_DEFAULT),
-        memory_write(MEMORY_DEFAULT),
 
         sound_on(1),
         sound_index(0),
@@ -164,49 +157,9 @@ gb_system::gb_system():
         channel4_envelopedir(0),
         channel4_envelopeATLreload(0),
 
-        RTC_latched(0),
-
-        cameraIO(0),
-
-        HuC3_RAMvalue(0),
-        HuC3_RAMaddress(0),
-        HuC3_address(0),
-        HuC3_RAMflag(0),
-        HuC3_last_time(time(0)),
-        HuC3_flag(HUC3_NONE),
-        HuC3_time(0),
-        HuC3_shift(0),
-
-        MBC7_cs(0),
-        MBC7_sk(0),
-        MBC7_state(0),
-        MBC7_buffer(0),
-        MBC7_idle(0),
-        MBC7_count(0),
-        MBC7_code(0),
-        MBC7_address(0),
-        MBC7_writeEnable(0),
-        MBC7_value(0),
-
-        bc_select(0),
-        tama_flag(0),
-        tama_time(0),
-        tama_val4(0),
-        tama_val5(0),
-        tama_val6(0),
-        tama_val7(0),
-        tama_count(0),
-        tama_month(0),
-        tama_change_clock(0),
-
         rumble_counter(0),
-        
-        sintax_mode(0),
-        sintax_xor2(0),
-        sintax_xor3(0),
-        sintax_xor4(0),
-        sintax_xor5(0),
-        sintax_currentxor(0)
+
+        rom_bank_xor(0)
 {
    button_pressed[B_LEFT]=button_pressed[B_RIGHT]=button_pressed[B_DOWN]=button_pressed[B_UP]=1;
    button_pressed[B_START]=button_pressed[B_SELECT]=button_pressed[B_A]=button_pressed[B_B]=1;
@@ -242,7 +195,7 @@ bool gb_system::init()
    if(!memory) 
       return false;
       
-   cartRAM = new byte[128*1024];
+   cartRAM = new byte[256*1024];
    if(!cartRAM) 
       return false;
    memset(cartRAM,0xFF,128*1024);
@@ -356,62 +309,83 @@ gb_system::~gb_system()
    }
 }
 
-void gb_system::reset(bool change_mode)
+void gb_system::reset(bool change_mode, bool preserveMulticartState)
 {
    int old_sgb_mode = sgb_mode;
    int old_gbc_mode = gbc_mode;
 
    emulating = true;
+
+    int cgbState = rom->CGB;
+    int sgbState = rom->SGB;
+
    
    //change mode according to user selection
    if(change_mode == false)
    {
      ; // do nothing
-   } else
-   if(system_type == SYS_GBP || system_type == SYS_GB)
-      sgb_mode = gbc_mode = 0;
-   else
-   if(system_type == SYS_GBC || system_type == SYS_GBA)
-   {
-      gbc_mode = 1;
-      sgb_mode = 0;
-      if(options->GBC_SGB_border == GBC_WITH_SGB_BORDER && rom->SGB)
-      {
-         sgb_mode = 1;
-         gbc_mode = 1;
-      } else
-      if(options->GBC_SGB_border == GBC_WITH_INITIAL_SGB_BORDER && rom->SGB)
-      {
-         sgb_mode = 1;
-         gbc_mode = 0;               
-      }
-   }
-   else
-   if((system_type == SYS_SGB || system_type == SYS_SGB2) || (options->GBC_SGB_border && rom->CGB && rom->SGB))
-   {       
-      sgb_mode = 1;
-      gbc_mode = 0;
-      if(rom->CGB && options->GBC_SGB_border == GBC_WITH_SGB_BORDER)
-         gbc_mode = 1;
-   }
-   else
-   {
-      sgb_mode = gbc_mode = 0;
-      
-      if(rom->CGB)
-         gbc_mode = 1;
+   } else {
 
-      if(rom->SGB && !gbc_mode)
-         sgb_mode = 1;
-   }
+       if ( preserveMulticartState ) { // It's a multicart resetting so we may need to change modes..
+           byte cgbFlag = mbc->readmemory_cart( 0x0143 );
+           if(cgbFlag == 0x80)
+               cgbState = 1;
+           else if(cgbFlag == 0xC0)
+               cgbState = 2; // gbc only
+           else
+               cgbState = 0;
+           byte sgbFlag = mbc->readmemory_cart( 0x0146 );
+           if(sgbFlag == 0x03)
+               sgbState = 1;
+           else
+               sgbState = 0;
+       }
 
+       if(system_type == SYS_GBP || system_type == SYS_GB)
+           sgb_mode = gbc_mode = 0;
+       else
+       if(system_type == SYS_GBC || system_type == SYS_GBA)
+       {
+           gbc_mode = 1;
+           sgb_mode = 0;
+           if(options->GBC_SGB_border == GBC_WITH_SGB_BORDER && sgbState)
+           {
+               sgb_mode = 1;
+               gbc_mode = 1;
+           } else
+           if(options->GBC_SGB_border == GBC_WITH_INITIAL_SGB_BORDER && sgbState)
+           {
+               sgb_mode = 1;
+               gbc_mode = 0;
+           }
+       }
+       else
+       if((system_type == SYS_SGB || system_type == SYS_SGB2) || (options->GBC_SGB_border && cgbState && sgbState))
+       {
+           sgb_mode = 1;
+           gbc_mode = 0;
+           if(cgbState && options->GBC_SGB_border == GBC_WITH_SGB_BORDER)
+               gbc_mode = 1;
+       }
+       else
+       {
+           sgb_mode = gbc_mode = 0;
+
+           if(cgbState)
+               gbc_mode = 1;
+
+           if(sgbState && !gbc_mode)
+               sgb_mode = 1;
+       }
+
+   }
    if(change_mode)
       border_uploaded = 0;
    
    if(multiple_gb && sgb_mode) // don't allow SGB mode
    {
       sgb_mode = 0;
-      if(rom->CGB) gbc_mode = 1;
+      if(cgbState) gbc_mode = 1;
    }
          
    if(sgb_mode)
@@ -471,13 +445,13 @@ void gb_system::reset(bool change_mode)
 
    frames = 0;
 
-   mem_reset();
+   mem_reset(preserveMulticartState);
    
    cpu_reset();
 
    sound_reset();
 
-   memory_variables_reset();
+    mbc->resetMbcVariables(preserveMulticartState);
 
    reset_devices();
 

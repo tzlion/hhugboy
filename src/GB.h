@@ -25,34 +25,7 @@
 #include "types.h"
 #include "rom.h"
 #include "cheats.h"
-
-enum memoryaccess
-{
-    MEMORY_DEFAULT = 0,
-    MEMORY_MBC1,
-    MEMORY_MBC2,
-    MEMORY_MBC3,
-    MEMORY_MBC5,
-    MEMORY_CAMERA,
-    MEMORY_HUC3,
-    MEMORY_MBC7,
-    MEMORY_TAMA5,
-    MEMORY_ROCKMAN8,
-    MEMORY_BC,
-    MEMORY_8IN1,
-    MEMORY_MMM01,
-    MEMORY_MK12,
-    MEMORY_POKE,
-    MEMORY_NIUTOUDE,
-    MEMORY_SINTAX
-};
-
-enum
-{
-    HUC3_READ = 0,
-    HUC3_WRITE = 1,
-    HUC3_NONE = 2
-};
+#include "memory/GB_MBC.h"
 
 class gb_system
 {
@@ -61,13 +34,14 @@ public:
    ~gb_system();
    
    bool init();
-   void reset(bool change_mode = true);
-   void mem_reset();
+   void reset(bool change_mode = true, bool preserveMulticartState = false);
+   void mem_reset(bool preserveMulticartState = false);
    void cpu_reset();
-   void memory_variables_reset();
+
+    gb_mbc* mbc;
 
    wchar_t rom_filename[ROM_FILENAME_SIZE];
-   bool load_rom(const wchar_t* filename);
+   bool load_rom(const wchar_t* filename, int offset=0);
    bool loadrom_zip(const wchar_t* filename);
    bool romloaded;
    void crdtype(byte value,byte romsize,byte ramsize);
@@ -133,25 +107,14 @@ public:
    bool write_save();
    bool load_save(bool loading_GB1_save_to_GB2 = false);
 
-   void rtc_update();
-   void update_HuC3time();
-   void update_tama_RTC();
-
    //--------------------------------------------
    int frames;
 
    int button_pressed[8];
    int last_button_pressed[8];
 
-   int MBC1memorymodel;
-   int RAMenable;
-   int rom_bank;
-   int ram_bank;
    int wram_bank; 
    int vram_bank;
-   unsigned short MBChi;
-   unsigned short MBClo;
-   int RTCIO;   
 
    bool LCD_clear_needed;
    int skip_frame;
@@ -200,9 +163,6 @@ public:
    unsigned short GBC_OBP[32];
    int windowline;
 
-   memoryaccess memory_read;
-   memoryaccess memory_write;
-
    byte io_reg_read(register unsigned short address);
 
    int io_reg_write(register unsigned short address,register byte data);
@@ -210,52 +170,6 @@ public:
    byte readmemory(unsigned short address);
 
    void writememory(unsigned short address,byte data);
-
-   byte readmemory_default(register unsigned short address);
-
-   byte readmemory_MBC3(register unsigned short address);
-
-   byte readmemory_Camera(register unsigned short address);
-
-   void writememory_default(unsigned short address,register byte data);
-
-   void writememory_MBC1(unsigned short address,register byte data);
-
-   void writememory_MBC2(unsigned short address,register byte data);
-
-   void writememory_MBC3(unsigned short address,register byte data);
-
-   void writememory_MBC5(unsigned short address,register byte data, bool isNiutoude, bool isSintax);
-
-   void writememory_Camera(unsigned short address,register byte data);
-
-   byte readmemory_HuC3(register unsigned short address);
-
-   void writememory_HuC3(register unsigned short address,register byte data);
-
-   void writememory_MBC7(unsigned short address,register byte data);
-
-   byte readmemory_MBC7(register unsigned short address);
-
-   void writememory_TAMA5(register unsigned short address,register byte data);
-
-   byte readmemory_TAMA5(register unsigned short address);
-   
-   byte readmemory_sintax(register unsigned short address);
-
-   void writememory_Rockman8(register unsigned short address,register byte data);
-
-   void writememory_BC(register unsigned short address,register byte data);
-
-   void writememory_8in1(register unsigned short address,register byte data);
-
-   void writememory_MMM01(register unsigned short address,register byte data);
-
-   void writememory_MK12(register unsigned short address,register byte data);
-
-   void writememory_poke(register unsigned short address,register byte data);
-   
-   void setXorForBank(byte bankNo);
 
    byte* memory;
    byte *cartRAM;
@@ -267,55 +181,9 @@ public:
 
    byte *memory_another;
 
-   rtc_clock rtc;
-   rtc_clock rtc_latch;
-
-   int RTC_latched;
-
-   int cameraIO;
-
-   int HuC3_register[8];
-   int HuC3_RAMvalue;
-   int HuC3_RAMaddress;
-   int HuC3_address;
-   int HuC3_RAMflag;
-
-   time_t HuC3_last_time;
-   int HuC3_flag;
-   unsigned int HuC3_time;
-   int HuC3_shift;
-
-   int MBC7_cs; // chip select
-   int MBC7_sk; // ?
-   int MBC7_state; // mapper state
-   int MBC7_buffer; // buffer for receiving serial data
-   int MBC7_idle; // idle state
-   int MBC7_count; // count of bits received
-   int MBC7_code; // command received
-   int MBC7_address; // address received
-   int MBC7_writeEnable; // write enable
-   int MBC7_value; // value to return on ram
-
-   int bc_select; // for collection carts
-
-   int tama_flag;
-   byte tama_time;
-   int tama_val4;
-   int tama_val5;
-   int tama_val6;
-   int tama_val7;
-   int tama_count;
-   int tama_month;
-   int tama_change_clock;
-
-   int rumble_counter;
-   
-   byte sintax_mode;
-   byte sintax_xor2;
-   byte sintax_xor3;
-   byte sintax_xor4;
-   byte sintax_xor5;
-   byte sintax_currentxor;
+    // things that are somewhat MBC related but would be mildly annoying to move
+   int rumble_counter; // this can stay in GB for now because, uh, let's say because the cartridge makes the whole GB rumble
+   byte rom_bank_xor; // this can stay as long as mem_map is here.. used by "fast reads"
 
    //Sound ---------------------------------------
    byte sound_buffer[4][735];
@@ -443,8 +311,8 @@ public:
             if(address == cheat[i].address && (!(cheat[i].long_code) || (cheat[i].old_value == mem_map[address>>12][address&0x0fff])))
                return cheat[i].new_value;
               
-      if (sintax_currentxor > 0 && (address >= 0x4000 && address < 0x8000)) {
-      	return (mem_map[address>>12][address&0x0FFF]) ^ sintax_currentxor;
+      if (rom_bank_xor > 0 && (address >= 0x4000 && address < 0x8000)) {
+      	return (mem_map[address>>12][address&0x0FFF]) ^ rom_bank_xor;
       }
 
       return mem_map[address>>12][address&0x0FFF];
@@ -452,13 +320,13 @@ public:
 
    unsigned short readword(register unsigned short address) //for fast memory access
    {
-      if (sintax_currentxor > 0 && (address >= 0x4000 && address < 0x8000)) {
+      if (rom_bank_xor > 0 && (address >= 0x4000 && address < 0x8000)) {
       	return 
 		  (unsigned short)
 		  (
-		  	(mem_map[address>>12][address&0x0FFF]  ^ sintax_currentxor)
+		  	(mem_map[address>>12][address&0x0FFF]  ^ rom_bank_xor)
 			  |
-			((mem_map[(address+1)>>12][(address+1)&0x0FFF]^ sintax_currentxor)<<8)
+			((mem_map[(address+1)>>12][(address+1)&0x0FFF]^ rom_bank_xor)<<8)
 		  );
 		  (mem_map[address>>12][address&0x0FFF]);
       }
@@ -475,11 +343,11 @@ public:
 
    void copy_memory(unsigned short to,unsigned short from,int count)
    {
-		if ( sintax_currentxor > 0 && from >= 0x4000 && from < 0x8000 ) {
+		if ( rom_bank_xor > 0 && from >= 0x4000 && from < 0x8000 ) {
 			
 			while(count)
 		      {
-		         mem_map[to>>12][to&0x0FFF] = (mem_map[from>>12][from&0x0FFF] ^ sintax_currentxor);
+		         mem_map[to>>12][to&0x0FFF] = (mem_map[from>>12][from&0x0FFF] ^ rom_bank_xor);
 		         ++to;
 		         ++from;
 		         --count;
@@ -501,21 +369,15 @@ public:
    }
    
    void mainloop();
+
+private:
+    void checkForMulticart(int fileSize);
+
 };
 
 extern gb_system *GB;
 extern gb_system *GB1;
 extern gb_system *GB2;
-
-inline byte switchOrder( byte input, byte* reorder )
-{
-	byte newbyte=0;
-	for( byte x=0;x<8;x++ ) {
-		newbyte += ( ( input >> ( 7 - reorder[x] ) ) & 1 ) << ( 7 - x );
-	}
-	
-	return newbyte;
-}
 
 
 #endif

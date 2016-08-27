@@ -110,7 +110,7 @@ bool debug = false;
 
 #include "licnames.h"
 
-int ramsize[9] = { 0, 2, 8, 32, 128, 64,64,64,8 }; // KBytes
+int ramsize[10] = { 0, 2, 8, 32, 128, 64,64,64,8, 256 }; // KBytes
 
 int romsize(int number)
 {
@@ -333,13 +333,13 @@ int WINAPI WinMain(HINSTANCE hThisInstance,HINSTANCE hPrevInstance, LPSTR  lpszA
       } else
       {        
          #ifdef ALLOW_DEBUG                
-         if(debug && !paused && romloaded[1])
+         if(debug && !paused && GB1->romloaded)
          {
             GB->frames = 1;
-            mainloop();
+            GB1->mainloop();
             GB->frames = 0;
 
-            renderer.drawDebugScreen();
+            (renderer.*renderer.drawDebugScreen)();
             continue;
          }
          #endif
@@ -1816,15 +1816,15 @@ void keyAction(int key)
         case 'F': // STEP
            if(GB->romloaded && paused && !debug)
            {
-              frames = 0;
-              mainloop();
+              GB1->frames = 0;
+              GB1->mainloop();
            }
            if(debug && GB->romloaded)
            {
-              frames = 1;
-              mainloop();
-              frames = 0;
-              renderer.drawDebugScreen();
+              GB1->frames = 1;
+              GB1->mainloop();
+              GB1->frames = 0;
+              (renderer.*renderer.drawDebugScreen)();
            }
         break;
         #endif
@@ -1846,12 +1846,14 @@ void keyAction(int key)
            menupause = !menupause;
            paused = !paused;
         break;
+        #ifndef ALLOW_DEBUG
         case 'F': // RESET
            if(!control_pressed)
               break;
 
            soft_reset = 1;     
-        break;            
+        break;          
+        #endif  
         case 'R': // RESET
            if(!control_pressed)
               break;       

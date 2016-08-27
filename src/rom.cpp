@@ -36,6 +36,7 @@
 #include ".\zlib\unzip.h"
 
 #include "GB.h"
+#include "memory/GB_MBC.h"
 
 void gb_system::crdtype(byte value,byte romsize,byte ramsize)
 {
@@ -49,109 +50,106 @@ void gb_system::crdtype(byte value,byte romsize,byte ramsize)
    rom->rumble = false;
    rom->carttype = value;
 
-   memory_read = MEMORY_DEFAULT;
-   memory_write = MEMORY_DEFAULT;
+    mbc->setMemoryReadWrite(MEMORY_DEFAULT);
    
    switch(value) 
    {
    case 0x00: //"ROM"
        rom->battery = false;
        rom->bankType = ROM;
+       mbc->setMemoryReadWrite(MEMORY_ROMONLY);
    break;
    
    case 0x01: //"MBC1"
        rom->battery = false;
        rom->bankType = MBC1;
-       memory_write = MEMORY_MBC1;
+       mbc->setMemoryReadWrite(MEMORY_MBC1);
    break;
    
    case 0x02: //"MBC1+RAM"
        rom->battery = false;
        rom->bankType = MBC1;
-       memory_write = MEMORY_MBC1;
+       mbc->setMemoryReadWrite(MEMORY_MBC1);
    break;
 
    case 0x03: //"MBC1+RAM+BATTERY"
        rom->battery = true;
        rom->bankType = MBC1;
-       memory_write = MEMORY_MBC1;
+       mbc->setMemoryReadWrite(MEMORY_MBC1);
    break;
 
    case 0x05: //"MBC2"
        rom->battery = false;
        rom->bankType = MBC2;
-       memory_write = MEMORY_MBC2;
+       mbc->setMemoryReadWrite(MEMORY_MBC2);
    break;
 
    case 0x06: //"MBC2+BATTERY"
        rom->battery = true;
        rom->bankType = MBC2;
-       memory_write = MEMORY_MBC2;
+       mbc->setMemoryReadWrite(MEMORY_MBC2);
    break;
 
    case 0x08: //"ROM+RAM";
        rom->battery = false;
        rom->bankType = ROM;
+       mbc->setMemoryReadWrite(MEMORY_ROMONLY);
    break;
 
    case 0x09: //"ROM+RAM+BATTERY"
        rom->battery = true;
        rom->bankType = ROM;
+       mbc->setMemoryReadWrite(MEMORY_ROMONLY);
    break;
 
    case 0x0B: //"MMM01"
        rom->battery = false;
        rom->bankType = MMM01;
-       memory_write = MEMORY_MMM01;
+       mbc->setMemoryReadWrite(MEMORY_MMM01);
    break;
 
    case 0x0C: //"MMM01+RAM"
        rom->battery = false;
        rom->bankType = MMM01;
-       memory_write = MEMORY_MMM01;
+       mbc->setMemoryReadWrite(MEMORY_MMM01);
    break;
 
    case 0x0D: //"MMM01+RAM+BATTERY"
        rom->battery = true;
        rom->bankType = MMM01;
-       memory_write = MEMORY_MMM01;
+       mbc->setMemoryReadWrite(MEMORY_MMM01);
    break;
 
    case 0x0F: //"MBC3+TIMER+BATTERY"
        rom->battery = true;
        rom->bankType = MBC3;
        rom->RTC = true;
-       memory_write = MEMORY_MBC3;
-       memory_read = MEMORY_MBC3;
+       mbc->setMemoryReadWrite(MEMORY_MBC3);
    break;
 
    case 0x10: //"MBC3+TIMER+RAM+BATTERY"
        rom->battery = true;
        rom->bankType = MBC3;
        rom->RTC = true;
-       memory_write = MEMORY_MBC3;
-       memory_read = MEMORY_MBC3;
+       mbc->setMemoryReadWrite(MEMORY_MBC3);
    break;
 
    case 0x11: //"MBC3"
        rom->battery = false;
        rom->bankType = MBC3;
-       memory_write = MEMORY_MBC3;
-       memory_read = MEMORY_MBC3;
+       mbc->setMemoryReadWrite(MEMORY_MBC3);
    break;
 
    case 0x12: //"MBC3+RAM"
        rom->battery = false;
        rom->bankType = MBC3;
-       memory_write = MEMORY_MBC3;
-       memory_read = MEMORY_MBC3;
+       mbc->setMemoryReadWrite(MEMORY_MBC3);
    break;
 
    case 0x13: //"MBC3+RAM+BATTERY"
        rom->battery = true;
        rom->bankType = MBC3;
-       memory_write = MEMORY_MBC3;
-       memory_read = MEMORY_MBC3;
+       mbc->setMemoryReadWrite(MEMORY_MBC3);
    break;
 
    case 0x15: //"MBC4"
@@ -172,93 +170,89 @@ void gb_system::crdtype(byte value,byte romsize,byte ramsize)
    case 0x19: //"MBC5"
        rom->battery = false;
        rom->bankType = MBC5;
-       memory_write = MEMORY_MBC5;
+       mbc->setMemoryReadWrite(MEMORY_MBC5);
    break;
 
    case 0x1A: //"MBC5+RAM"
        rom->battery = false;
        rom->bankType = MBC5;
-       memory_write = MEMORY_MBC5;
+       mbc->setMemoryReadWrite(MEMORY_MBC5);
    break;
 
    case 0x1B: //"MBC5+RAM+BATTERY"
        rom->battery = true;
        rom->bankType = MBC5;
-       memory_write = MEMORY_MBC5;
+       mbc->setMemoryReadWrite(MEMORY_MBC5);
    break;
 
    case 0x1C: //"MBC5+RUMBLE"
        rom->battery = false;
        rom->bankType = MBC5;
        rom->rumble = true;
-       memory_write = MEMORY_MBC5;
+       mbc->setMemoryReadWrite(MEMORY_MBC5);
    break;
 
    case 0x1D: //"MBC5+RUMBLE+RAM"
        rom->battery = false;
        rom->bankType = MBC5;
        rom->rumble = true;
-       memory_write = MEMORY_MBC5;
+       mbc->setMemoryReadWrite(MEMORY_MBC5);
    break;
 
    case 0x1E: //"MBC5+RUMBLE+RAM+BATTERY"
        rom->battery = true;
        rom->bankType = MBC5;
        rom->rumble = true;
-       memory_write = MEMORY_MBC5;
+       mbc->setMemoryReadWrite(MEMORY_MBC5);
    break;
 
    case 0x22: //Kirby's Tilt'n'Tumble
        rom->battery = true;
        rom->bankType = MBC7;
-       memory_write = MEMORY_MBC7;
-       memory_read = MEMORY_MBC7;
+       mbc->setMemoryReadWrite(MEMORY_MBC7);
    break;
 
    case 0x59: //Game Boy Smart Card
        rom->battery = false;
        rom->bankType = MBC1;
-       memory_write = MEMORY_MBC1;
+       mbc->setMemoryReadWrite(MEMORY_MBC1);
    break;
 
    case 0xBE: //Pocket Voice Recorder
        rom->battery = false;
        rom->ROMsize++;
        rom->bankType = MBC5;
-       memory_write = MEMORY_MBC5;
+       mbc->setMemoryReadWrite(MEMORY_MBC5);
    break;
 
    case 0xEA: //SONIC5
        rom->battery = false;
        rom->bankType = MBC1;
-       memory_write = MEMORY_MBC1;
+       mbc->setMemoryReadWrite(MEMORY_MBC1);
    break;
 
    case 0xFC: //"POCKET CAMERA"
        rom->battery = true;
        rom->bankType = Camera;
-       memory_write = MEMORY_CAMERA;
-       memory_read = MEMORY_CAMERA;
+       mbc->setMemoryReadWrite(MEMORY_CAMERA);
    break;
 
    case 0xFD: //"Bandai TAMA5"
        rom->battery = true;
        rom->bankType = TAMA5;
-       memory_write = MEMORY_TAMA5;
-       memory_read = MEMORY_TAMA5;
+       mbc->setMemoryReadWrite(MEMORY_TAMA5);
    break;
 
    case 0xFE: //"Hudson HuC-3"
        rom->battery = true;
        rom->bankType = HuC3;
-       memory_write = MEMORY_HUC3;
-       memory_read = MEMORY_HUC3;
+       mbc->setMemoryReadWrite(MEMORY_HUC3);
    break;
 
    case 0xFF: //"Hudson HuC-1+RAM+BATTERY"
        rom->battery = true;
        rom->bankType = HuC1;
-       memory_write = MEMORY_MBC1;
+       mbc->setMemoryReadWrite(MEMORY_MBC1);
    break;
 
    default: //"Unknown"
@@ -300,10 +294,6 @@ int gb_system::process_rom_info(byte *rominfo,byte *logo1, byte *logo2)
    
    bool useNiutoude = false;
    bool useSintax = false;
-   
-   sintax_currentxor = 0; // reset this, otherwise it leaks over into other roms
-   sintax_mode = 0;
-   sintax_xor2 = sintax_xor3 = sintax_xor4 = sintax_xor5 = 0;
    
    switch(options->unl_compat_mode) {
    	
@@ -359,15 +349,14 @@ int gb_system::process_rom_info(byte *rominfo,byte *logo1, byte *logo2)
    	    //debug_print("Niutoude enabled");
 		rom->battery = true;
 		rom->bankType = MBC5;
-		memory_write = MEMORY_NIUTOUDE;
+        mbc->setMemoryReadWrite(MEMORY_NIUTOUDE);
 		rom->ROMsize=07; // assumption for now
 		rom->RAMsize=03; // assumption for now; Sango5 doesnt work with smaller
 		rom->carttype=0x1B;
    } else if (useSintax) {
    		rom->battery = true;
 		rom->bankType = MBC5;
-		memory_read = MEMORY_SINTAX;
-   		memory_write = MEMORY_SINTAX;
+        mbc->setMemoryReadWrite(MEMORY_SINTAX);
    		rom->ROMsize=07; // assumption for now
    		rom->RAMsize=03; // assumption for now
    		rom->carttype=0x1B; // same
@@ -377,8 +366,7 @@ int gb_system::process_rom_info(byte *rominfo,byte *logo1, byte *logo2)
    if(!strcmp(rom->newlic,"MK")||!strcmp(rom->newlic,"GC"))
    {
       rom->rumble = 1;
-   }     
-   
+   }
       
    if(!strcmp(rom->name,"GB SMART CARD"))
    {
@@ -389,8 +377,7 @@ int gb_system::process_rom_info(byte *rominfo,byte *logo1, byte *logo2)
    // BHGOS MultiCart
    if(!strcmp(rom->name,"MultiCart"))
    {
-      memory_read = MEMORY_DEFAULT;
-      memory_write = MEMORY_DEFAULT;
+       mbc->setMemoryReadWrite(MEMORY_DEFAULT);
 
       rom->RAMsize = 3;
       rom->ROMsize = 2;
@@ -413,17 +400,17 @@ int gb_system::process_rom_info(byte *rominfo,byte *logo1, byte *logo2)
       default: thisromsize=2; debug_print(str_table[ERROR_ROM_SIZE]); break;
    }
 
-   char ball_name[16] = { 0x42,0x61,0x6C,0x6C,0x20,0x20,0x20,0x20,0x20,0x20,0x20,0x20,0x20,0x20,0x00,0x80 };    
+   char ball_name[16] = { 0x42,0x61,0x6C,0x6C,0x20,0x20,0x20,0x20,0x20,0x20,0x20,0x20,0x20,0x20,0x00,0x80 };
    // Ball (Bung)(PD)[C] and Capman (Lik-Sang)(PD)[C] and Fix & Foxi [C][t1]
    if(!strcmp(rom->name,ball_name) || strstr(rom->name,"CAPMAN") || !strcmp(rom->name,"LUPO +3HI"))
    {
-      memory_write = MEMORY_DEFAULT;
+       mbc->setMemoryReadWrite(MEMORY_DEFAULT);
    }
    else    
    //Bugs Bunny - Crazy Castle 3 (J)[C][t2]
    if(!strcmp(rom->name,"BUGS CC3 CRACK"))
    {
-      memory_write = MEMORY_DEFAULT;
+       mbc->setMemoryReadWrite(MEMORY_DEFAULT);
       rom->RAMsize=1;
    }
    else
@@ -437,7 +424,7 @@ int gb_system::process_rom_info(byte *rominfo,byte *logo1, byte *logo2)
    if(!strcmp(rom->name,"POKEMON RED") && rom->ROMsize == 6)
    {
       rom->ROMsize = 7;
-      memory_write = MEMORY_POKE;
+       mbc->setMemoryReadWrite(MEMORY_POKE);
    }
    else   
    // SGB Pack
@@ -452,8 +439,8 @@ int gb_system::process_rom_info(byte *rominfo,byte *logo1, byte *logo2)
    {
       rom->carttype = 3;
       rom->battery = true; 
-      rom->bankType = MBC1; 
-      memory_write = MEMORY_MBC1;
+      rom->bankType = MBC1;
+       mbc->setMemoryReadWrite(MEMORY_MBC1);
    }
    else       
    // Bokujou Monogatari 3 Chinese
@@ -480,19 +467,20 @@ int gb_system::process_rom_info(byte *rominfo,byte *logo1, byte *logo2)
    else   
    // Rockman 8
    if(!strcmp(rom->name,"ROCKMAN 99"))
-      memory_write = MEMORY_ROCKMAN8;
+       mbc->setMemoryReadWrite(MEMORY_ROCKMAN8);
    else
+
    // Collection Carts
    if(!strcmp(rom->name,"BOMCOL") || !strcmp(rom->name,"GENCOL") || strstr(rom->name,"MOMOCOL") || strstr(rom->name,"SUPERCHINESE 12"))
    {
-      memory_write = MEMORY_BC;
+       mbc->setMemoryReadWrite(MEMORY_BC);
       if(strstr(rom->name,"MOMOCOL2"))
-         memory_write = MEMORY_MMM01;
+          mbc->setMemoryReadWrite(MEMORY_MMM01);
    }
    else
-   if(!strcmp(rom->name,"MORTALKOMBATI&I"))
+   if(strstr(rom->name,"MORTALKOMBATI&I"))
    {
-      memory_write = MEMORY_MK12;
+       mbc->setMemoryReadWrite(MEMORY_MK12);
    }
    else
    // Gameboy Camera
@@ -502,8 +490,7 @@ int gb_system::process_rom_info(byte *rominfo,byte *logo1, byte *logo2)
       thisromsize = 64;
       rom->ROMsize = 5;
       rom->RAMsize = 4;
-      memory_write = MEMORY_CAMERA;
-      memory_read = MEMORY_CAMERA;
+       mbc->setMemoryReadWrite(MEMORY_CAMERA);
    }
       
    addr+=3; rom->destcode = rominfo[addr];
@@ -557,6 +544,16 @@ int get_size(int real_size) // return good size to use
       return 8192*1024;
    else
       return real_size;                                 
+}
+
+void gb_system::checkForMulticart(int fileSize)
+{
+    if ( (strstr(rom->name,"POKEMON_GLDAAUJ")&&fileSize==4194304) || (strstr(rom->name,"TIMER MONSTER")&&fileSize==16777216||fileSize==(8388608) )
+    ) {
+        rom->bankType = MBC5;
+        rom->RAMsize = 9; // Doesn't really exist shh
+        mbc->setMemoryReadWrite(MEMORY_LBMULTI);
+    }
 }
 
 bool gb_system::loadrom_zip(const wchar_t* filename)
@@ -680,16 +677,16 @@ bool gb_system::loadrom_zip(const wchar_t* filename)
   
    process_rom_info(rominfo,logo1,logo2);
    
-   
+   checkForMulticart(size);
    
    if(!strcmp(rom->name,"TETRIS") && size > 32768 && rom->ROMsize==0)
    {
-      memory_write = MEMORY_MBC1;
+       mbc->setMemoryReadWrite(MEMORY_MBC1);
       rom->ROMsize = 2;
    } else
    if(!strcmp(rom->name,"\0") && size > 32768 && rom->ROMsize==0)
    {
-      memory_write = MEMORY_8IN1;
+       mbc->setMemoryReadWrite(MEMORY_8IN1);
       rom->ROMsize = 4;
    } else
    if(strstr(rom->name,"TUWAMONO") && size == 524288) // Joryu Janshi Ni Chousen (J)[C] (bad)
@@ -700,7 +697,7 @@ bool gb_system::loadrom_zip(const wchar_t* filename)
    if(!strcmp(rom->name,"SGBPACK") && size > 32768)
    {
       rom->ROMsize = 6;
-      memory_write = MEMORY_POKE;
+       mbc->setMemoryReadWrite(MEMORY_POKE);
    } else     
    if(size == 262144 && rom->ROMsize == 4)
       rom->ROMsize--;
@@ -710,7 +707,7 @@ bool gb_system::loadrom_zip(const wchar_t* filename)
    return true;
 }
 
-bool gb_system::load_rom(const wchar_t* filename)
+bool gb_system::load_rom(const wchar_t* filename,int offset)
 {    
 
     
@@ -738,7 +735,7 @@ bool gb_system::load_rom(const wchar_t* filename)
   
   
    // Go to start of ROM info area
-   if(fseek(romfile,0x0134,SEEK_SET))
+   if(fseek(romfile,offset+0x0134,SEEK_SET))
    { 
       debug_print(str_table[ERROR_FSEEK]); 
       fclose(romfile);
@@ -755,9 +752,9 @@ bool gb_system::load_rom(const wchar_t* filename)
    
    byte logo1[0x30];
    byte logo2[0x30];
-   fseek(romfile,0x0104,SEEK_SET);
+   fseek(romfile,offset+0x0104,SEEK_SET);
    fread(logo1,1,0x30,romfile);
-   fseek(romfile,0x0184,SEEK_SET);
+   fseek(romfile,offset+0x0184,SEEK_SET);
    fread(logo2,1,0x30,romfile);
    
    // ...process it...
@@ -768,16 +765,18 @@ bool gb_system::load_rom(const wchar_t* filename)
    if(_wstat(filename,&file_stat) == 0)
    {
       file_size = file_stat.st_size;
-      
-      // Captain Knick Knack
+
+       checkForMulticart(file_size);
+
+       // Captain Knick Knack
       if(!strcmp(rom->name,"TETRIS") && file_size > 32768 && rom->ROMsize == 0)
       {
-         memory_write = MEMORY_MBC1;
+          mbc->setMemoryReadWrite(MEMORY_MBC1);
          rom->ROMsize = 2;
       } else
       if(!strcmp(rom->name,"\0") && file_size > 32768 && rom->ROMsize == 0)
       {
-         memory_write = MEMORY_8IN1;
+          mbc->setMemoryReadWrite(MEMORY_8IN1);
          rom->ROMsize = 4;
       } else
       if(strstr(rom->name,"TUWAMONO") && file_size == 524288) // Joryu Janshi Ni Chousen (J)[C]
@@ -788,7 +787,7 @@ bool gb_system::load_rom(const wchar_t* filename)
       if(!strcmp(rom->name,"SGBPACK") && file_size > 32768)
       {
          rom->ROMsize = 6;
-         memory_write = MEMORY_POKE;
+          mbc->setMemoryReadWrite(MEMORY_POKE);
       }
       if(file_size == 262144 && rom->ROMsize == 4)
          rom->ROMsize--;
@@ -798,6 +797,7 @@ bool gb_system::load_rom(const wchar_t* filename)
    
    // ...now load the rom into memory
    rewind(romfile);  // go to beginning
+   fseek(romfile,offset,SEEK_SET);
    
    if(cartridge != NULL) 
    { 
@@ -811,7 +811,14 @@ bool gb_system::load_rom(const wchar_t* filename)
       fclose(romfile);
       return false; 
    }
-   if((int)fread(cartridge,1,file_size,romfile) < file_size)
+   
+   /*if ( offset ) {
+        char wrmessage[50];
+        sprintf(wrmessage,"REREAD FROM OFFSET %X",offset);
+        debug_print(wrmessage  );
+   }*/
+   
+   if((int)fread(cartridge,1,file_size-offset,romfile) < file_size-offset)
    { 
       if(rom->ROMsize)
          debug_print(str_table[ERROR_READ_ROM_TO_MEMORY]); 
