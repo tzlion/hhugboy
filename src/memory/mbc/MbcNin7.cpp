@@ -296,3 +296,16 @@ void MbcNin7::writeMemory(unsigned short address, register byte data) {
 
     gbMemMap[address>>12][address&0x0FFF] = data;
 }
+
+MbcNin7::MbcNin7():
+        MBC7_cs(0),
+        MBC7_sk(0),
+        MBC7_state(0),
+        MBC7_buffer(0),
+        MBC7_idle(0),
+        MBC7_count(0),
+        MBC7_code(0),
+        MBC7_address(0),
+        MBC7_writeEnable(0),
+        MBC7_value(0)
+{}

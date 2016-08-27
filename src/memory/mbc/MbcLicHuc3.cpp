@@ -222,3 +222,32 @@ void MbcLicHuc3::updateHuc3Time()
     HuC3_last_time = now;
 }
 
+MbcLicHuc3::MbcLicHuc3():
+        HuC3_RAMvalue(0),
+        HuC3_RAMaddress(0),
+        HuC3_address(0),
+        HuC3_RAMflag(0),
+        HuC3_last_time(time(0)),
+        HuC3_flag(HUC3_NONE),
+        HuC3_time(0),
+        HuC3_shift(0)
+{}
+
+void MbcLicHuc3::resetVars(bool preserveMulticartState) {
+    HuC3_flag = HUC3_NONE;
+    HuC3_RAMvalue = 1;
+    AbstractMbc::resetVars(preserveMulticartState);
+}
+
+void MbcLicHuc3::readMbcSpecificVarsFromSaveFile(FILE *savefile) {
+    fread(&(HuC3_time), sizeof(unsigned int), 1, savefile);
+    fread(&(HuC3_last_time), sizeof(time_t), 1, savefile);
+    fread(&(rtc).s, sizeof(int), 1, savefile);
+}
+
+void MbcLicHuc3::writeMbcSpecificVarsToSaveFile(FILE *savefile) {
+    fwrite(&(HuC3_time), sizeof(unsigned int), 1, savefile);
+    fwrite(&(HuC3_last_time), sizeof(time_t), 1, savefile);
+    fwrite(&(rtc).s, sizeof(int), 1, savefile);
+}
+

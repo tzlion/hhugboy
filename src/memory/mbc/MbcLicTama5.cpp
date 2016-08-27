@@ -335,3 +335,38 @@ void MbcLicTama5::writeMemory(unsigned short address, register byte data) {
 
     gbMemMap[address>>12][address&0x0FFF] = data;
 }
+
+MbcLicTama5::MbcLicTama5():
+        tama_flag(0),
+        tama_time(0),
+        tama_val4(0),
+        tama_val5(0),
+        tama_val6(0),
+        tama_val7(0),
+        tama_count(0),
+        tama_month(0),
+        tama_change_clock(0)
+{}
+
+void MbcLicTama5::resetVars(bool preserveMulticartState) {
+    tama_flag = 0;
+    tama_time = 0;
+    tama_val6 = 0;
+    tama_val7 = 0;
+    tama_val4 = 0;
+    tama_val5 = 0;
+    tama_count = 0;
+    tama_month = 0;
+    tama_change_clock = 0;
+    AbstractMbc::resetVars(preserveMulticartState);
+}
+
+void MbcLicTama5::readMbcSpecificVarsFromSaveFile(FILE *savefile) {
+    AbstractMbc::readMbcSpecificVarsFromSaveFile(savefile); // gotta call this first for now because it does some RTC stuff
+    fread(&(tama_month), sizeof(int), 1, savefile);
+}
+
+void MbcLicTama5::writeMbcSpecificVarsToSaveFile(FILE *savefile) {
+    AbstractMbc::writeMbcSpecificVarsToSaveFile(savefile); // gotta call this first for now because it does some RTC stuff
+    fwrite(&(tama_month), sizeof(int), 1, savefile);
+}

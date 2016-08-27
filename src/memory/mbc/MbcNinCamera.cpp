@@ -78,3 +78,12 @@ void MbcNinCamera::writeMemory(unsigned short address, register byte data) {
 
     gbMemMap[address>>12][address&0x0FFF] = data;
 }
+
+MbcNinCamera::MbcNinCamera():
+        cameraIO(0)
+{}
+
+void MbcNinCamera::resetVars(bool preserveMulticartState) {
+    cameraIO = 0;
+    AbstractMbc::resetVars(preserveMulticartState);
+}

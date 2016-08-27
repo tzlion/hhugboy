@@ -14,6 +14,12 @@ class MbcNinCamera : public BasicMbc {
 public:
     virtual byte readMemory(register unsigned short address) override;
     virtual void writeMemory(unsigned short address, register byte data) override;
+    MbcNinCamera();
+
+    virtual void resetVars(bool preserveMulticartState) override;
+
+private:
+    int cameraIO;
 };
 
 

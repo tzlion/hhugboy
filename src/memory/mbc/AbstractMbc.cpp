@@ -25,42 +25,11 @@ AbstractMbc::AbstractMbc():
 
         bc_select(0),
 
-        HuC3_RAMvalue(0),
-        HuC3_RAMaddress(0),
-        HuC3_address(0),
-        HuC3_RAMflag(0),
-        HuC3_last_time(time(0)),
-        HuC3_flag(HUC3_NONE),
-        HuC3_time(0),
-        HuC3_shift(0),
-
-        MBC7_cs(0),
-        MBC7_sk(0),
-        MBC7_state(0),
-        MBC7_buffer(0),
-        MBC7_idle(0),
-        MBC7_count(0),
-        MBC7_code(0),
-        MBC7_address(0),
-        MBC7_writeEnable(0),
-        MBC7_value(0),
-
-        tama_flag(0),
-        tama_time(0),
-        tama_val4(0),
-        tama_val5(0),
-        tama_val6(0),
-        tama_val7(0),
-        tama_count(0),
-        tama_month(0),
-        tama_change_clock(0),
-
         MBC1memorymodel(0),
 
         RTCIO(0),
 
         RTC_latched(0),
-        cameraIO(0),
 
         multicartOffset(0),
         multicartRamOffset(0)
@@ -69,7 +38,7 @@ AbstractMbc::AbstractMbc():
 }
 
 void AbstractMbc::resetVars(bool preserveMulticartState = false) {
-    // todo: move to respective mappers
+
     MBC1memorymodel = 0;
     MBChi = 0;
     MBClo = 1;
@@ -81,7 +50,6 @@ void AbstractMbc::resetVars(bool preserveMulticartState = false) {
         bc_select = 0;
     }
 
-    cameraIO = 0;
     RTC_latched = 0;
 
     rtc.s = 0;
@@ -92,18 +60,6 @@ void AbstractMbc::resetVars(bool preserveMulticartState = false) {
     rtc.last_time = time(0);
     rtc.cur_register = 0x08;
 
-    tama_flag = 0;
-    tama_time = 0;
-    tama_val6 = 0;
-    tama_val7 = 0;
-    tama_val4 = 0;
-    tama_val5 = 0;
-    tama_count = 0;
-    tama_month = 0;
-    tama_change_clock = 0;
-
-    HuC3_flag = HUC3_NONE;
-    HuC3_RAMvalue = 1;
 }
 
 void AbstractMbc::readSgbMbcSpecificVarsFromStateFile(FILE *statefile) {
@@ -134,17 +90,6 @@ void AbstractMbc::readMbcSpecificVarsFromSaveFile(FILE *savefile) {
         fread(&(rtc).last_time, sizeof(time_t), 1, savefile);
         rtc_latch = rtc;
     }
-
-    if((*gbRom)->bankType == TAMA5)
-        fread(&(tama_month), sizeof(int), 1, savefile);
-
-    if((*gbRom)->bankType == HuC3)
-    {
-        fread(&(HuC3_time), sizeof(unsigned int), 1, savefile);
-        fread(&(HuC3_last_time), sizeof(time_t), 1, savefile);
-        fread(&(rtc).s, sizeof(int), 1, savefile);
-    }
-
 }
 
 void AbstractMbc::writeMbcSpecificVarsToSaveFile(FILE *savefile) {
@@ -157,16 +102,6 @@ void AbstractMbc::writeMbcSpecificVarsToSaveFile(FILE *savefile) {
         fwrite(&(rtc).d, sizeof(int), 1, savefile);
         fwrite(&(rtc).control, sizeof(int), 1, savefile);
         fwrite(&(rtc).last_time, sizeof(time_t), 1, savefile);
-    }
-
-    if((*gbRom)->bankType == TAMA5)
-        fwrite(&(tama_month), sizeof(int), 1, savefile);
-
-    if((*gbRom)->bankType == HuC3)
-    {
-        fwrite(&(HuC3_time), sizeof(unsigned int), 1, savefile);
-        fwrite(&(HuC3_last_time), sizeof(time_t), 1, savefile);
-        fwrite(&(rtc).s, sizeof(int), 1, savefile);
     }
 }
 
