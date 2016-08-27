@@ -4,67 +4,65 @@
 
 #include "MbcUnlLbMulti.h"
 
-#include "../../GB.h"
-#include "../../main.h"
-// ^ can we not
-
 #include <cstdio>
-
 
 void MbcUnlLbMulti::writeMemory(unsigned short address, register byte data) {
 
-    bool vfmulti = true;
-    if ( vfmulti && !bc_select ) {
+    if ( !bc_select ) {
 
-        if ( /*address & 0xF000 == 0x5000*/ address >= 0x5000 && address <= 0x5FFF ) {
-            vfmultimode = data;
+        // Initial set of writes to switch into the menu are done to 5080 and 7080
+        // Subsequent writes to select game are done to 5000 and 7000
+
+        if ( address >= 0x5000 && address <= 0x5FFF ) {
+            multiCommand = data;
             return;
         }
-        if ( /*address & 0xF000 == 0x7000*/ address >= 0x7000 && address <= 0x7FFF ) {
+        if ( address >= 0x7000 && address <= 0x7FFF ) {
+
             bool effectChange = false;
-            switch( vfmultimode ) {
-                case 0xAA:
-                    if ( vfmultibank == 0 ) {
-                        vfmultibank = data;
+
+            switch( multiCommand ) {
+                case 0xAA: // Set ROM bank
+                    if ( multiRomSelect == 0 ) {
+                        multiRomSelect = data;
                     } else {
+                        // The initial bank switch to activate the menu is followed by another write of 07 to 7080
+                        // Which seems to immediately perform the switch without waiting for the rest of the sequence
+                        // No idea if this write has to be 7
                         effectChange = true;
                     }
                     break;
-                case 0xBB:
-                    vfmultimem = data;
+                case 0xBB: // Set RAM bank
+                    multiRamSelect = data;
                     break;
-                case 0x55:
-                    vfmultifinal = data;
+                case 0x55: // Set other shit and do the switch
+                    multiOtherStuff = data;
                     effectChange = true;
+                    bc_select = true; // prevent further changes
                     break;
             }
+
             if ( effectChange ) {
+                byte romSize = multiOtherStuff & 0x07; // Inverse of Nintendo's sizes
+                // 00 = 4m, 01 = 2m, 02 = 1m, 03 = 512k, 04 = 256k, 05 = 128k, 06 = 64k, 07 = 32k
+                byte eightMegBankNo = ( multiOtherStuff & 0x08 ) >> 3; // 0 or 1 - haven't observed carts >16m yet
+                byte doReset = ( multiOtherStuff & 0x80 ) >> 7;
 
-                byte size = vfmultifinal & 0x07; // COULD implement this but meh
-                byte eightMegBankNo = ( vfmultifinal & 0x08 ) >> 3; // 0 or 1
-                byte doReset = ( vfmultifinal & 0x80 ) >> 7; // 0 or 1 again
+                multicartOffset = (multiRomSelect << 0x0F) + (eightMegBankNo << 0x17);
 
-                int addroffset = vfmultibank << 15;
-                addroffset += (eightMegBankNo << 0x17);
-                multicartOffset = addroffset;
+                gbMemMap[0x0] = &(*gbCartridge)[multicartOffset];
+                gbMemMap[0x1] = &(*gbCartridge)[multicartOffset+0x1000];
+                gbMemMap[0x2] = &(*gbCartridge)[multicartOffset+0x2000];
+                gbMemMap[0x3] = &(*gbCartridge)[multicartOffset+0x3000];
 
-                //wchar_t wrmessage[50];
-                //wsprintf(wrmessage,L"MM %X %X",multicartOffset,vfmultibank);
-                //renderer.showMessage(wrmessage,60,GB1);
+                gbMemMap[0x4] = &(*gbCartridge)[multicartOffset+0x4000];
+                gbMemMap[0x5] = &(*gbCartridge)[multicartOffset+0x5000];
+                gbMemMap[0x6] = &(*gbCartridge)[multicartOffset+0x6000];
+                gbMemMap[0x7] = &(*gbCartridge)[multicartOffset+0x7000];
 
-                gbMemMap[0x0] = &(*gbCartridge)[addroffset];
-                gbMemMap[0x1] = &(*gbCartridge)[addroffset+0x1000];
-                gbMemMap[0x2] = &(*gbCartridge)[addroffset+0x2000];
-                gbMemMap[0x3] = &(*gbCartridge)[addroffset+0x3000];
-
-                gbMemMap[0x4] = &(*gbCartridge)[addroffset+0x4000];
-                gbMemMap[0x5] = &(*gbCartridge)[addroffset+0x5000];
-                gbMemMap[0x6] = &(*gbCartridge)[addroffset+0x6000];
-                gbMemMap[0x7] = &(*gbCartridge)[addroffset+0x7000];
-
-                // Should be no bankswitching for values 0x30-0x3F but meh
-                if ( vfmultimem >= 0x20 && vfmultimem <= 0x3F ) {
-                    multicartRamOffset = ( vfmultimem - 0x20 ) << 0x0D;
+                // todo: RAM bankswitching should not really be allowed for values 0x30-0x3F
+                if ( multiRamSelect >= 0x20 && multiRamSelect <= 0x3F ) {
+                    multicartRamOffset = ( multiRamSelect - 0x20 ) << 0x0D;
                 } else {
                     multicartRamOffset = 0;
                 }
@@ -76,14 +74,11 @@ void MbcUnlLbMulti::writeMemory(unsigned short address, register byte data) {
                     deferredReset = true;
                 }
 
-                if ( vfmultifinal>0) bc_select = 1;
-
-                vfmultimode=0; vfmultibank=0; vfmultimem=0; vfmultifinal = 0;
-
-                return;
+                multiCommand=0; multiRomSelect=0; multiRamSelect=0; multiOtherStuff = 0;
             }
 
             return;
+
         }
     }
 
@@ -94,30 +89,30 @@ void MbcUnlLbMulti::writeMemory(unsigned short address, register byte data) {
 void MbcUnlLbMulti::resetVars(bool preserveMulticartState) {
 
     if ( !preserveMulticartState ) {
-        vfmultimode=0;
-        vfmultibank=0;
-        vfmultimem=0;
-        vfmultifinal=0;
+        multiCommand=0;
+        multiRomSelect=0;
+        multiRamSelect=0;
+        multiOtherStuff=0;
     }
 
     AbstractMbc::resetVars(preserveMulticartState);
 }
 
 void MbcUnlLbMulti::writeMbcSpecificVarsToStateFile(FILE *statefile) {
-    fwrite(&(vfmultimode), sizeof(byte), 1, statefile);
-    fwrite(&(vfmultibank), sizeof(byte), 1, statefile);
-    fwrite(&(vfmultimem), sizeof(byte), 1, statefile);
-    fwrite(&(vfmultifinal), sizeof(byte), 1, statefile);
+    fwrite(&(multiCommand), sizeof(byte), 1, statefile);
+    fwrite(&(multiRomSelect), sizeof(byte), 1, statefile);
+    fwrite(&(multiRamSelect), sizeof(byte), 1, statefile);
+    fwrite(&(multiOtherStuff), sizeof(byte), 1, statefile);
     fwrite(&(multicartOffset),sizeof(int),1,statefile);
     fwrite(&(multicartRamOffset),sizeof(int),1,statefile);
     fwrite(&(bc_select),sizeof(int),1,statefile);
 }
 
 void MbcUnlLbMulti::readMbcSpecificVarsFromStateFile(FILE *statefile) {
-    fread(&(vfmultimode), sizeof(byte), 1, statefile);
-    fread(&(vfmultibank), sizeof(byte), 1, statefile);
-    fread(&(vfmultimem), sizeof(byte), 1, statefile);
-    fread(&(vfmultifinal), sizeof(byte), 1, statefile);
+    fread(&(multiCommand), sizeof(byte), 1, statefile);
+    fread(&(multiRomSelect), sizeof(byte), 1, statefile);
+    fread(&(multiRamSelect), sizeof(byte), 1, statefile);
+    fread(&(multiOtherStuff), sizeof(byte), 1, statefile);
     fread(&(multicartOffset),sizeof(int),1,statefile);
     fread(&(multicartRamOffset),sizeof(int),1,statefile);
     fread(&(bc_select),sizeof(int),1,statefile);

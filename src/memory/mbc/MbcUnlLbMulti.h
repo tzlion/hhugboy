@@ -18,10 +18,10 @@ public:
     virtual void readMbcSpecificVarsFromStateFile(FILE *statefile) override;
 
 private:
-    byte vfmultimode=0;
-    byte vfmultibank=0;
-    byte vfmultimem=0;
-    byte vfmultifinal=0;
+    byte multiCommand=0;
+    byte multiRomSelect=0;
+    byte multiRamSelect=0;
+    byte multiOtherStuff=0;
 };
 
 
