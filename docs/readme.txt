@@ -87,6 +87,12 @@ http://bitbucket.org/taizou/hhugboy
  Address/Value  xxxx=yy
                 xxxx = address, yy = value, in hexadecimal. e.g. 1234=1F
 
+[ COMPATIBILITY ]- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+
+ This emulator was primarily designed for Windows, but it will also run on
+ Linux using WINE. However it has not been extensively tested in this
+ environment - your mileage may vary. 
+
 [ ISSUES ] - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 
  * Loading from Zip fails with Unicode chars anywhere in the filename or path.
