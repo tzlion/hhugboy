@@ -118,6 +118,7 @@ void MbcUnlLbMulti::writeMbcSpecificVarsToStateFile(FILE *statefile) {
     fwrite(&(multicartOffset),sizeof(int),1,statefile);
     fwrite(&(multicartRamOffset),sizeof(int),1,statefile);
     fwrite(&(mbc1Mode),sizeof(bool),1,statefile);
+    fwrite(&((*gbRom)->ROMsize),sizeof(bool),1,statefile);
 }
 
 void MbcUnlLbMulti::readMbcSpecificVarsFromStateFile(FILE *statefile) {
@@ -129,6 +130,7 @@ void MbcUnlLbMulti::readMbcSpecificVarsFromStateFile(FILE *statefile) {
     fread(&(multicartOffset),sizeof(int),1,statefile);
     fread(&(multicartRamOffset),sizeof(int),1,statefile);
     fread(&(mbc1Mode),sizeof(bool),1,statefile);
+    fread(&((*gbRom)->ROMsize),sizeof(bool),1,statefile);
 
     resetRomMemoryMap(true);
 }
