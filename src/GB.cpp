@@ -463,6 +463,8 @@ void gb_system::reset(bool change_mode, bool preserveMulticartState)
       sgb_reset();
 
    if(sgb_mode) (renderer.*renderer.drawBorder)();
+
+    renderer.handleWindowResize();
 }
 
 void gb_system::cpu_reset()
