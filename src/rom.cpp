@@ -548,8 +548,20 @@ int get_size(int real_size) // return good size to use
 
 void gb_system::checkForMulticart(int fileSize)
 {
-    if ( (strstr(rom->name,"POKEMON_GLDAAUJ")&&fileSize==4194304) || (strstr(rom->name,"TIMER MONSTER")&&fileSize==16777216||fileSize==(8388608) )
-    ) {
+    bool isLbMulti = false;
+
+    if ( options->unl_compat_mode == UNL_LBMULTI ) isLbMulti = true;
+
+    if ( options->unl_compat_mode == UNL_AUTO ) {
+        if (
+             (strstr(rom->name,"POKEMON_GLDAAUJ")&&fileSize==4194304) || // SL 36 in 1 w/Pokemon GS
+             (strstr(rom->name,"TIMER MONSTER")&&fileSize==16777216||fileSize==(8388608) ) // V.Fame 12in1 Silver / 18in1
+        ) {
+            isLbMulti = true;
+        }
+    }
+
+    if ( isLbMulti ) {
         rom->bankType = MBC5;
         rom->RAMsize = 9; // Doesn't really exist shh
         mbc->setMemoryReadWrite(MEMORY_LBMULTI);

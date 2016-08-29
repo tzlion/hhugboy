@@ -298,6 +298,7 @@ BEGIN
                     MENUITEM "&Auto", IDM_UNLAUTO, CHECKED
                     MENUITEM "&Li Cheng (XingXing/Niutoude)", IDM_UNLNIUTOUDE
                     MENUITEM "&Sintax", IDM_UNLSINTAX
+                    MENUITEM "'Last &Bible' Multicart (VFame etc)", IDM_UNLLBMULTI
                     MENUITEM "&Disabled", IDM_UNLNONE
                 END
                 POPUP "E&xternal Device"

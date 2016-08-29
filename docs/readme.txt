@@ -21,14 +21,19 @@ http://bitbucket.org/taizou/hhugboy
 
 [ UNLICENSED COMPATIBILITY MODES ] - - - - - - - - - - - - - - - - - - - - - - -
 
- Auto      Will attempt to automatically determine which mode to use based on
-           the boot logo present in the ROM. 
-           "Niutoude" -> Li Cheng mode
-           part-inverted Nintendo (looks like "Kwichvu") -> Sintax mode
+ Auto      For unlicensed publishers with unique boot logos, the emulator will
+           attempt to automatically determine which mode to use based on the
+           logo present in the ROM.
+           * "Niutoude" -> Li Cheng mode
+           * part-inverted Nintendo (looks like "Kwichvu") -> Sintax mode
            This is not always a 100% reliable indicator though! 
            e.g. some Li Cheng games do not have the "Niutoude" logo, and Sintax
            games hacked to work on generic mappers still have the weird logo.
            In these cases you will have to select the mode manually.
+
+           For multicarts, the detection is currently done based on the ROM
+           title and size, meaning only predefined carts can be autodetected
+           for now.
 
  Li Cheng  For games released by Li Cheng, also known as Xing Xing, Niutoude,
            Winsen or Yongsheng.
@@ -37,6 +42,12 @@ http://bitbucket.org/taizou/hhugboy
            for anything other than a raw Sintax dump from a game using their
            own mapper! If the game is hacked to work on other emulators or a
            generic release from another company, it won't work.
+
+ 'Last Bible' multicart
+           A type of multicart using menu music taken from 'Megami Tensei
+           Gaiden: Last Bible' aka 'Revelations: The Demon Slayer'.
+           This notably covers all of Vast Fame's multicarts, in addition to a
+           number of more generic carts.
 
  Disabled  No compatibility mode
 
@@ -110,6 +121,8 @@ http://bitbucket.org/taizou/hhugboy
    another mode
  * Emu freezes unrecoverably if you press Ctrl+Alt+Del, standby or lock the PC 
  * (Visual) rumble only works for the first Makon game you load
+ * On a multicart, loading a savestate from a mono game while playing a colour
+   game (including the menu) will not work properly
 
 [ FUTURE DEVELOPMENTS? ] - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 

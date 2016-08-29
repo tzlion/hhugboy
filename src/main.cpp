@@ -1005,6 +1005,10 @@ void menuAction(int menuOption)
          	options->unl_compat_mode = UNL_SINTAX;
          	emuMenu.checkOption(IDM_UNLSINTAX);
         break;
+         case IDM_UNLLBMULTI:
+         	options->unl_compat_mode = UNL_LBMULTI;
+         	emuMenu.checkOption(IDM_UNLLBMULTI);
+         break;
          
          case IDM_CPUSPFS9:
             if(options->speedup_skip_9frames)
