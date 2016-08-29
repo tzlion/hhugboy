@@ -2,7 +2,7 @@ hhugboy v1.1
 a Game Boy/Game Boy Color emulator for Windows
 by taizou (cactusgunman@gmail.com)
 http://hhug.me/
-http://bitbucket.org/taizou/hhugboy
+https://github.com/tzlion/hhugboy
 
  hhugboy is based on GEST v1.1.1 by TM (http://koti.mbnet.fi/gest_emu/)
  with the following additions:
