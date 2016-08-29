@@ -1,4 +1,4 @@
-hhugboy v1.1.0
+hhugboy v1.1
 a Game Boy/Game Boy Color emulator for Windows
 by taizou (cactusgunman@gmail.com)
 http://hhug.me/
@@ -134,11 +134,13 @@ http://bitbucket.org/taizou/hhugboy
 
 [ RELEASE HISTORY ]- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 
- v1.1.0 ?????????
+ v1.1 30th August 2016
  * Adds support for 'Last Bible' multicart mapper, with detection for three
    carts on that mapper: V.Fame 18 in 1, V.Fame 12 in 1, SL Pokemon 36 in 1
  * Fixed savestates in Sintax games
  * Fixes Mortal Kombat 1&2 ([a1] only)
+ * Fixes issue where border would remain when loading a regular game after a
+   Super Game Boy one
  * Way more code refactoring to make it easier to add new mappers in future
 
  v1.0.5 3rd January 2016
