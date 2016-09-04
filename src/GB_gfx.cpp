@@ -557,19 +557,20 @@ void gb_system::draw_line_tile_GBC()
    }
     
    // do the window display
-   if((memory[0xFF40] & 0x20) && (video_enable&VID_EN_WIN)) 
+   if((memory[0xFF40] & 0x20) && (video_enable&VID_EN_WIN))
    {
       int wy = memory[0xFF4A];
 
-      if(y >= wy) 
+      if(y >= wy)
       {
+         if(windowline == -1 || windowline > 144)
+            windowline = 0;
+
          int wx = memory[0xFF4B];
          wx -= 7;
 
-         if(wx <= 159 && windowline <= 143) 
-         {          
-            if(windowline == -1) 
-               windowline = 0;
+         if(wx <= 159 && windowline <= 143)
+         {
 
             tx = 0;
             ty = windowline >> 3;
