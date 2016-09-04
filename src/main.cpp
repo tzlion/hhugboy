@@ -1,6 +1,6 @@
 /*
    hhugboy Game Boy emulator
-   copyright 2013 taizou
+   copyright 2013-16 taizou
 
    Based on GEST
    Copyright (C) 2003-2010 TM
@@ -67,7 +67,7 @@ gb_system* GB = NULL;
 gb_system* GB1 = NULL;
 gb_system* GB2 = NULL;
 
-const wchar_t* prg_version = L"1.1";
+const wchar_t* prg_version = L"1.1.1";
 
 // Windows stuff ----------------------------------------
 HWND hwnd = NULL;           

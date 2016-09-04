@@ -1,4 +1,4 @@
-hhugboy v1.1
+hhugboy v1.1.1
 a Game Boy/Game Boy Color emulator for Windows
 by taizou (cactusgunman@gmail.com)
 http://hhug.me/
@@ -109,8 +109,6 @@ https://github.com/tzlion/hhugboy
  * Loading from Zip fails with Unicode chars anywhere in the filename or path.
    (However it still works if the file inside the zip is named unicodely)
  * Unicode filenames will not be preserved for screenshots
- * Problems with Window layer in Sanguozhi 5 prevents dialogue boxes being
-   displayed. (This was an existing issue in GEST, not the mapper emulation)
  * Compatibility mode selection does not autosave. May/may not be beneficial
  * Saved games will probably be lost if you load the same game in different
    compatibility modes
@@ -133,6 +131,10 @@ https://github.com/tzlion/hhugboy
  * Other language translations
 
 [ RELEASE HISTORY ]- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+
+ v1.1.1 4th September 2016
+ * Adds detection for Korean 'Bomberman Selection' cart
+ * Fixes window layer issue affecting Sanguozhi Wudai
 
  v1.1 30th August 2016
  * Adds support for 'Last Bible' multicart mapper, with detection for three
