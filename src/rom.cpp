@@ -471,7 +471,7 @@ int gb_system::process_rom_info(byte *rominfo,byte *logo1, byte *logo2)
    else
 
    // Collection Carts
-   if(!strcmp(rom->name,"BOMCOL") || !strcmp(rom->name,"GENCOL") || strstr(rom->name,"MOMOCOL") || strstr(rom->name,"SUPERCHINESE 12"))
+   if(!strcmp(rom->name,"BOMCOL") || !strcmp(rom->name,"BOMSEL") || !strcmp(rom->name,"GENCOL") || strstr(rom->name,"MOMOCOL") || strstr(rom->name,"SUPERCHINESE 12"))
    {
        mbc->setMemoryReadWrite(MEMORY_BC);
       if(strstr(rom->name,"MOMOCOL2"))
