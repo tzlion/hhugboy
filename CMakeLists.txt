@@ -67,7 +67,6 @@ set(SOURCE_FILES
         src/strings.h
         src/types.h
         src/version.rc
-        src/version.res
         src/memory/mbc/BasicMbc.cpp
         src/memory/mbc/BasicMbc.h
         src/memory/mbc/MbcNin3.cpp
@@ -132,4 +131,6 @@ link_libraries(
 )
 
 add_executable(hhugboy ${SOURCE_FILES})
+set_target_properties(hhugboy PROPERTIES LINKER_LANGUAGE CXX)
 add_executable(hhugboy-debug ${SOURCE_FILES})
+set_target_properties(hhugboy-debug PROPERTIES LINKER_LANGUAGE CXX)
