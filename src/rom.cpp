@@ -298,27 +298,23 @@ int gb_system::process_rom_info(byte *rominfo,byte *logo1, byte *logo2)
    switch(options->unl_compat_mode) {
    	
    		case UNL_AUTO: {
-   			//int ts1= 0;
-			//for(int lb=0;lb<0x30;++lb) {
-			//	ts1+=logo1[lb];
-			//}
    			int ts2= 0;
 			for(int lb=0;lb<0x30;++lb) {
 				ts2+=logo2[lb];
 			}
 			//char buff[1000];
-			//sprintf(buff,"%d %d",ts1,ts2);
+			//sprintf(buff,"%d",ts2);
 			//debug_print(buff);
    		   	// 4876 = "niutoude"
    		   	// 4125 = Sintax "Kwichvu" (corrupted Nintendo)
    		   	// 4138 = Slight variation on Sintax, seen in Sintax Harry.
-		   	// 5152= odd logo from Digimon Fight
+		   	// 5152 = odd logo from Digimon Fight
 		  	// 3746 = not a logo at all; data from Cap vs SNK (its logo is at 0x0904 instead)
-	      	if ( ts2 == 4876 ) {
-	      		useNiutoude = true;
-	      	}
-	      	
+
 	      	switch ( ts2 ) {
+                case 4639:
+                    mbc->setMemoryReadWrite(MEMORY_BBD);
+                break;
 	      		case 4876:
 	      			useNiutoude = true;
 	      		break;
@@ -327,10 +323,10 @@ int gb_system::process_rom_info(byte *rominfo,byte *logo1, byte *logo2)
 	      			useSintax = true;
 	      		break;
 	      	}
-   			break;
-   		}
-
-   		break;
+   		break; }
+        case UNL_BBD:
+            mbc->setMemoryReadWrite(MEMORY_BBD);
+        break;
    		case UNL_NIUTOUDE:
    			useNiutoude = true;
    		break;
@@ -342,11 +338,9 @@ int gb_system::process_rom_info(byte *rominfo,byte *logo1, byte *logo2)
    		break;
    	
    }
-   
+
 
 	if (useNiutoude) {
-
-   	    //debug_print("Niutoude enabled");
 		rom->battery = true;
 		rom->bankType = MBC5;
         mbc->setMemoryReadWrite(MEMORY_NIUTOUDE);

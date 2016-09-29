@@ -26,6 +26,7 @@ enum memoryaccess
     MEMORY_POKE,
     MEMORY_NIUTOUDE,
     MEMORY_SINTAX,
+    MEMORY_BBD,
     MEMORY_ROMONLY,
     MEMORY_LBMULTI,
 };

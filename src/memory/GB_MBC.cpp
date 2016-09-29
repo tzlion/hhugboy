@@ -51,6 +51,7 @@
 #include "mbc/MbcUnlSachen8in1.h"
 #include "mbc/MbcLicMk12.h"
 #include "mbc/MbcUnlLbMulti.h"
+#include "mbc/MbcUnlBbd.h"
 
 // So maybe this should be "cart" and a lot of whats in rom.cpp now e.g. autodetection should go in here..
 
@@ -162,6 +163,9 @@ void gb_mbc::setMemoryReadWrite(memoryaccess memory_type) {
             break;
         case MEMORY_SINTAX:
             mbc = new MbcUnlSintax();
+            break;
+        case MEMORY_BBD:
+            mbc = new MbcUnlBbd();
             break;
         case MEMORY_NIUTOUDE:
             mbc = new MbcUnlLiCheng();

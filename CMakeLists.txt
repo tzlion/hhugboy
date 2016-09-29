@@ -107,6 +107,8 @@ set(SOURCE_FILES
         src/memory/mbc/MbcUnlSachen8in1.h
         src/memory/mbc/MbcUnlLbMulti.cpp
         src/memory/mbc/MbcUnlLbMulti.h
+        src/memory/mbc/MbcUnlBbd.cpp
+        src/memory/mbc/MbcUnlBbd.h
 )
 
 include_directories(
