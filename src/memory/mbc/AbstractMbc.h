@@ -117,6 +117,16 @@ protected:
     rtc_clock rtc;
     rtc_clock rtc_latch;
 
+    inline byte switchOrder( byte input, byte* reorder )
+    {
+        byte newbyte=0;
+        for( byte x=0;x<8;x++ ) {
+            newbyte += ( ( input >> ( 7 - reorder[x] ) ) & 1 ) << ( 7 - x );
+        }
+
+        return newbyte;
+    }
+
 /*** SHOULD BE IN SUBCLASSES END ***/
 
 };

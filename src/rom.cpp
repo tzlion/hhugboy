@@ -305,21 +305,20 @@ int gb_system::process_rom_info(byte *rominfo,byte *logo1, byte *logo2)
 			//char buff[1000];
 			//sprintf(buff,"%d",ts2);
 			//debug_print(buff);
-   		   	// 4876 = "niutoude"
-   		   	// 4125 = Sintax "Kwichvu" (corrupted Nintendo)
-   		   	// 4138 = Slight variation on Sintax, seen in Sintax Harry.
-		   	// 5152 = odd logo from Digimon Fight
-		  	// 3746 = not a logo at all; data from Cap vs SNK (its logo is at 0x0904 instead)
 
 	      	switch ( ts2 ) {
-                case 4639:
+                case 4639: // BBD
+                case 5092: // Fiver Firm
                     mbc->setMemoryReadWrite(MEMORY_BBD);
                 break;
-	      		case 4876:
+                case 4876: // Niutoude (Li Cheng)
+                    // Also appears in Li Cheng games:
+                    // 5152 = odd logo from Digimon Fight
+                    //  3746 = not a logo at all; data from Cap vs SNK (its logo is at 0x0904 instead)
 	      			useNiutoude = true;
 	      		break;
-	      		case 4138:
-	      		case 4125:
+	      		case 4138: // Slight variation on Sintax, seen in Harry
+	      		case 4125: // Sintax "Kwichvu" (corrupted Nintendo)
 	      			useSintax = true;
 	      		break;
 	      	}

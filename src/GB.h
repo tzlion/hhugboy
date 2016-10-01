@@ -311,6 +311,10 @@ public:
             if(address == cheat[i].address && (!(cheat[i].long_code) || (cheat[i].old_value == mem_map[address>>12][address&0x0fff])))
                return cheat[i].new_value;
               
+      if ((address >= 0x4000 && address < 0x8000)) {
+      	return mbc->readmemory_cart(address);
+      }
+
       if (rom_bank_xor > 0 && (address >= 0x4000 && address < 0x8000)) {
       	return (mem_map[address>>12][address&0x0FFF]) ^ rom_bank_xor;
       }
@@ -320,8 +324,12 @@ public:
 
    unsigned short readword(register unsigned short address) //for fast memory access
    {
+      if ((address >= 0x4000 && address < 0x8000)) {
+      	return  (unsigned short) ( mbc->readmemory_cart(address) | mbc->readmemory_cart(address+1) << 8  );
+      }
+
       if (rom_bank_xor > 0 && (address >= 0x4000 && address < 0x8000)) {
-      	return 
+      	return
 		  (unsigned short)
 		  (
 		  	(mem_map[address>>12][address&0x0FFF]  ^ rom_bank_xor)
@@ -330,8 +338,8 @@ public:
 		  );
 		  (mem_map[address>>12][address&0x0FFF]);
       }
-   		
-   		
+
+
       return (unsigned short)(mem_map[address>>12][address&0x0FFF]|(mem_map[(address+1)>>12][(address+1)&0x0FFF]<<8));
    }
 
@@ -343,8 +351,18 @@ public:
 
    void copy_memory(unsigned short to,unsigned short from,int count)
    {
-		if ( rom_bank_xor > 0 && from >= 0x4000 && from < 0x8000 ) {
+		if ( from >= 0x4000 && from < 0x8000 ) {
 			
+			while(count)
+		      {
+		         mem_map[to>>12][to&0x0FFF] = mbc->readmemory_cart(from);
+		         ++to;
+		         ++from;
+		         --count;
+		      }
+
+		} else if ( rom_bank_xor > 0 && from >= 0x4000 && from < 0x8000 ) {
+
 			while(count)
 		      {
 		         mem_map[to>>12][to&0x0FFF] = (mem_map[from>>12][from&0x0FFF] ^ rom_bank_xor);
@@ -352,7 +370,7 @@ public:
 		         ++from;
 		         --count;
 		      }
-			
+
 		} else {
 			
 			while(count)

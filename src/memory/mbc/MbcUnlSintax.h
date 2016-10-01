@@ -47,14 +47,5 @@ private:
     byte noReordering[8] = {0,1,2,3,4,5,6,7};
 };
 
-inline byte switchOrder( byte input, byte* reorder )
-{
-    byte newbyte=0;
-    for( byte x=0;x<8;x++ ) {
-        newbyte += ( ( input >> ( 7 - reorder[x] ) ) & 1 ) << ( 7 - x );
-    }
-
-    return newbyte;
-}
 
 #endif //HHUGBOY_MBCUNLSINTAX_H
