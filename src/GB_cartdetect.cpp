@@ -289,16 +289,23 @@ unlCompatMode gb_system::detectUnlCompatMode()
 
     switch ( logoChecksum ) {
         case 4639: // BBD
-        case 5092: // Fiver Firm
-            return UNL_BBD;
+        case 5092: // Fiver Firm (publisher of e'Fighter Hot, appears in subsequent BBD fighting games)
+            // Games from BBD, Sintax and related developers (probably anything built with Gamtec's SDK) have the bank
+            // number as the last byte of each bank. If that number matches the actual bank number, then this is
+            // PROBABLY a decrypted rom & we don't have to apply the swapping stuff
+            // There MAY be some BBD games that this check fails on, but it works for everything dumped so far (afaik)
+            if ( cartridge[0x7fff] != 01 || cartridge[0xbfff] != 02 )
+                return UNL_BBD;
+            else
+                return UNL_NONE;
         case 4876: // Niutoude (Li Cheng)
             // Also appears in Li Cheng games:
             // 5152 = odd logo from Digimon Fight
             // 3746 = not a logo at all; data from Cap vs SNK (its logo is at 0x0904 instead)
             // But since I don't think those are LC-exclusive, you gotta select manual mode for those games for now
             return UNL_NIUTOUDE;
-        case 4138: // Slight variation on Sintax, seen in Harry
         case 4125: // Sintax "Kwichvu" (corrupted Nintendo)
+        case 4138: // Slight variation on Sintax, seen in Harry
             return UNL_SINTAX;
     }
 

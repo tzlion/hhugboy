@@ -32,38 +32,26 @@ byte MbcUnlBbd::readMemory(register unsigned short address) {
 
 void MbcUnlBbd::writeMemory(unsigned short address, register byte data) {
 
-    // Games from BBD, Sintax and related developers (probably anything built with Gamtec's SDK) have the bank number as
-    // the last byte of each bank. If that number matches the actual bank number, then this is PROBABLY a decrypted rom
-    // & we don't have to apply the swapping stuff
-    // This isn't really the best way to do it since if it's decrypted then it shouldn't be running through the BBD
-    // mapper at all, but the way the existing rom loading/detection code is set up makes this kinda awful to do there
-    // There MAY be some BBD games that this check fails on, but it works for everything dumped so far (afaik)
+    if ( address == 0x2080 ) {
 
-    if ( gbMemMap[0x7][0x0FFF] != rom_bank ) {
+        bbdBankSwapMode = (byte)(data & 0x07);
 
-        if ( address == 0x2080 ) {
-
-            bbdBankSwapMode = (byte)(data & 0x07);
-
-            if ( bbdBankSwapMode != 0x03 && bbdBankSwapMode != 0x05 && bbdBankSwapMode != 0x00 ) { // 00 = normal
-                char buff[1000];
-                sprintf(buff,"BBD bankswap mode unsupported - %02x",bbdBankSwapMode);
-                debug_print(buff);
-            }
-
-        } else if(address== 0x2001 ) {
-
-            bbdBitSwapMode = (byte)(data & 0x07);
-            if ( bbdBitSwapMode != 0x07 && bbdBitSwapMode != 0x05 && bbdBitSwapMode != 0x04 && bbdBitSwapMode != 0x00 ) { // 00 = normal
-                char buff[1000];
-                sprintf(buff,"BBD bitswap mode unsupported - %02x",bbdBitSwapMode);
-                debug_print(buff);
-            }
-
+        if ( bbdBankSwapMode != 0x03 && bbdBankSwapMode != 0x05 && bbdBankSwapMode != 0x00 ) { // 00 = normal
+            char buff[1000];
+            sprintf(buff,"BBD bankswap mode unsupported - %02x",bbdBankSwapMode);
+            debug_print(buff);
         }
-    }
 
-    if ( address == 0x2000 ) {
+    } else if ( address == 0x2001 ) {
+
+        bbdBitSwapMode = (byte)(data & 0x07);
+        if ( bbdBitSwapMode != 0x07 && bbdBitSwapMode != 0x05 && bbdBitSwapMode != 0x04 && bbdBitSwapMode != 0x00 ) { // 00 = normal
+            char buff[1000];
+            sprintf(buff,"BBD bitswap mode unsupported - %02x",bbdBitSwapMode);
+            debug_print(buff);
+        }
+
+    } else if ( address == 0x2000 ) {
 
         if ( bbdBankSwapMode == 0x03 ) {
             data = switchOrder(data, bankReordering03);
