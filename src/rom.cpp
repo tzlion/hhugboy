@@ -435,6 +435,12 @@ int gb_system::process_rom_info(byte *rominfo,byte *logo1, byte *logo2)
       rom->bankType = MBC1;
        mbc->setMemoryReadWrite(MEMORY_MBC1);
    }
+   else
+   // Dragon Ball Z Goku 2 (English)
+   if(!strcmp(rom->name,"GB DBZ GOKOU 2") && rom->ROMsize == 05)
+   {
+       mbc->setMemoryReadWrite(MEMORY_DBZTRANS);
+   }
    else       
    // Bokujou Monogatari 3 Chinese
    if(!strcmp(rom->name,"BOKUMONOGB3BWAJ") || !strcmp(rom->name,"BOYGIRLD640BWAJ"))

@@ -29,6 +29,7 @@ enum memoryaccess
     MEMORY_BBD,
     MEMORY_ROMONLY,
     MEMORY_LBMULTI,
+    MEMORY_DBZTRANS,
 };
 
 class gb_mbc {
