@@ -60,14 +60,15 @@ void MbcUnlBbd::writeMemory(unsigned short address, register byte data) {
                 debug_print(buff);
             }
 
-        } else if ( address == 0x2000 ) {
+        }
+    }
 
-            if ( bbdBankSwapMode == 0x03 ) {
-                data = switchOrder(data, bankReordering03);
-            } else if ( bbdBankSwapMode == 0x05 ) {
-                data = switchOrder(data, bankReordering05);
-            }
+    if ( address == 0x2000 ) {
 
+        if ( bbdBankSwapMode == 0x03 ) {
+            data = switchOrder(data, bankReordering03);
+        } else if ( bbdBankSwapMode == 0x05 ) {
+            data = switchOrder(data, bankReordering05);
         }
 
     }
