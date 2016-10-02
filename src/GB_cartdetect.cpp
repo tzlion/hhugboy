@@ -272,73 +272,78 @@ void gb_system::readHeader()
     cmpl+=25; rom->complementok = !cmpl;
 }
 
+unlCompatMode gb_system::detectUnlCompatMode()
+{
+    byte logo1[0x30];
+    byte logo2[0x30];
+    memcpy(logo1,cartridge+0x0104,0x30); // Real logo
+    memcpy(logo2,cartridge+0x0184,0x30); // Unlicensed game's logo. Sometimes.
+
+    int logoChecksum= 0;
+    for(int lb=0;lb<0x30;++lb) {
+        logoChecksum+=logo2[lb];
+    }
+    //char buff[1000];
+    //sprintf(buff,"%d",logoChecksum);
+    //debug_print(buff);
+
+    switch ( logoChecksum ) {
+        case 4639: // BBD
+        case 5092: // Fiver Firm
+            return UNL_BBD;
+        case 4876: // Niutoude (Li Cheng)
+            // Also appears in Li Cheng games:
+            // 5152 = odd logo from Digimon Fight
+            // 3746 = not a logo at all; data from Cap vs SNK (its logo is at 0x0904 instead)
+            // But since I don't think those are LC-exclusive, you gotta select manual mode for those games for now
+            return UNL_NIUTOUDE;
+        case 4138: // Slight variation on Sintax, seen in Harry
+        case 4125: // Sintax "Kwichvu" (corrupted Nintendo)
+            return UNL_SINTAX;
+    }
+
+    if (
+        (strstr(rom->name,"POKEMON_GLDAAUJ")&&romFileSize==4194304) || // SL 36 in 1 w/Pokemon GS
+        (strstr(rom->name,"TIMER MONSTER")&&romFileSize==16777216||romFileSize==(8388608) ) // V.Fame 12in1 Silver / 18in1
+    ) {
+        return UNL_LBMULTI;
+    }
+
+    return UNL_NONE;
+}
+
 int gb_system::detectWeirdCarts()
 {
-    bool useNiutoude = false;
-    bool useSintax = false;
+    unlCompatMode unlMode = options->unl_compat_mode;
+    if ( unlMode == UNL_AUTO ) {
+        unlMode = detectUnlCompatMode();
+    }
 
-    switch(options->unl_compat_mode) {
+    switch(unlMode) {
 
-        case UNL_AUTO: {
-
-            byte logo1[0x30];
-            byte logo2[0x30];
-            memcpy(logo1,cartridge+0x0104,0x30); // Real logo
-            memcpy(logo2,cartridge+0x0184,0x30); // Unlicensed game's logo. Sometimes.
-
-            int ts2= 0;
-            for(int lb=0;lb<0x30;++lb) {
-                ts2+=logo2[lb];
-            }
-            //char buff[1000];
-            //sprintf(buff,"%d",ts2);
-            //debug_print(buff);
-
-            switch ( ts2 ) {
-                case 4639: // BBD
-                case 5092: // Fiver Firm
-                    rom->mbcType = MEMORY_BBD;
-                    break;
-                case 4876: // Niutoude (Li Cheng)
-                    // Also appears in Li Cheng games:
-                    // 5152 = odd logo from Digimon Fight
-                    //  3746 = not a logo at all; data from Cap vs SNK (its logo is at 0x0904 instead)
-                    useNiutoude = true;
-                    break;
-                case 4138: // Slight variation on Sintax, seen in Harry
-                case 4125: // Sintax "Kwichvu" (corrupted Nintendo)
-                    useSintax = true;
-                    break;
-            }
-            break; }
         case UNL_BBD:
             rom->mbcType = MEMORY_BBD;
             break;
         case UNL_NIUTOUDE:
-            useNiutoude = true;
+            rom->battery = true;
+            rom->mbcType = MEMORY_NIUTOUDE;
+            rom->ROMsize=07; // assumption for now
+            rom->RAMsize=03; // assumption for now; Sango5 doesnt work with smaller
+            rom->carttype=0x1B;
             break;
         case UNL_SINTAX:
-            useSintax = true;
+            rom->battery = true;
+            rom->mbcType = MEMORY_SINTAX;
+            rom->ROMsize=07; // assumption for now
+            rom->RAMsize=03; // assumption for now
+            rom->carttype=0x1B; // same
+            break;
+        case UNL_LBMULTI:
+            rom->RAMsize = 9; // Doesn't really exist shh
+            rom->mbcType = MEMORY_LBMULTI;
             break;
         case UNL_NONE: default:
-
             break;
-
-    }
-
-
-    if (useNiutoude) {
-        rom->battery = true;
-        rom->mbcType = MEMORY_NIUTOUDE;
-        rom->ROMsize=07; // assumption for now
-        rom->RAMsize=03; // assumption for now; Sango5 doesnt work with smaller
-        rom->carttype=0x1B;
-    } else if (useSintax) {
-        rom->battery = true;
-        rom->mbcType = MEMORY_SINTAX;
-        rom->ROMsize=07; // assumption for now
-        rom->RAMsize=03; // assumption for now
-        rom->carttype=0x1B; // same
     }
 
     // Rumble force for Makon games
@@ -461,35 +466,6 @@ int gb_system::detectWeirdCarts()
     if(!strcmp(rom->name,"DEFENDER/JOUST") && rom->checksum == 0xB110)
         rom->RAMsize = 1;
 
-    sizeBasedChecks();
-
-}
-
-void gb_system::checkForMulticart()
-{
-    bool isLbMulti = false;
-
-    if ( options->unl_compat_mode == UNL_LBMULTI ) isLbMulti = true;
-
-    if ( options->unl_compat_mode == UNL_AUTO ) {
-        if (
-                (strstr(rom->name,"POKEMON_GLDAAUJ")&&romFileSize==4194304) || // SL 36 in 1 w/Pokemon GS
-                (strstr(rom->name,"TIMER MONSTER")&&romFileSize==16777216||romFileSize==(8388608) ) // V.Fame 12in1 Silver / 18in1
-                ) {
-            isLbMulti = true;
-        }
-    }
-
-    if ( isLbMulti ) {
-        rom->RAMsize = 9; // Doesn't really exist shh
-        rom->mbcType = MEMORY_LBMULTI;
-    }
-}
-
-void gb_system::sizeBasedChecks()
-{
-    checkForMulticart();
-
     if(!strcmp(rom->name,"TETRIS") && romFileSize > 32768 && rom->ROMsize==0)
     {
         rom->mbcType = MEMORY_MBC1;
@@ -512,4 +488,5 @@ void gb_system::sizeBasedChecks()
     } else
     if(romFileSize == 262144 && rom->ROMsize == 4)
         rom->ROMsize--;
+
 }

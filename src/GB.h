@@ -26,6 +26,7 @@
 #include "rom.h"
 #include "cheats.h"
 #include "memory/GB_MBC.h"
+#include "options.h"
 
 class gb_system
 {
@@ -396,6 +397,7 @@ private:
     int detectWeirdCarts();
     void processRomInfo();
     void readHeader();
+    unlCompatMode detectUnlCompatMode();
 };
 
 extern gb_system *GB;
