@@ -37,12 +37,6 @@ enum
 };
 
 /**
- * Note: ROM has a "bankType" which doesn't necessarily correspond with the MBC
- * Generally this will be something more standard even if the MBC type is set to something weird
- * There are also some banktypes like "MBC4" which is set w/o any MBC selected (so it just falls back to Default)
- * (Maybe the "Unknown" case should fall back to MBC5 with 4m size, might fix some pirates or at least make them boot)
- * (Although BasicMBC is pretty similar as is)
- *
  * MBC shouldn't really start knowing too much that actually should be under cart though
  * E.g. anything currently in the "rom" object like ramsize,romsize,...
  * Maybe our current GB_MBC could become Cartridge or CartWrangler or something and ROM should then belong to that.
@@ -76,7 +70,7 @@ public:
 
     AbstractMbc();
 
-    void init(byte** gbMemMap, GBrom** gbRom, byte** gbMemory, byte* gbRomBankXor, byte** gbCartridge, byte** gbCartRam, int* gbRumbleCounter);
+    void init(byte** gbMemMap, GBrom** gbRom, byte** gbMemory, byte** gbCartridge, byte** gbCartRam, int* gbRumbleCounter);
     virtual byte readMemory(register unsigned short address) = 0;
     virtual void writeMemory(unsigned short address, register byte data) = 0;
     virtual void resetVars(bool preserveMulticartState);
@@ -97,7 +91,6 @@ protected:
     byte** gbMemMap;
     byte** gbMemory;
     GBrom** gbRom;
-    byte* gbRomBankXor;
     byte** gbCartridge;
     byte** gbCartRam;
     int* gbRumbleCounter;
@@ -108,6 +101,8 @@ protected:
 
 /*** THESE SHOULD BE IN SUB CLASSES ***/
 
+    byte romBankXor;
+
     int MBC1memorymodel;
 
     int bc_select; // for collection carts
@@ -116,6 +111,16 @@ protected:
     int RTC_latched;
     rtc_clock rtc;
     rtc_clock rtc_latch;
+
+    inline byte switchOrder( byte input, byte* reorder )
+    {
+        byte newbyte=0;
+        for( byte x=0;x<8;x++ ) {
+            newbyte += ( ( input >> ( 7 - reorder[x] ) ) & 1 ) << ( 7 - x );
+        }
+
+        return newbyte;
+    }
 
 /*** SHOULD BE IN SUBCLASSES END ***/
 

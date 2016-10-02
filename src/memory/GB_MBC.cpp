@@ -51,6 +51,8 @@
 #include "mbc/MbcUnlSachen8in1.h"
 #include "mbc/MbcLicMk12.h"
 #include "mbc/MbcUnlLbMulti.h"
+#include "mbc/MbcUnlBbd.h"
+#include "mbc/MbcUnlDbzTrans.h"
 
 // So maybe this should be "cart" and a lot of whats in rom.cpp now e.g. autodetection should go in here..
 
@@ -58,7 +60,7 @@
 //int RTC_latched = 0;
 
 // Eventually GB should contain cart and cart should contain MBC
-gb_mbc::gb_mbc(byte** gbMemMap, byte** gbCartridge, GBrom** gbRom, byte** gbCartRam, byte* gbRomBankXor, int* gbRumbleCounter, byte** gbMemory):
+gb_mbc::gb_mbc(byte** gbMemMap, byte** gbCartridge, GBrom** gbRom, byte** gbCartRam, int* gbRumbleCounter, byte** gbMemory):
 
         mbcType(MEMORY_DEFAULT)
 
@@ -67,7 +69,6 @@ gb_mbc::gb_mbc(byte** gbMemMap, byte** gbCartridge, GBrom** gbRom, byte** gbCart
     this->gbMemMap = gbMemMap;
     this->gbRom = gbRom;
     this->gbCartRam = gbCartRam;
-    this->gbRomBankXor = gbRomBankXor;
     this->gbRumbleCounter = gbRumbleCounter;
     this->gbMemory = gbMemory;
 
@@ -140,7 +141,7 @@ int gb_mbc::getRamBank() {
     return mbc->ram_bank;
 }
 
-void gb_mbc::setMemoryReadWrite(memoryaccess memory_type) {
+void gb_mbc::setMemoryReadWrite(MbcType memory_type) {
     gb_mbc::mbcType = memory_type;
 
     switch(mbcType)
@@ -162,6 +163,9 @@ void gb_mbc::setMemoryReadWrite(memoryaccess memory_type) {
             break;
         case MEMORY_SINTAX:
             mbc = new MbcUnlSintax();
+            break;
+        case MEMORY_BBD:
+            mbc = new MbcUnlBbd();
             break;
         case MEMORY_NIUTOUDE:
             mbc = new MbcUnlLiCheng();
@@ -190,6 +194,9 @@ void gb_mbc::setMemoryReadWrite(memoryaccess memory_type) {
         case MEMORY_POKE:
             mbc = new MbcUnlPoke2in1();
             break;
+        case MEMORY_DBZTRANS:
+            mbc = new MbcUnlDbzTrans();
+            break;
         case MEMORY_8IN1:
             mbc = new MbcUnlSachen8in1();
             break;
@@ -205,7 +212,7 @@ void gb_mbc::setMemoryReadWrite(memoryaccess memory_type) {
             break;
     }
 
-    mbc->init( gbMemMap, gbRom, gbMemory, gbRomBankXor, gbCartridge, gbCartRam, gbRumbleCounter );
+    mbc->init( gbMemMap, gbRom, gbMemory, gbCartridge, gbCartRam, gbRumbleCounter );
 }
 
 bool gb_mbc::shouldReset() {

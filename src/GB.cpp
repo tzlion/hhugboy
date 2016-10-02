@@ -39,7 +39,7 @@
 int gb_system::gfx_bit_count = 16;
 
 gb_system::gb_system():
-        mbc(new gb_mbc(mem_map,&cartridge,&rom,&cartRAM,&rom_bank_xor,&rumble_counter,&memory)),
+        mbc(new gb_mbc(mem_map,&cartridge,&rom,&cartRAM,&rumble_counter,&memory)),
         frames(0),
         LCD_clear_needed(false),
         skip_frame(0),
@@ -159,7 +159,7 @@ gb_system::gb_system():
 
         rumble_counter(0),
 
-        rom_bank_xor(0)
+        romFileSize(0)
 {
    button_pressed[B_LEFT]=button_pressed[B_RIGHT]=button_pressed[B_DOWN]=button_pressed[B_UP]=1;
    button_pressed[B_START]=button_pressed[B_SELECT]=button_pressed[B_A]=button_pressed[B_B]=1;

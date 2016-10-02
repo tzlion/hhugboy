@@ -26,6 +26,7 @@
 #include "rom.h"
 #include "cheats.h"
 #include "memory/GB_MBC.h"
+#include "options.h"
 
 class gb_system
 {
@@ -42,10 +43,8 @@ public:
 
    wchar_t rom_filename[ROM_FILENAME_SIZE];
    bool load_rom(const wchar_t* filename, int offset=0);
-   bool loadrom_zip(const wchar_t* filename);
    bool romloaded;
-   void crdtype(byte value,byte romsize,byte ramsize);
-   int process_rom_info(byte *rominfo, byte *logo1, byte *logo2);
+
    //CPU-----------------------------------------
    byte A;
    byte F; 
@@ -183,7 +182,6 @@ public:
 
     // things that are somewhat MBC related but would be mildly annoying to move
    int rumble_counter; // this can stay in GB for now because, uh, let's say because the cartridge makes the whole GB rumble
-   byte rom_bank_xor; // this can stay as long as mem_map is here.. used by "fast reads"
 
    //Sound ---------------------------------------
    byte sound_buffer[4][735];
@@ -311,8 +309,8 @@ public:
             if(address == cheat[i].address && (!(cheat[i].long_code) || (cheat[i].old_value == mem_map[address>>12][address&0x0fff])))
                return cheat[i].new_value;
               
-      if (rom_bank_xor > 0 && (address >= 0x4000 && address < 0x8000)) {
-      	return (mem_map[address>>12][address&0x0FFF]) ^ rom_bank_xor;
+      if ((address >= 0x4000 && address < 0x8000)) {
+      	return mbc->readmemory_cart(address);
       }
 
       return mem_map[address>>12][address&0x0FFF];
@@ -320,18 +318,10 @@ public:
 
    unsigned short readword(register unsigned short address) //for fast memory access
    {
-      if (rom_bank_xor > 0 && (address >= 0x4000 && address < 0x8000)) {
-      	return 
-		  (unsigned short)
-		  (
-		  	(mem_map[address>>12][address&0x0FFF]  ^ rom_bank_xor)
-			  |
-			((mem_map[(address+1)>>12][(address+1)&0x0FFF]^ rom_bank_xor)<<8)
-		  );
-		  (mem_map[address>>12][address&0x0FFF]);
+      if ((address >= 0x4000 && address < 0x8000)) {
+      	return  (unsigned short) ( mbc->readmemory_cart(address) | mbc->readmemory_cart(address+1) << 8  );
       }
-   		
-   		
+
       return (unsigned short)(mem_map[address>>12][address&0x0FFF]|(mem_map[(address+1)>>12][(address+1)&0x0FFF]<<8));
    }
 
@@ -343,16 +333,16 @@ public:
 
    void copy_memory(unsigned short to,unsigned short from,int count)
    {
-		if ( rom_bank_xor > 0 && from >= 0x4000 && from < 0x8000 ) {
+		if ( from >= 0x4000 && from < 0x8000 ) {
 			
 			while(count)
 		      {
-		         mem_map[to>>12][to&0x0FFF] = (mem_map[from>>12][from&0x0FFF] ^ rom_bank_xor);
+		         mem_map[to>>12][to&0x0FFF] = mbc->readmemory_cart(from);
 		         ++to;
 		         ++from;
 		         --count;
 		      }
-			
+
 		} else {
 			
 			while(count)
@@ -371,8 +361,14 @@ public:
    void mainloop();
 
 private:
-    void checkForMulticart(int fileSize);
-
+    int romFileSize;
+    bool loadrom_zip(const wchar_t* filename);
+    bool loadrom_file(const wchar_t* filename, int offset);
+    void setCartridgeType(byte value);
+    int detectWeirdCarts();
+    void processRomInfo();
+    void readHeader();
+    unlCompatMode detectUnlCompatMode();
 };
 
 extern gb_system *GB;

@@ -24,11 +24,10 @@
 #include "AbstractMbc.h"
 #include <cstdio>
 
-void AbstractMbc::init(byte** gbMemMap, GBrom** gbRom, byte** gbMemory, byte* gbRomBankXor, byte** gbCartridge, byte** gbCartRam, int* gbRumbleCounter) {
+void AbstractMbc::init(byte** gbMemMap, GBrom** gbRom, byte** gbMemory, byte** gbCartridge, byte** gbCartRam, int* gbRumbleCounter) {
     this->gbMemMap = gbMemMap;
     this->gbRom = gbRom;
     this->gbMemory = gbMemory;
-    this->gbRomBankXor = gbRomBankXor;
     this->gbCartridge = gbCartridge;
     this->gbCartRam = gbCartRam;
     this->gbRumbleCounter = gbRumbleCounter;
@@ -51,7 +50,9 @@ AbstractMbc::AbstractMbc():
         RTC_latched(0),
 
         multicartOffset(0),
-        multicartRamOffset(0)
+        multicartRamOffset(0),
+
+        romBankXor(0)
 {
 
 }
@@ -99,7 +100,7 @@ void AbstractMbc::writeMbcSpecificVarsToStateFile(FILE *statefile) {
 
 void AbstractMbc::readMbcSpecificVarsFromSaveFile(FILE *savefile) {
     // todo: move to respective mappers
-    if((*gbRom)->RTC || (*gbRom)->bankType == TAMA5)
+    if((*gbRom)->RTC || (*gbRom)->mbcType == MEMORY_TAMA5)
     {
         fread(&(rtc).s, sizeof(int), 1, savefile);
         fread(&(rtc).m, sizeof(int), 1, savefile);
@@ -113,7 +114,7 @@ void AbstractMbc::readMbcSpecificVarsFromSaveFile(FILE *savefile) {
 
 void AbstractMbc::writeMbcSpecificVarsToSaveFile(FILE *savefile) {
     // todo: move to respective mappers
-    if((*gbRom)->RTC || (*gbRom)->bankType == TAMA5)
+    if((*gbRom)->RTC || (*gbRom)->mbcType == MEMORY_TAMA5)
     {
         fwrite(&(rtc).s, sizeof(int), 1, savefile);
         fwrite(&(rtc).m, sizeof(int), 1, savefile);
