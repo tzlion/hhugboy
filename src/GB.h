@@ -43,8 +43,7 @@ public:
    wchar_t rom_filename[ROM_FILENAME_SIZE];
    bool load_rom(const wchar_t* filename, int offset=0);
    bool romloaded;
-   void crdtype(byte value,byte romsize,byte ramsize);
-   int process_rom_info(byte *rominfo, byte *logo1, byte *logo2);
+
    //CPU-----------------------------------------
    byte A;
    byte F; 
@@ -388,11 +387,14 @@ public:
    void mainloop();
 
 private:
+    int romSize;
     void checkForMulticart(int fileSize);
     void sizeBasedChecks(int fileSize);
     bool loadrom_zip(const wchar_t* filename);
     bool loadrom_file(const wchar_t* filename, int offset);
-
+    void crdtype(byte value,byte romsize,byte ramsize);
+    int process_rom_info(byte *rominfo, byte *logo1, byte *logo2);
+    void processRomInfo();
 };
 
 extern gb_system *GB;

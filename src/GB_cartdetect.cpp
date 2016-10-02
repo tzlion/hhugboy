@@ -1,0 +1,575 @@
+/*
+   hhugboy Game Boy emulator
+   copyright 2013-2016 taizou
+
+   Based on GEST
+   Copyright (C) 2003-2010 TM
+   This file incorporates code from VisualBoyAdvance
+   Copyright (C) 1999-2004 by Forgotten
+
+   This program is free software; you can redistribute it and/or
+   modify it under the terms of the GNU General Public License
+   as published by the Free Software Foundation; either version 2
+   of the License, or (at your option) any later version.
+
+   This program is distributed in the hope that it will be useful,
+   but WITHOUT ANY WARRANTY; without even the implied warranty of
+   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+   GNU General Public License for more details.
+
+   You should have received a copy of the GNU General Public License
+   along with this program; if not, write to the Free Software Foundation, Inc.,
+   51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
+*/
+
+#include <cstring>
+#include "GB.h"
+#include "config.h"
+#include "strings.h"
+
+
+void gb_system::processRomInfo() {
+
+    byte rominfo[30];
+    byte logo1[0x30];
+    byte logo2[0x30];
+
+    memcpy(rominfo,cartridge+0x0134,0x1C);
+    memcpy(logo1,cartridge+0x0104,0x30); // Real logo
+    memcpy(logo2,cartridge+0x0184,0x30); // Unlicensed game's logo. Sometimes.
+
+    // ...process it...
+    process_rom_info(rominfo,logo1,logo2);
+    sizeBasedChecks(romSize);
+
+}
+
+void gb_system::crdtype(byte value,byte romsize,byte ramsize)
+{
+    if((romsize > 8 && romsize < 0x52) || romsize > 0x54)
+        romsize = 0;
+    rom->ROMsize = romsize;
+    rom->RAMsize = ramsize;
+    if(rom->RAMsize >= 8)
+        rom->RAMsize = 1;
+    rom->RTC = false;
+    rom->rumble = false;
+    rom->carttype = value;
+
+    mbc->setMemoryReadWrite(MEMORY_DEFAULT);
+
+    switch(value)
+    {
+        case 0x00: //"ROM"
+            rom->battery = false;
+            rom->bankType = ROM;
+            mbc->setMemoryReadWrite(MEMORY_ROMONLY);
+            break;
+
+        case 0x01: //"MBC1"
+            rom->battery = false;
+            rom->bankType = MBC1;
+            mbc->setMemoryReadWrite(MEMORY_MBC1);
+            break;
+
+        case 0x02: //"MBC1+RAM"
+            rom->battery = false;
+            rom->bankType = MBC1;
+            mbc->setMemoryReadWrite(MEMORY_MBC1);
+            break;
+
+        case 0x03: //"MBC1+RAM+BATTERY"
+            rom->battery = true;
+            rom->bankType = MBC1;
+            mbc->setMemoryReadWrite(MEMORY_MBC1);
+            break;
+
+        case 0x05: //"MBC2"
+            rom->battery = false;
+            rom->bankType = MBC2;
+            mbc->setMemoryReadWrite(MEMORY_MBC2);
+            break;
+
+        case 0x06: //"MBC2+BATTERY"
+            rom->battery = true;
+            rom->bankType = MBC2;
+            mbc->setMemoryReadWrite(MEMORY_MBC2);
+            break;
+
+        case 0x08: //"ROM+RAM";
+            rom->battery = false;
+            rom->bankType = ROM;
+            mbc->setMemoryReadWrite(MEMORY_ROMONLY);
+            break;
+
+        case 0x09: //"ROM+RAM+BATTERY"
+            rom->battery = true;
+            rom->bankType = ROM;
+            mbc->setMemoryReadWrite(MEMORY_ROMONLY);
+            break;
+
+        case 0x0B: //"MMM01"
+            rom->battery = false;
+            rom->bankType = MMM01;
+            mbc->setMemoryReadWrite(MEMORY_MMM01);
+            break;
+
+        case 0x0C: //"MMM01+RAM"
+            rom->battery = false;
+            rom->bankType = MMM01;
+            mbc->setMemoryReadWrite(MEMORY_MMM01);
+            break;
+
+        case 0x0D: //"MMM01+RAM+BATTERY"
+            rom->battery = true;
+            rom->bankType = MMM01;
+            mbc->setMemoryReadWrite(MEMORY_MMM01);
+            break;
+
+        case 0x0F: //"MBC3+TIMER+BATTERY"
+            rom->battery = true;
+            rom->bankType = MBC3;
+            rom->RTC = true;
+            mbc->setMemoryReadWrite(MEMORY_MBC3);
+            break;
+
+        case 0x10: //"MBC3+TIMER+RAM+BATTERY"
+            rom->battery = true;
+            rom->bankType = MBC3;
+            rom->RTC = true;
+            mbc->setMemoryReadWrite(MEMORY_MBC3);
+            break;
+
+        case 0x11: //"MBC3"
+            rom->battery = false;
+            rom->bankType = MBC3;
+            mbc->setMemoryReadWrite(MEMORY_MBC3);
+            break;
+
+        case 0x12: //"MBC3+RAM"
+            rom->battery = false;
+            rom->bankType = MBC3;
+            mbc->setMemoryReadWrite(MEMORY_MBC3);
+            break;
+
+        case 0x13: //"MBC3+RAM+BATTERY"
+            rom->battery = true;
+            rom->bankType = MBC3;
+            mbc->setMemoryReadWrite(MEMORY_MBC3);
+            break;
+
+        case 0x15: //"MBC4"
+            rom->battery = false;
+            rom->bankType = MBC4;
+            break;
+
+        case 0x16: //"MBC4+RAM"
+            rom->battery = false;
+            rom->bankType = MBC4;
+            break;
+
+        case 0x17: //"MBC4+RAM+BATTERY"
+            rom->battery = true;
+            rom->bankType = MBC4;
+            break;
+
+        case 0x19: //"MBC5"
+            rom->battery = false;
+            rom->bankType = MBC5;
+            mbc->setMemoryReadWrite(MEMORY_MBC5);
+            break;
+
+        case 0x1A: //"MBC5+RAM"
+            rom->battery = false;
+            rom->bankType = MBC5;
+            mbc->setMemoryReadWrite(MEMORY_MBC5);
+            break;
+
+        case 0x1B: //"MBC5+RAM+BATTERY"
+            rom->battery = true;
+            rom->bankType = MBC5;
+            mbc->setMemoryReadWrite(MEMORY_MBC5);
+            break;
+
+        case 0x1C: //"MBC5+RUMBLE"
+            rom->battery = false;
+            rom->bankType = MBC5;
+            rom->rumble = true;
+            mbc->setMemoryReadWrite(MEMORY_MBC5);
+            break;
+
+        case 0x1D: //"MBC5+RUMBLE+RAM"
+            rom->battery = false;
+            rom->bankType = MBC5;
+            rom->rumble = true;
+            mbc->setMemoryReadWrite(MEMORY_MBC5);
+            break;
+
+        case 0x1E: //"MBC5+RUMBLE+RAM+BATTERY"
+            rom->battery = true;
+            rom->bankType = MBC5;
+            rom->rumble = true;
+            mbc->setMemoryReadWrite(MEMORY_MBC5);
+            break;
+
+        case 0x22: //Kirby's Tilt'n'Tumble
+            rom->battery = true;
+            rom->bankType = MBC7;
+            mbc->setMemoryReadWrite(MEMORY_MBC7);
+            break;
+
+        case 0x59: //Game Boy Smart Card
+            rom->battery = false;
+            rom->bankType = MBC1;
+            mbc->setMemoryReadWrite(MEMORY_MBC1);
+            break;
+
+        case 0xBE: //Pocket Voice Recorder
+            rom->battery = false;
+            rom->ROMsize++;
+            rom->bankType = MBC5;
+            mbc->setMemoryReadWrite(MEMORY_MBC5);
+            break;
+
+        case 0xEA: //SONIC5
+            rom->battery = false;
+            rom->bankType = MBC1;
+            mbc->setMemoryReadWrite(MEMORY_MBC1);
+            break;
+
+        case 0xFC: //"POCKET CAMERA"
+            rom->battery = true;
+            rom->bankType = Camera;
+            mbc->setMemoryReadWrite(MEMORY_CAMERA);
+            break;
+
+        case 0xFD: //"Bandai TAMA5"
+            rom->battery = true;
+            rom->bankType = TAMA5;
+            mbc->setMemoryReadWrite(MEMORY_TAMA5);
+            break;
+
+        case 0xFE: //"Hudson HuC-3"
+            rom->battery = true;
+            rom->bankType = HuC3;
+            mbc->setMemoryReadWrite(MEMORY_HUC3);
+            break;
+
+        case 0xFF: //"Hudson HuC-1+RAM+BATTERY"
+            rom->battery = true;
+            rom->bankType = HuC1;
+            mbc->setMemoryReadWrite(MEMORY_MBC1);
+            break;
+
+        default: //"Unknown"
+            rom->battery = false;
+            rom->bankType = UnknownCart;
+            debug_print(str_table[ERROR_ROM_TYPE]);
+            break;
+    }
+}
+
+
+int gb_system::process_rom_info(byte *rominfo,byte *logo1, byte *logo2)
+{
+
+    int addr = 0;
+    byte data;
+    for(;addr<=14; ++addr)
+        rom->name[addr] = rominfo[addr];
+
+    int thisromsize = 0;
+
+    if(rominfo[addr] == 0x80)
+        rom->CGB = 1;
+    else if(rominfo[addr] == 0xC0)
+        rom->CGB = 2; // gbc only
+    else
+        rom->CGB = 0;
+    // modes changed when reset
+
+    ++addr; rom->newlic[0] = rominfo[addr];
+    ++addr; rom->newlic[1] = rominfo[addr];
+
+    ++addr;
+    if(rominfo[addr] == 0x03)
+        rom->SGB = 1;
+    else
+        rom->SGB = 0;
+
+    ++addr; crdtype(rominfo[addr],data=rominfo[addr+1],rominfo[addr+2]);
+
+    bool useNiutoude = false;
+    bool useSintax = false;
+
+    switch(options->unl_compat_mode) {
+
+        case UNL_AUTO: {
+            int ts2= 0;
+            for(int lb=0;lb<0x30;++lb) {
+                ts2+=logo2[lb];
+            }
+            //char buff[1000];
+            //sprintf(buff,"%d",ts2);
+            //debug_print(buff);
+
+            switch ( ts2 ) {
+                case 4639: // BBD
+                case 5092: // Fiver Firm
+                    mbc->setMemoryReadWrite(MEMORY_BBD);
+                    break;
+                case 4876: // Niutoude (Li Cheng)
+                    // Also appears in Li Cheng games:
+                    // 5152 = odd logo from Digimon Fight
+                    //  3746 = not a logo at all; data from Cap vs SNK (its logo is at 0x0904 instead)
+                    useNiutoude = true;
+                    break;
+                case 4138: // Slight variation on Sintax, seen in Harry
+                case 4125: // Sintax "Kwichvu" (corrupted Nintendo)
+                    useSintax = true;
+                    break;
+            }
+            break; }
+        case UNL_BBD:
+            mbc->setMemoryReadWrite(MEMORY_BBD);
+            break;
+        case UNL_NIUTOUDE:
+            useNiutoude = true;
+            break;
+        case UNL_SINTAX:
+            useSintax = true;
+            break;
+        case UNL_NONE: default:
+
+            break;
+
+    }
+
+
+    if (useNiutoude) {
+        rom->battery = true;
+        rom->bankType = MBC5;
+        mbc->setMemoryReadWrite(MEMORY_NIUTOUDE);
+        rom->ROMsize=07; // assumption for now
+        rom->RAMsize=03; // assumption for now; Sango5 doesnt work with smaller
+        rom->carttype=0x1B;
+    } else if (useSintax) {
+        rom->battery = true;
+        rom->bankType = MBC5;
+        mbc->setMemoryReadWrite(MEMORY_SINTAX);
+        rom->ROMsize=07; // assumption for now
+        rom->RAMsize=03; // assumption for now
+        rom->carttype=0x1B; // same
+    }
+
+    // Rumble force for Makon games
+    if(!strcmp(rom->newlic,"MK")||!strcmp(rom->newlic,"GC"))
+    {
+        rom->rumble = 1;
+    }
+
+    if(!strcmp(rom->name,"GB SMART CARD"))
+    {
+        data = 0;
+        rom->ROMsize = 0;
+    }
+
+    // BHGOS MultiCart
+    if(!strcmp(rom->name,"MultiCart"))
+    {
+        mbc->setMemoryReadWrite(MEMORY_DEFAULT);
+
+        rom->RAMsize = 3;
+        rom->ROMsize = 2;
+    }
+
+    switch(data)
+    {
+        case 0: thisromsize=2; break;
+        case 1: thisromsize=4; break;
+        case 2: thisromsize=8; break;
+        case 3: thisromsize=16; break;
+        case 4: thisromsize=32; break;
+        case 5: thisromsize=64; break;
+        case 6: thisromsize=128; break;
+        case 7: thisromsize=256; break;
+        case 8: thisromsize=512; break;
+        case 0x52: thisromsize=72; break;
+        case 0x53: thisromsize=80; break;
+        case 0x54: thisromsize=96; break;
+        default: thisromsize=2; debug_print(str_table[ERROR_ROM_SIZE]); break;
+    }
+
+    char ball_name[16] = { 0x42,0x61,0x6C,0x6C,0x20,0x20,0x20,0x20,0x20,0x20,0x20,0x20,0x20,0x20,0x00,(char)0x80 };
+    // Ball (Bung)(PD)[C] and Capman (Lik-Sang)(PD)[C] and Fix & Foxi [C][t1]
+    if(!strcmp(rom->name,ball_name) || strstr(rom->name,"CAPMAN") || !strcmp(rom->name,"LUPO +3HI"))
+    {
+        mbc->setMemoryReadWrite(MEMORY_DEFAULT);
+    }
+    else
+        //Bugs Bunny - Crazy Castle 3 (J)[C][t2]
+    if(!strcmp(rom->name,"BUGS CC3 CRACK"))
+    {
+        mbc->setMemoryReadWrite(MEMORY_DEFAULT);
+        rom->RAMsize=1;
+    }
+    else
+        //Pulsar (Freedom GB Contest 2001)(PD)[C]
+    if(strstr(rom->name,"PULSAR"))
+    {
+        rom->bankType=MBC5;
+    }
+    else
+        //Pokemon Red-Blue 2-in-1 (Unl)[S][h1]
+    if(!strcmp(rom->name,"POKEMON RED") && rom->ROMsize == 6)
+    {
+        rom->ROMsize = 7;
+        mbc->setMemoryReadWrite(MEMORY_POKE);
+    }
+    else
+        // SGB Pack
+    if(!strcmp(rom->name,"SGBPACK"))
+    {
+        thisromsize = 2;
+        rom->ROMsize = 0;
+    }
+    else
+        // Dragon Ball Z Goku (Chinese)
+    if(!strcmp(rom->name,"GB DBZ GOKOU"))
+    {
+        rom->carttype = 3;
+        rom->battery = true;
+        rom->bankType = MBC1;
+        mbc->setMemoryReadWrite(MEMORY_MBC1);
+    }
+    else
+        // Dragon Ball Z Goku 2 (English)
+    if(!strcmp(rom->name,"GB DBZ GOKOU 2") && rom->ROMsize == 05)
+    {
+        mbc->setMemoryReadWrite(MEMORY_DBZTRANS);
+    }
+    else
+        // Bokujou Monogatari 3 Chinese
+    if(!strcmp(rom->name,"BOKUMONOGB3BWAJ") || !strcmp(rom->name,"BOYGIRLD640BWAJ"))
+    {
+        thisromsize = 128;
+        rom->ROMsize = 6;
+    }
+    else
+        // Monsters GO!GO!GO!!
+    if(!strcmp(rom->name,"POCKET MONSTER"))
+    {
+        thisromsize = 32;
+        rom->ROMsize = 4;
+    }
+    else
+        // Sonic 3D Blast 5
+    if(strstr(rom->name,"SONIC5"))
+    {
+        thisromsize = 16;
+        rom->ROMsize = 3;
+        rom->RAMsize = 0;
+    }
+    else
+        // Rockman 8
+    if(!strcmp(rom->name,"ROCKMAN 99"))
+        mbc->setMemoryReadWrite(MEMORY_ROCKMAN8);
+    else
+
+        // Collection Carts
+    if(!strcmp(rom->name,"BOMCOL") || !strcmp(rom->name,"BOMSEL") || !strcmp(rom->name,"GENCOL") || strstr(rom->name,"MOMOCOL") || strstr(rom->name,"SUPERCHINESE 12"))
+    {
+        mbc->setMemoryReadWrite(MEMORY_BC);
+        if(strstr(rom->name,"MOMOCOL2"))
+            mbc->setMemoryReadWrite(MEMORY_MMM01);
+    }
+    else
+    if(strstr(rom->name,"MORTALKOMBATI&I"))
+    {
+        mbc->setMemoryReadWrite(MEMORY_MK12);
+    }
+    else
+        // Gameboy Camera
+    if(!strcmp(rom->name,"GAMEBOYCAMERA"))
+    {
+        rom->bankType = Camera;
+        thisromsize = 64;
+        rom->ROMsize = 5;
+        rom->RAMsize = 4;
+        mbc->setMemoryReadWrite(MEMORY_CAMERA);
+    }
+
+    addr+=3; rom->destcode = rominfo[addr];
+    ++addr; rom->lic = rominfo[addr];
+    ++addr; rom->version = rominfo[addr];
+    ++addr; rom->complement = rominfo[addr];
+    ++addr; rom->checksum=(rominfo[addr]<<8);
+    ++addr; rom->checksum|=rominfo[addr];
+
+    // Digimon 3 saving
+    if(!strcmp(rom->name,"DIGIMON") && rom->checksum == 0xE11B)
+        rom->battery = true;
+    else
+        // Joust & Defender (U)[C][t1]
+    if(!strcmp(rom->name,"DEFENDER/JOUST") && rom->checksum == 0xB110)
+        rom->RAMsize = 1;
+
+    // check complement
+    byte cmpl=0;
+    for(addr=0;addr<=0x19;++addr)
+        cmpl+=rominfo[addr];
+    cmpl+=25; rom->complementok = !cmpl;
+    // done processing info...
+
+    return thisromsize;
+}
+
+void gb_system::checkForMulticart(int fileSize)
+{
+    bool isLbMulti = false;
+
+    if ( options->unl_compat_mode == UNL_LBMULTI ) isLbMulti = true;
+
+    if ( options->unl_compat_mode == UNL_AUTO ) {
+        if (
+                (strstr(rom->name,"POKEMON_GLDAAUJ")&&fileSize==4194304) || // SL 36 in 1 w/Pokemon GS
+                (strstr(rom->name,"TIMER MONSTER")&&fileSize==16777216||fileSize==(8388608) ) // V.Fame 12in1 Silver / 18in1
+                ) {
+            isLbMulti = true;
+        }
+    }
+
+    if ( isLbMulti ) {
+        rom->bankType = MBC5;
+        rom->RAMsize = 9; // Doesn't really exist shh
+        mbc->setMemoryReadWrite(MEMORY_LBMULTI);
+    }
+}
+
+void gb_system::sizeBasedChecks(int fileSize)
+{
+    checkForMulticart(fileSize);
+
+    if(!strcmp(rom->name,"TETRIS") && fileSize > 32768 && rom->ROMsize==0)
+    {
+        mbc->setMemoryReadWrite(MEMORY_MBC1);
+        rom->ROMsize = 2;
+    } else
+    if(!strcmp(rom->name,"\0") && fileSize > 32768 && rom->ROMsize==0)
+    {
+        mbc->setMemoryReadWrite(MEMORY_8IN1);
+        rom->ROMsize = 4;
+    } else
+    if(strstr(rom->name,"TUWAMONO") && fileSize == 524288) // Joryu Janshi Ni Chousen (J)[C] (bad)
+    {
+        debug_print("Bad dump!");
+        rom->ROMsize--;
+    }  else
+    if(!strcmp(rom->name,"SGBPACK") && fileSize > 32768)
+    {
+        rom->ROMsize = 6;
+        mbc->setMemoryReadWrite(MEMORY_POKE);
+    } else
+    if(fileSize == 262144 && rom->ROMsize == 4)
+        rom->ROMsize--;
+}
