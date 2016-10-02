@@ -182,7 +182,6 @@ public:
 
     // things that are somewhat MBC related but would be mildly annoying to move
    int rumble_counter; // this can stay in GB for now because, uh, let's say because the cartridge makes the whole GB rumble
-   byte rom_bank_xor; // this can stay as long as mem_map is here.. used by "fast reads"
 
    //Sound ---------------------------------------
    byte sound_buffer[4][735];
@@ -314,10 +313,6 @@ public:
       	return mbc->readmemory_cart(address);
       }
 
-      if (rom_bank_xor > 0 && (address >= 0x4000 && address < 0x8000)) {
-      	return (mem_map[address>>12][address&0x0FFF]) ^ rom_bank_xor;
-      }
-
       return mem_map[address>>12][address&0x0FFF];
    }
 
@@ -326,18 +321,6 @@ public:
       if ((address >= 0x4000 && address < 0x8000)) {
       	return  (unsigned short) ( mbc->readmemory_cart(address) | mbc->readmemory_cart(address+1) << 8  );
       }
-
-      if (rom_bank_xor > 0 && (address >= 0x4000 && address < 0x8000)) {
-      	return
-		  (unsigned short)
-		  (
-		  	(mem_map[address>>12][address&0x0FFF]  ^ rom_bank_xor)
-			  |
-			((mem_map[(address+1)>>12][(address+1)&0x0FFF]^ rom_bank_xor)<<8)
-		  );
-		  (mem_map[address>>12][address&0x0FFF]);
-      }
-
 
       return (unsigned short)(mem_map[address>>12][address&0x0FFF]|(mem_map[(address+1)>>12][(address+1)&0x0FFF]<<8));
    }
@@ -355,16 +338,6 @@ public:
 			while(count)
 		      {
 		         mem_map[to>>12][to&0x0FFF] = mbc->readmemory_cart(from);
-		         ++to;
-		         ++from;
-		         --count;
-		      }
-
-		} else if ( rom_bank_xor > 0 && from >= 0x4000 && from < 0x8000 ) {
-
-			while(count)
-		      {
-		         mem_map[to>>12][to&0x0FFF] = (mem_map[from>>12][from&0x0FFF] ^ rom_bank_xor);
 		         ++to;
 		         ++from;
 		         --count;

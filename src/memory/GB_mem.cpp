@@ -88,8 +88,6 @@ void gb_system::mem_reset(bool preserveMulticartState)
    
    memory[0xc100] = 0xff;// fix for Minesweeper for 'Windows'
 
-   rom_bank_xor = 0;
-
     mbc->resetRomMemoryMap(preserveMulticartState);
 
    if(gbc_mode)

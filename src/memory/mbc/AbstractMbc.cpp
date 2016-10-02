@@ -24,11 +24,10 @@
 #include "AbstractMbc.h"
 #include <cstdio>
 
-void AbstractMbc::init(byte** gbMemMap, GBrom** gbRom, byte** gbMemory, byte* gbRomBankXor, byte** gbCartridge, byte** gbCartRam, int* gbRumbleCounter) {
+void AbstractMbc::init(byte** gbMemMap, GBrom** gbRom, byte** gbMemory, byte** gbCartridge, byte** gbCartRam, int* gbRumbleCounter) {
     this->gbMemMap = gbMemMap;
     this->gbRom = gbRom;
     this->gbMemory = gbMemory;
-    this->gbRomBankXor = gbRomBankXor;
     this->gbCartridge = gbCartridge;
     this->gbCartRam = gbCartRam;
     this->gbRumbleCounter = gbRumbleCounter;
@@ -51,7 +50,9 @@ AbstractMbc::AbstractMbc():
         RTC_latched(0),
 
         multicartOffset(0),
-        multicartRamOffset(0)
+        multicartRamOffset(0),
+
+        romBankXor(0)
 {
 
 }

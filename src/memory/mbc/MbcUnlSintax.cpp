@@ -16,7 +16,7 @@ byte MbcUnlSintax::readMemory(register unsigned short address) {
     if(address >= 0x4000 && address < 0x8000)
     {
         byte data = gbMemMap[address>>12][address&0x0FFF];
-        return  data ^ *gbRomBankXor;
+        return  data ^ romBankXor;
     }
 
     return gbMemMap[address>>12][address&0x0FFF];
@@ -108,7 +108,7 @@ void MbcUnlSintax::writeMemory(unsigned short address, register byte data) {
                 break;
         }
 
-        if (*gbRomBankXor == 0) {
+        if (romBankXor == 0) {
             setXorForBank(4);
         }
 
@@ -135,7 +135,7 @@ void MbcUnlSintax::resetVars(bool preserveMulticartState) {
     sintax_mode = 0;
     sintax_xor2 = sintax_xor3 = sintax_xor4 = sintax_xor5 = 0;
 
-    *gbRomBankXor = 0;
+    romBankXor = 0;
 
     AbstractMbc::resetVars(preserveMulticartState);
 }
@@ -146,7 +146,7 @@ void MbcUnlSintax::readMbcSpecificVarsFromStateFile(FILE *statefile) {
     fread(&(sintax_xor3), sizeof(byte), 1, statefile);
     fread(&(sintax_xor4), sizeof(byte), 1, statefile);
     fread(&(sintax_xor5), sizeof(byte), 1, statefile);
-    fread(&(*gbRomBankXor), sizeof(byte), 1, statefile);
+    fread(&(romBankXor), sizeof(byte), 1, statefile);
 }
 
 void MbcUnlSintax::writeMbcSpecificVarsToStateFile(FILE *statefile) {
@@ -155,23 +155,23 @@ void MbcUnlSintax::writeMbcSpecificVarsToStateFile(FILE *statefile) {
     fwrite(&(sintax_xor3), sizeof(byte), 1, statefile);
     fwrite(&(sintax_xor4), sizeof(byte), 1, statefile);
     fwrite(&(sintax_xor5), sizeof(byte), 1, statefile);
-    fwrite(&(*gbRomBankXor), sizeof(byte), 1, statefile);
+    fwrite(&(romBankXor), sizeof(byte), 1, statefile);
 }
 
 void MbcUnlSintax::setXorForBank(byte bankNo)
 {
     switch(bankNo & 0x0F) {
         case 0x00: case 0x04: case 0x08: case 0x0C:
-            *gbRomBankXor = sintax_xor2;
+            romBankXor = sintax_xor2;
             break;
         case 0x01: case 0x05: case 0x09: case 0x0D:
-            *gbRomBankXor = sintax_xor3;
+            romBankXor = sintax_xor3;
             break;
         case 0x02: case 0x06: case 0x0A: case 0x0E:
-            *gbRomBankXor = sintax_xor4;
+            romBankXor = sintax_xor4;
             break;
         case 0x03: case 0x07: case 0x0B: case 0x0F:
-            *gbRomBankXor = sintax_xor5;
+            romBankXor = sintax_xor5;
             break;
     }
 }
