@@ -1,4 +1,4 @@
-hhugboy v1.1.5beta1
+hhugboy v1.1.5
 a Game Boy/Game Boy Color emulator for Windows
 by taizou (cactusgunman@gmail.com)
 http://hhug.me/
@@ -136,7 +136,7 @@ https://github.com/tzlion/hhugboy
 
 [ RELEASE HISTORY ]- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 
- v1.1.5 xxth October 2016
+ v1.1.5 2nd October 2016
  * Support for (some) BBD games
  * Support for "Dragon Ball Z 3" English translation of DBZ Goku Gekitouden
  * Fix roms loaded from ZIP not showing up in the recent roms list
