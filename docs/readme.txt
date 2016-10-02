@@ -1,4 +1,4 @@
-hhugboy v1.1.1
+hhugboy v1.1.5beta1
 a Game Boy/Game Boy Color emulator for Windows
 by taizou (cactusgunman@gmail.com)
 http://hhug.me/
@@ -7,7 +7,7 @@ https://github.com/tzlion/hhugboy
  hhugboy is based on GEST v1.1.1 by TM (http://koti.mbnet.fi/gest_emu/)
  with the following additions:
   * Unicode filename support!
-  * Unlicensed Mapper support! (Sintax & Li Cheng)
+  * Unlicensed Mapper support! (Sintax, Li Cheng, BBD, more!)
   * Support for Vast Fame and some other multicarts!
   * Screenshots!
   * Recent ROM list
@@ -32,8 +32,11 @@ https://github.com/tzlion/hhugboy
            In these cases you will have to select the mode manually.
 
            For multicarts, the detection is currently done based on the ROM
-           title and size, meaning only predefined carts can be autodetected
-           for now.
+           title and size, meaning only the following predefined carts can be
+           autodetected for now:
+              - Vast Fame 12-in-1
+              - Vast Fame 18-in-1
+              - SL 36-in-1 with Chinese Pokemon Gold & Silver
 
  Li Cheng  For games released by Li Cheng, also known as Xing Xing, Niutoude,
            Winsen or Yongsheng.
@@ -43,6 +46,9 @@ https://github.com/tzlion/hhugboy
            own mapper! If the game is hacked to work on other emulators or a
            generic release from another company, it won't work.
 
+ BBD       For games by BBD using their own mapper. Support isn't complete yet
+           but works with known dumps.
+
  'Last Bible' multicart
            A type of multicart using menu music taken from 'Megami Tensei
            Gaiden: Last Bible' aka 'Revelations: The Demon Slayer'.
@@ -51,10 +57,8 @@ https://github.com/tzlion/hhugboy
 
  Disabled  No compatibility mode
 
- * Support for certain multicarts is available in any mode - currently:
-   - Vast Fame 12-in-1
-   - Vast Fame 18-in-1
-   - SL 36-in-1 with Chinese Pokemon Gold & Silver
+ * Also, 'Dragon Ball Z 3', the pirate English translation of DBZ Goku
+   Gekitouden, will work in any mode for now
 
 [ KEYS ] - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 
@@ -131,6 +135,12 @@ https://github.com/tzlion/hhugboy
  * Other language translations
 
 [ RELEASE HISTORY ]- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+
+ v1.1.5 xxth October 2016
+ * Support for (some) BBD games
+ * Support for "Dragon Ball Z 3" English translation of DBZ Goku Gekitouden
+ * Fix roms loaded from ZIP not showing up in the recent roms list
+ * More code refactoring mostly around rom type detection
 
  v1.1.1 4th September 2016
  * Adds detection for Korean 'Bomberman Selection' cart
