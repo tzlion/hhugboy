@@ -122,7 +122,7 @@ bool gb_system::loadrom_zip(const wchar_t* filename)
       return false;
    }
 
-   romSize = info.uncompressed_size;
+   romFileSize = info.uncompressed_size;
     
    r = unzOpenCurrentFile(unz);
 
@@ -139,7 +139,7 @@ bool gb_system::loadrom_zip(const wchar_t* filename)
       cartridge = NULL; 
    }
       
-   cartridge = new byte[get_size(romSize)];
+   cartridge = new byte[get_size(romFileSize)];
    if(cartridge == NULL) 
    { 
       unzCloseCurrentFile(unz);
@@ -148,7 +148,7 @@ bool gb_system::loadrom_zip(const wchar_t* filename)
       return false; 
    }
 
-   if(romSize != unzReadCurrentFile(unz,cartridge,romSize))
+   if(romFileSize != unzReadCurrentFile(unz,cartridge,romFileSize))
    {
       debug_print(str_table[ERROR_READ_FILE]);
       delete [] cartridge;
@@ -194,10 +194,10 @@ bool gb_system::loadrom_file(const wchar_t* filename,int offset)
       return false; 
    }  
 
-   romSize = 0;
+   romFileSize = 0;
 
    if(_wstat(filename,&file_stat) == 0) {
-       romSize = file_stat.st_size;
+       romFileSize = file_stat.st_size;
    } else {
        debug_print("Couldn't read file info");
        fclose(romfile);
@@ -216,7 +216,7 @@ bool gb_system::loadrom_file(const wchar_t* filename,int offset)
       delete [] cartridge; 
       cartridge=NULL; 
    }
-   cartridge = new byte[get_size(romSize)];
+   cartridge = new byte[get_size(romFileSize)];
    if(cartridge == NULL) 
    { 
       debug_print(str_table[ERROR_MEMORY]); 
@@ -224,7 +224,7 @@ bool gb_system::loadrom_file(const wchar_t* filename,int offset)
       return false; 
    }
    
-   if((int)fread(cartridge,1,romSize-offset,romfile) < romSize-offset)
+   if((int)fread(cartridge,1,romFileSize-offset,romfile) < romFileSize-offset)
    { 
       //if(rom->ROMsize)
          debug_print(str_table[ERROR_READ_ROM_TO_MEMORY]); 

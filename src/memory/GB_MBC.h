@@ -27,37 +27,12 @@
 #include "mbc/AbstractMbc.h"
 #include "mbc/MbcLicHuc3.h"
 
-enum memoryaccess
-{
-    MEMORY_DEFAULT = 0,
-    MEMORY_MBC1,
-    MEMORY_MBC2,
-    MEMORY_MBC3,
-    MEMORY_MBC5,
-    MEMORY_CAMERA,
-    MEMORY_HUC3,
-    MEMORY_MBC7,
-    MEMORY_TAMA5,
-    MEMORY_ROCKMAN8,
-    MEMORY_BC,
-    MEMORY_8IN1,
-    MEMORY_MMM01,
-    MEMORY_MK12,
-    MEMORY_POKE,
-    MEMORY_NIUTOUDE,
-    MEMORY_SINTAX,
-    MEMORY_BBD,
-    MEMORY_ROMONLY,
-    MEMORY_LBMULTI,
-    MEMORY_DBZTRANS,
-};
-
 class gb_mbc {
 
 public:
     gb_mbc(byte** gbMemMap, byte** gbCartridge, GBrom** gbRom, byte** gbCartRam, byte* romBankXor, int* rumbleCounter, byte** gbMemory);
 
-    void setMemoryReadWrite(memoryaccess memory_type);
+    void setMemoryReadWrite(MbcType memory_type);
 
     int getRomBank();
     int getRamBank();
@@ -97,7 +72,7 @@ private:
     int* gbRumbleCounter;
     byte** gbMemory;
 
-    memoryaccess mbcType;
+    MbcType mbcType;
 
 };
 

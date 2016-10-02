@@ -387,14 +387,15 @@ public:
    void mainloop();
 
 private:
-    int romSize;
-    void checkForMulticart(int fileSize);
-    void sizeBasedChecks(int fileSize);
+    int romFileSize;
+    void checkForMulticart();
+    void sizeBasedChecks();
     bool loadrom_zip(const wchar_t* filename);
     bool loadrom_file(const wchar_t* filename, int offset);
-    void crdtype(byte value,byte romsize,byte ramsize);
-    int process_rom_info(byte *rominfo, byte *logo1, byte *logo2);
+    void setCartridgeType(byte value);
+    int detectWeirdCarts();
     void processRomInfo();
+    void readHeader();
 };
 
 extern gb_system *GB;

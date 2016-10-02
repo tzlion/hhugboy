@@ -142,7 +142,7 @@ int gb_mbc::getRamBank() {
     return mbc->ram_bank;
 }
 
-void gb_mbc::setMemoryReadWrite(memoryaccess memory_type) {
+void gb_mbc::setMemoryReadWrite(MbcType memory_type) {
     gb_mbc::mbcType = memory_type;
 
     switch(mbcType)

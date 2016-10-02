@@ -99,7 +99,7 @@ void AbstractMbc::writeMbcSpecificVarsToStateFile(FILE *statefile) {
 
 void AbstractMbc::readMbcSpecificVarsFromSaveFile(FILE *savefile) {
     // todo: move to respective mappers
-    if((*gbRom)->RTC || (*gbRom)->bankType == TAMA5)
+    if((*gbRom)->RTC || (*gbRom)->mbcType == MEMORY_TAMA5)
     {
         fread(&(rtc).s, sizeof(int), 1, savefile);
         fread(&(rtc).m, sizeof(int), 1, savefile);
@@ -113,7 +113,7 @@ void AbstractMbc::readMbcSpecificVarsFromSaveFile(FILE *savefile) {
 
 void AbstractMbc::writeMbcSpecificVarsToSaveFile(FILE *savefile) {
     // todo: move to respective mappers
-    if((*gbRom)->RTC || (*gbRom)->bankType == TAMA5)
+    if((*gbRom)->RTC || (*gbRom)->mbcType == MEMORY_TAMA5)
     {
         fwrite(&(rtc).s, sizeof(int), 1, savefile);
         fwrite(&(rtc).m, sizeof(int), 1, savefile);

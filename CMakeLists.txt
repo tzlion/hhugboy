@@ -112,6 +112,7 @@ set(SOURCE_FILES
         src/memory/mbc/MbcUnlDbzTrans.cpp
         src/memory/mbc/MbcUnlDbzTrans.h
         src/GB_cartdetect.cpp
+        src/memory/MbcType.h
 )
 
 include_directories(

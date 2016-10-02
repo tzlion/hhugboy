@@ -161,7 +161,7 @@ gb_system::gb_system():
 
         rom_bank_xor(0),
 
-        romSize(0)
+        romFileSize(0)
 {
    button_pressed[B_LEFT]=button_pressed[B_RIGHT]=button_pressed[B_DOWN]=button_pressed[B_UP]=1;
    button_pressed[B_START]=button_pressed[B_SELECT]=button_pressed[B_A]=button_pressed[B_B]=1;
