@@ -45,7 +45,7 @@ void MbcUnlBbd::writeMemory(unsigned short address, register byte data) {
 
             bbdBankSwapMode = (byte)(data & 0x07);
 
-            if ( bbdBankSwapMode != 0x03 && bbdBankSwapMode != 0x05 ) {
+            if ( bbdBankSwapMode != 0x03 && bbdBankSwapMode != 0x05 && bbdBankSwapMode != 0x00 ) { // 00 = normal
                 char buff[1000];
                 sprintf(buff,"BBD bankswap mode unsupported - %02x",bbdBankSwapMode);
                 debug_print(buff);
@@ -54,7 +54,7 @@ void MbcUnlBbd::writeMemory(unsigned short address, register byte data) {
         } else if(address== 0x2001 ) {
 
             bbdBitSwapMode = (byte)(data & 0x07);
-            if ( bbdBitSwapMode != 0x07 && bbdBitSwapMode != 0x05 && bbdBitSwapMode != 0x04 ) {
+            if ( bbdBitSwapMode != 0x07 && bbdBitSwapMode != 0x05 && bbdBitSwapMode != 0x04 && bbdBitSwapMode != 0x00 ) { // 00 = normal
                 char buff[1000];
                 sprintf(buff,"BBD bitswap mode unsupported - %02x",bbdBitSwapMode);
                 debug_print(buff);
