@@ -389,8 +389,6 @@ public:
 
 private:
     int romFileSize;
-    void checkForMulticart();
-    void sizeBasedChecks();
     bool loadrom_zip(const wchar_t* filename);
     bool loadrom_file(const wchar_t* filename, int offset);
     void setCartridgeType(byte value);
