@@ -33,7 +33,7 @@
 #include "debug.h"
 #include "cpu.h"
 #include "mainloop.h"
-#include ".\zlib\unzip.h"
+#include "zlib/unzip.h"
 
 #include "GB.h"
 #include "memory/GB_MBC.h"
@@ -567,6 +567,34 @@ void gb_system::checkForMulticart(int fileSize)
     }
 }
 
+void gb_system::sizeBasedChecks(int fileSize)
+{
+    checkForMulticart(fileSize);
+
+    if(!strcmp(rom->name,"TETRIS") && fileSize > 32768 && rom->ROMsize==0)
+    {
+        mbc->setMemoryReadWrite(MEMORY_MBC1);
+        rom->ROMsize = 2;
+    } else
+    if(!strcmp(rom->name,"\0") && fileSize > 32768 && rom->ROMsize==0)
+    {
+        mbc->setMemoryReadWrite(MEMORY_8IN1);
+        rom->ROMsize = 4;
+    } else
+    if(strstr(rom->name,"TUWAMONO") && fileSize == 524288) // Joryu Janshi Ni Chousen (J)[C] (bad)
+    {
+        debug_print("Bad dump!");
+        rom->ROMsize--;
+    }  else
+    if(!strcmp(rom->name,"SGBPACK") && fileSize > 32768)
+    {
+        rom->ROMsize = 6;
+        mbc->setMemoryReadWrite(MEMORY_POKE);
+    } else
+    if(fileSize == 262144 && rom->ROMsize == 4)
+        rom->ROMsize--;
+}
+
 bool gb_system::loadrom_zip(const wchar_t* filename)
 {
 	
@@ -687,49 +715,16 @@ bool gb_system::loadrom_zip(const wchar_t* filename)
    unzClose(unz);
   
    process_rom_info(rominfo,logo1,logo2);
-   
-   checkForMulticart(size);
-   
-   if(!strcmp(rom->name,"TETRIS") && size > 32768 && rom->ROMsize==0)
-   {
-       mbc->setMemoryReadWrite(MEMORY_MBC1);
-      rom->ROMsize = 2;
-   } else
-   if(!strcmp(rom->name,"\0") && size > 32768 && rom->ROMsize==0)
-   {
-       mbc->setMemoryReadWrite(MEMORY_8IN1);
-      rom->ROMsize = 4;
-   } else
-   if(strstr(rom->name,"TUWAMONO") && size == 524288) // Joryu Janshi Ni Chousen (J)[C] (bad)
-   {
-      debug_print("Bad dump!");
-      rom->ROMsize--;
-   }  else      
-   if(!strcmp(rom->name,"SGBPACK") && size > 32768)
-   {
-      rom->ROMsize = 6;
-       mbc->setMemoryReadWrite(MEMORY_POKE);
-   } else     
-   if(size == 262144 && rom->ROMsize == 4)
-      rom->ROMsize--;
+
+   sizeBasedChecks(size);
       
    romloaded = true;
 
    return true;
 }
 
-bool gb_system::load_rom(const wchar_t* filename,int offset)
-{    
-
-    
-    //for(int x=0;x<10;x++) {
-    //    emuMenu.setText(IDM_RECENTROM0+x,(wchar_t*)options->recent_rom_names[x].c_str());
-    //}
-
-
-   // todo: Reinstate later... 
-   if(wcsstr(filename,L".zip") || wcsstr(filename,L".ZIP"))
-      return loadrom_zip(filename);
+bool gb_system::loadrom_file(const wchar_t* filename,int offset)
+{
         
    struct _stat file_stat;
 
@@ -772,36 +767,12 @@ bool gb_system::load_rom(const wchar_t* filename,int offset)
    int thisromsize = process_rom_info(rominfo,logo1,logo2);
    
    int file_size = 0;
-   
+
    if(_wstat(filename,&file_stat) == 0)
    {
       file_size = file_stat.st_size;
 
-       checkForMulticart(file_size);
-
-       // Captain Knick Knack
-      if(!strcmp(rom->name,"TETRIS") && file_size > 32768 && rom->ROMsize == 0)
-      {
-          mbc->setMemoryReadWrite(MEMORY_MBC1);
-         rom->ROMsize = 2;
-      } else
-      if(!strcmp(rom->name,"\0") && file_size > 32768 && rom->ROMsize == 0)
-      {
-          mbc->setMemoryReadWrite(MEMORY_8IN1);
-         rom->ROMsize = 4;
-      } else
-      if(strstr(rom->name,"TUWAMONO") && file_size == 524288) // Joryu Janshi Ni Chousen (J)[C]
-      {
-         debug_print("Bad dump!");
-         rom->ROMsize--;
-      } else      
-      if(!strcmp(rom->name,"SGBPACK") && file_size > 32768)
-      {
-         rom->ROMsize = 6;
-          mbc->setMemoryReadWrite(MEMORY_POKE);
-      }
-      if(file_size == 262144 && rom->ROMsize == 4)
-         rom->ROMsize--;
+        sizeBasedChecks(file_size);
    }
    else // failed ?
       file_size = 16384 * thisromsize;
@@ -880,6 +851,14 @@ bool gb_system::load_rom(const wchar_t* filename,int offset)
     }
 
    return true;
+}
+
+bool gb_system::load_rom(const wchar_t* filename,int offset)
+{
+    if (wcsstr(filename, L".zip") || wcsstr(filename, L".ZIP"))
+        return loadrom_zip(filename);
+
+    return loadrom_file(filename,offset);
 }
 
 
