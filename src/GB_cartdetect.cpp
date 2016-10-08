@@ -306,7 +306,11 @@ unlCompatMode gb_system::detectUnlCompatMode()
             return UNL_NIUTOUDE;
         case 4125: // Sintax "Kwichvu" (corrupted Nintendo)
         case 4138: // Slight variation on Sintax, seen in Harry
-            return UNL_SINTAX;
+            // Similar check to BBD here to detect fixes/hacks/reprints/etc
+            if ( ( cartridge[0x7fff] != 01 && cartridge[0x7fff] != 00 ) )
+                return UNL_SINTAX;
+            else
+                return UNL_NONE;
     }
 
     if (
