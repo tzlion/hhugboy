@@ -31,11 +31,12 @@ private:
 
     void setXorForBank(byte bankNo);
 
-    byte sintax_mode;
-    byte sintax_xor2;
-    byte sintax_xor3;
-    byte sintax_xor4;
-    byte sintax_xor5;
+    byte sintaxMode;
+    byte sintaxXor00;
+    byte sintaxXor01;
+    byte sintaxXor02;
+    byte sintaxXor03;
+    byte sintaxBankNo;
 
     byte reordering00[8] = {0,7,2,1,4,3,6,5};
     byte reordering01[8] = {7,6,1,0,3,2,5,4};
