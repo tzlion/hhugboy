@@ -1,4 +1,4 @@
-hhugboy v1.1.5
+hhugboy v1.1.6 dev
 a Game Boy/Game Boy Color emulator for Windows
 by taizou (cactusgunman@gmail.com)
 http://hhug.me/
@@ -27,9 +27,8 @@ https://github.com/tzlion/hhugboy
            * "Niutoude" -> Li Cheng mode
            * part-inverted Nintendo (looks like "Kwichvu") -> Sintax mode
            This is not always a 100% reliable indicator though! 
-           e.g. some Li Cheng games do not have the "Niutoude" logo, and Sintax
-           games hacked to work on generic mappers still have the weird logo.
-           In these cases you will have to select the mode manually.
+           e.g. some Li Cheng games do not have the "Niutoude" logo.
+           If a game doesn't work, try selecting the mode manually.
 
            For multicarts, the detection is currently done based on the ROM
            title and size, meaning only the following predefined carts can be
@@ -45,6 +44,7 @@ https://github.com/tzlion/hhugboy
            for anything other than a raw Sintax dump from a game using their
            own mapper! If the game is hacked to work on other emulators or a
            generic release from another company, it won't work.
+           (However these roms SHOULD now be picked up by Auto mode)
 
  BBD       For games by BBD using their own mapper. Support isn't complete yet
            but works with known dumps.
@@ -135,6 +135,10 @@ https://github.com/tzlion/hhugboy
  * Other language translations
 
 [ RELEASE HISTORY ]- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+
+ v1.1.6 xxx xxxxxxx xxxx
+ * Better Sintax support - fixes Dragon Ball Z 3 2002 Fighting
+ * Auto-detection support for fixed/hacked/decrypted Sintax games
 
  v1.1.5 2nd October 2016
  * Support for (some) BBD games

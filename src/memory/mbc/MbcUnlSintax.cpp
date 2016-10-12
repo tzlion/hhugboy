@@ -26,11 +26,11 @@ void MbcUnlSintax::writeMemory(unsigned short address, register byte data) {
 
     if(address>= 0x2000 && address < 0x3000)
     {
-        byte origData = data;
+        sintaxBankNo = data;
 
         byte* romBankNoReordering;
 
-        switch(sintax_mode & 0x0f) {
+        switch(sintaxMode & 0x0f) {
             case 0x0D:
                 romBankNoReordering = reordering0d;
                 break;
@@ -52,42 +52,46 @@ void MbcUnlSintax::writeMemory(unsigned short address, register byte data) {
             case 0x0B:
                 romBankNoReordering = reordering0b;
                 break;
+            case 0x0F:
             default:
                 romBankNoReordering = noReordering;
         }
 
         data = switchOrder(data, romBankNoReordering);
 
-        setXorForBank(origData);
+        setXorForBank(sintaxBankNo);
     }
 
-    if(address >= 0x5000 && address < 0x6000) {
+    if( ( address & 0xF0F0 ) == 0x5010 ) {
 
-        // check mode was not already set; if it was, ignore it (otherwise Metal Max breaks)
-        if (sintax_mode == 0) {
+        // contrary to previous belief it IS possible to change the mode after setting it initially
+        // The reason Metal Max was breaking is because it only recognises writes to 5x1x
+        // and that game writes to a bunch of other 5xxx addresses before battles
 
-            switch (0x0F & data) {
-                // Supported modes
-                case 0x00: // Lion King, Golden Sun
-                case 0x01: // Langrisser
-                case 0x05: // Maple Story, Pokemon Platinum
-                case 0x07: // Bynasty Warriors 5
-                case 0x09: // ???
-                case 0x0B: // Shaolin Legend
-                case 0x0D: // Older games
-                    break;
-                default:
-                    char buff[100];
-                    sprintf(buff, "Unknown Sintax Mode %X Addr %X - probably won't work!", data, address);
-                    debug_print(buff);
-                    break;
-            }
-            sintax_mode = data;
+        sintaxMode = (byte)(0x0F & data);
 
-            writeMemory(0x2000, 01); // fake a bank switch to select the correct bank 1
-
-            return;
+        switch (sintaxMode) {
+            // Supported modes
+            case 0x00: // Lion King, Golden Sun
+            case 0x01: // Langrisser
+            case 0x05: // Maple Story, Pokemon Platinum
+            case 0x07: // Bynasty Warriors 5
+            case 0x09: // ???
+            case 0x0B: // Shaolin Legend
+            case 0x0D: // Older games
+            case 0x0F: // Default mode, no reordering
+                break;
+            default:
+                char buff[100];
+                sprintf(buff, "Unknown Sintax Mode %X Addr %X - probably won't work!", data, address);
+                debug_print(buff);
+                break;
         }
+
+        writeMemory(0x2000, sintaxBankNo); // fake a bank switch to select the correct bank
+
+        return;
+
     }
 
     if (address >= 0x7000 && address < 0x8000) {
@@ -95,23 +99,21 @@ void MbcUnlSintax::writeMemory(unsigned short address, register byte data) {
         int xorNo = (address & 0x00F0) >> 4;
         switch (xorNo) {
             case 2:
-                sintax_xor2 = data;
+                sintaxXor00 = data;
                 break;
             case 3:
-                sintax_xor3 = data;
+                sintaxXor01 = data;
                 break;
             case 4:
-                sintax_xor4 = data;
+                sintaxXor02 = data;
                 break;
             case 5:
-                sintax_xor5 = data;
+                sintaxXor03 = data;
                 break;
         }
 
-        if (romBankXor == 0) {
-            setXorForBank(4);
-        }
-
+        // xor is applied immediately to the current bank
+        setXorForBank(sintaxBankNo);
 
         return;
     }
@@ -122,18 +124,19 @@ void MbcUnlSintax::writeMemory(unsigned short address, register byte data) {
 }
 
 MbcUnlSintax::MbcUnlSintax() :
-        sintax_mode(0),
-        sintax_xor2(0),
-        sintax_xor3(0),
-        sintax_xor4(0),
-        sintax_xor5(0) {
+        sintaxMode(0),
+        sintaxXor00(0),
+        sintaxXor01(0),
+        sintaxXor02(0),
+        sintaxXor03(0),
+        sintaxBankNo(1) {
 
 }
 
 void MbcUnlSintax::resetVars(bool preserveMulticartState) {
 
-    sintax_mode = 0;
-    sintax_xor2 = sintax_xor3 = sintax_xor4 = sintax_xor5 = 0;
+    sintaxMode = 0;
+    sintaxXor00 = sintaxXor01 = sintaxXor02 = sintaxXor03 = 0;
 
     romBankXor = 0;
 
@@ -141,37 +144,37 @@ void MbcUnlSintax::resetVars(bool preserveMulticartState) {
 }
 
 void MbcUnlSintax::readMbcSpecificVarsFromStateFile(FILE *statefile) {
-    fread(&(sintax_mode), sizeof(byte), 1, statefile);
-    fread(&(sintax_xor2), sizeof(byte), 1, statefile);
-    fread(&(sintax_xor3), sizeof(byte), 1, statefile);
-    fread(&(sintax_xor4), sizeof(byte), 1, statefile);
-    fread(&(sintax_xor5), sizeof(byte), 1, statefile);
+    fread(&(sintaxMode), sizeof(byte), 1, statefile);
+    fread(&(sintaxXor00), sizeof(byte), 1, statefile);
+    fread(&(sintaxXor01), sizeof(byte), 1, statefile);
+    fread(&(sintaxXor02), sizeof(byte), 1, statefile);
+    fread(&(sintaxXor03), sizeof(byte), 1, statefile);
     fread(&(romBankXor), sizeof(byte), 1, statefile);
 }
 
 void MbcUnlSintax::writeMbcSpecificVarsToStateFile(FILE *statefile) {
-    fwrite(&(sintax_mode), sizeof(byte), 1, statefile);
-    fwrite(&(sintax_xor2), sizeof(byte), 1, statefile);
-    fwrite(&(sintax_xor3), sizeof(byte), 1, statefile);
-    fwrite(&(sintax_xor4), sizeof(byte), 1, statefile);
-    fwrite(&(sintax_xor5), sizeof(byte), 1, statefile);
+    fwrite(&(sintaxMode), sizeof(byte), 1, statefile);
+    fwrite(&(sintaxXor00), sizeof(byte), 1, statefile);
+    fwrite(&(sintaxXor01), sizeof(byte), 1, statefile);
+    fwrite(&(sintaxXor02), sizeof(byte), 1, statefile);
+    fwrite(&(sintaxXor03), sizeof(byte), 1, statefile);
     fwrite(&(romBankXor), sizeof(byte), 1, statefile);
 }
 
 void MbcUnlSintax::setXorForBank(byte bankNo)
 {
-    switch(bankNo & 0x0F) {
-        case 0x00: case 0x04: case 0x08: case 0x0C:
-            romBankXor = sintax_xor2;
+    switch(bankNo & 0x03) {
+        case 0x00:
+            romBankXor = sintaxXor00;
             break;
-        case 0x01: case 0x05: case 0x09: case 0x0D:
-            romBankXor = sintax_xor3;
+        case 0x01:
+            romBankXor = sintaxXor01;
             break;
-        case 0x02: case 0x06: case 0x0A: case 0x0E:
-            romBankXor = sintax_xor4;
+        case 0x02:
+            romBankXor = sintaxXor02;
             break;
-        case 0x03: case 0x07: case 0x0B: case 0x0F:
-            romBankXor = sintax_xor5;
+        case 0x03:
+            romBankXor = sintaxXor03;
             break;
     }
 }
