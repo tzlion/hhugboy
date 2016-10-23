@@ -1,4 +1,4 @@
-hhugboy v1.1.6 dev
+hhugboy v1.1.6
 a Game Boy/Game Boy Color emulator for Windows
 by taizou (cactusgunman@gmail.com)
 http://hhug.me/
@@ -136,7 +136,7 @@ https://github.com/tzlion/hhugboy
 
 [ RELEASE HISTORY ]- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 
- v1.1.6 xxx xxxxxxx xxxx
+ v1.1.6 23rd October 2016
  * Better Sintax support - fixes Dragon Ball Z 3 2002 Fighting
  * Auto-detection support for fixed/hacked/decrypted Sintax games
 
