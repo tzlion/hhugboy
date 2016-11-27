@@ -22,15 +22,20 @@ class MbcUnlBbd : public MbcNin5 {
 
         virtual void readMbcSpecificVarsFromStateFile(FILE *savefile) override;
         virtual void writeMbcSpecificVarsToStateFile(FILE *savefile) override;
-    private:
+
+    protected:
+        MbcUnlBbd( byte bbdBitSwapMode, byte bbdBankSwapMode );
+
         byte bbdBitSwapMode;
         byte bbdBankSwapMode;
 
+    private:
         byte bankReordering03[8] = {0,1,2,6,7,5,3,4}; // 0,1 unconfirmed. Digimon/Garou
         byte bankReordering05[8] = {0,1,2,7,3,4,5,6}; // 0,1 unconfirmed. Harry
         byte dataReordering07[8] = {0,1,5,3,4,2,6,7}; // Digimon
         byte dataReordering05[8] = {0,1,2,6,4,5,3,7}; // Harry
         byte dataReordering04[8] = {0,1,5,3,4,6,2,7}; // Garou
+
 };
 
 

@@ -9,11 +9,10 @@
 #ifndef HHUGBOY_MBCUNLHITEK_H
 #define HHUGBOY_MBCUNLHITEK_H
 
-// todo this was mostly copied from bbd..
-
 #include "MbcNin5.h"
+#include "MbcUnlBbd.h"
 
-class MbcUnlHitek : public MbcNin5 {
+class MbcUnlHitek : public MbcUnlBbd {
 public:
     MbcUnlHitek();
     virtual byte readMemory(register unsigned short address) override;
@@ -21,11 +20,7 @@ public:
 
     virtual void resetVars(bool preserveMulticartState) override;
 
-    virtual void readMbcSpecificVarsFromStateFile(FILE *savefile) override;
-    virtual void writeMbcSpecificVarsToStateFile(FILE *savefile) override;
 private:
-    byte bbdBitSwapMode;
-    byte bbdBankSwapMode;
 
     byte dataReordering[8][8] = {
             {0,1,2,3,4,5,6,7},

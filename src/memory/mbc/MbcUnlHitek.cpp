@@ -7,8 +7,6 @@
  * See "license.txt" in the project root
  */
 
-// todo this was mostly copied from bbd
-
 #include <cstdio>
 #include "MbcUnlHitek.h"
 #include "../../debug.h"
@@ -53,9 +51,7 @@ void MbcUnlHitek::writeMemory(unsigned short address, register byte data) {
 
 }
 
-MbcUnlHitek::MbcUnlHitek() :
-        bbdBitSwapMode(7), // default
-        bbdBankSwapMode(7)
+MbcUnlHitek::MbcUnlHitek() : MbcUnlBbd( 7, 7 )
 {
 }
 
@@ -63,14 +59,4 @@ void MbcUnlHitek::resetVars(bool preserveMulticartState) {
     bbdBitSwapMode = 7;
     bbdBankSwapMode = 7;
     AbstractMbc::resetVars(preserveMulticartState);
-}
-
-void MbcUnlHitek::readMbcSpecificVarsFromStateFile(FILE *statefile) {
-    fread(&(bbdBitSwapMode), sizeof(byte), 1, statefile);
-    fread(&(bbdBankSwapMode), sizeof(byte), 1, statefile);
-}
-
-void MbcUnlHitek::writeMbcSpecificVarsToStateFile(FILE *statefile) {
-    fwrite(&(bbdBitSwapMode), sizeof(byte), 1, statefile);
-    fwrite(&(bbdBankSwapMode), sizeof(byte), 1, statefile);
 }

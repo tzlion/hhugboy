@@ -72,6 +72,9 @@ MbcUnlBbd::MbcUnlBbd() :
 
 }
 
+MbcUnlBbd::MbcUnlBbd( byte bbdBitSwapMode, byte bbdBankSwapMode ) : bbdBitSwapMode( bbdBitSwapMode ),  bbdBankSwapMode( bbdBankSwapMode )
+{}
+
 void MbcUnlBbd::resetVars(bool preserveMulticartState) {
     bbdBitSwapMode = 0;
     bbdBankSwapMode = 0;
