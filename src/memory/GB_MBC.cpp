@@ -53,6 +53,7 @@
 #include "mbc/MbcUnlLbMulti.h"
 #include "mbc/MbcUnlBbd.h"
 #include "mbc/MbcUnlDbzTrans.h"
+#include "mbc/MbcUnlHitek.h"
 
 // So maybe this should be "cart" and a lot of whats in rom.cpp now e.g. autodetection should go in here..
 
@@ -166,6 +167,9 @@ void gb_mbc::setMemoryReadWrite(MbcType memory_type) {
             break;
         case MEMORY_BBD:
             mbc = new MbcUnlBbd();
+            break;
+        case MEMORY_HITEK:
+            mbc = new MbcUnlHitek();
             break;
         case MEMORY_NIUTOUDE:
             mbc = new MbcUnlLiCheng();

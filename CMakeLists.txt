@@ -113,6 +113,8 @@ set(SOURCE_FILES
         src/memory/mbc/MbcUnlDbzTrans.h
         src/GB_cartdetect.cpp
         src/memory/MbcType.h
+        src/memory/mbc/MbcUnlHitek.cpp
+        src/memory/mbc/MbcUnlHitek.h
 )
 
 include_directories(
