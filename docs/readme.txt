@@ -1,4 +1,4 @@
-hhugboy v1.1.6
+hhugboy v1.1.8dev
 a Game Boy/Game Boy Color emulator for Windows
 by taizou (cactusgunman@gmail.com)
 http://hhug.me/
@@ -7,7 +7,7 @@ https://github.com/tzlion/hhugboy
  hhugboy is based on GEST v1.1.1 by TM (http://koti.mbnet.fi/gest_emu/)
  with the following additions:
   * Unicode filename support!
-  * Unlicensed Mapper support! (Sintax, Li Cheng, BBD, more!)
+  * Unlicensed Mapper support! (Sintax, Li Cheng, BBD, Hitek, more!)
   * Support for Vast Fame and some other multicarts!
   * Screenshots!
   * Recent ROM list
@@ -48,6 +48,8 @@ https://github.com/tzlion/hhugboy
 
  BBD       For games by BBD using their own mapper. Support isn't complete yet
            but works with known dumps.
+
+ Hitek     For games by Hitek. Only Shui Hu Zhuan confirmed to work so far
 
  'Last Bible' multicart
            A type of multicart using menu music taken from 'Megami Tensei
@@ -135,6 +137,9 @@ https://github.com/tzlion/hhugboy
  * Other language translations
 
 [ RELEASE HISTORY ]- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+
+ v1.1.8 xxxxxxx
+ * Hitek support
 
  v1.1.6 23rd October 2016
  * Better Sintax support - fixes Dragon Ball Z 3 2002 Fighting

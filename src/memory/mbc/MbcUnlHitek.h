@@ -15,14 +15,18 @@
 class MbcUnlHitek : public MbcUnlBbd {
 public:
     MbcUnlHitek();
-    virtual byte readMemory(register unsigned short address) override;
     virtual void writeMemory(unsigned short address, register byte data) override;
 
     virtual void resetVars(bool preserveMulticartState) override;
 
-private:
+protected:
+    virtual byte swapDataByte( byte data ) override;
+    virtual byte swapBankByte( byte data ) override;
 
-    byte dataReordering[8][8] = {
+    virtual bool isDataSwapModeSupported() override;
+    virtual bool isBankSwapModeSupported() override;
+
+    byte hitekDataReordering[8][8] = {
             {0,1,2,3,4,5,6,7},
             {0,5,6,3,4,2,1,7},
             {0,6,5,3,4,1,2,7},
@@ -32,7 +36,7 @@ private:
             {0,2,6,3,4,1,5,7},
             {0,2,6,3,4,5,1,7},
     };
-    byte bankReordering[8][8] = {
+    byte hitekBankReordering[8][8] = {
             {0,1,2,3,4,5,6,7},
             {0,1,2,3,7,6,5,4},
             {0,1,2,3,4,7,6,5},

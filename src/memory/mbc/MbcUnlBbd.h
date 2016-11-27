@@ -26,15 +26,36 @@ class MbcUnlBbd : public MbcNin5 {
     protected:
         MbcUnlBbd( byte bbdBitSwapMode, byte bbdBankSwapMode );
 
-        byte bbdBitSwapMode;
-        byte bbdBankSwapMode;
+        virtual byte swapDataByte( byte data );
+        virtual byte swapBankByte( byte data );
 
-    private:
-        byte bankReordering03[8] = {0,1,2,6,7,5,3,4}; // 0,1 unconfirmed. Digimon/Garou
-        byte bankReordering05[8] = {0,1,2,7,3,4,5,6}; // 0,1 unconfirmed. Harry
-        byte dataReordering07[8] = {0,1,5,3,4,2,6,7}; // Digimon
-        byte dataReordering05[8] = {0,1,2,6,4,5,3,7}; // Harry
-        byte dataReordering04[8] = {0,1,5,3,4,6,2,7}; // Garou
+        virtual bool isDataSwapModeSupported();
+        virtual bool isBankSwapModeSupported();
+
+        byte bitSwapMode;
+        byte bankSwapMode;
+
+        byte bbdDataReordering[8][8] = {
+                {0,1,2,3,4,5,6,7}, // 00 - Normal
+                {0,1,2,3,4,5,6,7}, // 01 - NOT KNOWN YET
+                {0,1,2,3,4,5,6,7}, // 02 - NOT KNOWN YET
+                {0,1,2,3,4,5,6,7}, // 03 - NOT KNOWN YET
+                {0,1,5,3,4,6,2,7}, // 04 - Garou
+                {0,1,2,6,4,5,3,7}, // 05 - Harry
+                {0,1,2,3,4,5,6,7}, // 06 - NOT KNOWN YET
+                {0,1,5,3,4,2,6,7}, // 07 - Digimon
+        };
+        byte bbdBankReordering[8][8] = {
+                {0,1,2,3,4,5,6,7}, // 00 - Normal
+                {0,1,2,3,4,5,6,7}, // 01 - NOT KNOWN YET
+                {0,1,2,3,4,5,6,7}, // 02 - NOT KNOWN YET
+                {0,1,2,6,7,5,3,4}, // 03 - 0,1 unconfirmed. Digimon/Garou
+                {0,1,2,3,4,5,6,7}, // 04 - NOT KNOWN YET
+                {0,1,2,7,3,4,5,6}, // 05 - 0,1 unconfirmed. Harry
+                {0,1,2,3,4,5,6,7}, // 06 - NOT KNOWN YET
+                {0,1,2,3,4,5,6,7}, // 07 - NOT KNOWN YET
+        };
+
 
 };
 
