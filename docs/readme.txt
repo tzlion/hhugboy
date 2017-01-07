@@ -1,4 +1,4 @@
-hhugboy v1.1.8dev
+hhugboy v1.1.8
 a Game Boy/Game Boy Color emulator for Windows
 by taizou (cactusgunman@gmail.com)
 http://hhug.me/
@@ -138,7 +138,7 @@ https://github.com/tzlion/hhugboy
 
 [ RELEASE HISTORY ]- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 
- v1.1.8 xxxxxxx
+ v1.1.8 7th January 2017
  * Hitek game support
  * Add 25% and 50% volume options
 
@@ -179,7 +179,7 @@ https://github.com/tzlion/hhugboy
 [ COPYRIGHT/LICENSE ]- - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 
  hhugboy Game Boy emulator
- copyright 2013-2016 taizou
+ copyright 2013-2017 taizou
 
  Based on GEST
  Copyright (C) 2003-2010 TM
