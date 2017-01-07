@@ -139,7 +139,8 @@ https://github.com/tzlion/hhugboy
 [ RELEASE HISTORY ]- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 
  v1.1.8 xxxxxxx
- * Hitek support
+ * Hitek game support
+ * Add 25% and 50% volume options
 
  v1.1.6 23rd October 2016
  * Better Sintax support - fixes Dragon Ball Z 3 2002 Fighting

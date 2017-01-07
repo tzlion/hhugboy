@@ -1663,10 +1663,18 @@ void menuAction(int menuOption)
             else
                 emuMenu.uncheckOption(IDM_OPTIONSOUNDRSTEREO);
          break;      
+         case IDM_OPTIONSOUNDVOL025:
+            options->sound_volume = VOLUME_025X;
+            emuMenu.checkOption(IDM_OPTIONSOUNDVOL025);
+         break;
+         case IDM_OPTIONSOUNDVOL05:
+            options->sound_volume = VOLUME_05X;
+            emuMenu.checkOption(IDM_OPTIONSOUNDVOL05);
+         break;
          case IDM_OPTIONSOUNDVOL1:
             options->sound_volume = VOLUME_1X;
-            emuMenu.checkOption(IDM_OPTIONSOUNDVOL1);       
-         break;         
+            emuMenu.checkOption(IDM_OPTIONSOUNDVOL1);
+         break;
          case IDM_OPTIONSOUNDVOL2:
             options->sound_volume = VOLUME_2X;
             emuMenu.checkOption(IDM_OPTIONSOUNDVOL2);                 

@@ -408,7 +408,9 @@ BEGIN
            END    
            POPUP "&Volume" 
            BEGIN
-              MENUITEM "&100%", IDM_OPTIONSOUNDVOL1                
+              MENUITEM "&25%", IDM_OPTIONSOUNDVOL025
+              MENUITEM "&50%", IDM_OPTIONSOUNDVOL05
+              MENUITEM "&100%", IDM_OPTIONSOUNDVOL1
               MENUITEM "&200%", IDM_OPTIONSOUNDVOL2
               MENUITEM "&300%", IDM_OPTIONSOUNDVOL3
               MENUITEM "&400%", IDM_OPTIONSOUNDVOL4

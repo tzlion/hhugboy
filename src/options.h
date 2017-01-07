@@ -64,10 +64,12 @@ enum videofiltertype
 
 enum soundvolumetype
 {
-    VOLUME_1X = 1,
-    VOLUME_2X = 2,
-    VOLUME_3X = 3,
-    VOLUME_4X = 4
+	VOLUME_025X = 25,
+	VOLUME_05X = 50,
+    VOLUME_1X = 100,
+    VOLUME_2X = 200,
+    VOLUME_3X = 300,
+    VOLUME_4X = 400
 };
 
 enum _controllernumber

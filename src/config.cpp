@@ -182,8 +182,14 @@ void init_menu_options()
       
    switch(options->sound_volume)
    {
+      case VOLUME_025X:
+         emuMenu.checkOption(IDM_OPTIONSOUNDVOL025);
+      break;
+      case VOLUME_05X:
+         emuMenu.checkOption(IDM_OPTIONSOUNDVOL05);
+      break;
       case VOLUME_2X:
-         emuMenu.checkOption(IDM_OPTIONSOUNDVOL2);       
+         emuMenu.checkOption(IDM_OPTIONSOUNDVOL2);
       break;
       case VOLUME_3X:
          emuMenu.checkOption(IDM_OPTIONSOUNDVOL3);       

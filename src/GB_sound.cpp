@@ -676,7 +676,7 @@ void gb_system::sound_mix()
       res = (sound_left[4] + 2*sound_left[3] + 8*sound_left[2] + 2*sound_left[1] + sound_left[0])/14;
    }
    
-   res *= options->sound_volume;
+   res *= ( (float)options->sound_volume / (float)100 );
    
    if(res > 32767)
       res = 32767;
@@ -726,7 +726,7 @@ void gb_system::sound_mix()
       res = (sound_right[4] + 2*sound_right[3] + 8*sound_right[2] + 2*sound_right[1] + sound_right[0])/14;
    }
    
-   res *= options->sound_volume;
+   res *= ( (float)options->sound_volume / (float)100 );
       
    if(res > 32767)
       res = 32767;
