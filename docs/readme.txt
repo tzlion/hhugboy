@@ -49,7 +49,7 @@ https://github.com/tzlion/hhugboy
  BBD       For games by BBD using their own mapper. Support isn't complete yet
            but works with known dumps.
 
- Hitek     For games by Hitek. Only Shui Hu Zhuan confirmed to work so far
+ Hitek     For games by Hitek.
 
  'Last Bible' multicart
            A type of multicart using menu music taken from 'Megami Tensei
