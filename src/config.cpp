@@ -149,6 +149,9 @@ void init_menu_options()
       case UNL_BBD:
       	emuMenu.checkOption(IDM_UNLBBD);
       break;
+      case UNL_HITEK:
+      	emuMenu.checkOption(IDM_UNLHITEK);
+      break;
       case UNL_LBMULTI:
       	emuMenu.checkOption(IDM_UNLLBMULTI);
       break;

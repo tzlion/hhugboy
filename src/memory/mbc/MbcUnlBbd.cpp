@@ -18,13 +18,7 @@ byte MbcUnlBbd::readMemory(register unsigned short address) {
         // Do the reorder..
         byte data = gbMemMap[address>>12][address&0x0FFF];
 
-        if ( bbdBitSwapMode == 0x07 ) {
-            return switchOrder(data, dataReordering07);
-        } else if ( bbdBitSwapMode == 0x05 ) {
-            return switchOrder(data, dataReordering05);
-        }else if ( bbdBitSwapMode == 0x04 ) {
-            return switchOrder(data, dataReordering04);
-        }
+        return swapDataByte(data);
     }
 
     return gbMemMap[address>>12][address&0x0FFF];
@@ -32,32 +26,28 @@ byte MbcUnlBbd::readMemory(register unsigned short address) {
 
 void MbcUnlBbd::writeMemory(unsigned short address, register byte data) {
 
-    if ( address == 0x2080 ) {
+    if ( ( address & 0xF0FF ) == 0x2080 ) {
 
-        bbdBankSwapMode = (byte)(data & 0x07);
+        bankSwapMode = (byte)(data & 0x07);
 
-        if ( bbdBankSwapMode != 0x03 && bbdBankSwapMode != 0x05 && bbdBankSwapMode != 0x00 ) { // 00 = normal
+        if ( !isBankSwapModeSupported() ) { // 00 = normal
             char buff[1000];
-            sprintf(buff,"BBD bankswap mode unsupported - %02x",bbdBankSwapMode);
+            sprintf(buff,"Bankswap mode unsupported - %02x",bankSwapMode);
             debug_print(buff);
         }
 
-    } else if ( address == 0x2001 ) {
+    } else if ( ( address & 0xF0FF ) == 0x2001 ) {
 
-        bbdBitSwapMode = (byte)(data & 0x07);
-        if ( bbdBitSwapMode != 0x07 && bbdBitSwapMode != 0x05 && bbdBitSwapMode != 0x04 && bbdBitSwapMode != 0x00 ) { // 00 = normal
+        bitSwapMode = (byte)(data & 0x07);
+        if ( !isDataSwapModeSupported() ) { // 00 = normal
             char buff[1000];
-            sprintf(buff,"BBD bitswap mode unsupported - %02x",bbdBitSwapMode);
+            sprintf(buff,"Bitswap mode unsupported - %02x",bitSwapMode);
             debug_print(buff);
         }
 
-    } else if ( address == 0x2000 ) {
+    } else if ( ( address & 0xF0FF ) == 0x2000 ) {
 
-        if ( bbdBankSwapMode == 0x03 ) {
-            data = switchOrder(data, bankReordering03);
-        } else if ( bbdBankSwapMode == 0x05 ) {
-            data = switchOrder(data, bankReordering05);
-        }
+        data = swapBankByte( data );
 
     }
 
@@ -66,24 +56,43 @@ void MbcUnlBbd::writeMemory(unsigned short address, register byte data) {
 }
 
 MbcUnlBbd::MbcUnlBbd() :
-        bbdBitSwapMode(0),
-        bbdBankSwapMode(0)
+        bitSwapMode(0),
+        bankSwapMode(0)
  {
 
 }
 
+MbcUnlBbd::MbcUnlBbd( byte bbdBitSwapMode, byte bbdBankSwapMode ) : bitSwapMode( bbdBitSwapMode ),  bankSwapMode( bbdBankSwapMode )
+{}
+
 void MbcUnlBbd::resetVars(bool preserveMulticartState) {
-    bbdBitSwapMode = 0;
-    bbdBankSwapMode = 0;
+    bitSwapMode = 0;
+    bankSwapMode = 0;
     AbstractMbc::resetVars(preserveMulticartState);
 }
 
-void MbcUnlBbd::readMbcSpecificVarsFromStateFile(FILE *statefile) {
-    fread(&(bbdBitSwapMode), sizeof(byte), 1, statefile);
-    fread(&(bbdBankSwapMode), sizeof(byte), 1, statefile);
+    void MbcUnlBbd::readMbcSpecificVarsFromStateFile(FILE *statefile) {
+    fread(&(bitSwapMode), sizeof(byte), 1, statefile);
+    fread(&(bankSwapMode), sizeof(byte), 1, statefile);
 }
 
 void MbcUnlBbd::writeMbcSpecificVarsToStateFile(FILE *statefile) {
-    fwrite(&(bbdBitSwapMode), sizeof(byte), 1, statefile);
-    fwrite(&(bbdBankSwapMode), sizeof(byte), 1, statefile);
+    fwrite(&(bitSwapMode), sizeof(byte), 1, statefile);
+    fwrite(&(bankSwapMode), sizeof(byte), 1, statefile);
+}
+
+byte MbcUnlBbd::swapDataByte(byte data) {
+    return switchOrder( data, bbdDataReordering[bitSwapMode] );
+}
+
+byte MbcUnlBbd::swapBankByte(byte data) {
+    return switchOrder(data, bbdBankReordering[bankSwapMode]);
+}
+
+bool MbcUnlBbd::isDataSwapModeSupported() {
+    return ( bitSwapMode == 0x07 || bitSwapMode == 0x05 || bitSwapMode == 0x04 || bitSwapMode == 0x00 );
+}
+
+bool MbcUnlBbd::isBankSwapModeSupported() {
+    return ( bankSwapMode == 0x03 || bankSwapMode == 0x05 || bankSwapMode == 0x00 );
 }

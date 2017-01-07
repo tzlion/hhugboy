@@ -288,6 +288,9 @@ unlCompatMode gb_system::detectUnlCompatMode()
     //debug_print(buff);
 
     switch ( logoChecksum ) {
+        case 4048: // "GK.RX" = Gaoke(Hitek) x Ruanxin
+            // (All known hacked versions of Hitek games are Li Cheng so have the Niutoude logo instead)
+            return UNL_HITEK;
         case 4639: // BBD
         case 5092: // Fiver Firm (publisher of e'Fighter Hot, appears in subsequent BBD fighting games)
             // Games from BBD, Sintax and related developers (probably anything built with Gamtec's SDK) have the bank
@@ -332,6 +335,9 @@ int gb_system::detectWeirdCarts()
 
     switch(unlMode) {
 
+        case UNL_HITEK:
+            rom->mbcType = MEMORY_HITEK;
+            break;
         case UNL_BBD:
             rom->mbcType = MEMORY_BBD;
             break;

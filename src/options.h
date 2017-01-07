@@ -119,6 +119,7 @@ enum unlCompatMode
 	UNL_NIUTOUDE,
 	UNL_SINTAX,
 	UNL_BBD,
+	UNL_HITEK,
 	UNL_LBMULTI
 };
 
