@@ -17,7 +17,7 @@ FILETYPE VFT_APP
       VALUE "FileVersion", VER_VERSION_STR
       VALUE "FileDescription", "hhugboy GB emulator"
       VALUE "InternalName", ""
-      VALUE "LegalCopyright", "taizou 2013-6"
+      VALUE "LegalCopyright", "taizou 2013-7"
       VALUE "LegalTrademarks", ""
       VALUE "OriginalFilename", "hhugboy.exe"
       VALUE "ProductName", "hhugboy"
