@@ -167,28 +167,9 @@ bool DirectDraw::init(Palette* palette)
     }
     
     directBollocksContainer->ddSurface->SetClipper(directBollocksContainer->ddClip);
-    
-    ZeroMemory(&ddsd,sizeof(ddsd));
-    ddsd.dwSize = sizeof(DDSURFACEDESC2);
-    ddsd.dwFlags = DDSD_CAPS|DDSD_WIDTH|DDSD_HEIGHT;
-    ddsd.ddsCaps.dwCaps = DDSCAPS_OFFSCREENPLAIN|DDSCAPS_VIDEOMEMORY;//DDSCAPS_SYSTEMMEMORY;
-    ddsd.dwWidth = 160;
-    ddsd.dwHeight = 144;
-    
-    ddrval = directBollocksContainer->dd->CreateSurface(&ddsd,&(directBollocksContainer->bSurface),NULL);
-    if(ddrval != DD_OK) 
-    {
-        debug_print("DirectDraw: Create gb surface failed!"); 
-        return false;
-    }
-    ddsd.dwWidth = 256;
-    ddsd.dwHeight = 224;   
-    ddrval = directBollocksContainer->dd->CreateSurface(&ddsd,&(directBollocksContainer->borderSurface),NULL);
-    if(ddrval != DD_OK) 
-    {
-        debug_print("DirectDraw: Create border surface failed!"); 
-        return false;
-    }   
+
+    bool res = createSurfaces(1,1,1,1);
+    if (!res) return false;
     
     // empty the new surface
     DDBLTFX clrblt;
@@ -332,38 +313,49 @@ void DirectDraw::setGameboyFilter(videofiltertype type)
 	this->changeFilters();
 }
 
+
+bool DirectDraw::createSurfaces(int gbWidthMulti, int gbHeightMulti, int borderWidthMulti, int borderHeightMulti)
+{
+    SafeRelease(directBollocksContainer->bSurface);
+    SafeRelease(directBollocksContainer->borderSurface);
+
+    HRESULT ddrval;
+    DDSURFACEDESC2 ddsd;
+
+    ZeroMemory(&ddsd,sizeof(ddsd));
+    ddsd.dwSize = sizeof(DDSURFACEDESC2);
+    ddsd.dwFlags = DDSD_CAPS|DDSD_WIDTH|DDSD_HEIGHT;
+    ddsd.ddsCaps.dwCaps = DDSCAPS_OFFSCREENPLAIN|DDSCAPS_VIDEOMEMORY;//DDSCAPS_SYSTEMMEMORY;
+    ddsd.dwWidth = 160 * gbWidthMulti;
+    ddsd.dwHeight = 144 * gbHeightMulti;
+
+    ddrval = directBollocksContainer->dd->CreateSurface(&ddsd,&(directBollocksContainer->bSurface),NULL);
+    if(ddrval != DD_OK)
+    {
+        debug_print("DirectDraw: Create gb surface failed!");
+        return false;
+    }
+    ddsd.dwWidth = 256 * borderWidthMulti;
+    ddsd.dwHeight = 224 * borderHeightMulti;
+    ddrval = directBollocksContainer->dd->CreateSurface(&ddsd,&(directBollocksContainer->borderSurface),NULL);
+    if(ddrval != DD_OK)
+    {
+        debug_print("DirectDraw: Create border surface failed!");
+        return false;
+    }
+
+    return true;
+}
+
 bool DirectDraw::changeFilters()
 {
 	borderFilterWidth = borderFilterHeight = borderFilter->getFilterDimension(); // width/height the same for now
 	gameboyFilterWidth = gameboyFilterHeight = gbFilter->getFilterDimension(); // width/height the same for now
-	
-	HRESULT ddrval;
-	DDSURFACEDESC2 ddsd;
-	
-	SafeRelease(directBollocksContainer->bSurface);
-	SafeRelease(directBollocksContainer->borderSurface);
-	
-	ZeroMemory(&ddsd,sizeof(ddsd));
-	ddsd.dwSize = sizeof(DDSURFACEDESC2);
-	ddsd.dwFlags = DDSD_CAPS|DDSD_WIDTH|DDSD_HEIGHT;
-	ddsd.ddsCaps.dwCaps = DDSCAPS_OFFSCREENPLAIN|DDSCAPS_VIDEOMEMORY;//DDSCAPS_SYSTEMMEMORY;
-	ddsd.dwWidth = 160*this->gameboyFilterWidth;
-	ddsd.dwHeight = 144*this->gameboyFilterHeight;
 
-	ddrval = directBollocksContainer->dd->CreateSurface(&ddsd,&(directBollocksContainer->bSurface),NULL);
-	if(ddrval != DD_OK) {
-		debug_print("DirectDraw Createsurface failed!"); 
-		return false;
-	}
+    bool res = createSurfaces(this->gameboyFilterWidth,this->gameboyFilterHeight,this->borderFilterHeight,this->borderFilterWidth);
+    if (!res) return false;
 
-	ddsd.dwWidth = 256*this->borderFilterWidth;
-	ddsd.dwHeight = 224*this->borderFilterHeight;
-	ddrval = directBollocksContainer->dd->CreateSurface(&ddsd,&(directBollocksContainer->borderSurface),NULL);
-	if(ddrval != DD_OK)  {
-		debug_print("DirectDraw Createsurface failed!"); 
-		return false;
-	} 
-	   
+    DDSURFACEDESC2 ddsd;
 	ZeroMemory(&ddsd,sizeof(ddsd));
 	ddsd.dwSize = sizeof(DDSURFACEDESC2);
 	directBollocksContainer->bSurface->Lock(NULL,&ddsd,DDLOCK_WAIT|DDLOCK_SURFACEMEMORYPTR,NULL);
