@@ -55,7 +55,6 @@ using namespace std;
 #include "devices.h"
 #include "rendering/render.h"
 
-#include "rendering/directdraw.h"
 #include "directinput.h"
 
 
