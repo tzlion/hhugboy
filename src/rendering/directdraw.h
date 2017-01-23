@@ -35,8 +35,8 @@
 #include "palette.h"
 
 #include "filters/filters.h"
+#include "DirectBollocksContainer.h"
 
-#include <ddraw.h>
 
 #include <string>
 
@@ -77,6 +77,8 @@ class DirectDraw: public Renderer {
         void toggleFiltering(bool on);
 
     private:
+
+        DirectBollocksContainer* directBollocksContainer;
         
 		void *dxBorderBufferRender;
 		void *dxBufferMix;
@@ -89,8 +91,6 @@ class DirectDraw: public Renderer {
         wstring messageText;
         int messageDuration;
         gb_system* messageGb;
-        
-		IDirectDrawClipper* ddClip;
 		
         int changeRect;
             
@@ -108,12 +108,7 @@ class DirectDraw: public Renderer {
 		void gameboyFilter(DWORD *target,DWORD *src,int width,int height,int pitch);
 		        
         void gbTextOut();
-        
-		IDirectDraw7* dd;
-		IDirectDrawSurface7* ddSurface;
-		IDirectDrawSurface7* bSurface;
-		IDirectDrawSurface7* borderSurface;       
-        
+
         int borderFilterHeight;
         int borderFilterWidth;
         int gameboyFilterHeight;

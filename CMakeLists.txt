@@ -115,7 +115,7 @@ set(SOURCE_FILES
         src/memory/MbcType.h
         src/memory/mbc/MbcUnlHitek.cpp
         src/memory/mbc/MbcUnlHitek.h
-)
+        src/rendering/DirectBollocksContainer.cpp src/rendering/DirectBollocksContainer.h)
 
 include_directories(
         includes
