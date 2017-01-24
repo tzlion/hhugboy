@@ -58,7 +58,6 @@ DirectDraw::DirectDraw(HWND* inHwnd)
    borderFilter = new NoFilter();
    this->hwnd = inHwnd;
    //RECT this->targetBltRect;
-   this->lPitch = 160;
    this->changeRect = 0;
 }
 
@@ -184,8 +183,7 @@ bool DirectDraw::init(Palette* palette)
     ddsd.dwFlags = DDSD_PIXELFORMAT;
     directBollocksContainer->bSurface->Lock(NULL,&ddsd,DDLOCK_WAIT|DDLOCK_SURFACEMEMORYPTR,NULL);
     
-    this->bitCount = ddsd.ddpfPixelFormat.dwRGBBitCount; 
-    this->lPitch = ddsd.lPitch;
+    this->bitCount = ddsd.ddpfPixelFormat.dwRGBBitCount;
     
     directBollocksContainer->bSurface->Unlock(NULL);
     
@@ -202,19 +200,15 @@ bool DirectDraw::init(Palette* palette)
         this->dxBorderBufferRender = new WORD[256*224];
         
         this->drawBorder = &DirectDraw::drawBorder16;
-        gbFilter = new NoFilter();
-        
-        this->lPitch >>= 1;
     } else {
         this->dxBufferMix = new DWORD[140*166];  
         this->dxBorderBufferRender = new DWORD[256*224];
         
         this->drawBorder = &DirectDraw::drawBorder32;
-        gbFilter = new NoFilter();
-        
-        this->lPitch >>= 2;
     }
-    
+
+    gbFilter = new NoFilter();
+
     if(!this->dxBufferMix || !this->dxBorderBufferRender) {
         debug_print(str_table[ERROR_MEMORY]); 
         return false;
@@ -359,15 +353,11 @@ bool DirectDraw::changeFilters()
 	ZeroMemory(&ddsd,sizeof(ddsd));
 	ddsd.dwSize = sizeof(DDSURFACEDESC2);
 	directBollocksContainer->bSurface->Lock(NULL,&ddsd,DDLOCK_WAIT|DDLOCK_SURFACEMEMORYPTR,NULL);
-   
-	this->lPitch = ddsd.lPitch;
 	
 	directBollocksContainer->bSurface->Unlock(NULL);
 	
 	int effectiveBitCount = this->bitCount == 16 ? 16 : 32;
 
-	this->lPitch >>= ( effectiveBitCount / 16 );
-    
    if(GB1->romloaded && sgb_mode)
 		(this->*DirectDraw::drawBorder)();  // totally not sure about this either 
 	
@@ -544,8 +534,10 @@ void DirectDraw::drawScreenGeneric(TYPE* buffer)
 	ZeroMemory(&ddsd,sizeof(ddsd));
 	ddsd.dwSize = sizeof(DDSURFACEDESC2);
 	directBollocksContainer->bSurface->Lock(NULL,&ddsd,DDLOCK_WRITEONLY|DDLOCK_SURFACEMEMORYPTR,NULL);
-	
-	this->gameboyFilter((TYPE*)ddsd.lpSurface,buffer,160,144,this->lPitch);
+
+    int effectiveBitCount = this->bitCount == 16 ? 16 : 32;
+    int lPitch = ddsd.lPitch >>= (effectiveBitCount / 16);
+	this->gameboyFilter((TYPE*)ddsd.lpSurface,buffer,160,144,lPitch);
 	
 	directBollocksContainer->bSurface->Unlock(NULL);
 	// Options accessed in here
@@ -604,13 +596,12 @@ void DirectDraw::drawBorder32()
 	ZeroMemory(&ddsd,sizeof(ddsd));
 	ddsd.dwSize = sizeof(DDSURFACEDESC2);
 	directBollocksContainer->borderSurface->Lock(NULL,&ddsd,DDLOCK_WRITEONLY|DDLOCK_SURFACEMEMORYPTR,NULL);
-	this->borderLPitch = ddsd.lPitch>>2;
-	
+
 	int temp_w = gameboyFilterWidth;
 	int temp_h = gameboyFilterHeight;   
 	this->gameboyFilterWidth = this->borderFilterWidth;
 	this->gameboyFilterHeight = this->borderFilterHeight;   
-	borderFilter->filter32((DWORD*)ddsd.lpSurface,(DWORD*)(this->dxBorderBufferRender),256,224,this->borderLPitch);
+	borderFilter->filter32((DWORD*)ddsd.lpSurface,(DWORD*)(this->dxBorderBufferRender),256,224,ddsd.lPitch>>2);
 	this->gameboyFilterWidth = temp_w;
 	this->gameboyFilterHeight = temp_h;
 	
@@ -651,13 +642,12 @@ void DirectDraw::drawBorder16()
 	ZeroMemory(&ddsd,sizeof(ddsd));
 	ddsd.dwSize = sizeof(DDSURFACEDESC2);
 	directBollocksContainer->borderSurface->Lock(NULL,&ddsd,DDLOCK_WRITEONLY|DDLOCK_SURFACEMEMORYPTR,NULL);
-	this->borderLPitch = ddsd.lPitch>>1;
-	
+
 	int temp_w = this->gameboyFilterWidth;
 	int temp_h = this->gameboyFilterHeight;   
 	this->gameboyFilterWidth = this->borderFilterWidth;
 	this->gameboyFilterHeight = this->borderFilterHeight;   
-	borderFilter->filter16((WORD*)ddsd.lpSurface,(WORD*)(this->dxBorderBufferRender),256,224,this->borderLPitch);
+	borderFilter->filter16((WORD*)ddsd.lpSurface,(WORD*)(this->dxBorderBufferRender),256,224,ddsd.lPitch>>1);
 	this->gameboyFilterWidth = temp_w;
 	this->gameboyFilterHeight = temp_h;   
 	

@@ -115,10 +115,7 @@ class DirectDraw: public Renderer {
         int borderFilterWidth;
         int gameboyFilterHeight;
         int gameboyFilterWidth;
-        
-        int lPitch;
-        int borderLPitch;
-        
+
         HFONT afont;
         
         RECT targetBltRect;
