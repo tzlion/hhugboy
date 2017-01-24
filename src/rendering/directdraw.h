@@ -100,12 +100,16 @@ class DirectDraw: public Renderer {
 		void drawScreen32();
 		void drawScreenMix16();
 		void drawScreenMix32();
-		
+
+        template<typename TYPE>
+        void drawBorderGeneric(TYPE* buffer);
 		void drawBorder16();
 		void drawBorder32();
 		
 		void gameboyFilter(WORD *target,WORD *src,int width,int height,int pitch);
 		void gameboyFilter(DWORD *target,DWORD *src,int width,int height,int pitch);
+		void borderzFilter(WORD *target,WORD *src,int width,int height,int pitch);
+		void borderzFilter(DWORD *target,DWORD *src,int width,int height,int pitch);
 		        
         void gbTextOut();
 

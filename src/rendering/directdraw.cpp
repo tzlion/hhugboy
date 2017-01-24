@@ -526,6 +526,16 @@ void DirectDraw::gameboyFilter(DWORD *target,DWORD *src,int width,int height,int
     gbFilter->filter32(target,src,width,height,pitch);
 }
 
+void DirectDraw::borderzFilter(WORD *target,WORD *src,int width,int height,int pitch)
+{
+    borderFilter->filter16(target,src,width,height,pitch);
+}
+
+void DirectDraw::borderzFilter(DWORD *target,DWORD *src,int width,int height,int pitch)
+{
+    borderFilter->filter32(target,src,width,height,pitch);
+}
+
 template<typename TYPE>
 void DirectDraw::drawScreenGeneric(TYPE* buffer)
 {
@@ -573,98 +583,80 @@ void DirectDraw::drawScreenGeneric(TYPE* buffer)
 		this->targetBltRect.right += VISUAL_RUMBLE_STRENGTH;
     }
 }
+template<typename TYPE>
+void DirectDraw::drawBorderGeneric(TYPE* buffer)
+{
+    DDSURFACEDESC2 ddsd;
 
+    ZeroMemory(&ddsd,sizeof(ddsd));
+    ddsd.dwSize = sizeof(DDSURFACEDESC2);
+    directBollocksContainer->borderSurface->Lock(NULL,&ddsd,DDLOCK_WRITEONLY|DDLOCK_SURFACEMEMORYPTR,NULL);
+
+    int temp_w = this->gameboyFilterWidth;
+    int temp_h = this->gameboyFilterHeight;
+    this->gameboyFilterWidth = this->borderFilterWidth;
+    this->gameboyFilterHeight = this->borderFilterHeight;
+
+    int effectiveBitCount = this->bitCount == 16 ? 16 : 32;
+    int lPitch = ddsd.lPitch >>= (effectiveBitCount / 16);
+    this->borderzFilter((TYPE*)ddsd.lpSurface,buffer,256,224,lPitch);
+
+    this->gameboyFilterWidth = temp_w;
+    this->gameboyFilterHeight = temp_h;
+
+    directBollocksContainer->borderSurface->Unlock(NULL);
+
+    POINT pt;
+    RECT rect;
+
+    GetClientRect(*(this->hwnd),&rect);
+    pt.x=pt.y=0;
+    ClientToScreen(*(this->hwnd),&pt);
+    OffsetRect(&rect,pt.x,pt.y);
+
+    if(directBollocksContainer->ddSurface->Blt(&rect,directBollocksContainer->borderSurface,NULL,0,NULL) == DDERR_SURFACELOST){
+        directBollocksContainer->ddSurface->Restore();
+        directBollocksContainer->borderSurface->Restore();
+    }
+
+}
 
 void DirectDraw::drawBorder32()
 {
 	unsigned short* source = sgb_border_buffer; // sgb_border_buffer == ?
 	DWORD* target = (DWORD*)(this->dxBorderBufferRender);
-	
-	for(register int y=0;y<256*224;y+=8) { 
-		*target++ = *(this->palette->gfxPal32+*source++);
-		*target++ = *(this->palette->gfxPal32+*source++);
-		*target++ = *(this->palette->gfxPal32+*source++);
-		*target++ = *(this->palette->gfxPal32+*source++);
-		*target++ = *(this->palette->gfxPal32+*source++);
-		*target++ = *(this->palette->gfxPal32+*source++);
-		*target++ = *(this->palette->gfxPal32+*source++);
-		*target++ = *(this->palette->gfxPal32+*source++);                                                                                                                                                   
-	} 
-	
-	DDSURFACEDESC2 ddsd;
-	
-	ZeroMemory(&ddsd,sizeof(ddsd));
-	ddsd.dwSize = sizeof(DDSURFACEDESC2);
-	directBollocksContainer->borderSurface->Lock(NULL,&ddsd,DDLOCK_WRITEONLY|DDLOCK_SURFACEMEMORYPTR,NULL);
 
-	int temp_w = gameboyFilterWidth;
-	int temp_h = gameboyFilterHeight;   
-	this->gameboyFilterWidth = this->borderFilterWidth;
-	this->gameboyFilterHeight = this->borderFilterHeight;   
-	borderFilter->filter32((DWORD*)ddsd.lpSurface,(DWORD*)(this->dxBorderBufferRender),256,224,ddsd.lPitch>>2);
-	this->gameboyFilterWidth = temp_w;
-	this->gameboyFilterHeight = temp_h;
-	
-	directBollocksContainer->borderSurface->Unlock(NULL);
-	
-	POINT pt;
-	RECT rect;
-	
-	GetClientRect(*(this->hwnd),&rect);
-	pt.x=pt.y=0;
-	ClientToScreen(*(this->hwnd),&pt);
-	OffsetRect(&rect,pt.x,pt.y);
-	
-	if(directBollocksContainer->ddSurface->Blt(&rect,directBollocksContainer->borderSurface,NULL,0,NULL) == DDERR_SURFACELOST){
-	    directBollocksContainer->ddSurface->Restore();
-		directBollocksContainer->borderSurface->Restore();
+	for(register int y=0;y<256*224;y+=8) {
+		*target++ = *(this->palette->gfxPal32+*source++);
+		*target++ = *(this->palette->gfxPal32+*source++);
+		*target++ = *(this->palette->gfxPal32+*source++);
+		*target++ = *(this->palette->gfxPal32+*source++);
+		*target++ = *(this->palette->gfxPal32+*source++);
+		*target++ = *(this->palette->gfxPal32+*source++);
+		*target++ = *(this->palette->gfxPal32+*source++);
+		*target++ = *(this->palette->gfxPal32+*source++);
 	}
+
+    drawBorderGeneric((DWORD*)(this->dxBorderBufferRender));
 }
 
 void DirectDraw::drawBorder16()
 {
 	WORD* target = (WORD*)(this->dxBorderBufferRender);
 	unsigned short* source = sgb_border_buffer;
-	
-	for(register int y=0;y<256*224;y+=8) { 
-		*target++ = *(this->palette->gfxPal16+*source++);
-		*target++ = *(this->palette->gfxPal16+*source++);
-		*target++ = *(this->palette->gfxPal16+*source++);
-		*target++ = *(this->palette->gfxPal16+*source++);
-		*target++ = *(this->palette->gfxPal16+*source++);
-		*target++ = *(this->palette->gfxPal16+*source++);
-		*target++ = *(this->palette->gfxPal16+*source++);
-		*target++ = *(this->palette->gfxPal16+*source++);                                                                                                                                                   
-	} 
-	
-	DDSURFACEDESC2 ddsd;
-	
-	ZeroMemory(&ddsd,sizeof(ddsd));
-	ddsd.dwSize = sizeof(DDSURFACEDESC2);
-	directBollocksContainer->borderSurface->Lock(NULL,&ddsd,DDLOCK_WRITEONLY|DDLOCK_SURFACEMEMORYPTR,NULL);
 
-	int temp_w = this->gameboyFilterWidth;
-	int temp_h = this->gameboyFilterHeight;   
-	this->gameboyFilterWidth = this->borderFilterWidth;
-	this->gameboyFilterHeight = this->borderFilterHeight;   
-	borderFilter->filter16((WORD*)ddsd.lpSurface,(WORD*)(this->dxBorderBufferRender),256,224,ddsd.lPitch>>1);
-	this->gameboyFilterWidth = temp_w;
-	this->gameboyFilterHeight = temp_h;   
-	
-	directBollocksContainer->borderSurface->Unlock(NULL);
-	
-	POINT pt;
-	RECT rect;
-	
-	GetClientRect(*(this->hwnd),&rect);
-	pt.x=pt.y=0;
-	ClientToScreen(*(this->hwnd),&pt);
-	OffsetRect(&rect,pt.x,pt.y);
-	
-	if(directBollocksContainer->ddSurface->Blt(&rect,directBollocksContainer->borderSurface,NULL,0,NULL) == DDERR_SURFACELOST){
-		directBollocksContainer->ddSurface->Restore();
-		directBollocksContainer->borderSurface->Restore();
+	for(register int y=0;y<256*224;y+=8) {
+		*target++ = *(this->palette->gfxPal16+*source++);
+		*target++ = *(this->palette->gfxPal16+*source++);
+		*target++ = *(this->palette->gfxPal16+*source++);
+		*target++ = *(this->palette->gfxPal16+*source++);
+		*target++ = *(this->palette->gfxPal16+*source++);
+		*target++ = *(this->palette->gfxPal16+*source++);
+		*target++ = *(this->palette->gfxPal16+*source++);
+		*target++ = *(this->palette->gfxPal16+*source++);
 	}
+
+    drawBorderGeneric((WORD*)(this->dxBorderBufferRender));
 }
 
 #ifdef ALLOW_DEBUG
