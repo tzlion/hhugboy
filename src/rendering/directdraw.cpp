@@ -584,8 +584,15 @@ void DirectDraw::drawScreenGeneric(TYPE* buffer)
     }
 }
 template<typename TYPE>
-void DirectDraw::drawBorderGeneric(TYPE* buffer)
+void DirectDraw::drawBorderGeneric(TYPE* buffer, TYPE* paletteSrc)
 {
+    unsigned short* source = sgb_border_buffer; // sgb_border_buffer == ?
+    TYPE* target = (TYPE*)(this->dxBorderBufferRender);
+
+    for(register int y=0;y<256*224;y++) {
+        *target++ = *(paletteSrc+*source++);
+    }
+
     DDSURFACEDESC2 ddsd;
 
     ZeroMemory(&ddsd,sizeof(ddsd));
@@ -623,40 +630,12 @@ void DirectDraw::drawBorderGeneric(TYPE* buffer)
 
 void DirectDraw::drawBorder32()
 {
-	unsigned short* source = sgb_border_buffer; // sgb_border_buffer == ?
-	DWORD* target = (DWORD*)(this->dxBorderBufferRender);
-
-	for(register int y=0;y<256*224;y+=8) {
-		*target++ = *(this->palette->gfxPal32+*source++);
-		*target++ = *(this->palette->gfxPal32+*source++);
-		*target++ = *(this->palette->gfxPal32+*source++);
-		*target++ = *(this->palette->gfxPal32+*source++);
-		*target++ = *(this->palette->gfxPal32+*source++);
-		*target++ = *(this->palette->gfxPal32+*source++);
-		*target++ = *(this->palette->gfxPal32+*source++);
-		*target++ = *(this->palette->gfxPal32+*source++);
-	}
-
-    drawBorderGeneric((DWORD*)(this->dxBorderBufferRender));
+    drawBorderGeneric((DWORD*)(this->dxBorderBufferRender),this->palette->gfxPal32);
 }
 
 void DirectDraw::drawBorder16()
 {
-	WORD* target = (WORD*)(this->dxBorderBufferRender);
-	unsigned short* source = sgb_border_buffer;
-
-	for(register int y=0;y<256*224;y+=8) {
-		*target++ = *(this->palette->gfxPal16+*source++);
-		*target++ = *(this->palette->gfxPal16+*source++);
-		*target++ = *(this->palette->gfxPal16+*source++);
-		*target++ = *(this->palette->gfxPal16+*source++);
-		*target++ = *(this->palette->gfxPal16+*source++);
-		*target++ = *(this->palette->gfxPal16+*source++);
-		*target++ = *(this->palette->gfxPal16+*source++);
-		*target++ = *(this->palette->gfxPal16+*source++);
-	}
-
-    drawBorderGeneric((WORD*)(this->dxBorderBufferRender));
+    drawBorderGeneric((WORD*)(this->dxBorderBufferRender),this->palette->gfxPal16);
 }
 
 #ifdef ALLOW_DEBUG

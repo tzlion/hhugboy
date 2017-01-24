@@ -102,7 +102,7 @@ class DirectDraw: public Renderer {
 		void drawScreenMix32();
 
         template<typename TYPE>
-        void drawBorderGeneric(TYPE* buffer);
+        void drawBorderGeneric(TYPE* buffer, TYPE* paletteSrc);
 		void drawBorder16();
 		void drawBorder32();
 		
