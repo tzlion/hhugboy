@@ -182,8 +182,13 @@ bool DirectDraw::init(Palette* palette)
     ddsd.dwSize = sizeof(DDSURFACEDESC2);
     ddsd.dwFlags = DDSD_PIXELFORMAT;
     directBollocksContainer->bSurface->Lock(NULL,&ddsd,DDLOCK_WAIT|DDLOCK_SURFACEMEMORYPTR,NULL);
-    
+
     this->bitCount = ddsd.ddpfPixelFormat.dwRGBBitCount;
+
+    if ( ddsd.ddpfPixelFormat.dwRGBBitCount == 16 )
+        showMessage(L"sixteen",69,GB);
+    if ( ddsd.ddpfPixelFormat.dwRGBBitCount == 32 )
+        showMessage(L"thirtytwo",69,GB);
     
     directBollocksContainer->bSurface->Unlock(NULL);
     
@@ -437,7 +442,7 @@ void DirectDraw::drawScreenMix32()
 			mix_temp2 = ((*older) + (*oldest)) >> 1;
 			
 			*target = ((mix_temp1*3 + mix_temp2) >> 2);
-			
+
 			++target;
 			++current;
 			++old;
@@ -482,7 +487,7 @@ void DirectDraw::drawScreenMix16()
 	WORD mix_temp2 = 0;
 	
 	WORD mask = ~RGB_BIT_MASK;
-   
+
 	if(options->video_mix_frames == MIX_FRAMES_MORE && !(GB->gbc_mode || sgb_mode)) {
 		for(int y = 0;y < 144*160;y++) {// mix it
 			mix_temp1 = ((*current&mask)>>1) + ((*old&mask)>>1);
@@ -490,13 +495,13 @@ void DirectDraw::drawScreenMix16()
 			
 			*target++ = ((((mix_temp1&mask)>>1) + ((mix_temp1&mask)>>1)&mask)>>1) +
 			((((mix_temp1&mask)>>1) + ((mix_temp2&mask)>>1)&mask)>>1);
-			
+
 			++current;
 			++old;
 			++older;
 			++oldest;
 		}
-		
+
 		void* temp1 = GB->gfx_buffer;
 		void* temp2 = GB->gfx_buffer_older;
 		GB->gfx_buffer = GB->gfx_buffer_oldest;
@@ -507,14 +512,62 @@ void DirectDraw::drawScreenMix16()
 		for(int y = 0;y < 144*160;y++){ // mix it
 			*target++ = (((*current++)&mask)>>1)+(((*old++)&mask)>>1);
 		}
-		
+
 		void* temp = GB->gfx_buffer;
 		GB->gfx_buffer = GB->gfx_buffer_old;
 		GB->gfx_buffer_old = temp;
 	}
-   
+
 	this->drawScreenGeneric((WORD*)dxBufferMix);
 }
+
+
+void DirectDraw::drawScreenMix16_Aesthetic()
+{
+	WORD* current = (WORD*)GB->gfx_buffer;
+	WORD* old = (WORD*)GB->gfx_buffer_old;
+	WORD* older = (WORD*)GB->gfx_buffer_older;
+	WORD* oldest = (WORD*)GB->gfx_buffer_oldest;
+
+	WORD* target = (WORD*)dxBufferMix;
+
+	WORD mix_temp1 = 0;
+	WORD mix_temp2 = 0;
+
+	if(options->video_mix_frames == MIX_FRAMES_MORE && !(GB->gbc_mode || sgb_mode)) { // Options and modes and stuff ugh
+		for(int y = 0;y < 144*160;y++) {// mix it
+			mix_temp1 = ((*current) + (*old)) >> 1;
+			mix_temp2 = ((*older) + (*oldest)) >> 1;
+
+			*target = ((mix_temp1*3 + mix_temp2) >> 2);
+
+			++target;
+			++current;
+			++old;
+			++older;
+			++oldest;
+		}
+
+		void* temp1 = GB->gfx_buffer;
+		void* temp2 = GB->gfx_buffer_older;
+		GB->gfx_buffer = GB->gfx_buffer_oldest;
+		GB->gfx_buffer_older = GB->gfx_buffer_old;
+		GB->gfx_buffer_old = temp1;
+		GB->gfx_buffer_oldest = temp2;
+	} else {
+		for(int y = 0;y < 144*160;y++) {// mix it
+			*target++ = ((*current++) + (*old++)) >> 1;
+		}
+
+		void* temp = GB->gfx_buffer;
+		GB->gfx_buffer = GB->gfx_buffer_old;
+		GB->gfx_buffer_old = temp;
+	}
+
+    this->drawScreenGeneric((WORD*)dxBufferMix);
+}
+
+
 
 void DirectDraw::gameboyFilter(WORD *target,WORD *src,int width,int height,int pitch)
 {
