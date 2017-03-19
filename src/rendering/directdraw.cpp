@@ -423,6 +423,12 @@ void DirectDraw::drawScreen32() {
    this->drawScreenGeneric((DWORD*)GB->gfx_buffer);
 }
 
+// I think what you gotta do is transform a DWORD style pixel to a WORD style pixel and fuck on that and then transform it back
+
+WORD transformPixel( DWORD lolman ) {}
+DWORD transformPixel( WORD lolman ) {}
+
+
 // draw the screen mixing frames
 void DirectDraw::drawScreenMix32()
 {   
@@ -435,13 +441,13 @@ void DirectDraw::drawScreenMix32()
 	
 	DWORD mix_temp1 = 0;
 	DWORD mix_temp2 = 0;
-	
+
 	if(options->video_mix_frames == MIX_FRAMES_MORE && !(GB->gbc_mode || sgb_mode)) { // Options and modes and stuff ugh
 		for(int y = 0;y < 144*160;y++) {// mix it
-			mix_temp1 = ((*current) + (*old)) >> 1;
-			mix_temp2 = ((*older) + (*oldest)) >> 1;
-			
-			*target = ((mix_temp1*3 + mix_temp2) >> 2);
+			mix_temp1 = (transformPixel(*current) + transformPixel(*old)) >> 1;
+			mix_temp2 = (transformPixel(*older) + transformPixel(*oldest)) >> 1;
+
+			*target = ((transformPixel(mix_temp1)*3 + transformPixel(mix_temp2)) >> 2);
 
 			++target;
 			++current;
@@ -449,7 +455,7 @@ void DirectDraw::drawScreenMix32()
 			++older;
 			++oldest;
 		}
-	
+
 		void* temp1 = GB->gfx_buffer;
 		void* temp2 = GB->gfx_buffer_older;
 		GB->gfx_buffer = GB->gfx_buffer_oldest;
@@ -460,7 +466,7 @@ void DirectDraw::drawScreenMix32()
 		for(int y = 0;y < 144*160;y++) {// mix it
 			*target++ = ((*current++) + (*old++)) >> 1;
 		}
-		
+
 		void* temp = GB->gfx_buffer;
 		GB->gfx_buffer = GB->gfx_buffer_old;
 		GB->gfx_buffer_old = temp;
