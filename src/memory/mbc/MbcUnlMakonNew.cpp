@@ -3,10 +3,10 @@
 //
 
 #include <cstdio>
-#include "MbcUnlMakon.h"
+#include "MbcUnlMakonNew.h"
 #include "../../debug.h"
 
-void MbcUnlMakon::writeMemory(unsigned short address, register byte data) {
+void MbcUnlMakonNew::writeMemory(unsigned short address, register byte data) {
     if ( (address&0xFF00)== 0x1400 && data == 0x55 ) {
         theMode = true;
         return;

@@ -8,7 +8,7 @@
 
 #include "MbcNin5.h"
 
-class MbcUnlMakon : public MbcNin5 {
+class MbcUnlMakonNew : public MbcNin5 {
     public:
         virtual void writeMemory(unsigned short address, register byte data) override;
     private:
