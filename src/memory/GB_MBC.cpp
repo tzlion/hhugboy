@@ -54,6 +54,7 @@
 #include "mbc/MbcUnlBbd.h"
 #include "mbc/MbcUnlDbzTrans.h"
 #include "mbc/MbcUnlHitek.h"
+#include "mbc/MbcUnlMakon.h"
 
 // So maybe this should be "cart" and a lot of whats in rom.cpp now e.g. autodetection should go in here..
 
@@ -215,6 +216,8 @@ void gb_mbc::setMemoryReadWrite(MbcType memory_type) {
             mbc = new BasicMbc();
             break;
     }
+
+    mbc = new MbcUnlMakon();
 
     mbc->init( gbMemMap, gbRom, gbMemory, gbCartridge, gbCartRam, gbRumbleCounter );
 }
