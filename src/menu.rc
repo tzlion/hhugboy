@@ -300,7 +300,8 @@ BEGIN
                     MENUITEM "&Sintax", IDM_UNLSINTAX
                     MENUITEM "&BBD (preliminary)", IDM_UNLBBD
                     MENUITEM "&Hitek", IDM_UNLHITEK
-                    MENUITEM "'Last Bible' &Multicart (VFame etc)", IDM_UNLLBMULTI
+                    MENUITEM "&Makon (new)", IDM_UNLMAKONNEW
+                    MENUITEM "'Last Bible' Multi&cart (VFame etc)", IDM_UNLLBMULTI
                     MENUITEM "&Disabled", IDM_UNLNONE
                 END
                 POPUP "E&xternal Device"

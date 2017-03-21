@@ -211,13 +211,14 @@ void gb_mbc::setMemoryReadWrite(MbcType memory_type) {
         case MEMORY_LBMULTI:
             mbc = new MbcUnlLbMulti();
             break;
+        case MEMORY_MAKONNEW:
+            mbc = new MbcUnlMakonNew();
+            break;
         case MEMORY_DEFAULT:
         default:
             mbc = new BasicMbc();
             break;
     }
-
-    mbc = new MbcUnlMakonNew();
 
     mbc->init( gbMemMap, gbRom, gbMemory, gbCartridge, gbCartRam, gbRumbleCounter );
 }

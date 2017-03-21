@@ -355,6 +355,11 @@ int gb_system::detectWeirdCarts()
             rom->RAMsize=03; // assumption for now
             rom->carttype=0x1B; // same
             break;
+        case UNL_MAKONNEW:
+            rom->RAMsize = 2; // assumption
+            rom->carttype=0x1B; // assumption
+            rom->mbcType = MEMORY_MAKONNEW;
+            break;
         case UNL_LBMULTI:
             rom->RAMsize = 9; // Doesn't really exist shh
             rom->mbcType = MEMORY_LBMULTI;

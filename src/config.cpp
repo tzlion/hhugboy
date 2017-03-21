@@ -155,6 +155,9 @@ void init_menu_options()
       case UNL_LBMULTI:
       	emuMenu.checkOption(IDM_UNLLBMULTI);
       break;
+      case UNL_MAKONNEW:
+      	emuMenu.checkOption(IDM_UNLMAKONNEW);
+      break;
       default:
          emuMenu.checkOption(IDM_UNLAUTO);    
       break;
