@@ -1,17 +1,21 @@
-//
-// Created by Alex on 20/03/2017.
-//
+/*
+ * Additional mapper support for hhugboy emulator
+ * by taizou 2017
+ * This file released under Creative Commons CC0 https://creativecommons.org/publicdomain/zero/1.0/legalcode
+ *
+ * As part of the hhugboy project it is also licensed under the GNU General Public License v2
+ * See "license.txt" in the project root
+ */
 
 #include <cstdio>
 #include "MbcUnlMakonNew.h"
-#include "../../debug.h"
 
 void MbcUnlMakonNew::writeMemory(unsigned short address, register byte data) {
     if ( (address&0xFF00)== 0x1400 && data == 0x55 ) {
-        theMode = true;
+        splitMode = true;
         return;
     }
-    if ( theMode ) {
+    if ( splitMode ) {
         if ( (address&0xFF00)== 0x2000 ) {
             int bankStartAddr = data<<0x0D;
             bankStartAddr &= rom_size_mask[(*gbRom)->ROMsize];
@@ -30,11 +34,22 @@ void MbcUnlMakonNew::writeMemory(unsigned short address, register byte data) {
         }
     }
 
-     //if(data == 0x69) {
-      // 	char buff[100];
-    	//	sprintf(buff,"Unk write %02X %04X",data,address);
-    	//	debug_print(buff);
-      //}
-
     MbcNin5::writeMemory(address, data);
+}
+
+MbcUnlMakonNew::MbcUnlMakonNew() :
+        splitMode(false) {
+}
+
+void MbcUnlMakonNew::resetVars(bool preserveMulticartState) {
+    splitMode = false;
+    AbstractMbc::resetVars(preserveMulticartState);
+}
+
+void MbcUnlMakonNew::readMbcSpecificVarsFromStateFile(FILE *statefile) {
+    fread(&(splitMode), sizeof(bool), 1, statefile);
+}
+
+void MbcUnlMakonNew::writeMbcSpecificVarsToStateFile(FILE *statefile) {
+    fwrite(&(splitMode), sizeof(bool), 1, statefile);
 }
