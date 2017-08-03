@@ -141,10 +141,10 @@ bool gb_system::save_state()
 {
    
    wchar_t old_directory[PROGRAM_PATH_SIZE]; // this needs unicode too
-   GetCurrentDirectory(PROGRAM_PATH_SIZE,old_directory);
-   if (!SetCurrentDirectory(options->state_directory.c_str())) {
-   		CreateDirectory(options->state_directory.c_str(),NULL);
-   		SetCurrentDirectory(options->state_directory.c_str());
+   GetCurrentDirectoryW(PROGRAM_PATH_SIZE,old_directory);
+   if (!SetCurrentDirectoryW(options->state_directory.c_str())) {
+   		CreateDirectoryW(options->state_directory.c_str(),NULL);
+   		SetCurrentDirectoryW(options->state_directory.c_str());
    }
    
    wchar_t save_filename[275]; 
@@ -169,9 +169,9 @@ bool gb_system::save_state()
    if(!statefile) 
    {       
       wchar_t dx_message[100];
-      wsprintf(dx_message,L"%s %d %s",str_table[SAVE_TO_SLOT],save_state_slot,str_table[SAVE_FAILED]);
+      wsprintfW(dx_message,L"%s %d %s",str_table[SAVE_TO_SLOT],save_state_slot,str_table[SAVE_FAILED]);
       renderer.showMessage(dx_message,60,this);
-      SetCurrentDirectory(old_directory);
+      SetCurrentDirectoryW(old_directory);
       return false; 
    }
    
@@ -325,10 +325,10 @@ bool gb_system::save_state()
     fclose(statefile);
    
    wchar_t dx_message[50];
-   wsprintf(dx_message,L"%s %d %s",str_table[SAVE_TO_SLOT],save_state_slot,str_table[SAVE_OK]);
+   wsprintfW(dx_message,L"%s %d %s",str_table[SAVE_TO_SLOT],save_state_slot,str_table[SAVE_OK]);
    renderer.showMessage(dx_message,60,this);
    
-   SetCurrentDirectory(old_directory);
+   SetCurrentDirectoryW(old_directory);
    
    return true;
 }
@@ -336,8 +336,8 @@ bool gb_system::save_state()
 bool gb_system::load_state()
 {
    wchar_t old_directory[PROGRAM_PATH_SIZE];
-   GetCurrentDirectory(PROGRAM_PATH_SIZE,old_directory);
-   SetCurrentDirectory(options->state_directory.c_str());
+   GetCurrentDirectoryW(PROGRAM_PATH_SIZE,old_directory);
+   SetCurrentDirectoryW(options->state_directory.c_str());
    
    wchar_t save_filename[275]; 
    wchar_t file_ext[5];
@@ -361,10 +361,10 @@ bool gb_system::load_state()
    if(!statefile) 
    { 
        wchar_t dx_message[50];
-      wsprintf(dx_message,L"%s %d %s",str_table[LOAD_FROM_SLOT],save_state_slot,str_table[SAVE_FAILED]);
+      wsprintfW(dx_message,L"%s %d %s",str_table[LOAD_FROM_SLOT],save_state_slot,str_table[SAVE_FAILED]);
       renderer.showMessage(dx_message,60,this);
    
-      SetCurrentDirectory(old_directory);
+      SetCurrentDirectoryW(old_directory);
       return false; 
    }
    
@@ -550,11 +550,11 @@ bool gb_system::load_state()
    flags |= ZFLAG<<14;*/
    
    wchar_t dx_message[50];
-   wsprintf(dx_message,L"%s %d %s",str_table[LOAD_FROM_SLOT],save_state_slot,str_table[SAVE_OK]);
+   wsprintfW(dx_message,L"%s %d %s",str_table[LOAD_FROM_SLOT],save_state_slot,str_table[SAVE_OK]);
    renderer.showMessage(dx_message,60,this);
    fclose(statefile);
    
-   SetCurrentDirectory(old_directory);
+   SetCurrentDirectoryW(old_directory);
    
    return true;
 }

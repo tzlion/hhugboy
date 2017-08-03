@@ -296,12 +296,15 @@ BEGIN
                 POPUP "&Unlicensed Compatibility Mode"
                 BEGIN
                     MENUITEM "&Auto", IDM_UNLAUTO, CHECKED
-                    MENUITEM "&Li Cheng (XingXing/Niutoude)", IDM_UNLNIUTOUDE
-                    MENUITEM "&Sintax", IDM_UNLSINTAX
-                    MENUITEM "&BBD (preliminary)", IDM_UNLBBD
+                    MENUITEM SEPARATOR
+                    MENUITEM "&BBD", IDM_UNLBBD
                     MENUITEM "&Hitek", IDM_UNLHITEK
+                    MENUITEM "&Li Cheng (XingXing/Niutoude)", IDM_UNLNIUTOUDE
                     MENUITEM "&Makon (new)", IDM_UNLMAKONNEW
-                    MENUITEM "'Last Bible' Multi&cart (VFame etc)", IDM_UNLLBMULTI
+                    MENUITEM "&Sintax", IDM_UNLSINTAX
+                    MENUITEM SEPARATOR
+                    MENUITEM "Multi&cart: 'Last Bible' (VFame etc)", IDM_UNLLBMULTI
+                    MENUITEM SEPARATOR
                     MENUITEM "&Disabled", IDM_UNLNONE
                 END
                 POPUP "E&xternal Device"

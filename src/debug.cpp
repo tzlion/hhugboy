@@ -38,19 +38,19 @@ void debug_print(const char* message)
 {
     wchar_t wmessage[1000];
     mbstowcs(wmessage,message,1000);
-    MessageBox(NULL, wmessage , w_emu_title, 0);
+    MessageBoxW(NULL, wmessage , w_emu_title, 0);
 }
 
 void debug_print(const wchar_t* message)
 {
-   MessageBox(NULL, message , w_emu_title, 0);
+   MessageBoxW(NULL, message , w_emu_title, 0);
 }
 
 
 
 void debug_log(const string message)
 {
-   SetCurrentDirectory(options->program_directory.c_str());
+   SetCurrentDirectoryW(options->program_directory.c_str());
    ofstream logfile("gest.log",ios_base::app);
 
    if(logfile.fail())
