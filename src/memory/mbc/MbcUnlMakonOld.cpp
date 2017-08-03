@@ -1,4 +1,6 @@
+#include <cstdio>
 #include "MbcUnlMakonOld.h"
+#include "../../debug.h"
 
 void MbcUnlMakonOld::writeMemory(unsigned short address, register byte data) {
 
@@ -8,9 +10,12 @@ void MbcUnlMakonOld::writeMemory(unsigned short address, register byte data) {
 
         if (data == 0) data = 1; // MBC1 stylez
 
-        byte flippo[8] = {0,1,2,4,3,6,5,7};
+        if (isWeirdMode) {
+            byte flippo[8] = {0,1,2,4,3,6,5,7};
 
-        data = switchOrder(data,flippo);
+            data = switchOrder(data,flippo);
+        }
+
         rom_bank = data;
 
         int bankAddress = rom_bank<<14;
@@ -25,11 +30,11 @@ void MbcUnlMakonOld::writeMemory(unsigned short address, register byte data) {
         return;
     }
 
-    if (address == 0x50ef) {
-        if (data == 10) {
-            // enable weird mode
-            // something like that
-            // maybe its gotta be 50ef
+    if (address >= 0x5000 && address <= 0x5FFF) {
+        if (data == 0x10 && address == 0x50EF) {
+            isWeirdMode = true;
+        } else {
+            debug_print("Unknown 5xxx write");
         }
         return;
     }
@@ -41,3 +46,21 @@ void MbcUnlMakonOld::writeMemory(unsigned short address, register byte data) {
 
     gbMemMap[address>>12][address&0x0FFF] = data;
 }
+
+MbcUnlMakonOld::MbcUnlMakonOld() :
+        isWeirdMode(false) {
+}
+
+void MbcUnlMakonOld::resetVars(bool preserveMulticartState) {
+    isWeirdMode = false;
+    AbstractMbc::resetVars(preserveMulticartState);
+}
+
+void MbcUnlMakonOld::readMbcSpecificVarsFromStateFile(FILE *statefile) {
+    fread(&(isWeirdMode), sizeof(bool), 1, statefile);
+}
+
+void MbcUnlMakonOld::writeMbcSpecificVarsToStateFile(FILE *statefile) {
+    fwrite(&(isWeirdMode), sizeof(bool), 1, statefile);
+}
+
