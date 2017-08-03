@@ -29,10 +29,7 @@ void MbcUnlRockman8::writeMemory(unsigned short address, register byte data) {
 
     if(address < 0x4000) // Is it a ROM bank switch?
     {
-
-        // Should be lookin for the init byte really
-
-       /* data &= 0x1F;
+        data &= 0x1F;
 
         if(data == 0)
             data = 1;
@@ -49,28 +46,7 @@ void MbcUnlRockman8::writeMemory(unsigned short address, register byte data) {
         gbMemMap[0x4] = &(*gbCartridge)[cart_address];
         gbMemMap[0x5] = &(*gbCartridge)[cart_address+0x1000];
         gbMemMap[0x6] = &(*gbCartridge)[cart_address+0x2000];
-        gbMemMap[0x7] = &(*gbCartridge)[cart_address+0x3000];*/
-
-        if(data == 0)
-            data = 1;
-
-        rom_bank = data;
-
-        byte flippo[8]=
-                {0,1,2,4,3,6,5,7};
-
-        rom_bank = switchOrder(data,flippo);
-
-        rom_bank &= 0x0f; // pawbibly not necessary
-
-        int cadr = rom_bank<<14;
-
-        cadr &= rom_size_mask[(*gbRom)->ROMsize];
-
-        gbMemMap[0x4] = &(*gbCartridge)[cadr];
-        gbMemMap[0x5] = &(*gbCartridge)[cadr+0x1000];
-        gbMemMap[0x6] = &(*gbCartridge)[cadr+0x2000];
-        gbMemMap[0x7] = &(*gbCartridge)[cadr+0x3000];
+        gbMemMap[0x7] = &(*gbCartridge)[cart_address+0x3000];
 
         return;
     }

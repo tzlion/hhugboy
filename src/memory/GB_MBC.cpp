@@ -54,6 +54,7 @@
 #include "mbc/MbcUnlBbd.h"
 #include "mbc/MbcUnlDbzTrans.h"
 #include "mbc/MbcUnlHitek.h"
+#include "mbc/MbcUnlMakonOld.h"
 
 // So maybe this should be "cart" and a lot of whats in rom.cpp now e.g. autodetection should go in here..
 
@@ -188,6 +189,9 @@ void gb_mbc::setMemoryReadWrite(MbcType memory_type) {
             break;
         case MEMORY_ROCKMAN8:
             mbc = new MbcUnlRockman8();
+            break;
+        case MEMORY_MAKONOLD:
+            mbc = new MbcUnlMakonOld();
             break;
         case MEMORY_BC:
             mbc = new MbcLicHuColl();

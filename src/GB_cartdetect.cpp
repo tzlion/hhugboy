@@ -450,8 +450,10 @@ int gb_system::detectWeirdCarts()
     }
     else
         // Rockman 8
-    if(!strcmp(rom->name,"ROCKMAN 99"))
+    if(!strcmp(rom->name,"ROCKMAN 99")) {
         rom->mbcType = MEMORY_ROCKMAN8;
+        rom->mbcType = MEMORY_MAKONOLD; // temp
+    }
     else
 
         // Collection Carts
