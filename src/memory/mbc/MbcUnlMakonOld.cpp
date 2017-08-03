@@ -2,6 +2,8 @@
 #include "MbcUnlMakonOld.h"
 #include "../../debug.h"
 
+
+
 void MbcUnlMakonOld::writeMemory(unsigned short address, register byte data) {
 
     // Maybe this should extend MBC1 idk
@@ -22,6 +24,8 @@ void MbcUnlMakonOld::writeMemory(unsigned short address, register byte data) {
 
         bankAddress &= rom_size_mask[(*gbRom)->ROMsize];
 
+        bankAddress += multicartOffset;
+
         gbMemMap[0x4] = &(*gbCartridge)[bankAddress];
         gbMemMap[0x5] = &(*gbCartridge)[bankAddress+0x1000];
         gbMemMap[0x6] = &(*gbCartridge)[bankAddress+0x2000];
@@ -33,6 +37,17 @@ void MbcUnlMakonOld::writeMemory(unsigned short address, register byte data) {
     if (address >= 0x5000 && address <= 0x5FFF) {
         if (data == 0x10 && address == 0x50EF) {
             isWeirdMode = true;
+        } else if (address == 0x5001) {
+            data &= 0x3f;
+            multicartOffset = (data << 0x0f);
+            //char ass[69];
+            //sprintf(ass,"%02x",data);
+            //debug_print(ass);
+            if(multicartOffset>0) {
+                resetRomMemoryMap(true);
+            }
+        } else if (address == 0x5002) {
+            (*gbRom)->ROMsize = 0x04;
         } else {
             debug_print("Unknown 5xxx write");
         }
