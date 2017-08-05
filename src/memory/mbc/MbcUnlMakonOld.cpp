@@ -13,24 +13,9 @@ void MbcUnlMakonOld::writeMemory(unsigned short address, register byte data) {
         if (data == 0) data = 1; // MBC1 stylez
 
         if (isWeirdMode) {
-
-            byte oldata=data;
-
-       //     char ass[69];
-         //   sprintf(ass,"%02x",data);
-           // if(data>=0x08)debug_print(ass);
-
            //byte flippo[8] = {0,1,2,4,3,6,5,7}; // rocco
             byte flippo[8] = {0,1,2,3,4,7,5,6}; // mario??????? doesnt work
-
-
             data = switchOrder(data,flippo);
-
-           // data &= 0x1f; // mario????
-
-            char ass[69];
-            sprintf(ass,"Mapped %02x to %02x",oldata,data);
-            //debug_print(ass);
         }
 
         rom_bank = data;
@@ -49,30 +34,27 @@ void MbcUnlMakonOld::writeMemory(unsigned short address, register byte data) {
         return;
     }
 
-    if (address >= 0x5000 && address <= 0x5FFF) {
-        if (data == 0x10 &&( address == 0x50EF || address == 0x5003)) {
-            isWeirdMode = true;
-            // bripro observed write of 20 to 5xxx tho.. and writes to 5003 too
-            // OK so when loading the level it writes 00 to 5003 hm
-            // Maybe check this behav for addresses e.g. is it addres & 5003 = whatever?
-        } else if (data == 0x00 && address == 0x5003) {
-            isWeirdMode = false;
-        } else if (address == 0x5001) {
-            data &= 0x3f;
-            multicartOffset = (data << 0x0f);
-            //char ass[69];
-            //sprintf(ass,"%02x",data);
-            //debug_print(ass);
-            if(multicartOffset>0) {
+    if ((address & 0xF000) == 0x5000) {
+
+        switch(address & 0x03) {
+            // no clue if 0x00 does anything
+            case 0x01:
+                data &= 0x3f; // should be limited to the actual rom size
+                multicartOffset = (data << 0x0f);
                 resetRomMemoryMap(true);
-            }
-        } else if (address == 0x5002) {
-            (*gbRom)->ROMsize = 0x04; // dubious but works 5now
-        } //else {
-           // char ass[69];
-         //   sprintf(ass,"%02x to %04x",data,address);
-          //  debug_print(ass);
-        //}
+                // unemulated behaviour: a further switch should not be possible after the 1st one
+                // also unemulated: the actual change should not be effected until you do the write to 5002
+                break;
+            case 0x02:
+                (*gbRom)->ROMsize = 0x04; // dubious but works 5now- we really need to map the actual size values here
+                // also this write seems to specify if it needs save data or not (??)
+                break;
+            case 0x03:
+                isWeirdMode = (data & 0x10) == 0x10;
+                // unemulated behaviour: the change is actually effected immediately on the real cart
+                // e.g. the active rom bank changes w/o a further bankswitch required
+                break;
+        }
         return;
     }
 
