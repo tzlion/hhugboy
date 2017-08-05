@@ -13,9 +13,24 @@ void MbcUnlMakonOld::writeMemory(unsigned short address, register byte data) {
         if (data == 0) data = 1; // MBC1 stylez
 
         if (isWeirdMode) {
-            byte flippo[8] = {0,1,2,4,3,6,5,7};
+
+            byte oldata=data;
+
+       //     char ass[69];
+         //   sprintf(ass,"%02x",data);
+           // if(data>=0x08)debug_print(ass);
+
+           //byte flippo[8] = {0,1,2,4,3,6,5,7}; // rocco
+            byte flippo[8] = {0,1,2,3,4,7,5,6}; // mario??????? doesnt work
+
 
             data = switchOrder(data,flippo);
+
+           // data &= 0x1f; // mario????
+
+            char ass[69];
+            sprintf(ass,"Mapped %02x to %02x",oldata,data);
+            //debug_print(ass);
         }
 
         rom_bank = data;
@@ -35,8 +50,13 @@ void MbcUnlMakonOld::writeMemory(unsigned short address, register byte data) {
     }
 
     if (address >= 0x5000 && address <= 0x5FFF) {
-        if (data == 0x10 && address == 0x50EF) {
+        if (data == 0x10 &&( address == 0x50EF || address == 0x5003)) {
             isWeirdMode = true;
+            // bripro observed write of 20 to 5xxx tho.. and writes to 5003 too
+            // OK so when loading the level it writes 00 to 5003 hm
+            // Maybe check this behav for addresses e.g. is it addres & 5003 = whatever?
+        } else if (data == 0x00 && address == 0x5003) {
+            isWeirdMode = false;
         } else if (address == 0x5001) {
             data &= 0x3f;
             multicartOffset = (data << 0x0f);
@@ -47,10 +67,12 @@ void MbcUnlMakonOld::writeMemory(unsigned short address, register byte data) {
                 resetRomMemoryMap(true);
             }
         } else if (address == 0x5002) {
-            (*gbRom)->ROMsize = 0x04;
-        } else {
-            debug_print("Unknown 5xxx write");
-        }
+            (*gbRom)->ROMsize = 0x04; // dubious but works 5now
+        } //else {
+           // char ass[69];
+         //   sprintf(ass,"%02x to %04x",data,address);
+          //  debug_print(ass);
+        //}
         return;
     }
 

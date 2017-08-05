@@ -449,8 +449,8 @@ int gb_system::detectWeirdCarts()
         rom->RAMsize = 0;
     }
     else
-        // Rockman 8
     if(!strcmp(rom->name,"ROCKMAN 99")||!strcmp(rom->name,"SUPER MARIO 3")||!strcmp(rom->name,"POKEBOM USA")) {
+        // Rockman 8
         debug_print("ROCK ON");
         rom->mbcType = MEMORY_ROCKMAN8;
         rom->mbcType = MEMORY_MAKONOLD; // temp
