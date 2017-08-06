@@ -1,10 +1,15 @@
 #include <cstdio>
 #include "MbcUnlMakonOld.h"
 #include "../../debug.h"
-
+#include "MbcNin1.h"
 
 
 void MbcUnlMakonOld::writeMemory(unsigned short address, register byte data) {
+
+    if(address < 0x2000) {
+        MbcNin1::writeMemory(address,data);
+        return;
+    }
 
     // Maybe this should extend MBC1 idk
 
@@ -49,6 +54,14 @@ void MbcUnlMakonOld::writeMemory(unsigned short address, register byte data) {
                 break;
             case 0x02:
                 (*gbRom)->ROMsize = 0x04; // dubious but works 5now- we really need to map the actual size values here
+                if ((data & 0xF0) == 0xE0) {
+                    debug_print("Saving data in this game is not currently emulated");
+                   // (*gbRom)->RAMsize = 0x02;
+                   // (*gbRom)->battery = true;
+                } else {
+                  //  (*gbRom)->RAMsize = 0x00;
+                  //  (*gbRom)->battery = false;
+                }
                 // also this write seems to specify if it needs save data or not (??)
                 break;
             case 0x03:
@@ -65,7 +78,8 @@ void MbcUnlMakonOld::writeMemory(unsigned short address, register byte data) {
         return;
     }
 
-    gbMemMap[address>>12][address&0x0FFF] = data;
+    MbcNin1::writeMemory(address,data);
+    return;
 }
 
 MbcUnlMakonOld::MbcUnlMakonOld() :
@@ -79,9 +93,14 @@ void MbcUnlMakonOld::resetVars(bool preserveMulticartState) {
 
 void MbcUnlMakonOld::readMbcSpecificVarsFromStateFile(FILE *statefile) {
     fread(&(isWeirdMode), sizeof(bool), 1, statefile);
+    fread(&(multicartOffset),sizeof(int),1,statefile);
+    fread(&((*gbRom)->ROMsize),sizeof(bool),1,statefile);
+    resetRomMemoryMap(true);
 }
 
 void MbcUnlMakonOld::writeMbcSpecificVarsToStateFile(FILE *statefile) {
     fwrite(&(isWeirdMode), sizeof(bool), 1, statefile);
+    fwrite(&(multicartOffset),sizeof(int),1,statefile);
+    fwrite(&((*gbRom)->ROMsize),sizeof(bool),1,statefile);
 }
 

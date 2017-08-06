@@ -3,10 +3,10 @@
 #define HHUGBOY_MBCUNLMAKONOLD_H
 
 
-#include "BasicMbc.h"
 
-class MbcUnlMakonOld: public BasicMbc {
-    public:
+#include "MbcNin1.h"
+class MbcUnlMakonOld: public MbcNin1 {
+   public:
         MbcUnlMakonOld();
         virtual void writeMemory(unsigned short address, register byte data) override;
 

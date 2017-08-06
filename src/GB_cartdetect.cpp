@@ -449,14 +449,13 @@ int gb_system::detectWeirdCarts()
         rom->RAMsize = 0;
     }
     else
-    if(!strcmp(rom->name,"ROCKMAN 99")||!strcmp(rom->name,"SUPER MARIO 3")||!strcmp(rom->name,"POKEBOM USA")) {
+    if(!strcmp(rom->name,"ROCKMAN 99")||!strcmp(rom->name,"SUPER MARIO 3")||(!strcmp(rom->name,"POKEBOM USA") && romFileSize > 512*1024)) {
         // Rockman 8
-        debug_print("ROCK ON");
         rom->mbcType = MEMORY_ROCKMAN8;
         rom->mbcType = MEMORY_MAKONOLD; // temp
-        if (!strcmp(rom->name,"POKEBOM USA")) { // Really only for NT x Wario
-            rom->battery=true;
-            rom->RAMsize = 2;
+        if (!strcmp(rom->name,"POKEBOM USA")) { // for NT multicarts
+           // rom->battery=true;
+           // rom->RAMsize = 2;
         }
     }
     else
