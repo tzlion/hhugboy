@@ -164,6 +164,8 @@ void AbstractMbc::resetRomMemoryMap(bool preserveMulticartState) {
     gbMemMap[0x7] = &(*gbCartridge)[multicartOffset+0x7000];
 
     //todo: do this on savestates too
-    gbMemMap[0xA] = &(*gbCartRam)[multicartRamOffset];
-    gbMemMap[0xB] = &(*gbCartRam)[multicartRamOffset+0x1000];
+    if((*gbRom)->RAMsize>2) {
+        gbMemMap[0xA] = &(*gbCartRam)[multicartRamOffset];
+        gbMemMap[0xB] = &(*gbCartRam)[multicartRamOffset + 0x1000];
+    }
 }
