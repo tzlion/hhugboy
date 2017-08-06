@@ -383,6 +383,38 @@ int gb_system::detectWeirdCarts()
         rom->ROMsize = 2;
     }
 
+    // Makon/NT multicarts with menu in Pocket Bomberman
+    if(!strcmp(rom->name,"POKEBOM USA") && romFileSize > 512*1024) {
+        if(cartridge[0x102] == 0xE0) {
+            // 23 in 1 with mario
+            rom->mbcType = MEMORY_MAKONOLD;
+        }
+        if(cartridge[0x102] == 0xC0) {
+            // 25 in 1 with rockman
+            rom->mbcType = MEMORY_MAKONOLD;
+            rom->battery = true;
+            rom->RAMsize = 2;
+        }
+    }
+
+    if(strcmp(rom->name,"ROCKMAN 99")/* || strcmp(rom->name,"DONKEY\x09KONG 5")*/) {
+        if (cartridge[0x8001] == 0xB7) {
+            // old dubious dump
+            rom->mbcType = MEMORY_ROCKMAN8;
+        } else {
+            rom->mbcType = MEMORY_MAKONOLD; // temp
+        }
+    }
+
+    if(!strcmp(rom->name,"SUPER MARIO 3")) {
+        if(romFileSize != 512*1024) {
+            // probably patched or underdump or otherwise not what i'm expect
+        } else {
+            rom->mbcType = MEMORY_MAKONOLD;
+            rom->ROMsize = 4;
+        }
+    }
+
     char ball_name[16] = { 0x42,0x61,0x6C,0x6C,0x20,0x20,0x20,0x20,0x20,0x20,0x20,0x20,0x20,0x20,0x00,(char)0x80 };
     // Ball (Bung)(PD)[C] and Capman (Lik-Sang)(PD)[C] and Fix & Foxi [C][t1]
     if(!strcmp(rom->name,ball_name) || strstr(rom->name,"CAPMAN") || !strcmp(rom->name,"LUPO +3HI"))
@@ -449,17 +481,6 @@ int gb_system::detectWeirdCarts()
         rom->RAMsize = 0;
     }
     else
-    if(!strcmp(rom->name,"ROCKMAN 99")||!strcmp(rom->name,"SUPER MARIO 3")||(!strcmp(rom->name,"POKEBOM USA") && romFileSize > 512*1024)) {
-        // Rockman 8
-        rom->mbcType = MEMORY_ROCKMAN8;
-        rom->mbcType = MEMORY_MAKONOLD; // temp
-        if (!strcmp(rom->name,"POKEBOM USA")) { // for NT multicarts
-           // rom->battery=true;
-           // rom->RAMsize = 2;
-        }
-    }
-    else
-
         // Collection Carts
     if(!strcmp(rom->name,"BOMCOL") || !strcmp(rom->name,"BOMSEL") || !strcmp(rom->name,"GENCOL") || strstr(rom->name,"MOMOCOL") || strstr(rom->name,"SUPERCHINESE 12"))
     {
