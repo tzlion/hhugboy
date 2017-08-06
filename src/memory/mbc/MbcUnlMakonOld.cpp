@@ -41,7 +41,9 @@ void MbcUnlMakonOld::writeMemory(unsigned short address, register byte data) {
             case 0x01:
                 data &= 0x3f; // should be limited to the actual rom size
                 multicartOffset = (data << 0x0f);
-                resetRomMemoryMap(true);
+                if (multicartOffset > 0) {
+                    resetRomMemoryMap(true);
+                }
                 // unemulated behaviour: a further switch should not be possible after the 1st one
                 // also unemulated: the actual change should not be effected until you do the write to 5002
                 break;

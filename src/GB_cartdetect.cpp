@@ -454,6 +454,10 @@ int gb_system::detectWeirdCarts()
         debug_print("ROCK ON");
         rom->mbcType = MEMORY_ROCKMAN8;
         rom->mbcType = MEMORY_MAKONOLD; // temp
+        if (!strcmp(rom->name,"POKEBOM USA")) { // Really only for NT x Wario
+            rom->battery=true;
+            rom->RAMsize = 2;
+        }
     }
     else
 
