@@ -397,22 +397,21 @@ int gb_system::detectWeirdCarts()
         }
     }
 
-    if(strcmp(rom->name,"ROCKMAN 99")/* || strcmp(rom->name,"DONKEY\x09KONG 5")*/) {
+    if(!strcmp(rom->name,"ROCKMAN 99")) {
         if (cartridge[0x8001] == 0xB7) {
             // old dubious dump
             rom->mbcType = MEMORY_ROCKMAN8;
         } else {
-            rom->mbcType = MEMORY_MAKONOLD; // temp
+            rom->mbcType = MEMORY_MAKONOLD;
         }
     }
 
-    if(!strcmp(rom->name,"SUPER MARIO 3")) {
-        if(romFileSize != 512*1024) {
-            // probably patched or underdump or otherwise not what i'm expect
-        } else {
-            rom->mbcType = MEMORY_MAKONOLD;
-            rom->ROMsize = 4;
+    if(!strcmp(rom->name,"SUPER MARIO 3") || !strcmp(rom->name,"DONKEY\x09KONG 5")) {
+        if(romFileSize < 512*1024) {
+            debug_print("This ROM is probably an underdump or patch and may not work properly");
         }
+        rom->mbcType = MEMORY_MAKONOLD;
+        rom->ROMsize = 4;
     }
 
     char ball_name[16] = { 0x42,0x61,0x6C,0x6C,0x20,0x20,0x20,0x20,0x20,0x20,0x20,0x20,0x20,0x20,0x00,(char)0x80 };
