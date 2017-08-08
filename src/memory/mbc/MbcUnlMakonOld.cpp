@@ -71,6 +71,12 @@ void MbcUnlMakonOld::writeMemory(unsigned short address, register byte data) {
                     case 0x08: // 256k
                         (*gbRom)->ROMsize = 0x03;
                         break;
+                    case 0x0c: // 128k
+                        (*gbRom)->ROMsize = 0x02;
+                        break;
+                    case 0x0e: // 64k
+                        (*gbRom)->ROMsize = 0x01;
+                        break;
                     case 0x0f: // 32k
                         (*gbRom)->ROMsize = 0x00;
                         break;
