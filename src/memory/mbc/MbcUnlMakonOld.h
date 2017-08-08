@@ -7,13 +7,15 @@
 #include "MbcNin1.h"
 class MbcUnlMakonOld: public MbcNin1 {
    public:
-        MbcUnlMakonOld();
+        MbcUnlMakonOld(int originalRomSize);
         virtual void writeMemory(unsigned short address, register byte data) override;
 
         virtual void resetVars(bool preserveMulticartState) override;
 
         virtual void readMbcSpecificVarsFromStateFile(FILE *savefile) override;
         virtual void writeMbcSpecificVarsToStateFile(FILE *savefile) override;
+
+        int originalRomSize;
 
     private:
         bool isWeirdMode;

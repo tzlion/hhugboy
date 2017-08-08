@@ -191,7 +191,7 @@ void gb_mbc::setMemoryReadWrite(MbcType memory_type) {
             mbc = new MbcUnlRockman8();
             break;
         case MEMORY_MAKONOLD:
-            mbc = new MbcUnlMakonOld();
+            mbc = new MbcUnlMakonOld((*gbRom)->ROMsize);
             break;
         case MEMORY_BC:
             mbc = new MbcLicHuColl();

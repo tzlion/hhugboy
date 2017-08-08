@@ -403,6 +403,7 @@ int gb_system::detectWeirdCarts()
             rom->mbcType = MEMORY_ROCKMAN8;
         } else {
             rom->mbcType = MEMORY_MAKONOLD;
+            rom->ROMsize = 3;
         }
     }
 

@@ -105,13 +105,14 @@ void MbcUnlMakonOld::writeMemory(unsigned short address, register byte data) {
     return;
 }
 
-MbcUnlMakonOld::MbcUnlMakonOld() :
+MbcUnlMakonOld::MbcUnlMakonOld(int originalRomSize) :
         isWeirdMode(false) {
+    this->originalRomSize = originalRomSize;
 }
 
 void MbcUnlMakonOld::resetVars(bool preserveMulticartState) {
     isWeirdMode = false;
-    (*gbRom)->ROMsize = 0x04;
+    (*gbRom)->ROMsize = originalRomSize;
     AbstractMbc::resetVars(preserveMulticartState);
 }
 
