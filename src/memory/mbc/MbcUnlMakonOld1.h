@@ -1,13 +1,13 @@
 
-#ifndef HHUGBOY_MBCUNLMAKONOLD_H
-#define HHUGBOY_MBCUNLMAKONOLD_H
+#ifndef HHUGBOY_MBCUNLMAKONOLD1_H
+#define HHUGBOY_MBCUNLMAKONOLD1_H
 
 
 
 #include "MbcNin1.h"
-class MbcUnlMakonOld: public BasicMbc {
+class MbcUnlMakonOld1: public BasicMbc {
    public:
-        MbcUnlMakonOld(int originalRomSize);
+        MbcUnlMakonOld1(int originalRomSize);
         virtual void writeMemory(unsigned short address, register byte data) override;
 
         virtual void resetVars(bool preserveMulticartState) override;
@@ -17,7 +17,7 @@ class MbcUnlMakonOld: public BasicMbc {
 
         int originalRomSize;
 
-    private:
+    protected:
         void handleOldMakonCartModeSet(unsigned short address, byte data);
         bool isWeirdMode;
         byte flippo1[8] = {0,1,2,4,3,6,5,7}; // rockman
@@ -25,4 +25,4 @@ class MbcUnlMakonOld: public BasicMbc {
 };
 
 
-#endif //HHUGBOY_MBCUNLMAKONOLD_H
+#endif //HHUGBOY_MBCUNLMAKONOLD1_H
