@@ -154,18 +154,26 @@ void AbstractMbc::resetRomMemoryMap(bool preserveMulticartState) {
         multicartOffset = 0;
         multicartRamOffset = 0;
     }
-    gbMemMap[0x0] = &(*gbCartridge)[multicartOffset+0x0000];
-    gbMemMap[0x1] = &(*gbCartridge)[multicartOffset+0x1000];
-    gbMemMap[0x2] = &(*gbCartridge)[multicartOffset+0x2000];
-    gbMemMap[0x3] = &(*gbCartridge)[multicartOffset+0x3000];
-    gbMemMap[0x4] = &(*gbCartridge)[multicartOffset+0x4000];
-    gbMemMap[0x5] = &(*gbCartridge)[multicartOffset+0x5000];
-    gbMemMap[0x6] = &(*gbCartridge)[multicartOffset+0x6000];
-    gbMemMap[0x7] = &(*gbCartridge)[multicartOffset+0x7000];
+    setRom0Offset(multicartOffset);
+    setRom1Offset(multicartOffset + 0x4000);
 
     //todo: do this on savestates too
     if((*gbRom)->RAMsize>2) {
         gbMemMap[0xA] = &(*gbCartRam)[multicartRamOffset];
         gbMemMap[0xB] = &(*gbCartRam)[multicartRamOffset + 0x1000];
     }
+}
+
+void AbstractMbc::setRom0Offset(int offset) {
+    gbMemMap[0x0] = &(*gbCartridge)[offset];
+    gbMemMap[0x1] = &(*gbCartridge)[offset+0x1000];
+    gbMemMap[0x2] = &(*gbCartridge)[offset+0x2000];
+    gbMemMap[0x3] = &(*gbCartridge)[offset+0x3000];
+}
+
+void AbstractMbc::setRom1Offset(int offset) {
+    gbMemMap[0x4] = &(*gbCartridge)[offset];
+    gbMemMap[0x5] = &(*gbCartridge)[offset+0x1000];
+    gbMemMap[0x6] = &(*gbCartridge)[offset+0x2000];
+    gbMemMap[0x7] = &(*gbCartridge)[offset+0x3000];
 }
