@@ -122,7 +122,11 @@ enum unlCompatMode
 	UNL_SINTAX,
 	UNL_BBD,
 	UNL_HITEK,
-	UNL_LBMULTI
+	UNL_LBMULTI,
+	UNL_NTKL1,
+	UNL_NTKL2,
+	UNL_MBC1,
+	UNL_MBC5
 };
 
 #endif

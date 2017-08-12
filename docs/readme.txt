@@ -1,4 +1,4 @@
-hhugboy v1.1.8
+hhugboy v1.2 dev
 a Game Boy/Game Boy Color emulator for Windows
 by taizou (cactusgunman@gmail.com)
 http://hhug.me/
@@ -30,12 +30,17 @@ https://github.com/tzlion/hhugboy
            e.g. some Li Cheng games do not have the "Niutoude" logo.
            If a game doesn't work, try selecting the mode manually.
 
-           For multicarts, the detection is currently done based on the ROM
-           title and size, meaning only the following predefined carts can be
-           autodetected for now:
+           For other games and multicarts, the detection is currently done
+           based on the ROM title and size, meaning only certain predefined
+           carts can be autodetected for now:
               - Vast Fame 12-in-1
               - Vast Fame 18-in-1
               - SL 36-in-1 with Chinese Pokemon Gold & Silver
+              - 23-in-1 CR2011 with Super Mario Special 3
+              - 25-in-1 NT-9920 with Rockman 8
+              - Super Mario Special 3
+              - Donkey Kong 5
+              - Rockman 8
 
  Li Cheng  For games released by Li Cheng, also known as Xing Xing, Niutoude,
            Winsen or Yongsheng.
@@ -51,11 +56,21 @@ https://github.com/tzlion/hhugboy
 
  Hitek     For games by Hitek.
 
+ NT KL type 1/2
+           Earlier carts released by NT with "KL" PCB codes, including older
+           Makon games and some multicarts.
+           Type 1: Rockman 8
+           Type 2: Super Mario 3, Donkey Kong 5, rumble carts
+
  'Last Bible' multicart
            A type of multicart using menu music taken from 'Megami Tensei
            Gaiden: Last Bible' aka 'Revelations: The Demon Slayer'.
            This notably covers all of Vast Fame's multicarts, in addition to a
            number of more generic carts.
+
+ MBC1/5 compatible
+           For unknown carts that fake their header value but are actually
+           compatible with common mappers.
 
  Disabled  No compatibility mode
 
@@ -137,6 +152,10 @@ https://github.com/tzlion/hhugboy
  * Other language translations
 
 [ RELEASE HISTORY ]- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+
+ v1.2 xx xx 2017
+ * Support for NT KL carts e.g. old Makon games
+ * Option for compatibility with unlicensed games using MBC1/5
 
  v1.1.8 7th January 2017
  * Hitek game support
