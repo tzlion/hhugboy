@@ -16,5 +16,14 @@ void MbcUnlMakonOld2::writeMemory(unsigned short address, register byte data) {
         return;
     }
 
+    if (address >= 0x4000 && address <= 0x4FFF) {
+        // todo later. rumble in the jungle
+        if((data & 0x02) == 0x02) {
+            // Rumble ON
+        } else {
+            // Rumble OFF
+        }
+    }
+
     MbcUnlMakonOld1::writeMemory(address, data);
 }

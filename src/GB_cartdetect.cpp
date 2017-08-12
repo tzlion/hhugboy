@@ -388,6 +388,7 @@ int gb_system::detectWeirdCarts()
         if(cartridge[0x102] == 0xE0) {
             // 23 in 1 with mario
             rom->mbcType = MEMORY_MAKONOLD2;
+            rom->rumble = true;
         }
         if(cartridge[0x102] == 0xC0) {
             // 25 in 1 with rockman
@@ -412,6 +413,7 @@ int gb_system::detectWeirdCarts()
             debug_print("This ROM is probably an underdump or patch and may not work properly");
         }
         rom->mbcType = MEMORY_MAKONOLD2;
+        rom->rumble = true;
         rom->ROMsize = 4;
     }
 

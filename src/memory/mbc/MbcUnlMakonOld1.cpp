@@ -12,7 +12,8 @@ void MbcUnlMakonOld1::writeMemory(unsigned short address, register byte data) {
     }
 
     if (address >= 0x2000 && address <= 0x3FFF) {
-        if (data == 0) data = 1; // MBC1 stylez
+        data &= 0x1f; // MBC1 stylez
+        if (data == 0) data = 1;
         if (isWeirdMode) {
             data = switchOrder(data,flippo1);
         }
