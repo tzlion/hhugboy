@@ -416,6 +416,20 @@ int gb_system::detectWeirdCarts()
             rom->rumble = true;
             rom->mbcType = MEMORY_NTKL2;
             break;
+        case UNL_MBC1:
+            rom->battery = true;
+            rom->RAMsize = 03;
+            rom->ROMsize = detectGbRomSize();
+            rom->mbcType = MEMORY_MBC1;
+            rom->carttype = 0x03;
+            break;
+        case UNL_MBC5:
+            rom->battery = true;
+            rom->RAMsize = 03;
+            rom->ROMsize = detectGbRomSize();
+            rom->mbcType = MEMORY_MBC5;
+            rom->carttype = 0x1B;
+            break;
         case UNL_NONE: default:
             break;
     }

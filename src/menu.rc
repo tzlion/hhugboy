@@ -306,6 +306,9 @@ BEGIN
                     MENUITEM SEPARATOR
                     MENUITEM "Multi&cart: 'Last Bible' (VFame etc)", IDM_UNLLBMULTI
                     MENUITEM SEPARATOR
+                    MENUITEM "MBC&1 compatible", IDM_UNLMBC1COMPAT
+                    MENUITEM "MBC&5 compatible", IDM_UNLMBC5COMPAT
+                    MENUITEM SEPARATOR
                     MENUITEM "&Disabled", IDM_UNLNONE
                 END
                 POPUP "E&xternal Device"
