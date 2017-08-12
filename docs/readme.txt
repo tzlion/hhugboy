@@ -1,4 +1,4 @@
-hhugboy v1.2 dev
+hhugboy v1.2 beta1
 a Game Boy/Game Boy Color emulator for Windows
 by taizou (cactusgunman@gmail.com)
 http://hhug.me/
