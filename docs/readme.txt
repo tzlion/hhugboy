@@ -1,4 +1,4 @@
-hhugboy v1.2 beta1
+hhugboy v1.2 beta2
 a Game Boy/Game Boy Color emulator for Windows
 by taizou (cactusgunman@gmail.com)
 http://hhug.me/
@@ -155,7 +155,8 @@ https://github.com/tzlion/hhugboy
 
  v1.2 xx xx 2017
  * Support for NT KL carts e.g. old Makon games
- * Option for compatibility with unlicensed games using MBC1/5
+ * Option for compatibility with unlicensed games using MBC1/
+ * "Realistic" colour mode is now off by default
 
  v1.1.8 7th January 2017
  * Hitek game support

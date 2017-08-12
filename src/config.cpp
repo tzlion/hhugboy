@@ -71,7 +71,7 @@ program_configuration::program_configuration():
         video_size(2),
         video_mix_frames(MIX_FRAMES_ON),
         video_GB_color(BLACK_WHITE),
-        video_GBCBGA_real_colors(true),
+        video_GBCBGA_real_colors(false),
         video_auto_frameskip(false),
         video_frameskip(0),
         video_sprite_limit(true),
