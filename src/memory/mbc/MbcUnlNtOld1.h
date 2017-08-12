@@ -1,13 +1,13 @@
 
-#ifndef HHUGBOY_MBCUNLMAKONOLD1_H
-#define HHUGBOY_MBCUNLMAKONOLD1_H
+#ifndef HHUGBOY_MBCUNLNTOLD1_H
+#define HHUGBOY_MBCUNLNTOLD1_H
 
 
 
 #include "MbcNin1.h"
-class MbcUnlMakonOld1: public BasicMbc {
+class MbcUnlNtOld1: public BasicMbc {
    public:
-        MbcUnlMakonOld1(int originalRomSize);
+        MbcUnlNtOld1(int originalRomSize);
         virtual void writeMemory(unsigned short address, register byte data) override;
 
         virtual void resetVars(bool preserveMulticartState) override;
@@ -26,4 +26,4 @@ class MbcUnlMakonOld1: public BasicMbc {
 };
 
 
-#endif //HHUGBOY_MBCUNLMAKONOLD1_H
+#endif //HHUGBOY_MBCUNLNTOLD1_H

@@ -54,8 +54,8 @@
 #include "mbc/MbcUnlBbd.h"
 #include "mbc/MbcUnlDbzTrans.h"
 #include "mbc/MbcUnlHitek.h"
-#include "mbc/MbcUnlMakonOld1.h"
-#include "mbc/MbcUnlMakonOld2.h"
+#include "mbc/MbcUnlNtOld1.h"
+#include "mbc/MbcUnlNtOld2.h"
 
 // So maybe this should be "cart" and a lot of whats in rom.cpp now e.g. autodetection should go in here..
 
@@ -191,11 +191,11 @@ void gb_mbc::setMemoryReadWrite(MbcType memory_type) {
         case MEMORY_ROCKMAN8:
             mbc = new MbcUnlRockman8();
             break;
-        case MEMORY_MAKONOLD1:
-            mbc = new MbcUnlMakonOld1((*gbRom)->ROMsize);
+        case MEMORY_NTOLD1:
+            mbc = new MbcUnlNtOld1((*gbRom)->ROMsize);
             break;
-        case MEMORY_MAKONOLD2:
-            mbc = new MbcUnlMakonOld2((*gbRom)->ROMsize);
+        case MEMORY_NTOLD2:
+            mbc = new MbcUnlNtOld2((*gbRom)->ROMsize);
             break;
         case MEMORY_BC:
             mbc = new MbcLicHuColl();

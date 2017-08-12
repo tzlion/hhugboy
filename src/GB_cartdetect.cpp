@@ -387,12 +387,12 @@ int gb_system::detectWeirdCarts()
     if(!strcmp(rom->name,"POKEBOM USA") && romFileSize > 512*1024) {
         if(cartridge[0x102] == 0xE0) {
             // 23 in 1 with mario
-            rom->mbcType = MEMORY_MAKONOLD2;
+            rom->mbcType = MEMORY_NTOLD2;
             rom->rumble = true;
         }
         if(cartridge[0x102] == 0xC0) {
             // 25 in 1 with rockman
-            rom->mbcType = MEMORY_MAKONOLD1;
+            rom->mbcType = MEMORY_NTOLD1;
             rom->battery = true;
             rom->RAMsize = 2;
         }
@@ -403,7 +403,7 @@ int gb_system::detectWeirdCarts()
             // old dubious dump
             rom->mbcType = MEMORY_ROCKMAN8;
         } else {
-            rom->mbcType = MEMORY_MAKONOLD1;
+            rom->mbcType = MEMORY_NTOLD1;
             rom->ROMsize = 3;
         }
     }
@@ -412,7 +412,7 @@ int gb_system::detectWeirdCarts()
         if(romFileSize < 512*1024) {
             debug_print("This ROM is probably an underdump or patch and may not work properly");
         }
-        rom->mbcType = MEMORY_MAKONOLD2;
+        rom->mbcType = MEMORY_NTOLD2;
         rom->rumble = true;
         rom->ROMsize = 4;
     }

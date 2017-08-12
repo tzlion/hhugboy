@@ -115,9 +115,9 @@ set(SOURCE_FILES
         src/memory/MbcType.h
         src/memory/mbc/MbcUnlHitek.cpp
         src/memory/mbc/MbcUnlHitek.h
-        src/memory/mbc/MbcUnlMakonOld1.cpp
-        src/memory/mbc/MbcUnlMakonOld1.h
-        src/memory/mbc/MbcUnlMakonOld2.cpp src/memory/mbc/MbcUnlMakonOld2.h)
+        src/memory/mbc/MbcUnlNtOld1.cpp
+        src/memory/mbc/MbcUnlNtOld1.h
+        src/memory/mbc/MbcUnlNtOld2.cpp src/memory/mbc/MbcUnlNtOld2.h)
 
 include_directories(
         includes

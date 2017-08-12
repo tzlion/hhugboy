@@ -1,11 +1,11 @@
 
-#include "MbcUnlMakonOld2.h"
+#include "MbcUnlNtOld2.h"
 
-MbcUnlMakonOld2::MbcUnlMakonOld2(int originalRomSize) : MbcUnlMakonOld1(originalRomSize)
+MbcUnlNtOld2::MbcUnlNtOld2(int originalRomSize) : MbcUnlNtOld1(originalRomSize)
 {
 }
 
-void MbcUnlMakonOld2::writeMemory(unsigned short address, register byte data) {
+void MbcUnlNtOld2::writeMemory(unsigned short address, register byte data) {
 
     if (address >= 0x2000 && address <= 0x3FFF) {
         if (data == 0) data = 1; // MBC3 stylez
@@ -25,5 +25,5 @@ void MbcUnlMakonOld2::writeMemory(unsigned short address, register byte data) {
         }
     }
 
-    MbcUnlMakonOld1::writeMemory(address, data);
+    MbcUnlNtOld1::writeMemory(address, data);
 }
