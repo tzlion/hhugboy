@@ -20,8 +20,9 @@ class MbcUnlMakonOld1: public BasicMbc {
     protected:
         void handleOldMakonCartModeSet(unsigned short address, byte data);
         bool isWeirdMode;
-        byte flippo1[8] = {0,1,2,4,3,6,5,7}; // rockman
-        byte flippo2[8] = {0,1,2,3,4,7,5,6}; // mario
+
+    private:
+        byte flippo1[8] = {0,1,2,4,3,6,5,7};
 };
 
 

@@ -177,3 +177,11 @@ void AbstractMbc::setRom1Offset(int offset) {
     gbMemMap[0x6] = &(*gbCartridge)[offset+0x2000];
     gbMemMap[0x7] = &(*gbCartridge)[offset+0x3000];
 }
+
+void AbstractMbc::setRom1Bank(int bankNo) {
+    rom_bank = bankNo;
+    int bankAddress = rom_bank<<14;
+    bankAddress &= rom_size_mask[(*gbRom)->ROMsize];
+    bankAddress += multicartOffset;
+    setRom1Offset(bankAddress);
+}

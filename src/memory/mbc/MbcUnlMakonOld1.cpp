@@ -12,33 +12,11 @@ void MbcUnlMakonOld1::writeMemory(unsigned short address, register byte data) {
     }
 
     if (address >= 0x2000 && address <= 0x3FFF) {
-
         if (data == 0) data = 1; // MBC1 stylez
-
         if (isWeirdMode) {
-            // okay so this detection is probably definitely hacky and this theory hasn't been tested on real carts but
-            // - Mario 3 and Rockman 8 each rely on different bit scrambling behaviour
-            // - But the actual cart mapper HW seems to be identical and the write used to enable the mode is the same
-            // So how does it know which mode to apply?
-            // The only difference in the multi initialisation for each game AFAIK is the ROM size
-            // So let's use that for now
-            if ((*gbRom)->ROMsize == 4) {
-                data = switchOrder(data,flippo2);
-            } else {
-                data = switchOrder(data,flippo1);
-            }
+            data = switchOrder(data,flippo1);
         }
-
-        rom_bank = data;
-
-        int bankAddress = rom_bank<<14;
-
-        bankAddress &= rom_size_mask[(*gbRom)->ROMsize];
-
-        bankAddress += multicartOffset;
-
-        setRom1Offset(bankAddress);
-
+        setRom1Bank(data);
         return;
     }
 
