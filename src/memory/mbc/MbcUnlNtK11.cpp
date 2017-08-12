@@ -1,10 +1,10 @@
 #include <cstdio>
-#include "MbcUnlNtOld1.h"
+#include "MbcUnlNtK11.h"
 #include "../../debug.h"
 #include "MbcNin1.h"
 
 
-void MbcUnlNtOld1::writeMemory(unsigned short address, register byte data) {
+void MbcUnlNtK11::writeMemory(unsigned short address, register byte data) {
 
     if(address < 0x2000) {
         BasicMbc::writeMemory(address,data);
@@ -34,7 +34,7 @@ void MbcUnlNtOld1::writeMemory(unsigned short address, register byte data) {
     BasicMbc::writeMemory(address,data);
 }
 
-void MbcUnlNtOld1::handleOldMakonCartModeSet(unsigned short address, byte data) {
+void MbcUnlNtK11::handleOldMakonCartModeSet(unsigned short address, byte data) {
     switch(address & 0x03) {
         // no clue if 0x00 does anything
         case 0x01:
@@ -81,25 +81,25 @@ void MbcUnlNtOld1::handleOldMakonCartModeSet(unsigned short address, byte data) 
     }
 }
 
-MbcUnlNtOld1::MbcUnlNtOld1(int originalRomSize) :
+MbcUnlNtK11::MbcUnlNtK11(int originalRomSize) :
         isWeirdMode(false) {
     this->originalRomSize = originalRomSize;
 }
 
-void MbcUnlNtOld1::resetVars(bool preserveMulticartState) {
+void MbcUnlNtK11::resetVars(bool preserveMulticartState) {
     isWeirdMode = false;
     (*gbRom)->ROMsize = originalRomSize;
     AbstractMbc::resetVars(preserveMulticartState);
 }
 
-void MbcUnlNtOld1::readMbcSpecificVarsFromStateFile(FILE *statefile) {
+void MbcUnlNtK11::readMbcSpecificVarsFromStateFile(FILE *statefile) {
     fread(&(isWeirdMode), sizeof(bool), 1, statefile);
     fread(&(multicartOffset),sizeof(int),1,statefile);
     fread(&((*gbRom)->ROMsize),sizeof(bool),1,statefile);
     resetRomMemoryMap(true);
 }
 
-void MbcUnlNtOld1::writeMbcSpecificVarsToStateFile(FILE *statefile) {
+void MbcUnlNtK11::writeMbcSpecificVarsToStateFile(FILE *statefile) {
     fwrite(&(isWeirdMode), sizeof(bool), 1, statefile);
     fwrite(&(multicartOffset),sizeof(int),1,statefile);
     fwrite(&((*gbRom)->ROMsize),sizeof(bool),1,statefile);

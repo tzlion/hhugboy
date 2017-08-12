@@ -1,11 +1,11 @@
 
-#include "MbcUnlNtOld2.h"
+#include "MbcUnlNtKl2.h"
 
-MbcUnlNtOld2::MbcUnlNtOld2(int originalRomSize) : MbcUnlNtOld1(originalRomSize)
+MbcUnlNtKl2::MbcUnlNtKl2(int originalRomSize) : MbcUnlNtK11(originalRomSize)
 {
 }
 
-void MbcUnlNtOld2::writeMemory(unsigned short address, register byte data) {
+void MbcUnlNtKl2::writeMemory(unsigned short address, register byte data) {
 
     if (address >= 0x2000 && address <= 0x3FFF) {
         if (data == 0) data = 1; // MBC3 stylez
@@ -18,6 +18,7 @@ void MbcUnlNtOld2::writeMemory(unsigned short address, register byte data) {
 
     if (address >= 0x4000 && address <= 0x4FFF) {
         // todo later. rumble in the jungle
+        // doesn't seem to work the same as official rumble carts but i will investigate later
         if((data & 0x02) == 0x02) {
             // Rumble ON
         } else {
@@ -25,5 +26,5 @@ void MbcUnlNtOld2::writeMemory(unsigned short address, register byte data) {
         }
     }
 
-    MbcUnlNtOld1::writeMemory(address, data);
+    MbcUnlNtK11::writeMemory(address, data);
 }
