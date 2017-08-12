@@ -369,6 +369,7 @@ private:
     void processRomInfo();
     void readHeader();
     unlCompatMode detectUnlCompatMode();
+    byte detectGbRomSize();
 };
 
 extern gb_system *GB;

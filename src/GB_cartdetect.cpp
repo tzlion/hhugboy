@@ -318,12 +318,52 @@ unlCompatMode gb_system::detectUnlCompatMode()
 
     if (
         (strstr(rom->name,"POKEMON_GLDAAUJ")&&romFileSize==4194304) || // SL 36 in 1 w/Pokemon GS
-        (strstr(rom->name,"TIMER MONSTER")&&romFileSize==16777216||romFileSize==(8388608) ) // V.Fame 12in1 Silver / 18in1
+        (strstr(rom->name,"TIMER MONSTER")&&(romFileSize==16777216||romFileSize==8388608) ) // V.Fame 12in1 Silver / 18in1
     ) {
         return UNL_LBMULTI;
     }
 
+    // Makon/NT multicarts with menu in Pocket Bomberman
+    if(!strcmp(rom->name,"POKEBOM USA") && romFileSize > 512*1024) {
+        if(cartridge[0x102] == 0xE0) {
+            // 23 in 1 with mario
+            return UNL_NTKL2;
+        }
+        if(cartridge[0x102] == 0xC0) {
+            // 25 in 1 with rockman
+            return UNL_NTKL1;
+        }
+    }
+
+    if(!strcmp(rom->name,"ROCKMAN 99") && cartridge[0x8001] != 0xB7) {
+        return UNL_NTKL1;
+    }
+
+    if(!strcmp(rom->name,"SUPER MARIO 3") || !strcmp(rom->name,"DONKEY\x09KONG 5")) {
+        return UNL_NTKL2;
+    }
+
     return UNL_NONE;
+}
+
+byte gb_system::detectGbRomSize() {
+    if (romFileSize > 4096 * 1024)
+        return 0x08;
+    if (romFileSize > 2048 * 1024)
+        return 0x07;
+    if (romFileSize > 1024 * 1024)
+        return 0x06;
+    if (romFileSize > 512 * 1024)
+        return 0x05;
+    if (romFileSize > 256 * 1024)
+        return 0x04;
+    if (romFileSize > 128 * 1024)
+        return 0x03;
+    if (romFileSize > 64 * 1024)
+        return 0x02;
+    if (romFileSize > 32 * 1024)
+        return 0x01;
+    return 0x00;
 }
 
 int gb_system::detectWeirdCarts()
@@ -359,6 +399,23 @@ int gb_system::detectWeirdCarts()
             rom->RAMsize = 9; // Doesn't really exist shh
             rom->mbcType = MEMORY_LBMULTI;
             break;
+        case UNL_NTKL1:
+            if(romFileSize > 512*1024) {
+                // enable battery for multicart
+                rom->battery = true;
+                rom->RAMsize = 2;
+            }
+            rom->ROMsize = detectGbRomSize();
+            rom->mbcType = MEMORY_NTKL1;
+            break;
+        case UNL_NTKL2:
+            if((!strcmp(rom->name,"SUPER MARIO 3") || !strcmp(rom->name,"DONKEY\x09KONG 5")) && romFileSize < 512*1024) {
+                debug_print("This ROM is probably an underdump or patch and may not work properly");
+            }
+            rom->ROMsize = detectGbRomSize();
+            rom->rumble = true;
+            rom->mbcType = MEMORY_NTKL2;
+            break;
         case UNL_NONE: default:
             break;
     }
@@ -381,40 +438,6 @@ int gb_system::detectWeirdCarts()
 
         rom->RAMsize = 3;
         rom->ROMsize = 2;
-    }
-
-    // Makon/NT multicarts with menu in Pocket Bomberman
-    if(!strcmp(rom->name,"POKEBOM USA") && romFileSize > 512*1024) {
-        if(cartridge[0x102] == 0xE0) {
-            // 23 in 1 with mario
-            rom->mbcType = MEMORY_NTKL2;
-            rom->rumble = true;
-        }
-        if(cartridge[0x102] == 0xC0) {
-            // 25 in 1 with rockman
-            rom->mbcType = MEMORY_NTKL1;
-            rom->battery = true;
-            rom->RAMsize = 2;
-        }
-    }
-
-    if(!strcmp(rom->name,"ROCKMAN 99")) {
-        if (cartridge[0x8001] == 0xB7) {
-            // old dubious dump
-            rom->mbcType = MEMORY_ROCKMAN8;
-        } else {
-            rom->mbcType = MEMORY_NTKL1;
-            rom->ROMsize = 3;
-        }
-    }
-
-    if(!strcmp(rom->name,"SUPER MARIO 3") || !strcmp(rom->name,"DONKEY\x09KONG 5")) {
-        if(romFileSize < 512*1024) {
-            debug_print("This ROM is probably an underdump or patch and may not work properly");
-        }
-        rom->mbcType = MEMORY_NTKL2;
-        rom->rumble = true;
-        rom->ROMsize = 4;
     }
 
     char ball_name[16] = { 0x42,0x61,0x6C,0x6C,0x20,0x20,0x20,0x20,0x20,0x20,0x20,0x20,0x20,0x20,0x00,(char)0x80 };
