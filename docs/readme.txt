@@ -160,6 +160,7 @@ https://github.com/tzlion/hhugboy
  v1.2.1 xxth August 2017
  * Detection for more NT KL carts
  * Visual rumble implemented for NT KL type 2 carts
+ * Somewhat more-accurate rumble on official carts
  * Restore compatibility for old Rockman 8 dump
  * Tidy up detection code a bit
 
