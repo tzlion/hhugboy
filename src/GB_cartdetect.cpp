@@ -339,22 +339,20 @@ unlCompatMode gb_system::detectUnlCompatMode()
         return UNL_NTKL2;
     }
 
-    if(!strcmp(rom->name,"ROCKMAN 99")) {
-        if(strstr(rom->newlic,"MK")) { // Rockman X4
-            if (rom->ROMsize == 3) { // Assume anything with a 'fixed' ROM size is patched
-                return UNL_NTKL2;
-            }
-        } else { // Rockman 8
-            if (cartridge[0x8001] != 0xB7) { // Exclude old dump
-                return UNL_NTKL1;
-            }
+    // Rockman 8
+    if(!strcmp(rom->name,"ROCKMAN 99") && !strstr(rom->newlic,"MK")) {
+        if (cartridge[0x8001] != 0xB7) { // Exclude old dump
+            return UNL_NTKL1;
         }
     }
 
-    if(!strcmp(rom->name,"SUPER MARIO 3") || !strcmp(rom->name,"DONKEY\x09KONG 5")) {
-        if (rom->ROMsize == 3) { // Assume anything with a 'fixed' ROM size is patched
-            return UNL_NTKL2;
-        }
+    // Makon early GBC single carts
+    if (
+        strstr(rom->newlic,"MK") // Makon GBC (un)licensee code (but later games share this code so we gotta check the title too)
+        && (!strcmp(rom->name,"SONIC 7") || !strcmp(rom->name,"SUPER MARIO 3") || !strcmp(rom->name,"DONKEY\x09KONG 5") || !strcmp(rom->name,"ROCKMAN 99"))
+        && rom->ROMsize == 3 // Untouched ROMs all have 256k in header, assume anything with a 'fixed' ROM size is patched
+    ) {
+        return UNL_NTKL2;
     }
 
     return UNL_NONE;
