@@ -1,4 +1,4 @@
-hhugboy v1.2
+hhugboy v1.2.1dev
 a Game Boy/Game Boy Color emulator for Windows
 by taizou (cactusgunman@gmail.com)
 http://hhug.me/
@@ -38,9 +38,13 @@ https://github.com/tzlion/hhugboy
               - SL 36-in-1 with Chinese Pokemon Gold & Silver
               - 23-in-1 CR2011 with Super Mario Special 3
               - 25-in-1 NT-9920 with Rockman 8
+              - 24-in-1 CY2060 with Donkey Kong 5, Sonic 8
+              - 24-in-1 CY2061/CR2020 with Rockman X4, Sonic 8
               - Super Mario Special 3
-              - Donkey Kong 5
+              - Super Donkey Kong 5
               - Rockman 8
+              - Rockman X4
+              - Sonic Adventure 8
 
  Li Cheng  For games released by Li Cheng, also known as Xing Xing, Niutoude,
            Winsen or Yongsheng.
@@ -154,8 +158,10 @@ https://github.com/tzlion/hhugboy
 [ RELEASE HISTORY ]- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 
  v1.2.1 xxth August 2017
- * More NT KL support
+ * Detection for more NT KL carts
+ * Visual rumble implemented for NT KL type 2 carts
  * Restore compatibility for old Rockman 8 dump
+ * Tidy up detection code a bit
 
  v1.2 13th August 2017
  * Support for NT KL carts e.g. old Makon games

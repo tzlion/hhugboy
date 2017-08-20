@@ -67,7 +67,7 @@ gb_system* GB = NULL;
 gb_system* GB1 = NULL;
 gb_system* GB2 = NULL;
 
-const wchar_t* prg_version = L"1.2";
+const wchar_t* prg_version = L"1.2.1dev";
 
 // Windows stuff ----------------------------------------
 HWND hwnd = NULL;           

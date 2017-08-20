@@ -27,7 +27,7 @@
 
 #include "BasicMbc.h"
 //-------------------------------------------------------------------------
-// for Rockman8
+// for Rockman8 ("[b1]" dump)
 // only game that requires memory echo emulation ?
 //-------------------------------------------------------------------------
 class MbcUnlRockman8 : public BasicMbc {

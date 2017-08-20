@@ -1,6 +1,6 @@
 /*
    hhugboy Game Boy emulator
-   copyright 2013-2016 taizou
+   copyright 2013-2017 taizou
 
    Based on GEST
    Copyright (C) 2003-2010 TM
@@ -26,7 +26,6 @@
 #include "GB.h"
 #include "config.h"
 #include "strings.h"
-
 
 void gb_system::processRomInfo() {
 
@@ -283,9 +282,6 @@ unlCompatMode gb_system::detectUnlCompatMode()
     for(int lb=0;lb<0x30;++lb) {
         logoChecksum+=logo2[lb];
     }
-    //char buff[1000];
-    //sprintf(buff,"%d",logoChecksum);
-    //debug_print(buff);
 
     switch ( logoChecksum ) {
         case 4048: // "GK.RX" = Gaoke(Hitek) x Ruanxin
@@ -474,12 +470,10 @@ void gb_system::detectWeirdCarts()
             break;
     }
 
-    // Rumble force for Makon games
-    if(!strcmp(rom->newlic,"MK")||!strcmp(rom->newlic,"GC"))
-    {
+    // Rumble force for misc Makon games
+    if(!strcmp(rom->newlic,"MK")||!strcmp(rom->newlic,"GC")) {
         rom->rumble = 1;
     }
-
 }
 
 void gb_system::otherCartDetection()
