@@ -8,19 +8,14 @@
 
 class CartDetection {
     public:
-        CartDetection(gb_mbc* mbc, byte* cartridge, GBrom* rom, int romFileSize);
-        void processRomInfo();
+        void processRomInfo(gb_mbc* mbc, byte* cartridge, GBrom* rom, int romFileSize);
     private:
-        gb_mbc* mbc;
-        byte* cartridge;
-        GBrom* rom;
-        int romFileSize;
-        void setCartridgeType(byte value);
-        void detectWeirdCarts();
-        void otherCartDetection();
-        void readHeader();
-        unlCompatMode detectUnlCompatMode();
-        byte detectGbRomSize();
+        void setCartridgeType(byte value, GBrom* rom);
+        void detectWeirdCarts(byte* cartridge, GBrom* rom, int romFileSize);
+        void otherCartDetection(byte* cartridge, GBrom* rom, int romFileSize);
+        void readHeader(byte* cartridge, GBrom* rom);
+        unlCompatMode detectUnlCompatMode(byte* cartridge, GBrom* rom, int romFileSize);
+        byte detectGbRomSize(int romFileSize);
 };
 
 #endif //HHUGBOY_CARTDETECTION_H

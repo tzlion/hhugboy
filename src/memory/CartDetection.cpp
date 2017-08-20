@@ -28,23 +28,15 @@
 #include "../config.h"
 #include "../strings.h"
 
-CartDetection::CartDetection(gb_mbc* mbc, byte* cartridge, GBrom* rom, int romFileSize)
+void CartDetection::processRomInfo(gb_mbc* mbc, byte* cartridge, GBrom* rom, int romFileSize)
 {
-    this->mbc = mbc;
-    this->cartridge = cartridge;
-    this->rom = rom;
-    this->romFileSize = romFileSize;
-}
-
-void CartDetection::processRomInfo()
-{
-    readHeader();
-    detectWeirdCarts();
+    readHeader(cartridge, rom);
+    detectWeirdCarts(cartridge, rom, romFileSize);
 
     mbc->setMemoryReadWrite(rom->mbcType);
 }
 
-void CartDetection::setCartridgeType(byte value)
+void CartDetection::setCartridgeType(byte value, GBrom* rom)
 {
     rom->carttype = value;
     rom->RTC = false;
@@ -228,7 +220,7 @@ void CartDetection::setCartridgeType(byte value)
     }
 }
 
-void CartDetection::readHeader()
+void CartDetection::readHeader(byte* cartridge, GBrom* rom)
 {
     byte rominfo[30];
     memcpy(rominfo,cartridge+0x0134,0x1C);
@@ -255,7 +247,7 @@ void CartDetection::readHeader()
         rom->SGB = 0;
 
     ++addr;
-    setCartridgeType(rominfo[addr]);
+    setCartridgeType(rominfo[addr], rom);
 
     byte romsize = rominfo[addr+1];
     if((romsize > 8 && romsize < 0x52) || romsize > 0x54)
@@ -280,7 +272,7 @@ void CartDetection::readHeader()
     cmpl+=25; rom->complementok = !cmpl;
 }
 
-unlCompatMode CartDetection::detectUnlCompatMode()
+unlCompatMode CartDetection::detectUnlCompatMode(byte* cartridge, GBrom* rom, int romFileSize)
 {
     byte logo1[0x30];
     byte logo2[0x30];
@@ -373,7 +365,7 @@ unlCompatMode CartDetection::detectUnlCompatMode()
     return UNL_NONE;
 }
 
-byte CartDetection::detectGbRomSize() {
+byte CartDetection::detectGbRomSize(int romFileSize) {
     if (romFileSize > 4096 * 1024)
         return 0x08;
     if (romFileSize > 2048 * 1024)
@@ -393,11 +385,11 @@ byte CartDetection::detectGbRomSize() {
     return 0x00;
 }
 
-void CartDetection::detectWeirdCarts()
+void CartDetection::detectWeirdCarts(byte* cartridge, GBrom* rom, int romFileSize)
 {
     unlCompatMode unlMode = options->unl_compat_mode;
     if ( unlMode == UNL_AUTO ) {
-        unlMode = detectUnlCompatMode();
+        unlMode = detectUnlCompatMode(cartridge, rom, romFileSize);
     }
 
     switch(unlMode) {
@@ -432,42 +424,42 @@ void CartDetection::detectWeirdCarts()
                 rom->battery = true;
                 rom->RAMsize = 2;
             }
-            rom->ROMsize = detectGbRomSize();
+            rom->ROMsize = detectGbRomSize(romFileSize);
             rom->mbcType = MEMORY_NTKL1;
             break;
         case UNL_NTKL2:
             if((!strcmp(rom->name,"SUPER MARIO 3") || !strcmp(rom->name,"DONKEY\x09KONG 5")) && romFileSize < 512*1024) {
                 debug_print("This ROM is probably an underdump or patch and may not work properly");
             }
-            rom->ROMsize = detectGbRomSize();
+            rom->ROMsize = detectGbRomSize(romFileSize);
             rom->rumble = true; // Multicarts technically start in the 'rumble off' state but ehhhh
             rom->mbcType = MEMORY_NTKL2;
             break;
         case UNL_MBC1SAVE:
             rom->battery = true;
             rom->RAMsize = 03;
-            rom->ROMsize = detectGbRomSize();
+            rom->ROMsize = detectGbRomSize(romFileSize);
             rom->mbcType = MEMORY_MBC1;
             rom->carttype = 0x03;
             break;
         case UNL_MBC1NOSAVE:
             rom->battery = false;
             rom->RAMsize = 00;
-            rom->ROMsize = detectGbRomSize();
+            rom->ROMsize = detectGbRomSize(romFileSize);
             rom->mbcType = MEMORY_MBC1;
             rom->carttype = 0x01;
             break;
         case UNL_MBC5SAVE:
             rom->battery = true;
             rom->RAMsize = 03;
-            rom->ROMsize = detectGbRomSize();
+            rom->ROMsize = detectGbRomSize(romFileSize);
             rom->mbcType = MEMORY_MBC5;
             rom->carttype = 0x1B;
             break;
         case UNL_MBC5NOSAVE:
             rom->battery = false;
             rom->RAMsize = 00;
-            rom->ROMsize = detectGbRomSize();
+            rom->ROMsize = detectGbRomSize(romFileSize);
             rom->mbcType = MEMORY_MBC5;
             rom->carttype = 0x19;
             break;
@@ -475,7 +467,7 @@ void CartDetection::detectWeirdCarts()
             rom->mbcType = MEMORY_DBZTRANS;
             break;
         case UNL_NONE: default:
-            otherCartDetection();
+            otherCartDetection(cartridge, rom, romFileSize);
             break;
     }
 
@@ -485,7 +477,7 @@ void CartDetection::detectWeirdCarts()
     }
 }
 
-void CartDetection::otherCartDetection()
+void CartDetection::otherCartDetection(byte* cartridge, GBrom* rom, int romFileSize)
 {
     // ============= LICENSED =============
 

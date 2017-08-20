@@ -251,8 +251,7 @@ bool gb_system::load_rom(const wchar_t* filename,int offset)
 
     if ( !romloaded ) return false;
 
-    auto detector = new CartDetection(mbc, cartridge, rom, romFileSize);
-    detector->processRomInfo();
+    (new CartDetection())->processRomInfo(mbc, cartridge, rom, romFileSize);
 
     wchar_t temp2[ROM_FILENAME_SIZE];
 
