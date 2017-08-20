@@ -335,12 +335,26 @@ unlCompatMode gb_system::detectUnlCompatMode()
         }
     }
 
-    if(!strcmp(rom->name,"ROCKMAN 99") && cartridge[0x8001] != 0xB7) {
-        return UNL_NTKL1;
+    if((!strcmp(rom->name," - TRUMP  BOY -") || !strcmp(rom->name,"QBILLION")) && romFileSize > 512*1024) {
+        return UNL_NTKL2;
+    }
+
+    if(!strcmp(rom->name,"ROCKMAN 99")) {
+        if(strstr(rom->newlic,"MK")) { // Rockman X4
+            if (rom->ROMsize == 3) { // Assume anything with a 'fixed' ROM size is patched
+                return UNL_NTKL2;
+            }
+        } else { // Rockman 8
+            if (cartridge[0x8001] != 0xB7) { // Exclude old dump
+                return UNL_NTKL1;
+            }
+        }
     }
 
     if(!strcmp(rom->name,"SUPER MARIO 3") || !strcmp(rom->name,"DONKEY\x09KONG 5")) {
-        return UNL_NTKL2;
+        if (rom->ROMsize == 3) { // Assume anything with a 'fixed' ROM size is patched
+            return UNL_NTKL2;
+        }
     }
 
     return UNL_NONE;
