@@ -413,7 +413,7 @@ int gb_system::detectWeirdCarts()
                 debug_print("This ROM is probably an underdump or patch and may not work properly");
             }
             rom->ROMsize = detectGbRomSize();
-            rom->rumble = true;
+            rom->rumble = true; // Multicarts technically start in the 'rumble off' state but ehhhh
             rom->mbcType = MEMORY_NTKL2;
             break;
         case UNL_MBC1:
