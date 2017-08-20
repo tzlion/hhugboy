@@ -75,7 +75,7 @@ https://github.com/tzlion/hhugboy
  Disabled  No compatibility mode
 
  * Also, 'Dragon Ball Z 3', the pirate English translation of DBZ Goku
-   Gekitouden, will work in any mode for now
+   Gekitouden, will work in auto mode only for now
 
 [ KEYS ] - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 
@@ -152,6 +152,10 @@ https://github.com/tzlion/hhugboy
  * Other language translations
 
 [ RELEASE HISTORY ]- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+
+ v1.2.1 xxth August 2017
+ * More NT KL support
+ * Restore compatibility for old Rockman 8 dump
 
  v1.2 13th August 2017
  * Support for NT KL carts e.g. old Makon games

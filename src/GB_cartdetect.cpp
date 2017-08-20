@@ -355,6 +355,16 @@ unlCompatMode gb_system::detectUnlCompatMode()
         return UNL_NTKL2;
     }
 
+    // Sonic 3D Blast 5, Super Donkey Kong 3
+    if(strstr(rom->name,"SONIC5")) {
+        return UNL_MBC1NOSAVE;
+    }
+
+    // Dragon Ball Z Goku 2 (English)
+    if(!strcmp(rom->name,"GB DBZ GOKOU 2") && rom->ROMsize == 05) {
+        return UNL_DBZTR;
+    }
+
     return UNL_NONE;
 }
 
@@ -378,7 +388,7 @@ byte gb_system::detectGbRomSize() {
     return 0x00;
 }
 
-int gb_system::detectWeirdCarts()
+void gb_system::detectWeirdCarts()
 {
     unlCompatMode unlMode = options->unl_compat_mode;
     if ( unlMode == UNL_AUTO ) {
@@ -428,24 +438,39 @@ int gb_system::detectWeirdCarts()
             rom->rumble = true; // Multicarts technically start in the 'rumble off' state but ehhhh
             rom->mbcType = MEMORY_NTKL2;
             break;
-        case UNL_MBC1:
+        case UNL_MBC1SAVE:
             rom->battery = true;
             rom->RAMsize = 03;
             rom->ROMsize = detectGbRomSize();
             rom->mbcType = MEMORY_MBC1;
             rom->carttype = 0x03;
             break;
-        case UNL_MBC5:
+        case UNL_MBC1NOSAVE:
+            rom->battery = false;
+            rom->RAMsize = 00;
+            rom->ROMsize = detectGbRomSize();
+            rom->mbcType = MEMORY_MBC1;
+            rom->carttype = 0x01;
+            break;
+        case UNL_MBC5SAVE:
             rom->battery = true;
             rom->RAMsize = 03;
             rom->ROMsize = detectGbRomSize();
             rom->mbcType = MEMORY_MBC5;
             rom->carttype = 0x1B;
             break;
+        case UNL_MBC5NOSAVE:
+            rom->battery = false;
+            rom->RAMsize = 00;
+            rom->ROMsize = detectGbRomSize();
+            rom->mbcType = MEMORY_MBC5;
+            rom->carttype = 0x19;
+            break;
+        case UNL_DBZTR:
+            rom->mbcType = MEMORY_DBZTRANS;
+            break;
         case UNL_NONE: default:
-            if(!strcmp(rom->name,"ROCKMAN 99") && cartridge[0x8001] == 0xB7) { // old dubious dump
-                rom->mbcType = MEMORY_ROCKMAN8;
-            }
+            otherCartDetection();
             break;
     }
 
@@ -453,6 +478,14 @@ int gb_system::detectWeirdCarts()
     if(!strcmp(rom->newlic,"MK")||!strcmp(rom->newlic,"GC"))
     {
         rom->rumble = 1;
+    }
+
+}
+
+void gb_system::otherCartDetection()
+{
+    if(!strcmp(rom->name,"ROCKMAN 99") && cartridge[0x8001] == 0xB7) { // old dubious dump
+        rom->mbcType = MEMORY_ROCKMAN8;
     }
 
     if(!strcmp(rom->name,"GB SMART CARD"))
@@ -510,12 +543,6 @@ int gb_system::detectWeirdCarts()
         rom->mbcType = MEMORY_MBC1;
     }
     else
-        // Dragon Ball Z Goku 2 (English)
-    if(!strcmp(rom->name,"GB DBZ GOKOU 2") && rom->ROMsize == 05)
-    {
-        rom->mbcType = MEMORY_DBZTRANS;
-    }
-    else
         // Bokujou Monogatari 3 Chinese
     if(!strcmp(rom->name,"BOKUMONOGB3BWAJ") || !strcmp(rom->name,"BOYGIRLD640BWAJ"))
     {
@@ -526,13 +553,6 @@ int gb_system::detectWeirdCarts()
     if(!strcmp(rom->name,"POCKET MONSTER"))
     {
         rom->ROMsize = 4;
-    }
-    else
-        // Sonic 3D Blast 5
-    if(strstr(rom->name,"SONIC5"))
-    {
-        rom->ROMsize = 3;
-        rom->RAMsize = 0;
     }
     else
         // Collection Carts
@@ -586,5 +606,4 @@ int gb_system::detectWeirdCarts()
     } else
     if(romFileSize == 262144 && rom->ROMsize == 4)
         rom->ROMsize--;
-
 }
