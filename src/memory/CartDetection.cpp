@@ -28,12 +28,10 @@
 #include "../config.h"
 #include "../strings.h"
 
-void CartDetection::processRomInfo(gb_mbc* mbc, byte* cartridge, GBrom* rom, int romFileSize)
+void CartDetection::processRomInfo(byte* cartridge, GBrom* rom, int romFileSize)
 {
     readHeader(cartridge, rom);
     detectWeirdCarts(cartridge, rom, romFileSize);
-
-    mbc->setMemoryReadWrite(rom->mbcType);
 }
 
 void CartDetection::setCartridgeType(byte value, GBrom* rom)

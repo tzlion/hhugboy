@@ -8,7 +8,7 @@
 
 class CartDetection {
     public:
-        void processRomInfo(gb_mbc* mbc, byte* cartridge, GBrom* rom, int romFileSize);
+        void processRomInfo(byte* cartridge, GBrom* rom, int romFileSize);
     private:
         void setCartridgeType(byte value, GBrom* rom);
         void detectWeirdCarts(byte* cartridge, GBrom* rom, int romFileSize);
