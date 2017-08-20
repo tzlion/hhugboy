@@ -445,6 +445,9 @@ int gb_system::detectWeirdCarts()
             rom->carttype = 0x1B;
             break;
         case UNL_NONE: default:
+            if(!strcmp(rom->name,"ROCKMAN 99") && cartridge[0x8001] == 0xB7) { // old dubious dump
+                rom->mbcType = MEMORY_ROCKMAN8;
+            }
             break;
     }
 
