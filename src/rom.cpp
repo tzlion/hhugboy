@@ -37,6 +37,7 @@
 
 #include "GB.h"
 #include "memory/GB_MBC.h"
+#include "memory/CartDetection.h"
 
 int get_size(int real_size) // return good size to use
 {
@@ -246,13 +247,12 @@ bool gb_system::load_rom(const wchar_t* filename,int offset)
     if (wcsstr(filename, L".zip") || wcsstr(filename, L".ZIP"))
         romloaded = loadrom_zip(filename);
     else
-        romloaded = loadrom_file(filename,offset);
+    romloaded = loadrom_file(filename,offset);
 
     if ( !romloaded ) return false;
 
-
-    processRomInfo();
-
+    auto detector = new CartDetection(mbc, cartridge, rom, romFileSize);
+    detector->processRomInfo();
 
     wchar_t temp2[ROM_FILENAME_SIZE];
 

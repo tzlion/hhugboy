@@ -23,19 +23,28 @@
 */
 
 #include <cstring>
-#include "GB.h"
-#include "config.h"
-#include "strings.h"
+#include "CartDetection.h"
+#include "../GB.h"
+#include "../config.h"
+#include "../strings.h"
 
-void gb_system::processRomInfo() {
+CartDetection::CartDetection(gb_mbc* mbc, byte* cartridge, GBrom* rom, int romFileSize)
+{
+    this->mbc = mbc;
+    this->cartridge = cartridge;
+    this->rom = rom;
+    this->romFileSize = romFileSize;
+}
 
+void CartDetection::processRomInfo()
+{
     readHeader();
     detectWeirdCarts();
 
     mbc->setMemoryReadWrite(rom->mbcType);
 }
 
-void gb_system::setCartridgeType(byte value)
+void CartDetection::setCartridgeType(byte value)
 {
     rom->carttype = value;
     rom->RTC = false;
@@ -219,7 +228,7 @@ void gb_system::setCartridgeType(byte value)
     }
 }
 
-void gb_system::readHeader()
+void CartDetection::readHeader()
 {
     byte rominfo[30];
     memcpy(rominfo,cartridge+0x0134,0x1C);
@@ -271,7 +280,7 @@ void gb_system::readHeader()
     cmpl+=25; rom->complementok = !cmpl;
 }
 
-unlCompatMode gb_system::detectUnlCompatMode()
+unlCompatMode CartDetection::detectUnlCompatMode()
 {
     byte logo1[0x30];
     byte logo2[0x30];
@@ -364,7 +373,7 @@ unlCompatMode gb_system::detectUnlCompatMode()
     return UNL_NONE;
 }
 
-byte gb_system::detectGbRomSize() {
+byte CartDetection::detectGbRomSize() {
     if (romFileSize > 4096 * 1024)
         return 0x08;
     if (romFileSize > 2048 * 1024)
@@ -384,7 +393,7 @@ byte gb_system::detectGbRomSize() {
     return 0x00;
 }
 
-void gb_system::detectWeirdCarts()
+void CartDetection::detectWeirdCarts()
 {
     unlCompatMode unlMode = options->unl_compat_mode;
     if ( unlMode == UNL_AUTO ) {
@@ -476,7 +485,7 @@ void gb_system::detectWeirdCarts()
     }
 }
 
-void gb_system::otherCartDetection()
+void CartDetection::otherCartDetection()
 {
     // ============= LICENSED =============
 

@@ -111,7 +111,6 @@ set(SOURCE_FILES
         src/memory/mbc/MbcUnlBbd.h
         src/memory/mbc/MbcUnlDbzTrans.cpp
         src/memory/mbc/MbcUnlDbzTrans.h
-        src/GB_cartdetect.cpp
         src/memory/MbcType.h
         src/memory/mbc/MbcUnlHitek.cpp
         src/memory/mbc/MbcUnlHitek.h
@@ -119,6 +118,8 @@ set(SOURCE_FILES
         src/memory/mbc/MbcUnlNtK11.h
         src/memory/mbc/MbcUnlNtKl2.cpp
         src/memory/mbc/MbcUnlNtKl2.h
+        src/memory/CartDetection.h
+        src/memory/CartDetection.cpp
 )
 
 include_directories(
