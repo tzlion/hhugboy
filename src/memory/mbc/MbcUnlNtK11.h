@@ -1,10 +1,17 @@
+/*
+ * Additional mapper support for hhugboy emulator
+ * by taizou 2017
+ * This file released under Creative Commons CC0 https://creativecommons.org/publicdomain/zero/1.0/legalcode
+ *
+ * As part of the hhugboy project it is also licensed under the GNU General Public License v2
+ * See "license.txt" in the project root
+ */
 
 #ifndef HHUGBOY_MBCUNLNTKL1_H
 #define HHUGBOY_MBCUNLNTKL1_H
 
-
-
 #include "MbcNin1.h"
+
 class MbcUnlNtK11: public BasicMbc {
    public:
         MbcUnlNtK11(int originalRomSize);
@@ -24,6 +31,5 @@ class MbcUnlNtK11: public BasicMbc {
     private:
         byte flippo1[8] = {0,1,2,4,3,6,5,7};
 };
-
 
 #endif //HHUGBOY_MBCUNLNTKL1_H

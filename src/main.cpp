@@ -67,7 +67,7 @@ gb_system* GB = NULL;
 gb_system* GB1 = NULL;
 gb_system* GB2 = NULL;
 
-const wchar_t* prg_version = L"1.2";
+const wchar_t* prg_version = L"1.2.1dev";
 
 // Windows stuff ----------------------------------------
 HWND hwnd = NULL;           
@@ -1026,11 +1026,11 @@ void menuAction(int menuOption)
          	emuMenu.checkOption(IDM_UNLNTKL2);
          break;
          case IDM_UNLMBC1COMPAT:
-         	options->unl_compat_mode = UNL_MBC1;
+         	options->unl_compat_mode = UNL_MBC1SAVE;
          	emuMenu.checkOption(IDM_UNLMBC1COMPAT);
          break;
          case IDM_UNLMBC5COMPAT:
-         	options->unl_compat_mode = UNL_MBC5;
+         	options->unl_compat_mode = UNL_MBC5SAVE;
          	emuMenu.checkOption(IDM_UNLMBC5COMPAT);
          break;
          

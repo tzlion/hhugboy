@@ -161,10 +161,10 @@ void init_menu_options()
       case UNL_NTKL2:
       	emuMenu.checkOption(IDM_UNLNTKL2);
       break;
-      case UNL_MBC1:
+      case UNL_MBC1SAVE:
       	emuMenu.checkOption(IDM_UNLMBC1COMPAT);
       break;
-      case UNL_MBC5:
+      case UNL_MBC5SAVE:
       	emuMenu.checkOption(IDM_UNLMBC5COMPAT);
       break;
       default:
