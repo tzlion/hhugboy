@@ -1,4 +1,4 @@
-hhugboy v1.2.1beta
+hhugboy v1.2.1
 a Game Boy/Game Boy Color emulator for Windows
 by taizou (cactusgunman@gmail.com)
 http://hhug.me/
@@ -157,7 +157,7 @@ https://github.com/tzlion/hhugboy
 
 [ RELEASE HISTORY ]- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 
- v1.2.1 xxth August 2017
+ v1.2.1 24th August 2017
  * Detection for more NT KL carts
  * Visual rumble implemented for NT KL type 2 carts
  * Somewhat more-accurate rumble on official carts
