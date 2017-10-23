@@ -22,6 +22,8 @@
 
 //#define ALLOW_DEBUG
 
+#define UNICODE
+
 #include "ui/menu.h"
 #include "rendering/directdraw.h"
 #include "config.h"
@@ -62,3 +64,5 @@ extern int ramsize[10];
 extern const wchar_t* prg_version;
 
 extern int control_pressed;
+
+extern int speedup;
