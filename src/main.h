@@ -24,6 +24,7 @@
 
 #include "ui/menu.h"
 #include "rendering/directdraw.h"
+#include "config.h"
 
 extern bool paused;
 extern bool menupause; 
@@ -45,4 +46,20 @@ void keyAction(int key);
 
 void setWinSize(int width, int height);
 
+extern gb_system* GB;
+extern gb_system* GB1;
+extern gb_system* GB2;
 
+extern HWND hwnd;
+extern HWND hwndCtrl;
+
+extern program_configuration* options;
+
+extern char title_text[ROM_FILENAME_SIZE + 8];
+extern wchar_t w_title_text[ROM_FILENAME_SIZE + 16];
+
+extern wstring gb1_loaded_file_name;
+
+extern int ramsize[10];
+
+extern const wchar_t* prg_version;

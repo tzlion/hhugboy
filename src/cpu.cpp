@@ -42,7 +42,7 @@
 int GB1_state_slot = 0;
 int GB2_state_slot = 0;
 
-extern int ramsize[6];
+extern int ramsize[10];
 extern int sensorX;
 extern int sensorY;
 
