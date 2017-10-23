@@ -50,6 +50,7 @@ using namespace std;
 
 #include "ui/keyactions.h"
 #include "ui/menuactions.h"
+#include "ui/window.h"
 
 gb_system* GB = NULL;
 gb_system* GB1 = NULL;

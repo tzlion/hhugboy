@@ -43,8 +43,6 @@ extern Palette palette;
 
 extern int current_controller;
 
-void setWinSize(int width, int height);
-
 extern gb_system* GB;
 extern gb_system* GB1;
 extern gb_system* GB2;
