@@ -120,7 +120,7 @@ set(SOURCE_FILES
         src/memory/mbc/MbcUnlNtKl2.h
         src/memory/CartDetection.h
         src/memory/CartDetection.cpp
-        src/ui/menuactions.cpp src/ui/menuactions.h)
+        src/ui/menuactions.cpp src/ui/menuactions.h src/ui/keyactions.cpp src/ui/keyactions.h)
 
 include_directories(
         includes
