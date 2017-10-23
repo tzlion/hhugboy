@@ -59,6 +59,8 @@ char rom_directory[ROM_PATH_SIZE];*/
 //extern char player_name[100];
 
 #include "ui/menu.h"
+#include "ui/window.h"
+
 menu emuMenu;
 
 program_configuration::program_configuration():

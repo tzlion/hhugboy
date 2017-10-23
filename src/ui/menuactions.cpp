@@ -34,6 +34,7 @@
 #include "../devices.h"
 #include "../SGB.h"
 #include "../licnames.h"
+#include "window.h"
 
 int romsize(int number)
 {
