@@ -24,17 +24,13 @@
 #define UNICODE
 #include <windows.h>
 #include <shellapi.h>
-#include <commdlg.h>
 #include <mmsystem.h>
-#include <stdio.h>
 
 #include <string>
-#include <iostream>
 
 using namespace std;
 
 #include <math.h>
-#include <time.h>
 
 #define DIRECTINPUT_VERSION 0x0700
 #include <dinput.h>
@@ -42,26 +38,16 @@ using namespace std;
 #include "ui/strings.h"
 #include "cheats.h"
 #include "config.h"
-#include "ui/dialogs.h"
 
 #include "main.h"
-#include "debug.h"
-#include "types.h"
 #include "cpu.h"
 #include "mainloop.h"
 #include "sound.h"
-#include "GB_gfx.h"
 #include "SGB.h"
-#include "devices.h"
 #include "rendering/render.h"
 
-#include "rendering/directdraw.h"
 #include "directinput.h"
 
-
-#include "ui/menu.h"
-
-#include "GB.h"
 #include "ui/keyactions.h"
 #include "ui/menuactions.h"
 
@@ -141,10 +127,10 @@ void cleanup()
 
 int WINAPI WinMain(HINSTANCE hThisInstance,HINSTANCE hPrevInstance, LPSTR  lpszArgument,int nFunsterStil)
 {
-	
-   WNDCLASSEX wincl;        
-   MSG msg;    
-   
+
+   WNDCLASSEX wincl;
+   MSG msg;
+
    /* The Window structure */
    hinst = hThisInstance;
    wincl.hInstance = hThisInstance;
@@ -273,9 +259,9 @@ int WINAPI WinMain(HINSTANCE hThisInstance,HINSTANCE hPrevInstance, LPSTR  lpszA
                      
          if(!GB1->load_save())
             debug_print(str_table[ERROR_SAVE_FILE_READ]);
-      
 
-         swprintf(w_title_text,L"%s - %s",w_emu_title,GB1->rom_filename);
+
+         wsprintfW(w_title_text,L"%s - %s",w_emu_title,GB1->rom_filename);
          SetWindowText(hwnd,w_title_text);
       }
    }
@@ -376,9 +362,9 @@ int WINAPI WinMain(HINSTANCE hThisInstance,HINSTANCE hPrevInstance, LPSTR  lpszA
                 }
                 
                 if(multiple_gb)
-                   swprintf(w_title_text,L"%s - %s --- %s, frameskip: %i",w_emu_title,GB1->rom_filename,GB2->rom_filename,options->video_frameskip);
+                   wsprintfW(w_title_text,L"%s - %s --- %s, frameskip: %i",w_emu_title,GB1->rom_filename,GB2->rom_filename,options->video_frameskip);
                 else
-                   swprintf(w_title_text,L"%s - %s, frameskip: %i",w_emu_title,GB1->rom_filename,options->video_frameskip);
+                   wsprintfW(w_title_text,L"%s - %s, frameskip: %i",w_emu_title,GB1->rom_filename,options->video_frameskip);
                 SetWindowText(hwnd,w_title_text);                
              }
              //-----Auto frameskip----
@@ -532,8 +518,8 @@ LRESULT CALLBACK WindowProcedure(HWND hwnd, UINT message, WPARAM wParam, LPARAM 
                      
               if(!GB1->load_save())
                  debug_print(str_table[ERROR_SAVE_FILE_READ]);
-                  
-              swprintf(w_title_text,L"%s - %s",w_emu_title,GB1->rom_filename);
+
+              wsprintfW(w_title_text,L"%s - %s",w_emu_title,GB1->rom_filename);
               SetWindowText(hwnd,w_title_text);
               if(!paused)
                  FSOUND_SetMute(FSOUND_ALL,FALSE);   
