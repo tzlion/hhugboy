@@ -25,6 +25,8 @@
 
 #include <windef.h>
 
+bool initWindow(HINSTANCE hThisInstance);
+void showWindow();
 LRESULT CALLBACK WindowProcedure(HWND hwnd, UINT message, WPARAM wParam, LPARAM lParam);
 void setWinSize(int width,int height);
 

@@ -33,7 +33,6 @@ using namespace std;
 #include <math.h>
 
 #define DIRECTINPUT_VERSION 0x0700
-#include <dinput.h>
 
 #include "ui/strings.h"
 #include "cheats.h"
@@ -48,8 +47,6 @@ using namespace std;
 
 #include "directinput.h"
 
-#include "ui/keyactions.h"
-#include "ui/menuactions.h"
 #include "ui/window.h"
 
 gb_system* GB = NULL;
@@ -69,7 +66,6 @@ LRESULT CALLBACK WindowProcedure (HWND, UINT, WPARAM, LPARAM);
 wchar_t w_szClassName[] = L"GESTclass";
 wchar_t w_emu_title[] = L"hhugboy";
 
-char title_text[ROM_FILENAME_SIZE + 8];
 wchar_t w_title_text[ROM_FILENAME_SIZE + 16];
 
 int timer_id = 0;
@@ -291,42 +287,6 @@ void initSound()
         channel_n = FSOUND_PlaySound(FSOUND_FREE,FSbuffer);
 }
 
-bool initWindow(HINSTANCE hThisInstance)
-{
-    WNDCLASSEX wincl;
-
-    /* The Window structure */
-    hinst = hThisInstance;
-    wincl.hInstance = hThisInstance;
-    wincl.lpszClassName = w_szClassName;
-    wincl.lpfnWndProc = WindowProcedure;
-    wincl.style = CS_DBLCLKS;                 /* Catch double-clicks */
-    wincl.cbSize = sizeof(WNDCLASSEX);
-
-    wincl.hIcon = LoadIcon(hThisInstance, MAKEINTRESOURCE(ID_ICON));
-    wincl.hIconSm = LoadIcon(hThisInstance, MAKEINTRESOURCE(ID_ICON));
-    wincl.hCursor = LoadCursor(NULL, IDC_ARROW);
-    wincl.lpszMenuName = NULL;                 /* No menu */
-    wincl.cbClsExtra = 0;                      /* No extra bytes after the window class */
-    wincl.cbWndExtra = 0;                      /* structure or the window instance */
-    wincl.hbrBackground = (HBRUSH) GetStockObject(BLACK_BRUSH);
-
-    if(!RegisterClassEx(&wincl))
-        return false;
-
-    emuMenu.init(hThisInstance);
-
-    hwnd = CreateWindowEx(0,w_szClassName,w_emu_title,WS_SIZEBOX|WS_OVERLAPPEDWINDOW,150,150,2*160,2*144,HWND_DESKTOP,emuMenu.getMenu(),hThisInstance,NULL);
-
-    RECT adjrect;
-    GetClientRect(hwnd,&adjrect);
-
-    sizen_w = 2*160-(adjrect.right-adjrect.left);
-    sizen_h = 2*144-(adjrect.bottom-adjrect.top);
-
-    return true;
-}
-
 void initConfigs()
 {
     //Get program directory
@@ -375,7 +335,7 @@ int WINAPI WinMain(HINSTANCE hThisInstance,HINSTANCE hPrevInstance, LPSTR  lpszA
    initGraphics();
    initConfigs();
 
-   ShowWindow(hwnd, SW_SHOW);    
+   showWindow();
 
    if(!Init_DI())
    {
@@ -384,8 +344,6 @@ int WINAPI WinMain(HINSTANCE hThisInstance,HINSTANCE hPrevInstance, LPSTR  lpszA
    }
 
    initSound();
-  
-   DragAcceptFiles(hwnd,TRUE);
 
    initFromArg();
 

@@ -52,7 +52,6 @@ extern HWND hwndCtrl;
 
 extern program_configuration* options;
 
-extern char title_text[ROM_FILENAME_SIZE + 8];
 extern wchar_t w_title_text[ROM_FILENAME_SIZE + 16];
 
 extern wstring gb1_loaded_file_name;
@@ -60,6 +59,7 @@ extern wstring gb1_loaded_file_name;
 extern int ramsize[10];
 
 extern const wchar_t* prg_version;
+extern wchar_t w_szClassName[];
 
 extern int control_pressed;
 
