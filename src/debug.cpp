@@ -46,7 +46,10 @@ void debug_print(const wchar_t* message)
    MessageBoxW(NULL, message , w_emu_title, 0);
 }
 
+void debug_win()
+{
 
+}
 
 void debug_log(const string message)
 {

@@ -25,9 +25,9 @@
 #include <windows.h>
 
 #include "menu.h"
-#include "version.rc"
+#include "../version.rc"
 
-ID_ICON ICON MOVEABLE DISCARDABLE "hhugboy.ico"
+ID_ICON ICON MOVEABLE DISCARDABLE "../hhugboy.ico"
 
 ID_F_DIALOG DIALOGEX 0, 0, 200, 100
 STYLE DS_MODALFRAME | WS_POPUP | WS_CAPTION | WS_SYSMENU

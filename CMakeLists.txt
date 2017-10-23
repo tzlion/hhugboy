@@ -35,8 +35,8 @@ set(SOURCE_FILES
         src/debug.h
         src/devices.cpp
         src/devices.h
-        src/dialogs.cpp
-        src/dialogs.h
+        src/ui/dialogs.cpp
+        src/ui/dialogs.h
         src/directinput.cpp
         src/directinput.h
         src/GB.cpp
@@ -48,23 +48,23 @@ set(SOURCE_FILES
         src/memory/GB_MBC.cpp
         src/memory/GB_mem.cpp
         src/GB_sound.cpp
-        src/keynames.h
+        src/ui/keynames.h
         src/licnames.h
         src/main.cpp
         src/main.h
-        src/menu.cpp
-        src/menu.rc
+        src/ui/menu.cpp
+        src/ui/menu.rc
         src/mainloop.cpp
         src/mainloop.h
-        src/menu.h
+        src/ui/menu.h
         src/options.h
         src/rom.cpp
         src/rom.h
         src/SGB.cpp
         src/SGB.h
         src/sound.h
-        src/strings.cpp
-        src/strings.h
+        src/ui/strings.cpp
+        src/ui/strings.h
         src/types.h
         src/version.rc
         src/memory/mbc/BasicMbc.cpp

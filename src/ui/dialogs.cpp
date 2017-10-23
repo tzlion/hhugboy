@@ -33,12 +33,12 @@ extern wstring gb1_loaded_file_name;
 
 #include "dialogs.h"
 #include "strings.h"
-#include "main.h"
-#include "rom.h"
-#include "config.h"
-#include "cheats.h"
-#include "directinput.h"
-#include "GB.h"
+#include "../main.h"
+#include "../rom.h"
+#include "../config.h"
+#include "../cheats.h"
+#include "../directinput.h"
+#include "../GB.h"
 
 int change_index = 0; // currently changing which button? 
 

@@ -26,7 +26,7 @@
 #include "CartDetection.h"
 #include "../GB.h"
 #include "../config.h"
-#include "../strings.h"
+#include "../ui/strings.h"
 
 void CartDetection::processRomInfo(byte* cartridge, GBrom* rom, int romFileSize)
 {

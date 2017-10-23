@@ -34,7 +34,7 @@
 
 #include "main.h"
 
-#include "keynames.h"
+#include "ui/keynames.h"
 
 extern int speedup;
 extern int sizen_w,sizen_h; 

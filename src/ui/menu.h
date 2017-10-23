@@ -23,7 +23,7 @@
 #ifndef MENU_H
 #define MENU_H
 
-#include "options.h"
+#include "../options.h"
 
 #define ID_MENU 501
 

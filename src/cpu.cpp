@@ -46,7 +46,7 @@ extern int ramsize[6];
 extern int sensorX;
 extern int sensorY;
 
-#include "strings.h"
+#include "ui/strings.h"
 #include "rom.h"
 #include "config.h"
 #include "memory/GB_MBC.h"

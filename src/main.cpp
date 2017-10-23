@@ -39,10 +39,10 @@ using namespace std;
 #define DIRECTINPUT_VERSION 0x0700
 #include <dinput.h>
 
-#include "strings.h"
+#include "ui/strings.h"
 #include "cheats.h"
 #include "config.h"
-#include "dialogs.h"
+#include "ui/dialogs.h"
 
 #include "main.h"
 #include "debug.h"
@@ -59,7 +59,7 @@ using namespace std;
 #include "directinput.h"
 
 
-#include "menu.h"
+#include "ui/menu.h"
 
 #include "GB.h"
 

@@ -22,7 +22,7 @@
 
 //#define ALLOW_DEBUG
 
-#include "menu.h"
+#include "ui/menu.h"
 #include "rendering/directdraw.h"
 
 extern bool paused;
