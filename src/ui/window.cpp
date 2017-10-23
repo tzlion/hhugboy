@@ -33,6 +33,16 @@
 #include "../cpu.h"
 #include "../directinput.h"
 
+HWND hwnd = NULL;
+HWND hwndCtrl = NULL;
+HINSTANCE hinst;
+
+wchar_t w_title_text[ROM_FILENAME_SIZE + 16];
+
+int sizen_w,sizen_h; // Size needed for menu,borders,etc.
+
+wchar_t w_szClassName[] = L"hhugboyclass";
+
 void cleanup()
 {
     if(GB1 != NULL)

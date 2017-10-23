@@ -29,12 +29,9 @@
 #include "config.h"
 
 extern bool paused;
-extern bool menupause; 
-extern int sizen_w;
-extern int sizen_h;
+extern bool menupause;
 
 extern int timer_id;
-extern HWND hwndCtrl;    
 
 extern menu emuMenu;
 
@@ -47,19 +44,13 @@ extern gb_system* GB;
 extern gb_system* GB1;
 extern gb_system* GB2;
 
-extern HWND hwnd;
-extern HWND hwndCtrl;
-
 extern program_configuration* options;
-
-extern wchar_t w_title_text[ROM_FILENAME_SIZE + 16];
 
 extern wstring gb1_loaded_file_name;
 
 extern int ramsize[10];
 
 extern const wchar_t* prg_version;
-extern wchar_t w_szClassName[];
 
 extern int control_pressed;
 

@@ -55,21 +55,11 @@ gb_system* GB2 = NULL;
 
 const wchar_t* prg_version = L"1.2.1";
 
-// Windows stuff ----------------------------------------
-HWND hwnd = NULL;           
-HWND hwndCtrl = NULL;    
+// Window stuff? ----------------------------------------
 
-HINSTANCE hinst;
-
-LRESULT CALLBACK WindowProcedure (HWND, UINT, WPARAM, LPARAM);
-
-wchar_t w_szClassName[] = L"GESTclass";
 wchar_t w_emu_title[] = L"hhugboy";
 
-wchar_t w_title_text[ROM_FILENAME_SIZE + 16];
-
 int timer_id = 0;
-int sizen_w,sizen_h; // Size needed for menu,borders,etc.
 
 DirectDraw renderer(&hwnd);
 

@@ -39,6 +39,7 @@ extern wstring gb1_loaded_file_name;
 #include "../cheats.h"
 #include "../directinput.h"
 #include "../GB.h"
+#include "window.h"
 
 int change_index = 0; // currently changing which button? 
 

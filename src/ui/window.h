@@ -24,6 +24,16 @@
 #define HHUGBOY_WINDOW_H
 
 #include <windef.h>
+#include "../rom.h"
+
+extern HWND hwnd;
+extern HWND hwndCtrl;
+extern HINSTANCE hinst;
+
+extern wchar_t w_title_text[ROM_FILENAME_SIZE + 16];
+
+extern int sizen_w;
+extern int sizen_h;
 
 bool initWindow(HINSTANCE hThisInstance);
 void showWindow();
