@@ -25,12 +25,14 @@
 
 bool DoFileOpen(HWND hwnd,int gb_number);
 BOOL CALLBACK NetplayProc(HWND hwndDlg, UINT message, WPARAM wParam, LPARAM lParam); 
-BOOL CALLBACK FolderProc(HWND hwndDlg, UINT message, WPARAM wParam, LPARAM lParam); 
-BOOL CALLBACK ChtProc(HWND hwndDlg, UINT message, WPARAM wParam, LPARAM lParam); 
+BOOL CALLBACK DebugLogProc(HWND hwndDlg, UINT message, WPARAM wParam, LPARAM lParam);
+BOOL CALLBACK FolderProc(HWND hwndDlg, UINT message, WPARAM wParam, LPARAM lParam);
+BOOL CALLBACK ChtProc(HWND hwndDlg, UINT message, WPARAM wParam, LPARAM lParam);
 VOID CALLBACK TProc(HWND hwnd,UINT uMsg,UINT idEvent,DWORD dwTime);
 BOOL CALLBACK CtrlProc(HWND hwndDlg, UINT message, WPARAM wParam, LPARAM lParam); 
 BOOL CALLBACK MultiCtrlProc(HWND hwndDlg, UINT message, WPARAM wParam, LPARAM lParam); 
 BOOL CALLBACK SensorProc(HWND hwndDlg, UINT message, WPARAM wParam, LPARAM lParam); 
 BOOL CALLBACK JoyCtrlProc(HWND hwndDlg, UINT message, WPARAM wParam, LPARAM lParam);
+void addDebugLogMessage(const wchar_t* message);
 
 #endif

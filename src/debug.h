@@ -30,6 +30,7 @@ void debug_print(const char* message);
 void debug_print(const wchar_t* message);
 
 void debug_log(const std::string message);
-void debug_win();
+void debug_win(const wchar_t* message);
+void debug_win(const char* message);
 
 #endif

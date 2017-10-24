@@ -75,7 +75,8 @@
 #define ID_CTRLJOY_AUTO_A 795
 #define ID_CTRLJOY_AUTO_B 796
 
-
+#define ID_DEBUG_DIALOG 768
+#define ID_DEBUG_LOG 769
 
 // Menu group definitions (ie check one of this group and the rest will uncheck)
 

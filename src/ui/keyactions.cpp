@@ -28,6 +28,7 @@
 #include "../GB_gfx.h"
 #include "../cpu.h"
 #include "../directinput.h"
+#include "dialogs.h"
 
 #define UNICODE
 
@@ -223,6 +224,11 @@ void keyAction(int key)
             break;
 
             // change GBC palette for mono games
+        case 'D':
+            if(!control_pressed)
+                break;
+            DialogBox(hinst, MAKEINTRESOURCE(ID_DEBUG_DIALOG), hwnd, (DLGPROC)DebugLogProc);
+            break;
         case '1':
         case '2':
         case '3':
