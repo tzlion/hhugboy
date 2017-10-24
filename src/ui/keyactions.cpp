@@ -32,6 +32,8 @@
 
 #define UNICODE
 
+HWND debugDialogHandle = NULL;
+
 void keyAction(int key)
 {
     switch(key)
@@ -227,7 +229,8 @@ void keyAction(int key)
         case 'D':
             if(!control_pressed)
                 break;
-            DialogBox(hinst, MAKEINTRESOURCE(ID_DEBUG_DIALOG), hwnd, (DLGPROC)DebugLogProc);
+            debugDialogHandle = CreateDialog(hinst, MAKEINTRESOURCE(ID_DEBUG_DIALOG), hwnd, (DLGPROC)DebugLogProc);
+            ShowWindow(debugDialogHandle, SW_SHOW);
             break;
         case '1':
         case '2':
