@@ -137,6 +137,9 @@ BOOL CALLBACK DebugLogProc(HWND hwndDlg, UINT message, WPARAM wParam, LPARAM lPa
                     EndDialog(hwndDlg, wParam);
                     return TRUE;
             }
+            break;
+        case WM_VKEYTOITEM:
+            return -2;
     }
     return FALSE;
 }
