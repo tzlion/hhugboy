@@ -47,7 +47,7 @@ using namespace std;
 
 #include "sound.h"
 
-#include "strings.h"
+#include "ui/strings.h"
 
 // Directories ------------------------------------------
 /*char program_directory[ROM_PATH_SIZE];
@@ -58,7 +58,9 @@ char rom_directory[ROM_PATH_SIZE];*/
 //extern int joy_config[6];
 //extern char player_name[100];
 
-#include "menu.h"
+#include "ui/menu.h"
+#include "ui/window.h"
+
 menu emuMenu;
 
 program_configuration::program_configuration():

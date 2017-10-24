@@ -26,7 +26,7 @@
 #include <string.h>
 #include <sys/stat.h>
 
-#include "strings.h"
+#include "ui/strings.h"
 
 #include "config.h"
 #include "rom.h"

@@ -1,6 +1,6 @@
 /*
    hhugboy Game Boy emulator
-   copyright 2013 taizou
+   copyright 2013-17 taizou
 
    Based on GEST
    Copyright (C) 2003-2010 TM
@@ -20,38 +20,10 @@
    51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
 
-//#define ALLOW_DEBUG
 
-#define UNICODE
+#ifndef HHUGBOY_KEYACTIONS_H
+#define HHUGBOY_KEYACTIONS_H
 
-#include "ui/menu.h"
-#include "rendering/directdraw.h"
-#include "config.h"
+void keyAction(int key);
 
-extern bool paused;
-extern bool menupause;
-
-extern int timer_id;
-
-extern menu emuMenu;
-
-extern DirectDraw renderer;
-extern Palette palette;
-
-extern int current_controller;
-
-extern gb_system* GB;
-extern gb_system* GB1;
-extern gb_system* GB2;
-
-extern program_configuration* options;
-
-extern wstring gb1_loaded_file_name;
-
-extern int ramsize[10];
-
-extern const wchar_t* prg_version;
-
-extern int control_pressed;
-
-extern int speedup;
+#endif //HHUGBOY_KEYACTIONS_H

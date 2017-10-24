@@ -1,6 +1,6 @@
 /*
    hhugboy Game Boy emulator
-   copyright 2013 taizou
+   copyright 2013-17 taizou
 
    Based on GEST
    Copyright (C) 2003-2010 TM
@@ -20,17 +20,24 @@
    51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
 
-#ifndef DIALOGS_H
-#define DIALOGS_H
+#ifndef HHUGBOY_WINDOW_H
+#define HHUGBOY_WINDOW_H
 
-bool DoFileOpen(HWND hwnd,int gb_number);
-BOOL CALLBACK NetplayProc(HWND hwndDlg, UINT message, WPARAM wParam, LPARAM lParam); 
-BOOL CALLBACK FolderProc(HWND hwndDlg, UINT message, WPARAM wParam, LPARAM lParam); 
-BOOL CALLBACK ChtProc(HWND hwndDlg, UINT message, WPARAM wParam, LPARAM lParam); 
-VOID CALLBACK TProc(HWND hwnd,UINT uMsg,UINT idEvent,DWORD dwTime);
-BOOL CALLBACK CtrlProc(HWND hwndDlg, UINT message, WPARAM wParam, LPARAM lParam); 
-BOOL CALLBACK MultiCtrlProc(HWND hwndDlg, UINT message, WPARAM wParam, LPARAM lParam); 
-BOOL CALLBACK SensorProc(HWND hwndDlg, UINT message, WPARAM wParam, LPARAM lParam); 
-BOOL CALLBACK JoyCtrlProc(HWND hwndDlg, UINT message, WPARAM wParam, LPARAM lParam);
+#include <windef.h>
+#include "../rom.h"
 
-#endif
+extern HWND hwnd;
+extern HWND hwndCtrl;
+extern HINSTANCE hinst;
+
+extern wchar_t w_title_text[ROM_FILENAME_SIZE + 16];
+
+extern int sizen_w;
+extern int sizen_h;
+
+bool initWindow(HINSTANCE hThisInstance);
+void showWindow();
+LRESULT CALLBACK WindowProcedure(HWND hwnd, UINT message, WPARAM wParam, LPARAM lParam);
+void setWinSize(int width,int height);
+
+#endif //HHUGBOY_WINDOW_H
