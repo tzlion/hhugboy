@@ -22,16 +22,16 @@
 
 //#define ALLOW_DEBUG
 
-#include "menu.h"
+#define UNICODE
+
+#include "ui/menu.h"
 #include "rendering/directdraw.h"
+#include "config.h"
 
 extern bool paused;
-extern bool menupause; 
-extern int sizen_w;
-extern int sizen_h;
+extern bool menupause;
 
 extern int timer_id;
-extern HWND hwndCtrl;    
 
 extern menu emuMenu;
 
@@ -40,9 +40,18 @@ extern Palette palette;
 
 extern int current_controller;
 
-void menuAction(int menuOption);
-void keyAction(int key);
+extern gb_system* GB;
+extern gb_system* GB1;
+extern gb_system* GB2;
 
-void setWinSize(int width, int height);
+extern program_configuration* options;
 
+extern wstring gb1_loaded_file_name;
 
+extern int ramsize[10];
+
+extern const wchar_t* prg_version;
+
+extern int control_pressed;
+
+extern int speedup;

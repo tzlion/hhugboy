@@ -44,7 +44,7 @@ using namespace std;
 #include "../cpu.h"
 #include "../debug.h"
 #include "../SGB.h"
-#include "../strings.h"
+#include "../ui/strings.h"
 #include "../config.h"
 
 int RGB_BIT_MASK = 0;

@@ -33,12 +33,13 @@ extern wstring gb1_loaded_file_name;
 
 #include "dialogs.h"
 #include "strings.h"
-#include "main.h"
-#include "rom.h"
-#include "config.h"
-#include "cheats.h"
-#include "directinput.h"
-#include "GB.h"
+#include "../main.h"
+#include "../rom.h"
+#include "../config.h"
+#include "../cheats.h"
+#include "../directinput.h"
+#include "../GB.h"
+#include "window.h"
 
 int change_index = 0; // currently changing which button? 
 
@@ -106,17 +107,51 @@ bool DoFileOpen(HWND hwnd,int gb_number)
    return true;
 }
 
+HWND debugDialog;
+
+void addDebugLogMessage(const wchar_t* message)
+{
+    if (debugDialog) {
+        HWND hwndbox = GetDlgItem(debugDialog, ID_DEBUG_LOG);
+        SendMessage(hwndbox, LB_ADDSTRING, 0, (LPARAM)message );
+        SendMessage(hwndbox, LB_SETCARETINDEX, SendMessage(hwndbox,LB_GETCOUNT,0,0)-1, true );
+    }
+}
+
+BOOL CALLBACK DebugLogProc(HWND hwndDlg, UINT message, WPARAM wParam, LPARAM lParam)
+{
+    HWND hwndbox = GetDlgItem(hwndDlg, ID_DEBUG_LOG);
+    switch (message)
+    {
+        case WM_INITDIALOG:
+            debugDialog = hwndDlg;
+            wchar_t str[100];
+            wsprintf(str,L"SECRET DEBUG LOG ACTIVATE");
+            SendMessage(hwndbox, LB_ADDSTRING, 0, (LPARAM)str );
+            break;
+        case WM_COMMAND:
+            switch (LOWORD(wParam))
+            {
+                case IDOK:
+                case IDCANCEL:
+                    EndDialog(hwndDlg, wParam);
+                    return TRUE;
+            }
+    }
+    return FALSE;
+}
+
 BOOL CALLBACK FolderProc(HWND hwndDlg, UINT message, WPARAM wParam, LPARAM lParam) 
-{ 
-    switch (message) 
-    { 
+{
+    switch (message)
+    {
     case WM_INITDIALOG:
         SetDlgItemText(hwndDlg, ID_F_SAVE, options->save_directory.c_str());
         SetDlgItemText(hwndDlg, ID_F_STATE, options->state_directory.c_str());
     break;
-    case WM_COMMAND: 
-            switch (LOWORD(wParam)) 
-            { 
+    case WM_COMMAND:
+            switch (LOWORD(wParam))
+            {
                 case IDOK:
                     wchar_t temp[PROGRAM_PATH_SIZE];
 
@@ -124,15 +159,15 @@ BOOL CALLBACK FolderProc(HWND hwndDlg, UINT message, WPARAM wParam, LPARAM lPara
                     options->save_directory = temp;
                     GetDlgItemText(hwndDlg, ID_F_STATE, temp,PROGRAM_PATH_SIZE);
                     options->state_directory = temp;
- 
-                    // Fall through. 
 
-                case IDCANCEL: 
-                    EndDialog(hwndDlg, wParam); 
-                return TRUE; 
-            } 
-    } 
-    return FALSE; 
+                    // Fall through.
+
+                case IDCANCEL:
+                    EndDialog(hwndDlg, wParam);
+                return TRUE;
+            }
+    }
+    return FALSE;
 } 
 
 gg_cheats old_cheats[MAXGGCHEATS];

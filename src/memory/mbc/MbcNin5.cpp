@@ -89,8 +89,12 @@ void MbcNin5::writeMemory(unsigned short address, register byte data) {
     {
         if((*gbRom)->rumble)
         {
-            if(data&0x08)
-                *gbRumbleCounter = 4;
+            if(data&0x08) {
+                *gbRumbleCounter += 4;
+            } else {
+                *gbRumbleCounter = 0;
+            }
+
             data &= 0x07;
         }
 
