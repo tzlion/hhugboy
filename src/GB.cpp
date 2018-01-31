@@ -35,6 +35,7 @@
 #include "devices.h"
 #include "main.h"
 #include "memory/GB_MBC.h"
+#include "ui/window.h"
 
 int gb_system::gfx_bit_count = 16;
 

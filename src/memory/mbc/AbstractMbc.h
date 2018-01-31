@@ -99,6 +99,10 @@ protected:
     unsigned short MBClo;
     int RAMenable;
 
+    void setRom0Offset(int offset);
+    void setRom1Offset(int offset);
+    void setRom1Bank(int bankNo);
+
 /*** THESE SHOULD BE IN SUB CLASSES ***/
 
     byte romBankXor;
