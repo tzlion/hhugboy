@@ -517,6 +517,10 @@ void menuAction(int menuOption)
             options->unl_compat_mode = UNL_MBC5SAVE;
             emuMenu.checkOption(IDM_UNLMBC5COMPAT);
             break;
+        case IDM_UNLMAKONNEW:
+            options->unl_compat_mode = UNL_MAKONNEW;
+            emuMenu.checkOption(IDM_UNLMAKONNEW);
+            break;
 
         case IDM_CPUSPFS9:
             if(options->speedup_skip_9frames)
