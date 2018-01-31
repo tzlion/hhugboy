@@ -1,10 +1,9 @@
 /*
    hhugboy Game Boy emulator
-   copyright 2013-2016 taizou
+   copyright 2013-17 taizou
+
    Based on GEST
    Copyright (C) 2003-2010 TM
-   Incorporating code from VisualBoyAdvance
-   Copyright (C) 1999-2004 by Forgotten
 
    This program is free software; you can redistribute it and/or
    modify it under the terms of the GNU General Public License
@@ -20,21 +19,9 @@
    along with this program; if not, write to the Free Software Foundation, Inc.,
    51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
+#ifndef HHUGBOY_MENUACTIONS_H
+#define HHUGBOY_MENUACTIONS_H
 
-#ifndef HHUGBOY_MBCUNLROCKMAN8_H
-#define HHUGBOY_MBCUNLROCKMAN8_H
+void menuAction(int menuOption);
 
-
-#include "BasicMbc.h"
-//-------------------------------------------------------------------------
-// for Rockman8 ("[b1]" dump)
-// only game that requires memory echo emulation ?
-//-------------------------------------------------------------------------
-class MbcUnlRockman8 : public BasicMbc {
-public:
-    virtual void writeMemory(unsigned short address, register byte data) override;
-
-};
-
-
-#endif //HHUGBOY_MBCUNLROCKMAN8_H
+#endif //HHUGBOY_MENUACTIONS_H

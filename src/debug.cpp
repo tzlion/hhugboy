@@ -31,6 +31,7 @@
 #include <stdlib.h>
 
 #include "config.h"
+#include "ui/dialogs.h"
 
 using namespace std;
 
@@ -46,7 +47,17 @@ void debug_print(const wchar_t* message)
    MessageBoxW(NULL, message , w_emu_title, 0);
 }
 
+void debug_win(const char* message)
+{
+    wchar_t wmessage[1000];
+    mbstowcs(wmessage,message,1000);
+    debug_win(wmessage);
+}
 
+void debug_win(const wchar_t* message)
+{
+    addDebugLogMessage(message);
+}
 
 void debug_log(const string message)
 {

@@ -1,7 +1,7 @@
 cmake_minimum_required(VERSION 3.6)
 project(hhugboy)
 
-set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++11 -U__STRICT_ANSI__ -mwindows")
+set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -static-libgcc -static-libstdc++ -std=c++11 -U__STRICT_ANSI__ -mwindows")
 
 set(CMAKE_RUNTIME_OUTPUT_DIRECTORY "${CMAKE_SOURCE_DIR}/bin")
 
@@ -35,8 +35,8 @@ set(SOURCE_FILES
         src/debug.h
         src/devices.cpp
         src/devices.h
-        src/dialogs.cpp
-        src/dialogs.h
+        src/ui/dialogs.cpp
+        src/ui/dialogs.h
         src/directinput.cpp
         src/directinput.h
         src/GB.cpp
@@ -48,23 +48,23 @@ set(SOURCE_FILES
         src/memory/GB_MBC.cpp
         src/memory/GB_mem.cpp
         src/GB_sound.cpp
-        src/keynames.h
+        src/ui/keynames.h
         src/licnames.h
         src/main.cpp
         src/main.h
-        src/menu.cpp
-        src/menu.rc
+        src/ui/menu.cpp
+        src/ui/menu.rc
         src/mainloop.cpp
         src/mainloop.h
-        src/menu.h
+        src/ui/menu.h
         src/options.h
         src/rom.cpp
         src/rom.h
         src/SGB.cpp
         src/SGB.h
         src/sound.h
-        src/strings.cpp
-        src/strings.h
+        src/ui/strings.cpp
+        src/ui/strings.h
         src/types.h
         src/version.rc
         src/memory/mbc/BasicMbc.cpp
@@ -111,10 +111,21 @@ set(SOURCE_FILES
         src/memory/mbc/MbcUnlBbd.h
         src/memory/mbc/MbcUnlDbzTrans.cpp
         src/memory/mbc/MbcUnlDbzTrans.h
-        src/GB_cartdetect.cpp
         src/memory/MbcType.h
         src/memory/mbc/MbcUnlHitek.cpp
         src/memory/mbc/MbcUnlHitek.h
+        src/memory/mbc/MbcUnlNtK11.cpp
+        src/memory/mbc/MbcUnlNtK11.h
+        src/memory/mbc/MbcUnlNtKl2.cpp
+        src/memory/mbc/MbcUnlNtKl2.h
+        src/memory/CartDetection.h
+        src/memory/CartDetection.cpp
+        src/ui/menuactions.cpp
+        src/ui/menuactions.h
+        src/ui/keyactions.cpp
+        src/ui/keyactions.h
+        src/ui/window.cpp
+        src/ui/window.h
         src/memory/mbc/MbcUnlMakonNew.cpp
         src/memory/mbc/MbcUnlMakonNew.h
 )

@@ -47,7 +47,7 @@ using namespace std;
 
 #include "sound.h"
 
-#include "strings.h"
+#include "ui/strings.h"
 
 // Directories ------------------------------------------
 /*char program_directory[ROM_PATH_SIZE];
@@ -58,7 +58,9 @@ char rom_directory[ROM_PATH_SIZE];*/
 //extern int joy_config[6];
 //extern char player_name[100];
 
-#include "menu.h"
+#include "ui/menu.h"
+#include "ui/window.h"
+
 menu emuMenu;
 
 program_configuration::program_configuration():
@@ -71,7 +73,7 @@ program_configuration::program_configuration():
         video_size(2),
         video_mix_frames(MIX_FRAMES_ON),
         video_GB_color(BLACK_WHITE),
-        video_GBCBGA_real_colors(true),
+        video_GBCBGA_real_colors(false),
         video_auto_frameskip(false),
         video_frameskip(0),
         video_sprite_limit(true),
@@ -154,6 +156,18 @@ void init_menu_options()
       break;
       case UNL_LBMULTI:
       	emuMenu.checkOption(IDM_UNLLBMULTI);
+      break;
+      case UNL_NTKL1:
+      	emuMenu.checkOption(IDM_UNLNTKL1);
+      break;
+      case UNL_NTKL2:
+      	emuMenu.checkOption(IDM_UNLNTKL2);
+      break;
+      case UNL_MBC1SAVE:
+      	emuMenu.checkOption(IDM_UNLMBC1COMPAT);
+      break;
+      case UNL_MBC5SAVE:
+      	emuMenu.checkOption(IDM_UNLMBC5COMPAT);
       break;
       case UNL_MAKONNEW:
       	emuMenu.checkOption(IDM_UNLMAKONNEW);

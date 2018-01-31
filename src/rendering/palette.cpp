@@ -1,6 +1,6 @@
 #include "palette.h"
 #include "../GB.h"
-#include "../strings.h"
+#include "../ui/strings.h"
 #include "../config.h"
 
 Palette::~Palette()

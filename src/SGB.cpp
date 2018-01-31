@@ -33,7 +33,7 @@
 #include "config.h"
 #include "main.h"
 
-#include "strings.h"
+#include "ui/strings.h"
 
 #define SGB_NONE            0
 #define SGB_RESET           1

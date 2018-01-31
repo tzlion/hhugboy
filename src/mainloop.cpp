@@ -43,7 +43,7 @@ using namespace std;
 //#include "directdraw.h"
 #include "config.h"
 
-#include "strings.h"
+#include "ui/strings.h"
 
 int sensor_dir[4];
 int sensorX = 2047;

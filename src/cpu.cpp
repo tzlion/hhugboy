@@ -42,11 +42,11 @@
 int GB1_state_slot = 0;
 int GB2_state_slot = 0;
 
-extern int ramsize[6];
+extern int ramsize[10];
 extern int sensorX;
 extern int sensorY;
 
-#include "strings.h"
+#include "ui/strings.h"
 #include "rom.h"
 #include "config.h"
 #include "memory/GB_MBC.h"

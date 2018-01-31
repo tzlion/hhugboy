@@ -364,11 +364,6 @@ private:
     int romFileSize;
     bool loadrom_zip(const wchar_t* filename);
     bool loadrom_file(const wchar_t* filename, int offset);
-    void setCartridgeType(byte value);
-    int detectWeirdCarts();
-    void processRomInfo();
-    void readHeader();
-    unlCompatMode detectUnlCompatMode();
 };
 
 extern gb_system *GB;

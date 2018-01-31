@@ -25,179 +25,11 @@
 #include <windows.h>
 
 #include "menu.h"
-#include "version.rc"
+#include "../version.rc"
 
-ID_ICON ICON MOVEABLE DISCARDABLE "hhugboy.ico"
+ID_ICON ICON MOVEABLE DISCARDABLE "../hhugboy.ico"
 
-ID_F_DIALOG DIALOGEX 0, 0, 200, 100
-STYLE DS_MODALFRAME | WS_POPUP | WS_CAPTION | WS_SYSMENU
-CAPTION "hhugboy - Directories:"
-LANGUAGE LANG_ENGLISH, SUBLANG_ENGLISH_US
-FONT 8, "MS Sans Serif"
-{
-    PUSHBUTTON      "OK",IDOK,30,70,52,15
-    PUSHBUTTON      "Cancel",IDCANCEL,100,70,52,15
-    CTEXT           "SRAM dir:", -1,  10,  10, 40,  8
-    CTEXT           "Save state dir:", -1,  10,  40, 55,  8
-    EDITTEXT        ID_F_SAVE,10,20,180,15,ES_MULTILINE | ES_AUTOHSCROLL
-    EDITTEXT        ID_F_STATE,10,50,180,15,ES_MULTILINE | ES_AUTOHSCROLL
-}
-
-ID_CHT_DIALOG DIALOGEX 0, 0, 230, 150
-STYLE DS_MODALFRAME | WS_POPUP | WS_CAPTION | WS_SYSMENU
-CAPTION "Cheats:"
-LANGUAGE LANG_ENGLISH, SUBLANG_ENGLISH_US
-FONT 8, "MS Sans Serif"
-{
-    PUSHBUTTON      "OK",IDOK,50,120,52,15
-    PUSHBUTTON      "Cancel",IDCANCEL,120,120,52,15
-    PUSHBUTTON      "Add",ID_CHT_ADDBTN,160,40,52,15
-    PUSHBUTTON      "Remove",ID_CHT_RMVBTN,30,85,52,15    
-    CTEXT           "Cheats:", -1,  10,  10, 40,  8
-    CTEXT           "Add cheat:", -1,  130,  10, 55,  8
-    LISTBOX         ID_CHT_CHEATS, /*LBS_NOTIFY | LBS_NOINTEGRALHEIGHT | WS_CHILD | WS_VISIBLE | WS_BORDER | WS_VSCROLL | WS_TABSTOP,*/ 10, 20, 90, 70
-    EDITTEXT        ID_CHT_ADD,130,20,90,15,ES_MULTILINE | ES_AUTOHSCROLL
-}
-
-ID_CTRL_DIALOG DIALOGEX 0, 0, 120, 265
-STYLE DS_MODALFRAME | WS_POPUP | WS_CAPTION | WS_SYSMENU
-CAPTION "hhugboy - Controls:"
-LANGUAGE LANG_ENGLISH, SUBLANG_ENGLISH_US
-FONT 8, "MS Sans Serif"
-{
-    CTEXT           "Up:", -1,  10,  10, 30,  8
-    EDITTEXT        ID_CTRL_UP,60,10,50,10,ES_AUTOHSCROLL
-
-    CTEXT           "Down:", -1,  10,  25, 30,  8
-    EDITTEXT        ID_CTRL_DOWN,60,25,50,10,ES_AUTOHSCROLL
-
-    CTEXT           "Left:", -1,  10,  40, 30,  8
-    EDITTEXT        ID_CTRL_LEFT,60,40,50,10,ES_AUTOHSCROLL
-
-    CTEXT           "Right:", -1,  10,  55, 30,  8
-    EDITTEXT        ID_CTRL_RIGHT,60,55,50,10,ES_AUTOHSCROLL
-
-    CTEXT           "A:", -1,  10,  70, 30,  8
-    EDITTEXT        ID_CTRL_A,60,70,50,10,ES_AUTOHSCROLL
-
-    CTEXT           "B:", -1,  10,  85, 30,  8
-    EDITTEXT        ID_CTRL_B,60,85,50,10,ES_AUTOHSCROLL
-
-    CTEXT           "Start:", -1,  10,  100, 30,  8
-    EDITTEXT        ID_CTRL_START,60,100,50,10,ES_AUTOHSCROLL
-
-    CTEXT           "Select:", -1,  10,  115, 30,  8
-    EDITTEXT        ID_CTRL_SELECT,60,115,50,10,ES_AUTOHSCROLL
-
-    CTEXT           "Autofire A:", -1,  5,  130, 35,  8
-    EDITTEXT        ID_CTRL_AUTO_A,60,130,50,10,ES_AUTOHSCROLL
-
-    CTEXT           "Autofire B:", -1,  5,  145, 35,  8
-    EDITTEXT        ID_CTRL_AUTO_B,60,145,50,10,ES_AUTOHSCROLL
-
-    CTEXT           "Autofire Start:", -1,  5,  160, 45,  8
-    EDITTEXT        ID_CTRL_AUTO_START,60,160,50,10,ES_AUTOHSCROLL
-
-    CTEXT           "Autofire Select:", -1,  5,  175, 50,  8
-    EDITTEXT        ID_CTRL_AUTO_SELECT,60,175,50,10,ES_AUTOHSCROLL
-
-    CTEXT           "L:", -1, 10,  190, 30,  8
-    EDITTEXT        ID_CTRL_L,60,190,50,10,ES_AUTOHSCROLL
-
-    CTEXT           "R:", -1, 10,  205, 30,  8
-    EDITTEXT        ID_CTRL_R, 60,205,50,10,ES_AUTOHSCROLL
-
-    CTEXT           "Speedup:", -1,  10,  220, 30,  8
-    EDITTEXT        ID_CTRL_SPEEDUP,60,220,50,10,ES_AUTOHSCROLL
-
-    PUSHBUTTON      "OK",IDOK,35,240,52,15
-}
-
-ID_CTRLMULTI_DIALOG DIALOGEX 0, 0, 120, 210
-STYLE DS_MODALFRAME | WS_POPUP | WS_CAPTION | WS_SYSMENU
-CAPTION "hhugboy - Controls:"
-LANGUAGE LANG_ENGLISH, SUBLANG_ENGLISH_US
-FONT 8, "MS Sans Serif"
-{
-    CTEXT           "Up:", -1,  10,  10, 30,  8
-    EDITTEXT        ID_CTRL_UP,60,10,50,10,ES_AUTOHSCROLL
-
-    CTEXT           "Down:", -1,  10,  25, 30,  8
-    EDITTEXT        ID_CTRL_DOWN,60,25,50,10,ES_AUTOHSCROLL
-
-    CTEXT           "Left:", -1,  10,  40, 30,  8
-    EDITTEXT        ID_CTRL_LEFT,60,40,50,10,ES_AUTOHSCROLL
-
-    CTEXT           "Right:", -1,  10,  55, 30,  8
-    EDITTEXT        ID_CTRL_RIGHT,60,55,50,10,ES_AUTOHSCROLL
-
-    CTEXT           "A:", -1,  10,  70, 30,  8
-    EDITTEXT        ID_CTRL_A,60,70,50,10,ES_AUTOHSCROLL
-
-    CTEXT           "B:", -1,  10,  85, 30,  8
-    EDITTEXT        ID_CTRL_B,60,85,50,10,ES_AUTOHSCROLL
-
-    CTEXT           "Start:", -1,  10,  100, 30,  8
-    EDITTEXT        ID_CTRL_START,60,100,50,10,ES_AUTOHSCROLL
-
-    CTEXT           "Select:", -1,  10,  115, 30,  8
-    EDITTEXT        ID_CTRL_SELECT,60,115,50,10,ES_AUTOHSCROLL
-
-    CTEXT           "Autofire A:", -1,  5,  130, 35,  8
-    EDITTEXT        ID_CTRL_AUTO_A,60,130,50,10,ES_AUTOHSCROLL
-
-    CTEXT           "Autofire B:", -1,  5,  145, 35,  8
-    EDITTEXT        ID_CTRL_AUTO_B,60,145,50,10,ES_AUTOHSCROLL
-
-    CTEXT           "Autofire Start:", -1,  5,  160, 45,  8
-    EDITTEXT        ID_CTRL_AUTO_START,60,160,50,10,ES_AUTOHSCROLL
-
-    CTEXT           "Autofire Select:", -1,  5,  175, 50,  8
-    EDITTEXT        ID_CTRL_AUTO_SELECT,60,175,50,10,ES_AUTOHSCROLL
-
-    PUSHBUTTON      "OK",IDOK,10,190,40,15
-    PUSHBUTTON      "Clear",ID_CTRL_CLEAR,60,190,40,15
-}
-
-ID_CTRLJOY_DIALOG DIALOGEX 0, 0, 100, 120
-STYLE DS_MODALFRAME | WS_POPUP | WS_CAPTION | WS_SYSMENU
-CAPTION "hhugboy - Controls:"
-LANGUAGE LANG_ENGLISH, SUBLANG_ENGLISH_US
-FONT 8, "MS Sans Serif"
-{
-    CTEXT           "A:", -1,  0,  10, 30,  8
-    EDITTEXT        ID_CTRLJOY_A,40,10,50,10,ES_AUTOHSCROLL
-    CTEXT           "B:", -1,  0,  25, 30,  8
-    EDITTEXT        ID_CTRLJOY_B,40,25,50,10,ES_AUTOHSCROLL
-    CTEXT           "Start:", -1,  0,  40, 30,  8
-    EDITTEXT        ID_CTRLJOY_START,40,40,50,10,ES_AUTOHSCROLL
-    CTEXT           "Select:", -1,  0,  55, 30,  8
-    EDITTEXT        ID_CTRLJOY_SELECT,40,55,50,10,ES_AUTOHSCROLL
-    CTEXT           "Autofire A:", -1,  0,  70, 35,  8
-    EDITTEXT        ID_CTRLJOY_AUTO_A,40,70,50,10,ES_AUTOHSCROLL
-    CTEXT           "Autofire B:", -1,  0,  85, 35,  8
-    EDITTEXT        ID_CTRLJOY_AUTO_B,40,85,50,10,ES_AUTOHSCROLL
-    
-    PUSHBUTTON      "OK",IDOK,25,100,40,15
-}
-
-ID_SENSOR_DIALOG DIALOGEX 0, 0, 100, 100
-STYLE DS_MODALFRAME | WS_POPUP | WS_CAPTION | WS_SYSMENU
-CAPTION "hhugboy - Sensor:"
-LANGUAGE LANG_ENGLISH, SUBLANG_ENGLISH_US
-FONT 8, "MS Sans Serif"
-{
-    CTEXT           "Up:", -1,  0,  10, 30,  8
-    EDITTEXT        ID_SENSOR_UP,40,10,50,10,ES_AUTOHSCROLL    
-    CTEXT           "Down:", -1,  0,  25, 30,  8
-    EDITTEXT        ID_SENSOR_DOWN,40,25,50,10,ES_AUTOHSCROLL
-    CTEXT           "Left:", -1,  0,  40, 30,  8
-    EDITTEXT        ID_SENSOR_LEFT,40,40,50,10,ES_AUTOHSCROLL
-    CTEXT           "Right:", -1,  0,  55, 30,  8
-    EDITTEXT        ID_SENSOR_RIGHT,40,55,50,10,ES_AUTOHSCROLL
-
-    PUSHBUTTON      "OK",IDOK,30,80,52,15
-}
+#include "dialogs.rc"
 
 ID_MENU MENU 
 BEGIN
@@ -300,10 +132,15 @@ BEGIN
                     MENUITEM "&BBD", IDM_UNLBBD
                     MENUITEM "&Hitek", IDM_UNLHITEK
                     MENUITEM "&Li Cheng (XingXing/Niutoude)", IDM_UNLNIUTOUDE
+                    MENUITEM "&NT KL (Makon old) type 1", IDM_UNLNTKL1
+                    MENUITEM "NT &KL (Makon old) type 2", IDM_UNLNTKL2
                     MENUITEM "&Makon (new)", IDM_UNLMAKONNEW
                     MENUITEM "&Sintax", IDM_UNLSINTAX
                     MENUITEM SEPARATOR
                     MENUITEM "Multi&cart: 'Last Bible' (VFame etc)", IDM_UNLLBMULTI
+                    MENUITEM SEPARATOR
+                    MENUITEM "MBC&1 compatible", IDM_UNLMBC1COMPAT
+                    MENUITEM "MBC&5 compatible", IDM_UNLMBC5COMPAT
                     MENUITEM SEPARATOR
                     MENUITEM "&Disabled", IDM_UNLNONE
                 END
