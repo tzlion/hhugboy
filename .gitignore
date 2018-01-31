@@ -21,3 +21,5 @@ bin/*.png
 .idea/*
 Thumbs.db
 cb/*
+cmake-build-debug/*
+cmake-build-release/*
