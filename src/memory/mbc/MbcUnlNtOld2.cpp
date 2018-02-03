@@ -7,14 +7,14 @@
  * See "license.txt" in the project root
  */
 
-#include "MbcUnlNtKl2.h"
+#include "MbcUnlNtOld2.h"
 #include "../../debug.h"
 
-MbcUnlNtKl2::MbcUnlNtKl2(int originalRomSize) : MbcUnlNtK11(originalRomSize)
+MbcUnlNtOld2::MbcUnlNtOld2(int originalRomSize) : MbcUnlNtOld1(originalRomSize)
 {
 }
 
-void MbcUnlNtKl2::writeMemory(unsigned short address, register byte data) {
+void MbcUnlNtOld2::writeMemory(unsigned short address, register byte data) {
 
     if (address >= 0x2000 && address <= 0x3FFF) {
         if (data == 0) data = 1; // MBC3 stylez
@@ -54,5 +54,5 @@ void MbcUnlNtKl2::writeMemory(unsigned short address, register byte data) {
         // Have tweaked both this and MBC5 to approximate this behaviour a bit closer
     }
 
-    MbcUnlNtK11::writeMemory(address, data);
+    MbcUnlNtOld1::writeMemory(address, data);
 }

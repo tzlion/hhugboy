@@ -501,13 +501,13 @@ void menuAction(int menuOption)
             options->unl_compat_mode = UNL_LBMULTI;
             emuMenu.checkOption(IDM_UNLLBMULTI);
             break;
-        case IDM_UNLNTKL1:
-            options->unl_compat_mode = UNL_NTKL1;
-            emuMenu.checkOption(IDM_UNLNTKL1);
+        case IDM_UNLNTOLD1:
+            options->unl_compat_mode = UNL_NTOLD1;
+            emuMenu.checkOption(IDM_UNLNTOLD1);
             break;
-        case IDM_UNLNTKL2:
-            options->unl_compat_mode = UNL_NTKL2;
-            emuMenu.checkOption(IDM_UNLNTKL2);
+        case IDM_UNLNTOLD2:
+            options->unl_compat_mode = UNL_NTOLD2;
+            emuMenu.checkOption(IDM_UNLNTOLD2);
             break;
         case IDM_UNLMBC1COMPAT:
             options->unl_compat_mode = UNL_MBC1SAVE;
