@@ -7,18 +7,19 @@
  * See "license.txt" in the project root
  */
 
-#ifndef HHUGBOY_MBCUNLMAKONNEW_H
-#define HHUGBOY_MBCUNLMAKONNEW_H
+#ifndef HHUGBOY_MBCUNLNTNEW_H
+#define HHUGBOY_MBCUNLNTNEW_H
 
 
 #include "MbcNin5.h"
 
 //-------------------------------------------------------------------------
-// For newer Makon games e.g. Digimon, Pokemon, H.Potter, fighting games..
+// For newer NT-made carts with Makon games
+// e.g. Digimon, Pokemon, H.Potter, fighting games..
 //-------------------------------------------------------------------------
-class MbcUnlMakonNew : public MbcNin5 {
+class MbcUnlNtNew : public MbcNin5 {
     public:
-        MbcUnlMakonNew();
+        MbcUnlNtNew();
         virtual void writeMemory(unsigned short address, register byte data) override;
 
         virtual void resetVars(bool preserveMulticartState) override;
@@ -30,4 +31,4 @@ class MbcUnlMakonNew : public MbcNin5 {
 };
 
 
-#endif //HHUGBOY_MBCUNLMAKONNEW_H
+#endif //HHUGBOY_MBCUNLNTNEW_H

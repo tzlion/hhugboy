@@ -126,8 +126,8 @@ set(SOURCE_FILES
         src/ui/keyactions.h
         src/ui/window.cpp
         src/ui/window.h
-        src/memory/mbc/MbcUnlMakonNew.cpp
-        src/memory/mbc/MbcUnlMakonNew.h
+        src/memory/mbc/MbcUnlNtNew.cpp
+        src/memory/mbc/MbcUnlNtNew.h
 )
 
 include_directories(

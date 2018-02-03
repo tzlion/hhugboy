@@ -412,10 +412,10 @@ void CartDetection::detectWeirdCarts(byte* cartridge, GBrom* rom, int romFileSiz
             rom->RAMsize=03; // assumption for now
             rom->carttype=0x1B; // same
             break;
-        case UNL_MAKONNEW:
+        case UNL_NTNEW:
             rom->RAMsize = 2; // assumption
             rom->carttype=0x1B; // assumption
-            rom->mbcType = MEMORY_MAKONNEW;
+            rom->mbcType = MEMORY_NTNEW;
             break;
         case UNL_LBMULTI:
             rom->RAMsize = 9; // Doesn't really exist shh

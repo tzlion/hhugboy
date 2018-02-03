@@ -130,7 +130,7 @@ enum unlCompatMode
 	UNL_MBC5NOSAVE,
 	UNL_MBC5SAVE,
 	UNL_DBZTR,
-	UNL_MAKONNEW
+	UNL_NTNEW
 };
 
 #endif

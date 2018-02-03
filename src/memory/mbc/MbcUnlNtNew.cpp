@@ -8,9 +8,9 @@
  */
 
 #include <cstdio>
-#include "MbcUnlMakonNew.h"
+#include "MbcUnlNtNew.h"
 
-void MbcUnlMakonNew::writeMemory(unsigned short address, register byte data) {
+void MbcUnlNtNew::writeMemory(unsigned short address, register byte data) {
     if ( (address&0xFF00)== 0x1400 && data == 0x55 ) {
         splitMode = true;
         return;
@@ -37,19 +37,19 @@ void MbcUnlMakonNew::writeMemory(unsigned short address, register byte data) {
     MbcNin5::writeMemory(address, data);
 }
 
-MbcUnlMakonNew::MbcUnlMakonNew() :
+MbcUnlNtNew::MbcUnlNtNew() :
         splitMode(false) {
 }
 
-void MbcUnlMakonNew::resetVars(bool preserveMulticartState) {
+void MbcUnlNtNew::resetVars(bool preserveMulticartState) {
     splitMode = false;
     AbstractMbc::resetVars(preserveMulticartState);
 }
 
-void MbcUnlMakonNew::readMbcSpecificVarsFromStateFile(FILE *statefile) {
+void MbcUnlNtNew::readMbcSpecificVarsFromStateFile(FILE *statefile) {
     fread(&(splitMode), sizeof(bool), 1, statefile);
 }
 
-void MbcUnlMakonNew::writeMbcSpecificVarsToStateFile(FILE *statefile) {
+void MbcUnlNtNew::writeMbcSpecificVarsToStateFile(FILE *statefile) {
     fwrite(&(splitMode), sizeof(bool), 1, statefile);
 }
