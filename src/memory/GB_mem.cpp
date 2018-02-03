@@ -190,7 +190,7 @@ void gb_system::mem_reset(bool preserveMulticartState)
 
    if(gbc_mode)
    {
-      if(rom->CGB)
+      if(rom->header.CGB)
       {
          hdma_source = 0x0000;
          hdma_destination = 0x8000;
@@ -217,7 +217,7 @@ void gb_system::mem_reset(bool preserveMulticartState)
             GBC_BGP[i++] = 0x7FFF;
          }
 
-         if(!strcmp(rom->name,"BUGS CC3 CRACK") || !strcmp(rom->name,"OS"))
+         if(!strcmp(rom->header.name,"BUGS CC3 CRACK") || !strcmp(rom->header.name,"OS"))
             memcpy(GBC_BGP,GBC_DMGBG_palettes[0],sizeof(unsigned short)*4);
 
          memcpy(GBC_OBP,GBC_DMGBG_palettes[0],sizeof(unsigned short)*4);
@@ -228,13 +228,13 @@ void gb_system::mem_reset(bool preserveMulticartState)
    win_tile_map = ((memory[0xFF40] & 0x40)?0x1c00:0x1800);
    tile_pattern = ((memory[0xFF40] & 0x10)?0x0000:0x0800);
 
-   if(gbc_mode && !rom->CGB)
+   if(gbc_mode && !rom->header.CGB)
    {
       memcpy(GBC_BGP,GBC_DMGBG_palettes[1],sizeof(unsigned short)*4);
       memcpy(GBC_OBP,GBC_DMGOBJ0_palettes[1],sizeof(unsigned short)*4);
       memcpy(GBC_OBP+4,GBC_DMGOBJ1_palettes[1],sizeof(unsigned short)*4);
    } else
-   if(!rom->CGB || !gbc_mode)
+   if(!rom->header.CGB || !gbc_mode)
    {
       if(options->video_GB_color == BLACK_WHITE)
       {
@@ -313,7 +313,7 @@ bool gb_system::write_save()
          return false;
       }      
    } else
-   if(rom->carttype == 6) // MBC2 + battery
+   if(rom->mbcType == MEMORY_MBC2 && rom->battery) // MBC2 + battery
    {
       if(fwrite(&memory[0xA000],sizeof(byte),512,savefile) < 512)
       {
@@ -392,7 +392,7 @@ bool gb_system::load_save(bool loading_GB1_save_to_GB2)
          return false;
       }      
    } else
-   if(rom->carttype == 6) // MBC2 + battery
+   if(rom->mbcType == MEMORY_MBC2 && rom->battery) // MBC2 + battery
    {
       if(fread(&memory[0xA000],sizeof(byte),512,savefile) < 512)
       {

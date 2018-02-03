@@ -279,7 +279,7 @@ bool gb_system::save_state()
    fwrite(sound_buffer, sizeof(byte),4*735,statefile);
    //fwrite(final_wave, sizeof(signed short),2*735,statefile);
       
-   if(gbc_mode && rom->CGB)
+   if(gbc_mode && rom->header.CGB)
    {
       fwrite(VRAM,sizeof(byte),0x4000,statefile);
       fwrite(WRAM,sizeof(byte),0x8000,statefile);  
@@ -468,7 +468,7 @@ bool gb_system::load_state()
    fread(sound_buffer, sizeof(byte),4*735,statefile);
    //fread(final_wave, sizeof(signed short),2*735,statefile);
       
-   if(gbc_mode && rom->CGB)
+   if(gbc_mode && rom->header.CGB)
    {
       fread(VRAM,sizeof(byte),0x4000,statefile);
       fread(WRAM,sizeof(byte),0x8000,statefile);  

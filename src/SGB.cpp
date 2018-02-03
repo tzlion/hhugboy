@@ -624,7 +624,7 @@ void sgb_chr_trn()
     
     sgb_CGB_support = 0;
     
-    if((GB1->rom->CGB || GB1->system_type == SYS_GBC) && options->GBC_SGB_border == GBC_WITH_INITIAL_SGB_BORDER)
+    if((GB1->rom->header.CGB || GB1->system_type == SYS_GBC) && options->GBC_SGB_border == GBC_WITH_INITIAL_SGB_BORDER)
     {
        sgb_mode = 0;
        GB1->gbc_mode = 1;
@@ -666,7 +666,7 @@ void sgb_pct_trn()
     border_uploaded = 1;
 
     sgb_CGB_support = 0;
-    if((GB1->rom->CGB || GB1->system_type == SYS_GBC) && options->GBC_SGB_border == GBC_WITH_INITIAL_SGB_BORDER)
+    if((GB1->rom->header.CGB || GB1->system_type == SYS_GBC) && options->GBC_SGB_border == GBC_WITH_INITIAL_SGB_BORDER)
     {
        sgb_mode = 0;
        GB1->gbc_mode = 1;

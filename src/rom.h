@@ -27,26 +27,38 @@
 
 #define ROM_FILENAME_SIZE 1024
 
+struct HeaderStuff
+{
+    char name[15];
+    char newlic[2];
+    byte lic;
+    byte carttype;
+    int ROMsize;
+    int RAMsize;
+    byte destcode;
+    byte version;
+    byte complement;
+    bool complementok;
+    unsigned short checksum;
+    int SGB;
+    int CGB; // this gets modified but it shouldn't
+};
+
 struct GBrom
 {
-   char name[15];
-   char newlic[2];
-   byte lic;
-   byte carttype;
    int ROMsize;
    int RAMsize;
-   int realFileSize;
+    // these are the real/effective values as opposed to the headers which could be wrong
+    // maybe something here like:
+    // - rom size (the full)
+    // - addressable rom size (for multicarts) ...
+    // and same for ram
+    // or maybe do a struct for rom/ram sizes by header no idk
+   HeaderStuff header;
    MbcType mbcType;
-   byte destcode;
-   byte version;
-   byte complement;
-   bool complementok;
-   unsigned short checksum;
    bool battery;
    bool RTC;
    bool rumble;
-   int CGB;
-   int SGB;
 };
 
 #endif

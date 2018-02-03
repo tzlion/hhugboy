@@ -486,7 +486,7 @@ void gb_system::draw_line_tile_GBC()
 
    int tile_pattern_address = tile_pattern + (tile<<4) + (by<<1); 
   
-   if(((memory[0xFF40] & 0x01) || rom->CGB) && (video_enable&VID_EN_BG)) 
+   if(((memory[0xFF40] & 0x01) || rom->header.CGB) && (video_enable&VID_EN_BG))
    {
       while(x < 160) 
       { 
@@ -513,7 +513,7 @@ void gb_system::draw_line_tile_GBC()
             if(attrs & 0x80)
                line_buffer[x] |= 0x300;     
 
-            if(!rom->CGB) 
+            if(!rom->header.CGB)
                c = BGP[c];
             else
                c = c + (attrs & 7)*4;
@@ -546,7 +546,7 @@ void gb_system::draw_line_tile_GBC()
    {
       fill_line16(line_buffer,0UL,160);
   
-      unsigned short c = (rom->CGB?GBC_BGP[0]:GBC_BGP[BGP[0]]);
+      unsigned short c = (rom->header.CGB?GBC_BGP[0]:GBC_BGP[BGP[0]]);
       if(gfx_bit_count == 16)
          fill_line16(((WORD*)gfx_buffer)+((y<<7)+(y<<5)),palette.gfxPal16[c]|(palette.gfxPal16[c]<<16),160);
       else
@@ -624,7 +624,7 @@ void gb_system::draw_line_tile_GBC()
                   else
                      line_buffer[x] = (0x100 + c);                      
               
-                  if(!rom->CGB) 
+                  if(!rom->header.CGB)
                      c = BGP[c];
                   else
                      c = c + (attrs & 7) * 4;
@@ -686,7 +686,7 @@ void gb_system::draw_sprite_tile(int tile, int x,int y,int t, int flags,int size
    byte a = 0;
    byte b = 0;
 
-   if((gbc_mode && rom->CGB) && (flags & 0x08)) 
+   if((gbc_mode && rom->header.CGB) && (flags & 0x08))
    {
       a = bank1[address++];
       b = bank1[address++];
@@ -718,7 +718,7 @@ void gb_system::draw_sprite_tile(int tile, int x,int y,int t, int flags,int size
 
       unsigned short color = line_buffer[xxx]&0xFFF;
      
-      if((rom->CGB && gbc_mode && (memory[0xFF40]&1)) || !gbc_mode || (gbc_mode && !rom->CGB))
+      if((rom->header.CGB && gbc_mode && (memory[0xFF40]&1)) || !gbc_mode || (gbc_mode && !rom->header.CGB))
       {
          if(prio) 
          {
@@ -761,7 +761,7 @@ void gb_system::draw_sprite_tile(int tile, int x,int y,int t, int flags,int size
 
       if(gbc_mode) 
       {
-         if(!rom->CGB)
+         if(!rom->header.CGB)
          {
             c = pal[c];
             if(pal == OBP1)

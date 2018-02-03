@@ -317,8 +317,8 @@ void gb_system::reset(bool change_mode, bool preserveMulticartState)
 
    emulating = true;
 
-    int cgbState = rom->CGB;
-    int sgbState = rom->SGB;
+    int cgbState = rom->header.CGB;
+    int sgbState = rom->header.SGB;
 
    
    //change mode according to user selection
