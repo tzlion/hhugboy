@@ -66,6 +66,9 @@ https://github.com/tzlion/hhugboy
            Type 1: Rockman 8
            Type 2: Super Mario 3, Donkey Kong 5, rumble carts
 
+ NT new    Later carts released by NT, specifically Makon single carts.
+           No multicart support yet.
+
  'Last Bible' multicart
            A type of multicart using menu music taken from 'Megami Tensei
            Gaiden: Last Bible' aka 'Revelations: The Demon Slayer'.
@@ -158,6 +161,7 @@ https://github.com/tzlion/hhugboy
 [ RELEASE HISTORY ]- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 
  v1.x.x xxth xxxxxxx 20xx
+ * Add support for NT new carts supporting later Makon single cart games
  * Rename 'NT KL' compatibility mode to 'NT Old'
    (since KL PCB codes were also used on at least one cart with the new mapper)
 
