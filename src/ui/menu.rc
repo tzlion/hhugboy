@@ -134,6 +134,7 @@ BEGIN
                     MENUITEM "&Li Cheng (XingXing/Niutoude)", IDM_UNLNIUTOUDE
                     MENUITEM "&NT (Makon) old type 1", IDM_UNLNTOLD1
                     MENUITEM "N&T (Makon) old type 2", IDM_UNLNTOLD2
+                    MENUITEM "NT (&Makon) new", IDM_UNLNTNEW
                     MENUITEM "&Sintax", IDM_UNLSINTAX
                     MENUITEM SEPARATOR
                     MENUITEM "Multi&cart: 'Last Bible' (VFame etc)", IDM_UNLLBMULTI

@@ -54,6 +54,7 @@
 #include "mbc/MbcUnlBbd.h"
 #include "mbc/MbcUnlDbzTrans.h"
 #include "mbc/MbcUnlHitek.h"
+#include "mbc/MbcUnlNtNew.h"
 #include "mbc/MbcUnlNtOld1.h"
 #include "mbc/MbcUnlNtOld2.h"
 
@@ -217,6 +218,9 @@ void gb_mbc::setMemoryReadWrite(MbcType memory_type) {
             break;
         case MEMORY_LBMULTI:
             mbc = new MbcUnlLbMulti();
+            break;
+        case MEMORY_NTNEW:
+            mbc = new MbcUnlNtNew();
             break;
         case MEMORY_DEFAULT:
         default:

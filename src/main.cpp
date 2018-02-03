@@ -315,9 +315,9 @@ int WINAPI WinMain(HINSTANCE hThisInstance,HINSTANCE hPrevInstance, LPSTR  lpszA
    GB1 = new gb_system;
 
    if(!options || !GB1 || !GB1->init() || !sgb_init())
-   { 
-      debug_print(str_table[ERROR_MEMORY]); 
-      PostMessage(hwnd, WM_QUIT, 0, 0L);  
+   {
+      debug_print(str_table[ERROR_MEMORY]);
+      PostMessage(hwnd, WM_QUIT, 0, 0L);
    }
 
    GB = GB1;
@@ -330,7 +330,7 @@ int WINAPI WinMain(HINSTANCE hThisInstance,HINSTANCE hPrevInstance, LPSTR  lpszA
    if(!Init_DI())
    {
       debug_print(str_table[ERROR_DINPUT]);
-      PostMessage(hwnd, WM_QUIT, 0, 0L);        
+      PostMessage(hwnd, WM_QUIT, 0, 0L);
    }
 
    initSound();

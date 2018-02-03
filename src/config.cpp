@@ -169,6 +169,9 @@ void init_menu_options()
       case UNL_MBC5SAVE:
       	emuMenu.checkOption(IDM_UNLMBC5COMPAT);
       break;
+      case UNL_NTNEW:
+      	emuMenu.checkOption(IDM_UNLNTNEW);
+      break;
       default:
          emuMenu.checkOption(IDM_UNLAUTO);    
       break;
