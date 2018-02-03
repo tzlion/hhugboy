@@ -322,22 +322,22 @@ unlCompatMode CartDetection::detectUnlCompatMode(byte* cartridge, GBrom* rom, in
     if(!strcmp(rom->name,"POKEBOM USA") && romFileSize > 512*1024) {
         if(cartridge[0x102] == 0xE0) {
             // 23 in 1 with mario
-            return UNL_NTKL2;
+            return UNL_NTOLD2;
         }
         if(cartridge[0x102] == 0xC0) {
             // 25 in 1 with rockman
-            return UNL_NTKL1;
+            return UNL_NTOLD1;
         }
     }
 
     if((!strcmp(rom->name," - TRUMP  BOY -") || !strcmp(rom->name,"QBILLION")) && romFileSize > 512*1024) {
-        return UNL_NTKL2;
+        return UNL_NTOLD2;
     }
 
     // Rockman 8
     if(!strcmp(rom->name,"ROCKMAN 99") && !strstr(rom->newlic,"MK")) {
         if (cartridge[0x8001] != 0xB7) { // Exclude old dump
-            return UNL_NTKL1;
+            return UNL_NTOLD1;
         }
     }
 
@@ -347,7 +347,7 @@ unlCompatMode CartDetection::detectUnlCompatMode(byte* cartridge, GBrom* rom, in
         && (!strcmp(rom->name,"SONIC 7") || !strcmp(rom->name,"SUPER MARIO 3") || !strcmp(rom->name,"DONKEY\x09KONG 5") || !strcmp(rom->name,"ROCKMAN 99"))
         && rom->ROMsize == 3 // Untouched ROMs all have 256k in header, assume anything with a 'fixed' ROM size is patched
     ) {
-        return UNL_NTKL2;
+        return UNL_NTOLD2;
     }
 
     // Sonic 3D Blast 5, Super Donkey Kong 3
@@ -421,22 +421,22 @@ void CartDetection::detectWeirdCarts(byte* cartridge, GBrom* rom, int romFileSiz
             rom->RAMsize = 9; // Doesn't really exist shh
             rom->mbcType = MEMORY_LBMULTI;
             break;
-        case UNL_NTKL1:
+        case UNL_NTOLD1:
             if(romFileSize > 512*1024) {
                 // enable battery for multicart
                 rom->battery = true;
                 rom->RAMsize = 2;
             }
             rom->ROMsize = detectGbRomSize(romFileSize);
-            rom->mbcType = MEMORY_NTKL1;
+            rom->mbcType = MEMORY_NTOLD1;
             break;
-        case UNL_NTKL2:
+        case UNL_NTOLD2:
             if((!strcmp(rom->name,"SUPER MARIO 3") || !strcmp(rom->name,"DONKEY\x09KONG 5")) && romFileSize < 512*1024) {
                 debug_print("This ROM is probably an underdump or patch and may not work properly");
             }
             rom->ROMsize = detectGbRomSize(romFileSize);
             rom->rumble = true; // Multicarts technically start in the 'rumble off' state but ehhhh
-            rom->mbcType = MEMORY_NTKL2;
+            rom->mbcType = MEMORY_NTOLD2;
             break;
         case UNL_MBC1SAVE:
             rom->battery = true;

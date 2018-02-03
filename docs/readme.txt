@@ -60,9 +60,9 @@ https://github.com/tzlion/hhugboy
 
  Hitek     For games by Hitek.
 
- NT KL type 1/2
-           Earlier carts released by NT with "KL" PCB codes, including older
-           Makon games and some multicarts.
+ NT old type 1/2
+           Earlier carts released by NT, including older Makon games and some
+           multicarts.
            Type 1: Rockman 8
            Type 2: Super Mario 3, Donkey Kong 5, rumble carts
 
