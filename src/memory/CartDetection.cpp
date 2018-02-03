@@ -31,19 +31,27 @@
 void CartDetection::processRomInfo(byte* cartridge, GBrom* rom, int romFileSize)
 {
     readHeader(cartridge, rom);
+    setCartridgeAttributesFromHeader(rom);
     detectWeirdCarts(cartridge, rom, romFileSize);
 }
 
-void CartDetection::setCartridgeType(GBrom* rom)
+void CartDetection::setCartridgeAttributesFromHeader(GBrom *rom)
 {
+    rom->ROMsize = rom->header.ROMsize;
+    if((rom->ROMsize > 8 && rom->ROMsize < 0x52) || rom->ROMsize > 0x54)
+        rom->ROMsize = 0;
+    rom->RAMsize = rom->header.RAMsize;
+    if(rom->RAMsize >= 8)
+        rom->RAMsize = 1;
+
     rom->RTC = false;
     rom->rumble = false;
+    rom->battery = false;
     rom->mbcType = MEMORY_DEFAULT;
 
     switch(rom->header.carttype)
     {
         case 0x00: //"ROM"
-            rom->battery = false;
             rom->mbcType = MEMORY_ROMONLY;
             break;
 
@@ -174,22 +182,6 @@ void CartDetection::setCartridgeType(GBrom* rom)
             rom->mbcType = MEMORY_MBC7;
             break;
 
-        case 0x59: //Game Boy Smart Card
-            rom->battery = false;
-            rom->mbcType = MEMORY_MBC1;
-            break;
-
-        case 0xBE: //Pocket Voice Recorder
-            rom->battery = false;
-            rom->ROMsize++;
-            rom->mbcType = MEMORY_MBC5;
-            break;
-
-        case 0xEA: //SONIC5
-            rom->battery = false;
-            rom->mbcType = MEMORY_MBC1;
-            break;
-
         case 0xFC: //"POCKET CAMERA"
             rom->battery = true;
             rom->mbcType = MEMORY_CAMERA;
@@ -208,11 +200,6 @@ void CartDetection::setCartridgeType(GBrom* rom)
         case 0xFF: //"Hudson HuC-1+RAM+BATTERY"
             rom->battery = true;
             rom->mbcType = MEMORY_MBC1;
-            break;
-
-        default: //"Unknown"
-            rom->battery = false;
-            debug_print(str_table[ERROR_ROM_TYPE]);
             break;
     }
 }
@@ -245,17 +232,9 @@ void CartDetection::readHeader(byte* cartridge, GBrom* rom)
 
     ++addr;
     rom->header.carttype = rominfo[addr];
-    setCartridgeType(rom);
 
     rom->header.ROMsize = rominfo[addr+1];
-    rom->ROMsize = rom->header.ROMsize;
-    if((rom->ROMsize > 8 && rom->ROMsize < 0x52) || rom->ROMsize > 0x54)
-        rom->ROMsize = 0;
-    rom->ROMsize = rom->ROMsize;
     rom->header.RAMsize = rominfo[addr+2];
-    rom->RAMsize = rom->header.RAMsize;
-    if(rom->RAMsize >= 8)
-        rom->RAMsize = 1;
 
     addr+=3; rom->header.destcode = rominfo[addr];
     ++addr; rom->header.lic = rominfo[addr];
@@ -512,6 +491,27 @@ void CartDetection::otherCartDetection(byte* cartridge, GBrom* rom, int romFileS
     }
 
     // ============ UNLICENSED ============
+
+    // Dubious unlicensed 'cartridge types'
+    // Carried over from GEST but not sure how valid this is
+    switch(rom->header.carttype)
+    {
+        case 0x59: //Game Boy Smart Card
+            rom->battery = false;
+            rom->mbcType = MEMORY_MBC1;
+            break;
+
+        case 0xBE: //Pocket Voice Recorder
+            rom->battery = false;
+            rom->ROMsize++;
+            rom->mbcType = MEMORY_MBC5;
+            break;
+
+        case 0xEA: //SONIC5
+            rom->battery = false;
+            rom->mbcType = MEMORY_MBC1;
+            break;
+    }
 
     // Rockman 8 (Unl) [p1][b1]
     if(!strcmp(rom->header.name,"ROCKMAN 99") && cartridge[0x8001] == 0xB7) {
