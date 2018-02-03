@@ -157,6 +157,10 @@ https://github.com/tzlion/hhugboy
 
 [ RELEASE HISTORY ]- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 
+ v1.x.x xxth xxxxxxx 20xx
+ * Rename 'NT KL' compatibility mode to 'NT Old'
+   (since KL PCB codes were also used on at least one cart with the new mapper)
+
  v1.2.1 24th August 2017
  * Detection for more NT KL carts
  * Visual rumble implemented for NT KL type 2 carts
