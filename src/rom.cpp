@@ -1,6 +1,6 @@
 /*
    hhugboy Game Boy emulator
-   copyright 2013 taizou
+   copyright 2013-2018 taizou
 
    Based on GEST
    Copyright (C) 2003-2010 TM
@@ -222,7 +222,7 @@ bool gb_system::loadrom_file(const wchar_t* filename,int offset)
    { 
       debug_print(str_table[ERROR_MEMORY]); 
       fclose(romfile);
-      return false; 
+      return false;
    }
    
    if((int)fread(cartROM,1,romFileSize-offset,romfile) < romFileSize-offset)

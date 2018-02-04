@@ -1,6 +1,6 @@
 /*
    hhugboy Game Boy emulator
-   copyright 2013 taizou
+   copyright 2013-2018 taizou
 
    Based on GEST
    Copyright (C) 2003-2010 TM
