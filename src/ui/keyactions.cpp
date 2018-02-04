@@ -140,7 +140,7 @@ void keyAction(int key)
                 char tmp_filename[275];
 
                 if (res == -1) { // -1 = could not convert, so take the internal name instead
-                    sprintf(tmp_filename,"[%s]_%04d.png",GB1->rom->header.name,fileno);
+                    sprintf(tmp_filename,"[%s]_%04d.png",GB1->cartridge->header.name,fileno);
                 } else {
                     sprintf(tmp_filename,"%s_%04d.png",img_filename_mb,fileno);
                 }
@@ -254,12 +254,12 @@ void keyAction(int key)
             } else if (key == 0xBB) {
                 paletteNo = 11;
             }
-            if(GB1->gbc_mode && !GB1->rom->header.CGB) {
+            if(GB1->gbc_mode && !GB1->cartridge->header.CGB) {
                 memcpy(GB1->GBC_BGP,GBC_DMGBG_palettes[paletteNo],sizeof(unsigned int)*4);
                 memcpy(GB1->GBC_OBP,GBC_DMGOBJ0_palettes[paletteNo],sizeof(unsigned int)*4);
                 memcpy(GB1->GBC_OBP+4,GBC_DMGOBJ1_palettes[paletteNo],sizeof(unsigned int)*4);
             }
-            if(GB2 && GB2->gbc_mode && !GB2->rom->header.CGB) {
+            if(GB2 && GB2->gbc_mode && !GB2->cartridge->header.CGB) {
                 memcpy(GB2->GBC_BGP,GBC_DMGBG_palettes[paletteNo],sizeof(unsigned int)*4);
                 memcpy(GB2->GBC_OBP,GBC_DMGOBJ0_palettes[paletteNo],sizeof(unsigned int)*4);
                 memcpy(GB2->GBC_OBP+4,GBC_DMGOBJ1_palettes[paletteNo],sizeof(unsigned int)*4);

@@ -27,7 +27,7 @@
 
 #define ROM_FILENAME_SIZE 1024
 
-struct HeaderStuff
+struct Header
 {
     char name[15];
     char newlic[2];
@@ -44,7 +44,7 @@ struct HeaderStuff
     int CGB; // this gets modified but it shouldn't
 };
 
-struct GBrom
+struct Cartridge
 {
    int ROMsize;
    int RAMsize;
@@ -54,7 +54,7 @@ struct GBrom
     // - addressable rom size (for multicarts) ...
     // and same for ram
     // or maybe do a struct for rom/ram sizes by header no idk
-   HeaderStuff header;
+   Header header;
    MbcType mbcType;
    bool battery;
    bool RTC;

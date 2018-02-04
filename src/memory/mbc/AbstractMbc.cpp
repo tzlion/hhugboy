@@ -24,7 +24,7 @@
 #include "AbstractMbc.h"
 #include <cstdio>
 
-void AbstractMbc::init(byte** gbMemMap, GBrom** gbRom, byte** gbMemory, byte** gbCartridge, byte** gbCartRam, int* gbRumbleCounter) {
+void AbstractMbc::init(byte** gbMemMap, Cartridge** gbRom, byte** gbMemory, byte** gbCartridge, byte** gbCartRam, int* gbRumbleCounter) {
     this->gbMemMap = gbMemMap;
     this->gbRom = gbRom;
     this->gbMemory = gbMemory;

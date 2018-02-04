@@ -28,7 +28,7 @@
 #include "../config.h"
 #include "../ui/strings.h"
 
-void CartDetection::processRomInfo(byte* cartridge, GBrom* rom, int romFileSize)
+void CartDetection::processRomInfo(byte* cartridge, Cartridge* rom, int romFileSize)
 {
     readHeader(cartridge, rom);
     setCartridgeAttributesFromHeader(rom);
@@ -37,7 +37,7 @@ void CartDetection::processRomInfo(byte* cartridge, GBrom* rom, int romFileSize)
     detectFlashCartHomebrew(rom, romFileSize);
 }
 
-void CartDetection::setCartridgeAttributesFromHeader(GBrom *rom)
+void CartDetection::setCartridgeAttributesFromHeader(Cartridge *rom)
 {
     rom->RTC = false;
     rom->rumble = false;
@@ -189,7 +189,7 @@ void CartDetection::setCartridgeAttributesFromHeader(GBrom *rom)
     }
 }
 
-void CartDetection::readHeader(byte* cartridge, GBrom* rom)
+void CartDetection::readHeader(byte* cartridge, Cartridge* rom)
 {
     byte rominfo[30];
     memcpy(rominfo,cartridge+0x0134,0x1C);
@@ -235,7 +235,7 @@ void CartDetection::readHeader(byte* cartridge, GBrom* rom)
     cmpl+=25; rom->header.complementok = !cmpl;
 }
 
-unlCompatMode CartDetection::detectUnlCompatMode(byte* cartridge, GBrom* rom, int romFileSize)
+unlCompatMode CartDetection::detectUnlCompatMode(byte* cartridge, Cartridge* rom, int romFileSize)
 {
     byte logo1[0x30];
     byte logo2[0x30];
@@ -388,7 +388,7 @@ byte CartDetection::detectGbRomSize(int romFileSize) {
     return 0x00;
 }
 
-bool CartDetection::detectUnlicensedCarts(byte *cartridge, GBrom *rom, int romFileSize)
+bool CartDetection::detectUnlicensedCarts(byte *cartridge, Cartridge *rom, int romFileSize)
 {
     unlCompatMode unlMode = options->unl_compat_mode;
     if ( unlMode == UNL_AUTO ) {
@@ -488,7 +488,7 @@ bool CartDetection::detectUnlicensedCarts(byte *cartridge, GBrom *rom, int romFi
 /**
  * Fix homebrew, cracks, trainers etc that were designed to run on a flashcart and have incorrect header values
  */
-bool CartDetection::detectFlashCartHomebrew(GBrom *rom, int romFileSize)
+bool CartDetection::detectFlashCartHomebrew(Cartridge *rom, int romFileSize)
 {
     // Trainers expecting some RAM where the original cart had none
     // - Fix & Foxi - Episode 1 Lupo (E) (M3) [C][t1]
@@ -534,7 +534,7 @@ bool CartDetection::detectFlashCartHomebrew(GBrom *rom, int romFileSize)
 /**
  * Detect licensed MBC1 multicarts (they use the regular MBC1 cart type values in the header)
  */
-bool CartDetection::detectMbc1ComboPacks(GBrom *rom, int romFileSize)
+bool CartDetection::detectMbc1ComboPacks(Cartridge *rom, int romFileSize)
 {
     // Maintain support for Mortal Kombat I & II (UE) [a1][!] .. for now
     if(strstr(rom->header.name,"MORTALKOMBATI&I") && romFileSize == 540672) {

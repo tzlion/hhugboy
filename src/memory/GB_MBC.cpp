@@ -64,7 +64,7 @@
 //int RTC_latched = 0;
 
 // Eventually GB should contain cart and cart should contain MBC
-gb_mbc::gb_mbc(byte** gbMemMap, byte** gbCartridge, GBrom** gbRom, byte** gbCartRam, int* gbRumbleCounter, byte** gbMemory):
+gb_mbc::gb_mbc(byte** gbMemMap, byte** gbCartridge, Cartridge** gbRom, byte** gbCartRam, int* gbRumbleCounter, byte** gbMemory):
 
         mbcType(MEMORY_DEFAULT)
 
