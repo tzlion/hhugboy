@@ -165,6 +165,9 @@ https://github.com/tzlion/hhugboy
  * Add support for NT new carts supporting later Makon single cart games
  * Rename 'NT KL' compatibility mode to 'NT Old'
    (since KL PCB codes were also used on at least one cart with the new mapper)
+ * Support for Mortal Kombat 1&2 1MB dump
+ * Cart detection code updates, mostly should have no effect aside from a
+   couple bad ROMs no longer being picked up
 
  v1.2.1 24th August 2017
  * Detection for more NT KL carts
