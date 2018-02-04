@@ -30,7 +30,6 @@
 Cartridge* CartDetection::processRomInfo(byte* rom, int romFileSize)
 {
     Cartridge* cartridge = new Cartridge();
-    debug_print(cartridge->header.name);
     readHeader(rom, cartridge);
     setCartridgeAttributesFromHeader(cartridge);
     detectMbc1ComboPacks(cartridge, romFileSize);
