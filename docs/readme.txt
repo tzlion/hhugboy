@@ -168,6 +168,7 @@ https://github.com/tzlion/hhugboy
  * Support for Mortal Kombat 1&2 1MB dump
  * Cart detection code updates, mostly should have no effect aside from a
    couple bad ROMs no longer being picked up
+ * Refactored UI code & added secret debug window (not really used yet)
 
  v1.2.1 24th August 2017
  * Detection for more NT KL carts
