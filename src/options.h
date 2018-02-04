@@ -132,8 +132,7 @@ enum unlCompatMode
 	UNL_DBZTR,
 	UNL_NTNEW,
 	UNL_RM8OLD,
-	UNL_SAC8IN1,
-    UNL_SGBPACK
+	UNL_SAC8IN1
 };
 
 #endif

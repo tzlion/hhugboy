@@ -32,7 +32,9 @@ void CartDetection::processRomInfo(byte* cartridge, GBrom* rom, int romFileSize)
 {
     readHeader(cartridge, rom);
     setCartridgeAttributesFromHeader(rom);
-    detectWeirdCarts(cartridge, rom, romFileSize);
+    detectMbc1ComboPacks(rom);
+    detectUnlicensedCarts(cartridge, rom, romFileSize);
+    detectFlashCartHomebrew(rom, romFileSize);
 }
 
 void CartDetection::setCartridgeAttributesFromHeader(GBrom *rom)
@@ -363,14 +365,6 @@ unlCompatMode CartDetection::detectUnlCompatMode(byte* cartridge, GBrom* rom, in
     if(!strcmp(rom->header.name,"DIGIMON") && rom->header.checksum == 0xE11B) {
         return UNL_MBC5SAVE;
     }
-    // Duz's Pokemon (for Bung carts?)
-    if(!strcmp(rom->header.name,"POKEMON RED") && rom->ROMsize == 6) {
-        return UNL_SGBPACK;
-    }
-    // Duz's SGB Pack (for Bung carts?)
-    if(!strcmp(rom->header.name,"SGBPACK") && romFileSize > 32768) {
-        return UNL_SGBPACK;
-    }
     return UNL_NONE;
 }
 
@@ -394,7 +388,7 @@ byte CartDetection::detectGbRomSize(int romFileSize) {
     return 0x00;
 }
 
-void CartDetection::detectWeirdCarts(byte* cartridge, GBrom* rom, int romFileSize)
+bool CartDetection::detectUnlicensedCarts(byte *cartridge, GBrom *rom, int romFileSize)
 {
     unlCompatMode unlMode = options->unl_compat_mode;
     if ( unlMode == UNL_AUTO ) {
@@ -479,12 +473,7 @@ void CartDetection::detectWeirdCarts(byte* cartridge, GBrom* rom, int romFileSiz
             rom->mbcType = MEMORY_8IN1;
             rom->ROMsize = 4;
             break;
-        case UNL_SGBPACK: // Can't be manually selected currently
-            rom->mbcType = MEMORY_POKE;
-            rom->ROMsize = detectGbRomSize(romFileSize);
-            break;
         case UNL_NONE: default:
-            otherCartDetection(rom, romFileSize);
             break;
     }
 
@@ -492,40 +481,19 @@ void CartDetection::detectWeirdCarts(byte* cartridge, GBrom* rom, int romFileSiz
     if(!strcmp(rom->header.newlic,"MK")||!strcmp(rom->header.newlic,"GC")) {
         rom->rumble = 1;
     }
+
+    return unlMode != UNL_NONE;
 }
 
-bool CartDetection::otherCartDetection(GBrom* rom, int romFileSize)
+/**
+ * Fix homebrew, cracks, trainers etc that were designed to run on a flashcart and have incorrect header values
+ */
+bool CartDetection::detectFlashCartHomebrew(GBrom *rom, int romFileSize)
 {
-    // ============= LICENSED =============
-
-    // Momotarou Collection 2 ... this is actually pointless because
-    // - for the correct dump, the menu bank is at the end and this won't catch it
-    // - for dumps putting the menu bank at the beginning, they already have the correct cart type for MMM01
-    // - neither works anyway
-    if(strstr(rom->header.name,"MOMOCOL2")) {
-        rom->mbcType = MEMORY_MMM01;
-        return true;
-    }
-
-    // Hudson collection carts
-    // These all specify standard cartridge types in the header but are extremely not
-    if(!strcmp(rom->header.name,"BOMCOL") || !strcmp(rom->header.name,"BOMSEL") || !strcmp(rom->header.name,"GENCOL")
-       || strstr(rom->header.name,"MOMOCOL") || strstr(rom->header.name,"SUPERCHINESE 12")) {
-        rom->mbcType = MEMORY_BC;
-        return true;
-    }
-
-    // Mortal Kombat I & II (UE) [a1][!]
-    // VERY similar to the Hudson carts
-    if(strstr(rom->header.name,"MORTALKOMBATI&I")) {
-        rom->mbcType = MEMORY_MK12;
-        return true;
-    }
-
     // ========= CRACKED, TRAINED =========
 
     // Gameboy Camera MBC hack ... forces it back to the original values
-    if(!strcmp(rom->header.name,"GAMEBOYCAMERA")) {
+    if(!strcmp(rom->header.name,"GAMEBOYCAMERA") && rom->header.carttype != 0xFC) {
         rom->ROMsize = 5;
         rom->RAMsize = 4;
         rom->mbcType = MEMORY_CAMERA;
@@ -570,6 +538,38 @@ bool CartDetection::otherCartDetection(GBrom* rom, int romFileSize)
     // Pulsar (Freedom GB Contest 2001)(PD)[C]
     if(strstr(rom->header.name,"PULSAR")) {
         rom->mbcType = MEMORY_MBC5;
+        return true;
+    }
+
+    // ============= MISC =============
+
+    // Duz's Pokemon & Duz's SGB Pack
+    if((!strcmp(rom->header.name,"POKEMON RED") && rom->ROMsize == 6) || !strcmp(rom->header.name,"SGBPACK")) {
+        rom->mbcType = MEMORY_POKE;
+        rom->ROMsize = detectGbRomSize(romFileSize);
+    }
+
+    return false;
+}
+
+/**
+ * Detect licensed MBC1 multicarts (they use the regular MBC1 cart type values in the header)
+ */
+bool CartDetection::detectMbc1ComboPacks(GBrom *rom)
+{
+    // Hudson collections
+    // momocol should have a battery, the others not
+    // (momocol2 uses MMM01 and doesn't currently work)
+    if(!strcmp(rom->header.name,"BOMCOL") || !strcmp(rom->header.name,"BOMSEL") || !strcmp(rom->header.name,"GENCOL")
+       || strstr(rom->header.name,"MOMOCOL") || strstr(rom->header.name,"SUPERCHINESE 12")) {
+        rom->mbcType = MEMORY_BC;
+        return true;
+    }
+
+    // Mortal Kombat I & II (UE) [a1][!]
+    // VERY similar to the Hudson carts, implementation slightly different, investigate this
+    if(strstr(rom->header.name,"MORTALKOMBATI&I")) {
+        rom->mbcType = MEMORY_MK12;
         return true;
     }
 
