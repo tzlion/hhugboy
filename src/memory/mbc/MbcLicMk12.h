@@ -1,6 +1,6 @@
 /*
    hhugboy Game Boy emulator
-   copyright 2013-2016 taizou
+   copyright 2013-2018 taizou
    Based on GEST
    Copyright (C) 2003-2010 TM
    Incorporating code from VisualBoyAdvance
@@ -27,9 +27,9 @@
 
 #include "MbcNin1.h"
 //-------------------------------------------------------------------------
-// for Mortal Kombat 1&2
-// another MBC1 derived collection cart, similar to HuColl but not quite?
-// Works only with "Mortal Kombat I & II (UE) [a1][!]" currently
+// for "Mortal Kombat I & II (UE) [a1][!]"
+// an oddly sized dump of the MK1+2 collection
+// deprecated, probably not reflective of any real mapper
 //-------------------------------------------------------------------------
 class MbcLicMk12 : public MbcNin1 {
 public:

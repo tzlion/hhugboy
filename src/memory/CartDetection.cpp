@@ -32,7 +32,7 @@ void CartDetection::processRomInfo(byte* cartridge, GBrom* rom, int romFileSize)
 {
     readHeader(cartridge, rom);
     setCartridgeAttributesFromHeader(rom);
-    detectMbc1ComboPacks(rom);
+    detectMbc1ComboPacks(rom, romFileSize);
     detectUnlicensedCarts(cartridge, rom, romFileSize);
     detectFlashCartHomebrew(rom, romFileSize);
 }
@@ -534,21 +534,20 @@ bool CartDetection::detectFlashCartHomebrew(GBrom *rom, int romFileSize)
 /**
  * Detect licensed MBC1 multicarts (they use the regular MBC1 cart type values in the header)
  */
-bool CartDetection::detectMbc1ComboPacks(GBrom *rom)
+bool CartDetection::detectMbc1ComboPacks(GBrom *rom, int romFileSize)
 {
-    // MBC1 collections
-    // momocol should have a battery, the others not
-    // (momocol2 uses MMM01 and doesn't currently work)
-    if(!strcmp(rom->header.name,"BOMCOL") || !strcmp(rom->header.name,"BOMSEL") || !strcmp(rom->header.name,"GENCOL")
-       || strstr(rom->header.name,"MOMOCOL") || strstr(rom->header.name,"SUPERCHINESE 12")) {
-        rom->mbcType = MEMORY_MBC1MULTI;
+    // Maintain support for Mortal Kombat I & II (UE) [a1][!] .. for now
+    if(strstr(rom->header.name,"MORTALKOMBATI&I") && romFileSize == 540672) {
+        rom->mbcType = MEMORY_MK12;
         return true;
     }
 
-    // Mortal Kombat I & II (UE) [a1][!]
-    // VERY similar to the Hudson carts, implementation slightly different, investigate this
-    if(strstr(rom->header.name,"MORTALKOMBATI&I")) {
-        rom->mbcType = MEMORY_MK12;
+    // momocol should have a battery, the others not
+    // (momocol2 uses MMM01 and doesn't currently work)
+    if(!strcmp(rom->header.name,"BOMCOL") || !strcmp(rom->header.name,"BOMSEL") || !strcmp(rom->header.name,"GENCOL")
+       || strstr(rom->header.name,"MOMOCOL") || strstr(rom->header.name,"SUPERCHINESE 12")
+       || strstr(rom->header.name,"MORTALKOMBATI&I")) {
+        rom->mbcType = MEMORY_MBC1MULTI;
         return true;
     }
 

@@ -12,7 +12,7 @@ class CartDetection {
     private:
         void setCartridgeAttributesFromHeader(GBrom *rom);
         bool detectUnlicensedCarts(byte *cartridge, GBrom *rom, int romFileSize);
-        bool detectMbc1ComboPacks(GBrom *rom);
+        bool detectMbc1ComboPacks(GBrom *rom, int romFileSize);
         bool detectFlashCartHomebrew(GBrom *rom, int romFileSize);
         void readHeader(byte* cartridge, GBrom* rom);
         unlCompatMode detectUnlCompatMode(byte* cartridge, GBrom* rom, int romFileSize);
