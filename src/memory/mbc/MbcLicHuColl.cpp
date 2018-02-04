@@ -20,18 +20,19 @@
    along with this program; if not, write to the Free Software Foundation, Inc.,
    51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
+
 #include "MbcLicHuColl.h"
 
 void MbcLicHuColl::updateMemoryMap() {
 
     rom_bank = MBClo|(MBChi<<4);
 
-    int bank1addr = (MBChi<<4)<<14;
+    int bank0addr = (MBChi<<4)<<14;
 
-    gbMemMap[0x0] = &(*gbCartridge)[bank1addr];
-    gbMemMap[0x1] = &(*gbCartridge)[bank1addr+0x1000];
-    gbMemMap[0x2] = &(*gbCartridge)[bank1addr+0x2000];
-    gbMemMap[0x3] = &(*gbCartridge)[bank1addr+0x3000];
+    gbMemMap[0x0] = &(*gbCartridge)[bank0addr];
+    gbMemMap[0x1] = &(*gbCartridge)[bank0addr+0x1000];
+    gbMemMap[0x2] = &(*gbCartridge)[bank0addr+0x2000];
+    gbMemMap[0x3] = &(*gbCartridge)[bank0addr+0x3000];
 
     int cadr = rom_bank<<14;
     cadr &= rom_size_mask[(*gbRom)->ROMsize];

@@ -536,7 +536,7 @@ bool CartDetection::detectFlashCartHomebrew(GBrom *rom, int romFileSize)
  */
 bool CartDetection::detectMbc1ComboPacks(GBrom *rom)
 {
-    // Hudson collections
+    // MBC1 collections
     // momocol should have a battery, the others not
     // (momocol2 uses MMM01 and doesn't currently work)
     if(!strcmp(rom->header.name,"BOMCOL") || !strcmp(rom->header.name,"BOMSEL") || !strcmp(rom->header.name,"GENCOL")
