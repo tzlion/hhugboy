@@ -22,6 +22,26 @@
 */
 #include "MbcLicHuColl.h"
 
+void MbcLicHuColl::updateMemoryMap() {
+
+    rom_bank = MBClo|(MBChi<<4);
+
+    int bank1addr = (MBChi<<4)<<14;
+
+    gbMemMap[0x0] = &(*gbCartridge)[bank1addr];
+    gbMemMap[0x1] = &(*gbCartridge)[bank1addr+0x1000];
+    gbMemMap[0x2] = &(*gbCartridge)[bank1addr+0x2000];
+    gbMemMap[0x3] = &(*gbCartridge)[bank1addr+0x3000];
+
+    int cadr = rom_bank<<14;
+    cadr &= rom_size_mask[(*gbRom)->ROMsize];
+
+    gbMemMap[0x4] = &(*gbCartridge)[cadr];
+    gbMemMap[0x5] = &(*gbCartridge)[cadr+0x1000];
+    gbMemMap[0x6] = &(*gbCartridge)[cadr+0x2000];
+    gbMemMap[0x7] = &(*gbCartridge)[cadr+0x3000];
+}
+
 void MbcLicHuColl::writeMemory(unsigned short address, register byte data) {
     if(address < 0x2000)// Is it a RAM bank enable/disable?
     {
@@ -31,44 +51,15 @@ void MbcLicHuColl::writeMemory(unsigned short address, register byte data) {
 
     if(address < 0x4000) // Is it a ROM bank switch?
     {
-        data &= 0x0F;
-
-        if(data == 0)
-            data = 1;
-
-        rom_bank = data|(MBChi<<4);
-
-        int cadr = rom_bank<<14;
-
-        cadr &= rom_size_mask[(*gbRom)->ROMsize];
-
-        gbMemMap[0x4] = &(*gbCartridge)[cadr];
-        gbMemMap[0x5] = &(*gbCartridge)[cadr+0x1000];
-        gbMemMap[0x6] = &(*gbCartridge)[cadr+0x2000];
-        gbMemMap[0x7] = &(*gbCartridge)[cadr+0x3000];
+        MBClo = (data & 0x0F) ?: 1;
+        updateMemoryMap();
         return;
     }
 
     if(address < 0x6000)
     {
-        if(address == 0x4000 || address == 0x5fff) // game select
-        {
-            MBClo = 0;
-            MBChi = (data&0x03);
-
-            cart_address = (MBChi<<4)<<14;
-
-            gbMemMap[0x0] = &(*gbCartridge)[cart_address];
-            gbMemMap[0x1] = &(*gbCartridge)[cart_address+0x1000];
-            gbMemMap[0x2] = &(*gbCartridge)[cart_address+0x2000];
-            gbMemMap[0x3] = &(*gbCartridge)[cart_address+0x3000];
-
-            gbMemMap[0x4] = &(*gbCartridge)[cart_address+0x4000];
-            gbMemMap[0x5] = &(*gbCartridge)[cart_address+0x5000];
-            gbMemMap[0x6] = &(*gbCartridge)[cart_address+0x6000];
-            gbMemMap[0x7] = &(*gbCartridge)[cart_address+0x7000];
-            return;
-        }
+        MBChi = (data&0x03);
+        updateMemoryMap();
         return;
     }
 

@@ -33,7 +33,8 @@
 class MbcLicHuColl : public MbcNin1 {
 public:
     virtual void writeMemory(unsigned short address, register byte data) override;
-
+private:
+    void updateMemoryMap();
 };
 
 
