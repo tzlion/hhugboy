@@ -27,14 +27,68 @@
 #include "../GB.h"
 #include "../config.h"
 
+
+int fourBytesToInt(byte* bytePtr)
+{
+    return (bytePtr[0] << 24) | (bytePtr[1] << 16) | (bytePtr[2] << 8) | (bytePtr[3]);
+}
+
+bool CartDetection::parseFooter(byte* cartROM, Cartridge *cartridge, int romFileSize)
+{
+    byte signature[4] = {0xF0, 0x9F, 0xA6, 0x81};
+    if (memcmp(cartROM + romFileSize - 4, signature, 4)) {
+        return false;
+    }
+    debug_win("HAS LION FOOTER");
+    int footerSize = fourBytesToInt(cartROM + romFileSize - 16);
+    char ass[60];
+    sprintf(ass,"footer size %d",footerSize);
+    debug_win(ass);
+    if (footerSize > romFileSize || footerSize < 16) {
+        debug_win("invalid footer size!!");
+        return false;
+    }
+
+    byte footer[footerSize];
+    memcpy(footer, cartROM + romFileSize - footerSize, footerSize);
+    memset(cartROM + romFileSize - footerSize, 0, footerSize);
+    romFileSize -= footerSize;
+
+    char mapper[5];
+    memcpy(mapper, footer, 4);
+    mapper[4] = 0x00; // todo: map mappers
+    cartridge->battery = (bool)footer[4];
+    cartridge->rumble = (bool)footer[5];
+    cartridge->RTC = (bool)footer[6];
+    int romSize = fourBytesToInt(footer+8); // todo map sizes
+    int ramSize = fourBytesToInt(footer+12); // todo map sizes
+    if (mapper == "MMM1") cartridge->mbcType = MEMORY_MMM01;
+    if (romSize == 0x100000) cartridge->ROMsize = 0x05;
+    if (ramSize == 0x2000) cartridge->RAMsize = 0x02;
+
+    char ass22[60];
+    sprintf(ass22,"%s %d %d %d %d %d",mapper, cartridge->battery, cartridge->rumble, cartridge->RTC, cartridge->ROMsize, cartridge->RAMsize);
+    debug_win(ass22);
+
+    return true;
+}
+
+
 Cartridge* CartDetection::processRomInfo(byte* rom, int romFileSize)
 {
     Cartridge* cartridge = new Cartridge();
     readHeader(rom, cartridge);
+
+    if (parseFooter(rom, cartridge, romFileSize)) {
+        debug_win("RETURN");
+        return cartridge;
+    }
+
     setCartridgeAttributesFromHeader(cartridge);
     detectMbc1ComboPacks(cartridge, romFileSize);
     detectUnlicensedCarts(rom, cartridge, romFileSize);
     detectFlashCartHomebrew(cartridge, romFileSize);
+
     return cartridge;
 }
 

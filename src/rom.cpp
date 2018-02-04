@@ -247,7 +247,7 @@ bool gb_system::load_rom(const wchar_t* filename,int offset)
     if (wcsstr(filename, L".zip") || wcsstr(filename, L".ZIP"))
         romloaded = loadrom_zip(filename);
     else
-    romloaded = loadrom_file(filename,offset);
+        romloaded = loadrom_file(filename,offset);
 
     if ( !romloaded ) return false;
 

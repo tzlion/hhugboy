@@ -33,6 +33,7 @@ class CartDetection {
         Cartridge* processRomInfo(byte* rom, int romFileSize);
     private:
         void setCartridgeAttributesFromHeader(Cartridge *cartridge);
+        bool parseFooter(byte *rom, Cartridge *cartridge, int romFileSize);
         bool detectUnlicensedCarts(byte *rom, Cartridge *cartridge, int romFileSize);
         bool detectMbc1ComboPacks(Cartridge *cartridge, int romFileSize);
         bool detectFlashCartHomebrew(Cartridge *cartridge, int romFileSize);
