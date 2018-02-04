@@ -37,167 +37,150 @@ void CartDetection::processRomInfo(byte* cartridge, GBrom* rom, int romFileSize)
 
 void CartDetection::setCartridgeAttributesFromHeader(GBrom *rom)
 {
-    rom->ROMsize = rom->header.ROMsize;
-    if((rom->ROMsize > 8 && rom->ROMsize < 0x52) || rom->ROMsize > 0x54)
-        rom->ROMsize = 0;
-    rom->RAMsize = rom->header.RAMsize;
-    if(rom->RAMsize >= 8)
-        rom->RAMsize = 1;
-
     rom->RTC = false;
     rom->rumble = false;
     rom->battery = false;
     rom->mbcType = MEMORY_DEFAULT;
+    rom->ROMsize = 0;
+    rom->RAMsize = 0;
+
+    if (rom->header.ROMsize <= 8) {
+        // Some docs list ROM size values of 0x52, 0x53, 0x54 but nothing uses that in the entire GoodGBX set
+        // and Nintendo's docs from 1999 don't mention them
+        rom->ROMsize = rom->header.ROMsize;
+    }
+
+    if (rom->header.RAMsize <= 5) {
+        // 5 is used by Japanese Pokemon Crystal only
+        // 8 was a duplicate of 2, only found in some homebrew/hacks but they don't actually need it
+        rom->RAMsize = rom->header.RAMsize;
+    }
 
     switch(rom->header.carttype)
     {
-        case 0x00: //"ROM"
+        case 0x00: // ROM
             rom->mbcType = MEMORY_ROMONLY;
             break;
 
-        case 0x01: //"MBC1"
-            rom->battery = false;
+        case 0x01: // MBC1
             rom->mbcType = MEMORY_MBC1;
             break;
 
-        case 0x02: //"MBC1+RAM"
-            rom->battery = false;
+        case 0x02: // MBC1+RAM
             rom->mbcType = MEMORY_MBC1;
             break;
 
-        case 0x03: //"MBC1+RAM+BATTERY"
+        case 0x03: // MBC1+RAM+BATTERY
             rom->battery = true;
             rom->mbcType = MEMORY_MBC1;
             break;
 
-        case 0x05: //"MBC2"
-            rom->battery = false;
+        case 0x05: // MBC2
             rom->mbcType = MEMORY_MBC2;
             break;
 
-        case 0x06: //"MBC2+BATTERY"
+        case 0x06: // MBC2+BATTERY
             rom->battery = true;
             rom->mbcType = MEMORY_MBC2;
             break;
 
-        case 0x08: //"ROM+RAM";
-            rom->battery = false;
+        case 0x08: // ROM+RAM;
             rom->mbcType = MEMORY_ROMONLY;
             break;
 
-        case 0x09: //"ROM+RAM+BATTERY"
+        case 0x09: // ROM+RAM+BATTERY
             rom->battery = true;
             rom->mbcType = MEMORY_ROMONLY;
             break;
 
-        case 0x0B: //"MMM01"
-            rom->battery = false;
+        case 0x0B: // MMM01
             rom->mbcType = MEMORY_MMM01;
             break;
 
-        case 0x0C: //"MMM01+RAM"
-            rom->battery = false;
+        case 0x0C: // MMM01+RAM
             rom->mbcType = MEMORY_MMM01;
             break;
 
-        case 0x0D: //"MMM01+RAM+BATTERY"
+        case 0x0D: // MMM01+RAM+BATTERY
             rom->battery = true;
             rom->mbcType = MEMORY_MMM01;
             break;
 
-        case 0x0F: //"MBC3+TIMER+BATTERY"
+        case 0x0F: // MBC3+TIMER+BATTERY
             rom->battery = true;
             rom->RTC = true;
             rom->mbcType = MEMORY_MBC3;
             break;
 
-        case 0x10: //"MBC3+TIMER+RAM+BATTERY"
+        case 0x10: // MBC3+TIMER+RAM+BATTERY
             rom->battery = true;
             rom->RTC = true;
             rom->mbcType = MEMORY_MBC3;
             break;
 
-        case 0x11: //"MBC3"
-            rom->battery = false;
+        case 0x11: // MBC3
             rom->mbcType = MEMORY_MBC3;
             break;
 
-        case 0x12: //"MBC3+RAM"
-            rom->battery = false;
+        case 0x12: // MBC3+RAM
             rom->mbcType = MEMORY_MBC3;
             break;
 
-        case 0x13: //"MBC3+RAM+BATTERY"
+        case 0x13: // MBC3+RAM+BATTERY
             rom->battery = true;
             rom->mbcType = MEMORY_MBC3;
             break;
 
-        case 0x15: //"MBC4"
-            rom->battery = false;
-            break;
-
-        case 0x16: //"MBC4+RAM"
-            rom->battery = false;
-            break;
-
-        case 0x17: //"MBC4+RAM+BATTERY"
-            rom->battery = true;
-            break;
-
-        case 0x19: //"MBC5"
-            rom->battery = false;
+        case 0x19: // MBC5
             rom->mbcType = MEMORY_MBC5;
             break;
 
-        case 0x1A: //"MBC5+RAM"
-            rom->battery = false;
+        case 0x1A: // MBC5+RAM
             rom->mbcType = MEMORY_MBC5;
             break;
 
-        case 0x1B: //"MBC5+RAM+BATTERY"
+        case 0x1B: // MBC5+RAM+BATTERY
             rom->battery = true;
             rom->mbcType = MEMORY_MBC5;
             break;
 
-        case 0x1C: //"MBC5+RUMBLE"
-            rom->battery = false;
+        case 0x1C: // MBC5+RUMBLE
             rom->rumble = true;
             rom->mbcType = MEMORY_MBC5;
             break;
 
-        case 0x1D: //"MBC5+RUMBLE+RAM"
-            rom->battery = false;
+        case 0x1D: // MBC5+RUMBLE+RAM
             rom->rumble = true;
             rom->mbcType = MEMORY_MBC5;
             break;
 
-        case 0x1E: //"MBC5+RUMBLE+RAM+BATTERY"
+        case 0x1E: // MBC5+RUMBLE+RAM+BATTERY
             rom->battery = true;
             rom->rumble = true;
             rom->mbcType = MEMORY_MBC5;
             break;
 
-        case 0x22: //Kirby's Tilt'n'Tumble
+        case 0x22: // MBC7+SENSOR+RUMBLE+RAM+BATTERY
             rom->battery = true;
             rom->mbcType = MEMORY_MBC7;
             break;
 
-        case 0xFC: //"POCKET CAMERA"
+        case 0xFC: // POCKET CAMERA
             rom->battery = true;
             rom->mbcType = MEMORY_CAMERA;
             break;
 
-        case 0xFD: //"Bandai TAMA5"
+        case 0xFD: // Bandai TAMA5
             rom->battery = true;
             rom->mbcType = MEMORY_TAMA5;
             break;
 
-        case 0xFE: //"Hudson HuC-3"
+        case 0xFE: // Hudson HuC-3
             rom->battery = true;
             rom->mbcType = MEMORY_HUC3;
             break;
 
-        case 0xFF: //"Hudson HuC-1+RAM+BATTERY"
+        case 0xFF: // Hudson HuC-1+RAM+BATTERY
             rom->battery = true;
             rom->mbcType = MEMORY_MBC1;
             break;
@@ -492,25 +475,15 @@ void CartDetection::otherCartDetection(byte* cartridge, GBrom* rom, int romFileS
 
     // ============ UNLICENSED ============
 
-    // Dubious unlicensed 'cartridge types'
-    // Carried over from GEST but not sure how valid this is
-    switch(rom->header.carttype)
-    {
-        case 0x59: //Game Boy Smart Card
-            rom->battery = false;
-            rom->mbcType = MEMORY_MBC1;
-            break;
+    // Pocket Voice Recorder
+    if (rom->header.carttype == 0xBE) {
+        rom->ROMsize = 4;
+        rom->mbcType = MEMORY_MBC5;
+    }
 
-        case 0xBE: //Pocket Voice Recorder
-            rom->battery = false;
-            rom->ROMsize++;
-            rom->mbcType = MEMORY_MBC5;
-            break;
-
-        case 0xEA: //SONIC5
-            rom->battery = false;
-            rom->mbcType = MEMORY_MBC1;
-            break;
+    // Sonic 5, V early Makon shit, this is actually code in the header area
+    if (rom->header.carttype == 0xEA) {
+        rom->mbcType = MEMORY_MBC1;
     }
 
     // Rockman 8 (Unl) [p1][b1]
@@ -520,7 +493,9 @@ void CartDetection::otherCartDetection(byte* cartridge, GBrom* rom, int romFileS
     }
 
     // Gameboy Smart Card (CCL Copier) (Unl)
+    // Some vers have an ID in the header area so it appears as cart type 0x59
     if(!strcmp(rom->header.name,"GB SMART CARD")) {
+        rom->mbcType = MEMORY_MBC1;
         rom->ROMsize = 0;
         return;
     }
