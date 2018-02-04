@@ -1,6 +1,6 @@
 /*
    hhugboy Game Boy emulator
-   copyright 2013-2017 taizou
+   copyright 2013-2018 taizou
 
    Based on GEST
    Copyright (C) 2003-2010 TM
@@ -314,6 +314,7 @@ unlCompatMode CartDetection::detectUnlCompatMode(byte* cartridge, GBrom* rom, in
     }
 
     // Sonic 3D Blast 5, Super Donkey Kong 3
+    // Also has a cart type of "EA" but this is a consequence of there being code in the header area
     if(strstr(rom->header.name,"SONIC5")) {
         return UNL_MBC1NOSAVE;
     }
@@ -323,6 +324,53 @@ unlCompatMode CartDetection::detectUnlCompatMode(byte* cartridge, GBrom* rom, in
         return UNL_DBZTR;
     }
 
+    // ------- older dumps, previously detected by GEST, may be hacked/patched/bad -------
+    // Pocket Voice Recorder
+    if (rom->header.carttype == 0xBE) {
+        return UNL_MBC5SAVE;
+    }
+    // Gameboy Smart Card (CCL Copier) (Unl)
+    // Some vers have an ID in the header area so it appears as cart type 0x59
+    if(!strcmp(rom->header.name,"GB SMART CARD")) {
+        return UNL_MBC1NOSAVE;
+    }
+    // Rockman 8 (Unl) [p1][b1]
+    if(!strcmp(rom->header.name,"ROCKMAN 99") && cartridge[0x8001] == 0xB7) {
+        return UNL_RM8OLD;
+    }
+    // Captain Knick-Knack (Sachen) [!] - has the Tetris header for some reason
+    // Magic Maze has it too but is 32k so works
+    if(!strcmp(rom->header.name,"TETRIS") && romFileSize > 32768 && rom->ROMsize==0) {
+        return UNL_MBC1NOSAVE;
+    }
+    // Sachen 8 in 1
+    if(!strcmp(rom->header.name,"\0") && romFileSize > 32768 && rom->ROMsize==0) {
+        return UNL_SAC8IN1;
+    }
+    // Bokujou Monogatari 3 Chinese
+    if((strstr(rom->header.name,"BOKUMONOGB3BWAJ") || strstr(rom->header.name,"BOYGIRLD640BWAJ")) && rom->ROMsize == 1) {
+        return UNL_MBC5SAVE;
+    }
+    // Dragon Ball Z Goku (Chinese)
+    if(!strcmp(rom->header.name,"GB DBZ GOKOU") && rom->ROMsize == 4) {
+        return UNL_MBC1SAVE;
+    }
+    // Monsters GO!GO!GO!!
+    if(!strcmp(rom->header.name,"POCKET MONSTER") && rom->ROMsize == 3) {
+        return UNL_MBC1NOSAVE;
+    }
+    // Digimon 3 saving
+    if(!strcmp(rom->header.name,"DIGIMON") && rom->header.checksum == 0xE11B) {
+        return UNL_MBC5SAVE;
+    }
+    // Duz's Pokemon (for Bung carts?)
+    if(!strcmp(rom->header.name,"POKEMON RED") && rom->ROMsize == 6) {
+        return UNL_SGBPACK;
+    }
+    // Duz's SGB Pack (for Bung carts?)
+    if(!strcmp(rom->header.name,"SGBPACK") && romFileSize > 32768) {
+        return UNL_SGBPACK;
+    }
     return UNL_NONE;
 }
 
@@ -354,7 +402,6 @@ void CartDetection::detectWeirdCarts(byte* cartridge, GBrom* rom, int romFileSiz
     }
 
     switch(unlMode) {
-
         case UNL_HITEK:
             rom->mbcType = MEMORY_HITEK;
             break;
@@ -422,11 +469,22 @@ void CartDetection::detectWeirdCarts(byte* cartridge, GBrom* rom, int romFileSiz
             rom->ROMsize = detectGbRomSize(romFileSize);
             rom->mbcType = MEMORY_MBC5;
             break;
-        case UNL_DBZTR:
+        case UNL_DBZTR: // Can't be manually selected currently
             rom->mbcType = MEMORY_DBZTRANS;
             break;
+        case UNL_RM8OLD: // Can't be manually selected currently
+            rom->mbcType = MEMORY_ROCKMAN8;
+            break;
+        case UNL_SAC8IN1: // Can't be manually selected currently
+            rom->mbcType = MEMORY_8IN1;
+            rom->ROMsize = 4;
+            break;
+        case UNL_SGBPACK: // Can't be manually selected currently
+            rom->mbcType = MEMORY_POKE;
+            rom->ROMsize = detectGbRomSize(romFileSize);
+            break;
         case UNL_NONE: default:
-            otherCartDetection(cartridge, rom, romFileSize);
+            otherCartDetection(rom, romFileSize);
             break;
     }
 
@@ -436,7 +494,7 @@ void CartDetection::detectWeirdCarts(byte* cartridge, GBrom* rom, int romFileSiz
     }
 }
 
-void CartDetection::otherCartDetection(byte* cartridge, GBrom* rom, int romFileSize)
+bool CartDetection::otherCartDetection(GBrom* rom, int romFileSize)
 {
     // ============= LICENSED =============
 
@@ -446,7 +504,7 @@ void CartDetection::otherCartDetection(byte* cartridge, GBrom* rom, int romFileS
     // - neither works anyway
     if(strstr(rom->header.name,"MOMOCOL2")) {
         rom->mbcType = MEMORY_MMM01;
-        return;
+        return true;
     }
 
     // Hudson collection carts
@@ -454,121 +512,43 @@ void CartDetection::otherCartDetection(byte* cartridge, GBrom* rom, int romFileS
     if(!strcmp(rom->header.name,"BOMCOL") || !strcmp(rom->header.name,"BOMSEL") || !strcmp(rom->header.name,"GENCOL")
        || strstr(rom->header.name,"MOMOCOL") || strstr(rom->header.name,"SUPERCHINESE 12")) {
         rom->mbcType = MEMORY_BC;
-        return;
+        return true;
     }
 
     // Mortal Kombat I & II (UE) [a1][!]
     // VERY similar to the Hudson carts
     if(strstr(rom->header.name,"MORTALKOMBATI&I")) {
         rom->mbcType = MEMORY_MK12;
-        return;
-    }
-
-    // Gameboy Camera
-    if(!strcmp(rom->header.name,"GAMEBOYCAMERA")) {
-        // Real GB Camera ROM does have these values, this seems to be to support an MBC hack or something?
-        rom->ROMsize = 5;
-        rom->RAMsize = 4;
-        rom->mbcType = MEMORY_CAMERA;
-        return;
-    }
-
-    // Joryu Janshi Ni Chousen (J)[C] (bad)
-    // Probably no point in detecting this since it just crashes after the title screen
-    if(strstr(rom->header.name,"TUWAMONO") && romFileSize == 524288) {
-        debug_print("Bad dump!");
-        rom->ROMsize--;
-        return;
-    }
-
-    // ============ UNLICENSED ============
-
-    // Pocket Voice Recorder
-    if (rom->header.carttype == 0xBE) {
-        rom->ROMsize = 4;
-        rom->mbcType = MEMORY_MBC5;
-    }
-
-    // Sonic 5, V early Makon shit, this is actually code in the header area
-    if (rom->header.carttype == 0xEA) {
-        rom->mbcType = MEMORY_MBC1;
-    }
-
-    // Rockman 8 (Unl) [p1][b1]
-    if(!strcmp(rom->header.name,"ROCKMAN 99") && cartridge[0x8001] == 0xB7) {
-        rom->mbcType = MEMORY_ROCKMAN8;
-        return;
-    }
-
-    // Gameboy Smart Card (CCL Copier) (Unl)
-    // Some vers have an ID in the header area so it appears as cart type 0x59
-    if(!strcmp(rom->header.name,"GB SMART CARD")) {
-        rom->mbcType = MEMORY_MBC1;
-        rom->ROMsize = 0;
-        return;
-    }
-
-    // Monsters GO!GO!GO!!
-    if(!strcmp(rom->header.name,"POCKET MONSTER")) {
-        rom->ROMsize = 4;
-        return;
-    }
-
-    // Digimon 3 saving
-    if(!strcmp(rom->header.name,"DIGIMON") && rom->header.checksum == 0xE11B) {
-        rom->battery = true;
-        return;
-    }
-
-    // Sachen 8 in 1
-    if(!strcmp(rom->header.name,"\0") && romFileSize > 32768 && rom->ROMsize==0) {
-        rom->mbcType = MEMORY_8IN1;
-        rom->ROMsize = 4;
-        return;
-    }
-
-    // Captain Knick-Knack (Sachen) [!] - has the Tetris header for some reason
-    // Magic Maze has it too but is 32k so works
-    if(!strcmp(rom->header.name,"TETRIS") && romFileSize > 32768 && rom->ROMsize==0) {
-        rom->mbcType = MEMORY_MBC1;
-        rom->ROMsize = 2;
-        return;
-    }
-
-    // ======= CHINESE TRANSLATIONS =======
-
-    // Dragon Ball Z Goku (Chinese)
-    if(!strcmp(rom->header.name,"GB DBZ GOKOU")) {
-        rom->battery = true;
-        rom->mbcType = MEMORY_MBC1;
-        return;
-    }
-
-    // Bokujou Monogatari 3 Chinese
-    if(!strcmp(rom->header.name,"BOKUMONOGB3BWAJ") || !strcmp(rom->header.name,"BOYGIRLD640BWAJ")) {
-        rom->ROMsize = 6;
-        return;
+        return true;
     }
 
     // ========= CRACKED, TRAINED =========
 
+    // Gameboy Camera MBC hack ... forces it back to the original values
+    if(!strcmp(rom->header.name,"GAMEBOYCAMERA")) {
+        rom->ROMsize = 5;
+        rom->RAMsize = 4;
+        rom->mbcType = MEMORY_CAMERA;
+        return true;
+    }
+
     // Fix & Foxi [C][t1]
     if(!strcmp(rom->header.name,"LUPO +3HI")) {
         rom->mbcType = MEMORY_DEFAULT;
-        return;
+        return true;
     }
 
     // Bugs Bunny - Crazy Castle 3 (J)[C][t2]
     if(!strcmp(rom->header.name,"BUGS CC3 CRACK")) {
         rom->mbcType = MEMORY_DEFAULT;
         rom->RAMsize=1;
-        return;
+        return true;
     }
 
     // Joust & Defender (U)[C][t1]
     if(!strcmp(rom->header.name,"DEFENDER/JOUST") && rom->header.checksum == 0xB110) {
         rom->RAMsize = 1;
-        return;
+        return true;
     }
 
     // ============= HOMEBREW =============
@@ -578,52 +558,20 @@ void CartDetection::otherCartDetection(byte* cartridge, GBrom* rom, int romFileS
         rom->mbcType = MEMORY_DEFAULT;
         rom->RAMsize = 3;
         rom->ROMsize = 2;
-        return;
+        return true;
     }
 
     // Ball (Bung)(PD)[C] and Capman (Lik-Sang)(PD)[C]
     if(!strcmp(rom->header.name,"Ball          \x00\x80") || strstr(rom->header.name,"CAPMAN")) {
         rom->mbcType = MEMORY_DEFAULT;
-        return;
+        return true;
     }
 
     // Pulsar (Freedom GB Contest 2001)(PD)[C]
     if(strstr(rom->header.name,"PULSAR")) {
         rom->mbcType = MEMORY_MBC5;
-        return;
+        return true;
     }
 
-    // =============== ETC. ===============
-
-    // Pokemon Red-Blue 2-in-1 (Unl)[S] -- Duz's Pokemon
-    if(!strcmp(rom->header.name,"POKEMON RED") && rom->ROMsize == 6) {
-        rom->ROMsize = 7;
-        rom->mbcType = MEMORY_POKE;
-        return;
-    }
-
-    // Pokemon Red-Blue 2-in-1 (Unl) [S][a1] -- Duz's SGB Pack
-    if(!strcmp(rom->header.name,"SGBPACK") && romFileSize > 32768) {
-        rom->ROMsize = 6;
-        rom->mbcType = MEMORY_POKE;
-        return;
-    }
-
-    // GB Pack V1.3 (PD) [C][h1]
-    // GB Pack V1.3 (PD) [C][h2]
-    // GB Pack V1.3 (PD) [M][h1]
-    // GB Pack Vx.x (16Mbit) (PD) [h1]
-    // GB Pack Vx.x (16Mbit) (PD) [h2]
-    if(!strcmp(rom->header.name,"SGBPACK")) {
-        rom->ROMsize = 0;
-        return;
-    }
-
-    // Not sure what this is for
-    // A couple Rocket Games games trip this check but seem to work without it?
-    // Some bad dumps also trip it but, eh
-    if(romFileSize == 262144 && rom->ROMsize == 4) {
-        rom->ROMsize--;
-        return;
-    }
+    return false;
 }

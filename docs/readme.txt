@@ -157,6 +157,7 @@ https://github.com/tzlion/hhugboy
  * Action Replay cheats
  * Implement a rendering engine other than DirectDraw
  * Other language translations
+ * Proper MMM01 support
 
 [ RELEASE HISTORY ]- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 

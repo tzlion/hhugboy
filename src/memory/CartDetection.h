@@ -12,7 +12,7 @@ class CartDetection {
     private:
         void setCartridgeAttributesFromHeader(GBrom *rom);
         void detectWeirdCarts(byte* cartridge, GBrom* rom, int romFileSize);
-        void otherCartDetection(byte* cartridge, GBrom* rom, int romFileSize);
+        bool otherCartDetection(GBrom* rom, int romFileSize);
         void readHeader(byte* cartridge, GBrom* rom);
         unlCompatMode detectUnlCompatMode(byte* cartridge, GBrom* rom, int romFileSize);
         byte detectGbRomSize(int romFileSize);
