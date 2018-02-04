@@ -490,36 +490,16 @@ bool CartDetection::detectUnlicensedCarts(byte *cartridge, GBrom *rom, int romFi
  */
 bool CartDetection::detectFlashCartHomebrew(GBrom *rom, int romFileSize)
 {
-    // ========= CRACKED, TRAINED =========
-
-    // Gameboy Camera MBC hack ... forces it back to the original values
-    if(!strcmp(rom->header.name,"GAMEBOYCAMERA") && rom->header.carttype != 0xFC) {
-        rom->ROMsize = 5;
-        rom->RAMsize = 4;
-        rom->mbcType = MEMORY_CAMERA;
-        return true;
-    }
-
-    // Fix & Foxi [C][t1]
-    if(!strcmp(rom->header.name,"LUPO +3HI")) {
+    // Trainers expecting some RAM where the original cart had none
+    // - Fix & Foxi - Episode 1 Lupo (E) (M3) [C][t1]
+    // - Bugs Bunny - Crazy Castle 3 (J)[C][t2]
+    // - Joust & Defender (U)[C][t1]
+    if(!strcmp(rom->header.name,"BUGS CC3 CRACK") || !strcmp(rom->header.name,"LUPO +3HI") ||
+       (!strcmp(rom->header.name,"DEFENDER/JOUST") && rom->header.checksum == 0xB110)) {
         rom->mbcType = MEMORY_DEFAULT;
-        return true;
-    }
-
-    // Bugs Bunny - Crazy Castle 3 (J)[C][t2]
-    if(!strcmp(rom->header.name,"BUGS CC3 CRACK")) {
-        rom->mbcType = MEMORY_DEFAULT;
-        rom->RAMsize=1;
-        return true;
-    }
-
-    // Joust & Defender (U)[C][t1]
-    if(!strcmp(rom->header.name,"DEFENDER/JOUST") && rom->header.checksum == 0xB110) {
         rom->RAMsize = 1;
         return true;
     }
-
-    // ============= HOMEBREW =============
 
     // BHGOS MultiCart
     if(!strcmp(rom->header.name,"MultiCart")) {
@@ -541,12 +521,11 @@ bool CartDetection::detectFlashCartHomebrew(GBrom *rom, int romFileSize)
         return true;
     }
 
-    // ============= MISC =============
-
     // Duz's Pokemon & Duz's SGB Pack
     if((!strcmp(rom->header.name,"POKEMON RED") && rom->ROMsize == 6) || !strcmp(rom->header.name,"SGBPACK")) {
         rom->mbcType = MEMORY_POKE;
         rom->ROMsize = detectGbRomSize(romFileSize);
+        return true;
     }
 
     return false;
