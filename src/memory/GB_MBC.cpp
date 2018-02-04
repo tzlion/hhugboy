@@ -64,14 +64,14 @@
 //int RTC_latched = 0;
 
 // Eventually GB should contain cart and cart should contain MBC
-gb_mbc::gb_mbc(byte** gbMemMap, byte** gbCartridge, Cartridge** gbRom, byte** gbCartRam, int* gbRumbleCounter, byte** gbMemory):
+gb_mbc::gb_mbc(byte** gbMemMap, byte** gbCartRom, Cartridge** gbCartridge, byte** gbCartRam, int* gbRumbleCounter, byte** gbMemory):
 
         mbcType(MEMORY_DEFAULT)
 
 {
-    this->gbCartridge = gbCartridge;
+    this->gbCartRom = gbCartRom;
     this->gbMemMap = gbMemMap;
-    this->gbRom = gbRom;
+    this->gbCartridge = gbCartridge;
     this->gbCartRam = gbCartRam;
     this->gbRumbleCounter = gbRumbleCounter;
     this->gbMemory = gbMemory;
@@ -193,10 +193,10 @@ void gb_mbc::setMemoryReadWrite(MbcType memory_type) {
             mbc = new MbcUnlRockman8();
             break;
         case MEMORY_NTOLD1:
-            mbc = new MbcUnlNtOld1((*gbRom)->ROMsize);
+            mbc = new MbcUnlNtOld1((*gbCartridge)->ROMsize);
             break;
         case MEMORY_NTOLD2:
-            mbc = new MbcUnlNtOld2((*gbRom)->ROMsize);
+            mbc = new MbcUnlNtOld2((*gbCartridge)->ROMsize);
             break;
         case MEMORY_MBC1MULTI:
             mbc = new MbcNin1Multi();
@@ -228,7 +228,7 @@ void gb_mbc::setMemoryReadWrite(MbcType memory_type) {
             break;
     }
 
-    mbc->init( gbMemMap, gbRom, gbMemory, gbCartridge, gbCartRam, gbRumbleCounter );
+    mbc->init( gbMemMap, gbCartridge, gbMemory, gbCartRom, gbCartRam, gbRumbleCounter );
 }
 
 bool gb_mbc::shouldReset() {
