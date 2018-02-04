@@ -1,6 +1,6 @@
 /*
    hhugboy Game Boy emulator
-   copyright 2013 taizou
+   copyright 2013-2018 taizou
 
    Based on GEST
    Copyright (C) 2003-2010 TM
@@ -134,14 +134,14 @@ bool gb_system::loadrom_zip(const wchar_t* filename)
       return false;
    }
    
-   if(cartridge != NULL) 
+   if(cartROM != NULL)
    { 
-      delete [] cartridge; 
-      cartridge = NULL; 
+      delete [] cartROM;
+      cartROM = NULL;
    }
       
-   cartridge = new byte[get_size(romFileSize)];
-   if(cartridge == NULL) 
+   cartROM = new byte[get_size(romFileSize)];
+   if(cartROM == NULL)
    { 
       unzCloseCurrentFile(unz);
       unzClose(unz);         
@@ -149,11 +149,11 @@ bool gb_system::loadrom_zip(const wchar_t* filename)
       return false; 
    }
 
-   if(romFileSize != unzReadCurrentFile(unz,cartridge,romFileSize))
+   if(romFileSize != unzReadCurrentFile(unz,cartROM,romFileSize))
    {
       debug_print(str_table[ERROR_READ_FILE]);
-      delete [] cartridge;
-      cartridge = NULL;
+      delete [] cartROM;
+      cartROM = NULL;
       return false;
    }
    
@@ -212,20 +212,20 @@ bool gb_system::loadrom_file(const wchar_t* filename,int offset)
    rewind(romfile);  // go to beginning
    fseek(romfile,offset,SEEK_SET);
    
-   if(cartridge != NULL) 
+   if(cartROM != NULL)
    { 
-      delete [] cartridge; 
-      cartridge=NULL; 
+      delete [] cartROM;
+      cartROM=NULL;
    }
-   cartridge = new byte[get_size(romFileSize)];
-   if(cartridge == NULL) 
+   cartROM = new byte[get_size(romFileSize)];
+   if(cartROM == NULL)
    { 
       debug_print(str_table[ERROR_MEMORY]); 
       fclose(romfile);
-      return false; 
+      return false;
    }
    
-   if((int)fread(cartridge,1,romFileSize-offset,romfile) < romFileSize-offset)
+   if((int)fread(cartROM,1,romFileSize-offset,romfile) < romFileSize-offset)
    { 
       //if(rom->ROMsize)
          debug_print(str_table[ERROR_READ_ROM_TO_MEMORY]); 
@@ -251,8 +251,8 @@ bool gb_system::load_rom(const wchar_t* filename,int offset)
 
     if ( !romloaded ) return false;
 
-    (new CartDetection())->processRomInfo(cartridge, rom, romFileSize);
-    mbc->setMemoryReadWrite(rom->mbcType);
+    cartridge = (new CartDetection())->processRomInfo(cartROM, romFileSize);
+    mbc->setMemoryReadWrite(cartridge->mbcType);
 
     wchar_t temp2[ROM_FILENAME_SIZE];
 

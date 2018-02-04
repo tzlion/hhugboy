@@ -480,8 +480,9 @@ int gb_system::io_reg_write(register unsigned short address,register byte data)
       case 0x68: // BCPS
       if(gbc_mode)
       {
-         if(!rom->CGB) // this is a GBC game
-            rom->CGB = 1;
+         if(!cartridge->header.CGB) // this is a GBC game
+            cartridge->header.CGB = 1;
+         // what the hell why are we overriding the header though
             
          int index = (data & 0x3f) >> 1;
          int hilo  = (data & 0x01);

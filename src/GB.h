@@ -175,8 +175,8 @@ public:
    byte *VRAM;
    byte *WRAM;
    byte* mem_map[0x10];
-   byte* cartridge;
-   GBrom* rom;
+   byte* cartROM;
+   Cartridge* cartridge;
 
    byte *memory_another;
 

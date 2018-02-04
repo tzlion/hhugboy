@@ -97,8 +97,8 @@ set(SOURCE_FILES
         src/memory/mbc/MbcUnlRockman8.h
         src/memory/mbc/MbcLicMk12.cpp
         src/memory/mbc/MbcLicMk12.h
-        src/memory/mbc/MbcLicHuColl.cpp
-        src/memory/mbc/MbcLicHuColl.h
+        src/memory/mbc/MbcNin1Multi.cpp
+        src/memory/mbc/MbcNin1Multi.h
         src/memory/mbc/MbcLicMmm01.cpp
         src/memory/mbc/MbcLicMmm01.h
         src/memory/mbc/MbcNin1.cpp

@@ -18,18 +18,18 @@ void MbcUnlNtNew::writeMemory(unsigned short address, register byte data) {
     if ( splitMode ) {
         if ( (address&0xFF00)== 0x2000 ) {
             int bankStartAddr = data<<0x0D;
-            bankStartAddr &= rom_size_mask[(*gbRom)->ROMsize];
+            bankStartAddr &= rom_size_mask[(*gbCartridge)->ROMsize];
             if ( bankStartAddr < 0x4000 ) bankStartAddr += 0x4000;
-            gbMemMap[0x4] = &(*gbCartridge)[bankStartAddr];
-            gbMemMap[0x5] = &(*gbCartridge)[bankStartAddr+0x1000];
+            gbMemMap[0x4] = &(*gbCartRom)[bankStartAddr];
+            gbMemMap[0x5] = &(*gbCartRom)[bankStartAddr+0x1000];
             return;
         }
         if ( (address&0xFF00)== 0x2400 ) {
             int bankStartAddr = data<<0x0D;
-            bankStartAddr &= rom_size_mask[(*gbRom)->ROMsize];
+            bankStartAddr &= rom_size_mask[(*gbCartridge)->ROMsize];
             if ( bankStartAddr < 0x4000 ) bankStartAddr += 0x4000;
-            gbMemMap[0x6] = &(*gbCartridge)[bankStartAddr+0x0000];
-            gbMemMap[0x7] = &(*gbCartridge)[bankStartAddr+0x1000];
+            gbMemMap[0x6] = &(*gbCartRom)[bankStartAddr+0x0000];
+            gbMemMap[0x7] = &(*gbCartRom)[bankStartAddr+0x1000];
             return;
         }
     }

@@ -30,7 +30,7 @@
 class gb_mbc {
 
 public:
-    gb_mbc(byte** gbMemMap, byte** gbCartridge, GBrom** gbRom, byte** gbCartRam, int* rumbleCounter, byte** gbMemory);
+    gb_mbc(byte** gbMemMap, byte** gbCartRom, Cartridge** gbCartridge, byte** gbCartRam, int* rumbleCounter, byte** gbMemory);
 
     void setMemoryReadWrite(MbcType memory_type);
 
@@ -65,9 +65,9 @@ private:
     AbstractMbc *mbc;
 
     byte** gbMemMap;
-    GBrom** gbRom;
+    Cartridge** gbCartridge;
     byte** gbCartRam;
-    byte** gbCartridge;
+    byte** gbCartRom;
     int* gbRumbleCounter;
     byte** gbMemory;
 

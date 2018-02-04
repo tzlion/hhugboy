@@ -14,16 +14,16 @@ void MbcUnlDbzTrans::writeMemory(unsigned short address, register byte data) {
     // Half Bank Switch(tm)
     if ( ( address & 0xf0ff ) == 0x70d2 ) {
         int bankStartAddr = data<<14;
-        bankStartAddr &= rom_size_mask[(*gbRom)->ROMsize];
-        gbMemMap[0x6] = &(*gbCartridge)[bankStartAddr+0x2000];
-        gbMemMap[0x7] = &(*gbCartridge)[bankStartAddr+0x3000];
+        bankStartAddr &= rom_size_mask[(*gbCartridge)->ROMsize];
+        gbMemMap[0x6] = &(*gbCartRom)[bankStartAddr+0x2000];
+        gbMemMap[0x7] = &(*gbCartRom)[bankStartAddr+0x3000];
         waitingForOtherHalf = true;
         return;
     } else if ( ( ( address & 0xf0ff ) == 0x20d2 ) || ( waitingForOtherHalf && ( address & 0xf000 ) == 0x2000 ) ) {
         int bankStartAddr = data<<14;
-        bankStartAddr &= rom_size_mask[(*gbRom)->ROMsize];
-        gbMemMap[0x4] = &(*gbCartridge)[bankStartAddr];
-        gbMemMap[0x5] = &(*gbCartridge)[bankStartAddr+0x1000];
+        bankStartAddr &= rom_size_mask[(*gbCartridge)->ROMsize];
+        gbMemMap[0x4] = &(*gbCartRom)[bankStartAddr];
+        gbMemMap[0x5] = &(*gbCartRom)[bankStartAddr+0x1000];
         waitingForOtherHalf = false;
         return;
     }

@@ -279,7 +279,7 @@ bool gb_system::save_state()
    fwrite(sound_buffer, sizeof(byte),4*735,statefile);
    //fwrite(final_wave, sizeof(signed short),2*735,statefile);
       
-   if(gbc_mode && rom->CGB)
+   if(gbc_mode && cartridge->header.CGB)
    {
       fwrite(VRAM,sizeof(byte),0x4000,statefile);
       fwrite(WRAM,sizeof(byte),0x8000,statefile);  
@@ -287,9 +287,9 @@ bool gb_system::save_state()
       fwrite(GBC_OBP, sizeof(unsigned short),32,statefile);      
    }
    
-   if(rom->RAMsize > 2)
+   if(cartridge->RAMsize > 2)
    {
-      fwrite(cartRAM,sizeof(byte),ramsize[rom->RAMsize]*1024,statefile);
+      fwrite(cartRAM,sizeof(byte),ramsize[cartridge->RAMsize]*1024,statefile);
    }
 
     mbc->writeCartSpecificVarsToStateFile(statefile);
@@ -468,7 +468,7 @@ bool gb_system::load_state()
    fread(sound_buffer, sizeof(byte),4*735,statefile);
    //fread(final_wave, sizeof(signed short),2*735,statefile);
       
-   if(gbc_mode && rom->CGB)
+   if(gbc_mode && cartridge->header.CGB)
    {
       fread(VRAM,sizeof(byte),0x4000,statefile);
       fread(WRAM,sizeof(byte),0x8000,statefile);  
@@ -476,9 +476,9 @@ bool gb_system::load_state()
       fread(GBC_OBP, sizeof(unsigned short),32,statefile);           
    }        
    
-   if(rom->RAMsize > 2)
+   if(cartridge->RAMsize > 2)
    {
-      fread(cartRAM,sizeof(byte),ramsize[rom->RAMsize]*1024,statefile);
+      fread(cartRAM,sizeof(byte),ramsize[cartridge->RAMsize]*1024,statefile);
    }
 
     mbc->readCartSpecificVarsFromStateFile(statefile);
@@ -515,12 +515,12 @@ bool gb_system::load_state()
     mbc->readNewerCartSpecificVarsFromStateFile(statefile);
 
     int cadr = ((mbc->getRomBank())<<14) + mbc->getOffset();
-   mem_map[0x4] = &cartridge[cadr];
-   mem_map[0x5] = &cartridge[cadr+0x1000];
-   mem_map[0x6] = &cartridge[cadr+0x2000];
-   mem_map[0x7] = &cartridge[cadr+0x3000];
+   mem_map[0x4] = &cartROM[cadr];
+   mem_map[0x5] = &cartROM[cadr+0x1000];
+   mem_map[0x6] = &cartROM[cadr+0x2000];
+   mem_map[0x7] = &cartROM[cadr+0x3000];
    
-   if(rom->RAMsize > 2)
+   if(cartridge->RAMsize > 2)
    {
       int madr = (mbc->getRamBank())<<13 + mbc->getRamOffset();
       mem_map[0xA] = &cartRAM[madr];

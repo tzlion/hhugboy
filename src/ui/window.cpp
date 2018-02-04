@@ -249,7 +249,7 @@ LRESULT CALLBACK WindowProcedure(HWND hwnd, UINT message, WPARAM wParam, LPARAM 
                 if(!paused)
                     FSOUND_SetMute(FSOUND_ALL,FALSE);
             } else
-            if(romwasloaded && GB1->cartridge != NULL)
+            if(romwasloaded && GB1->cartROM != NULL)
                 GB1->romloaded = true;
 
             DragFinish(d_handle);

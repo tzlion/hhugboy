@@ -44,12 +44,12 @@ void MbcNin1::writeMemory(unsigned short address, register byte data) {
             cart_address = MBClo<<14;
             cart_address |= (MBChi<<19);
 
-            cart_address &= rom_size_mask[(*gbRom)->ROMsize];
+            cart_address &= rom_size_mask[(*gbCartridge)->ROMsize];
 
-            gbMemMap[0x4] = &(*gbCartridge)[cart_address];
-            gbMemMap[0x5] = &(*gbCartridge)[cart_address+0x1000];
-            gbMemMap[0x6] = &(*gbCartridge)[cart_address+0x2000];
-            gbMemMap[0x7] = &(*gbCartridge)[cart_address+0x3000];
+            gbMemMap[0x4] = &(*gbCartRom)[cart_address];
+            gbMemMap[0x5] = &(*gbCartRom)[cart_address+0x1000];
+            gbMemMap[0x6] = &(*gbCartRom)[cart_address+0x2000];
+            gbMemMap[0x7] = &(*gbCartRom)[cart_address+0x3000];
         } else
         {
             if(data == 0)
@@ -59,12 +59,12 @@ void MbcNin1::writeMemory(unsigned short address, register byte data) {
 
             int cadr = rom_bank<<14;
 
-            cadr &= rom_size_mask[(*gbRom)->ROMsize];
+            cadr &= rom_size_mask[(*gbCartridge)->ROMsize];
 
-            gbMemMap[0x4] = &(*gbCartridge)[cadr];
-            gbMemMap[0x5] = &(*gbCartridge)[cadr+0x1000];
-            gbMemMap[0x6] = &(*gbCartridge)[cadr+0x2000];
-            gbMemMap[0x7] = &(*gbCartridge)[cadr+0x3000];
+            gbMemMap[0x4] = &(*gbCartRom)[cadr];
+            gbMemMap[0x5] = &(*gbCartRom)[cadr+0x1000];
+            gbMemMap[0x6] = &(*gbCartRom)[cadr+0x2000];
+            gbMemMap[0x7] = &(*gbCartRom)[cadr+0x3000];
         }
         return;
     }
@@ -73,7 +73,7 @@ void MbcNin1::writeMemory(unsigned short address, register byte data) {
     {
         if(MBC1memorymodel == 0)
         {
-            if((((data&0x03)<<5)|MBClo) > maxROMbank[(*gbRom)->ROMsize])
+            if((((data&0x03)<<5)|MBClo) > maxROMbank[(*gbCartridge)->ROMsize])
                 return;
 
             MBChi = (data&0x03);
@@ -83,22 +83,22 @@ void MbcNin1::writeMemory(unsigned short address, register byte data) {
             cart_address = MBClo<<14;
             cart_address |= (MBChi<<19);
 
-            cart_address &= rom_size_mask[(*gbRom)->ROMsize];
+            cart_address &= rom_size_mask[(*gbCartridge)->ROMsize];
 
-            gbMemMap[0x4] = &(*gbCartridge)[cart_address];
-            gbMemMap[0x5] = &(*gbCartridge)[cart_address+0x1000];
-            gbMemMap[0x6] = &(*gbCartridge)[cart_address+0x2000];
-            gbMemMap[0x7] = &(*gbCartridge)[cart_address+0x3000];
+            gbMemMap[0x4] = &(*gbCartRom)[cart_address];
+            gbMemMap[0x5] = &(*gbCartRom)[cart_address+0x1000];
+            gbMemMap[0x6] = &(*gbCartRom)[cart_address+0x2000];
+            gbMemMap[0x7] = &(*gbCartRom)[cart_address+0x3000];
             return;
         }
 
-        if((*gbRom)->RAMsize <= 2) // no need to change it if there isn't over 8KB ram
+        if((*gbCartridge)->RAMsize <= 2) // no need to change it if there isn't over 8KB ram
             return;
 
         data &= 0x03;
 
-        if(data > maxRAMbank[(*gbRom)->RAMsize])
-            data = maxRAMbank[(*gbRom)->RAMsize];
+        if(data > maxRAMbank[(*gbCartridge)->RAMsize])
+            data = maxRAMbank[(*gbCartridge)->RAMsize];
 
         ram_bank = data;
 
