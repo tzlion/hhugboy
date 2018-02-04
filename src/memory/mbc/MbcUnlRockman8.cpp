@@ -34,19 +34,19 @@ void MbcUnlRockman8::writeMemory(unsigned short address, register byte data) {
         if(data == 0)
             data = 1;
 
-        if(data > maxROMbank[(*gbRom)->ROMsize])
+        if(data > maxROMbank[(*gbCartridge)->ROMsize])
             data -= 8; // <--- MAKE IT WORK!!!
 
         rom_bank = data;
 
         cart_address = data<<14;
 
-        cart_address &= rom_size_mask[(*gbRom)->ROMsize];
+        cart_address &= rom_size_mask[(*gbCartridge)->ROMsize];
 
-        gbMemMap[0x4] = &(*gbCartridge)[cart_address];
-        gbMemMap[0x5] = &(*gbCartridge)[cart_address+0x1000];
-        gbMemMap[0x6] = &(*gbCartridge)[cart_address+0x2000];
-        gbMemMap[0x7] = &(*gbCartridge)[cart_address+0x3000];
+        gbMemMap[0x4] = &(*gbCartRom)[cart_address];
+        gbMemMap[0x5] = &(*gbCartRom)[cart_address+0x1000];
+        gbMemMap[0x6] = &(*gbCartRom)[cart_address+0x2000];
+        gbMemMap[0x7] = &(*gbCartRom)[cart_address+0x3000];
 
         return;
     }

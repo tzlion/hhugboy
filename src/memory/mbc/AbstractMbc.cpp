@@ -24,11 +24,11 @@
 #include "AbstractMbc.h"
 #include <cstdio>
 
-void AbstractMbc::init(byte** gbMemMap, Cartridge** gbRom, byte** gbMemory, byte** gbCartridge, byte** gbCartRam, int* gbRumbleCounter) {
+void AbstractMbc::init(byte** gbMemMap, Cartridge** gbCartridge, byte** gbMemory, byte** gbCartRom, byte** gbCartRam, int* gbRumbleCounter) {
     this->gbMemMap = gbMemMap;
-    this->gbRom = gbRom;
-    this->gbMemory = gbMemory;
     this->gbCartridge = gbCartridge;
+    this->gbMemory = gbMemory;
+    this->gbCartRom = gbCartRom;
     this->gbCartRam = gbCartRam;
     this->gbRumbleCounter = gbRumbleCounter;
 }
@@ -100,7 +100,7 @@ void AbstractMbc::writeMbcSpecificVarsToStateFile(FILE *statefile) {
 
 void AbstractMbc::readMbcSpecificVarsFromSaveFile(FILE *savefile) {
     // todo: move to respective mappers
-    if((*gbRom)->RTC || (*gbRom)->mbcType == MEMORY_TAMA5)
+    if((*gbCartridge)->RTC || (*gbCartridge)->mbcType == MEMORY_TAMA5)
     {
         fread(&(rtc).s, sizeof(int), 1, savefile);
         fread(&(rtc).m, sizeof(int), 1, savefile);
@@ -114,7 +114,7 @@ void AbstractMbc::readMbcSpecificVarsFromSaveFile(FILE *savefile) {
 
 void AbstractMbc::writeMbcSpecificVarsToSaveFile(FILE *savefile) {
     // todo: move to respective mappers
-    if((*gbRom)->RTC || (*gbRom)->mbcType == MEMORY_TAMA5)
+    if((*gbCartridge)->RTC || (*gbCartridge)->mbcType == MEMORY_TAMA5)
     {
         fwrite(&(rtc).s, sizeof(int), 1, savefile);
         fwrite(&(rtc).m, sizeof(int), 1, savefile);
@@ -158,30 +158,30 @@ void AbstractMbc::resetRomMemoryMap(bool preserveMulticartState) {
     setRom1Offset(multicartOffset + 0x4000);
 
     //todo: do this on savestates too
-    if((*gbRom)->RAMsize>2) {
+    if((*gbCartridge)->RAMsize>2) {
         gbMemMap[0xA] = &(*gbCartRam)[multicartRamOffset];
         gbMemMap[0xB] = &(*gbCartRam)[multicartRamOffset + 0x1000];
     }
 }
 
 void AbstractMbc::setRom0Offset(int offset) {
-    gbMemMap[0x0] = &(*gbCartridge)[offset];
-    gbMemMap[0x1] = &(*gbCartridge)[offset+0x1000];
-    gbMemMap[0x2] = &(*gbCartridge)[offset+0x2000];
-    gbMemMap[0x3] = &(*gbCartridge)[offset+0x3000];
+    gbMemMap[0x0] = &(*gbCartRom)[offset];
+    gbMemMap[0x1] = &(*gbCartRom)[offset+0x1000];
+    gbMemMap[0x2] = &(*gbCartRom)[offset+0x2000];
+    gbMemMap[0x3] = &(*gbCartRom)[offset+0x3000];
 }
 
 void AbstractMbc::setRom1Offset(int offset) {
-    gbMemMap[0x4] = &(*gbCartridge)[offset];
-    gbMemMap[0x5] = &(*gbCartridge)[offset+0x1000];
-    gbMemMap[0x6] = &(*gbCartridge)[offset+0x2000];
-    gbMemMap[0x7] = &(*gbCartridge)[offset+0x3000];
+    gbMemMap[0x4] = &(*gbCartRom)[offset];
+    gbMemMap[0x5] = &(*gbCartRom)[offset+0x1000];
+    gbMemMap[0x6] = &(*gbCartRom)[offset+0x2000];
+    gbMemMap[0x7] = &(*gbCartRom)[offset+0x3000];
 }
 
 void AbstractMbc::setRom1Bank(int bankNo) {
     rom_bank = bankNo;
     int bankAddress = rom_bank<<14;
-    bankAddress &= rom_size_mask[(*gbRom)->ROMsize];
+    bankAddress &= rom_size_mask[(*gbCartridge)->ROMsize];
     bankAddress += multicartOffset;
     setRom1Offset(bankAddress);
 }

@@ -55,7 +55,7 @@ void MbcUnlLbMulti::writeMemory(unsigned short address, register byte data) {
                 //  not sure if there are other potential mapper modes..
                 mbc1Mode = ( ( multiOtherStuff & 0x60 ) == 0x60 );
 
-                (*gbRom)->ROMsize = 7 - romSize; // Inverse of Nintendo's sizes e.g. 00 = 4m, 07 = 32k
+                (*gbCartridge)->ROMsize = 7 - romSize; // Inverse of Nintendo's sizes e.g. 00 = 4m, 07 = 32k
 
                 multicartOffset = (multiRomSelect << 0x0F) + (eightMegBankNo << 0x17);
 
@@ -118,7 +118,7 @@ void MbcUnlLbMulti::writeMbcSpecificVarsToStateFile(FILE *statefile) {
     fwrite(&(multicartOffset),sizeof(int),1,statefile);
     fwrite(&(multicartRamOffset),sizeof(int),1,statefile);
     fwrite(&(mbc1Mode),sizeof(bool),1,statefile);
-    fwrite(&((*gbRom)->ROMsize),sizeof(bool),1,statefile);
+    fwrite(&((*gbCartridge)->ROMsize),sizeof(bool),1,statefile);
 }
 
 void MbcUnlLbMulti::readMbcSpecificVarsFromStateFile(FILE *statefile) {
@@ -130,7 +130,7 @@ void MbcUnlLbMulti::readMbcSpecificVarsFromStateFile(FILE *statefile) {
     fread(&(multicartOffset),sizeof(int),1,statefile);
     fread(&(multicartRamOffset),sizeof(int),1,statefile);
     fread(&(mbc1Mode),sizeof(bool),1,statefile);
-    fread(&((*gbRom)->ROMsize),sizeof(bool),1,statefile);
+    fread(&((*gbCartridge)->ROMsize),sizeof(bool),1,statefile);
 
     resetRomMemoryMap(true);
 }

@@ -30,18 +30,18 @@ void MbcLicMk12::updateMemoryMap() {
 
     int bank0addr = MBChi<<14;
 
-    gbMemMap[0x0] = &(*gbCartridge)[bank0addr];
-    gbMemMap[0x1] = &(*gbCartridge)[bank0addr+0x1000];
-    gbMemMap[0x2] = &(*gbCartridge)[bank0addr+0x2000];
-    gbMemMap[0x3] = &(*gbCartridge)[bank0addr+0x3000];
+    gbMemMap[0x0] = &(*gbCartRom)[bank0addr];
+    gbMemMap[0x1] = &(*gbCartRom)[bank0addr+0x1000];
+    gbMemMap[0x2] = &(*gbCartRom)[bank0addr+0x2000];
+    gbMemMap[0x3] = &(*gbCartRom)[bank0addr+0x3000];
 
     int cadr = rom_bank<<14;
-    cadr &= rom_size_mask[(*gbRom)->ROMsize];
+    cadr &= rom_size_mask[(*gbCartridge)->ROMsize];
 
-    gbMemMap[0x4] = &(*gbCartridge)[cadr];
-    gbMemMap[0x5] = &(*gbCartridge)[cadr+0x1000];
-    gbMemMap[0x6] = &(*gbCartridge)[cadr+0x2000];
-    gbMemMap[0x7] = &(*gbCartridge)[cadr+0x3000];
+    gbMemMap[0x4] = &(*gbCartRom)[cadr];
+    gbMemMap[0x5] = &(*gbCartRom)[cadr+0x1000];
+    gbMemMap[0x6] = &(*gbCartRom)[cadr+0x2000];
+    gbMemMap[0x7] = &(*gbCartRom)[cadr+0x3000];
 }
 
 void MbcLicMk12::writeMemory(unsigned short address, register byte data) {
