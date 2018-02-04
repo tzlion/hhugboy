@@ -440,18 +440,25 @@ void CartDetection::otherCartDetection(byte* cartridge, GBrom* rom, int romFileS
 {
     // ============= LICENSED =============
 
-    // Momotarou Collection 2 but doesn't seem to actually work with any of the dumps I have
+    // Momotarou Collection 2 ... this is actually pointless because
+    // - for the correct dump, the menu bank is at the end and this won't catch it
+    // - for dumps putting the menu bank at the beginning, they already have the correct cart type for MMM01
+    // - neither works anyway
     if(strstr(rom->header.name,"MOMOCOL2")) {
         rom->mbcType = MEMORY_MMM01;
+        return;
     }
 
-    // Collection Carts
-    if(!strcmp(rom->header.name,"BOMCOL") || !strcmp(rom->header.name,"BOMSEL") || !strcmp(rom->header.name,"GENCOL") || strstr(rom->header.name,"MOMOCOL") || strstr(rom->header.name,"SUPERCHINESE 12")) {
+    // Hudson collection carts
+    // These all specify standard cartridge types in the header but are extremely not
+    if(!strcmp(rom->header.name,"BOMCOL") || !strcmp(rom->header.name,"BOMSEL") || !strcmp(rom->header.name,"GENCOL")
+       || strstr(rom->header.name,"MOMOCOL") || strstr(rom->header.name,"SUPERCHINESE 12")) {
         rom->mbcType = MEMORY_BC;
         return;
     }
 
     // Mortal Kombat I & II (UE) [a1][!]
+    // VERY similar to the Hudson carts
     if(strstr(rom->header.name,"MORTALKOMBATI&I")) {
         rom->mbcType = MEMORY_MK12;
         return;
@@ -459,6 +466,7 @@ void CartDetection::otherCartDetection(byte* cartridge, GBrom* rom, int romFileS
 
     // Gameboy Camera
     if(!strcmp(rom->header.name,"GAMEBOYCAMERA")) {
+        // Real GB Camera ROM does have these values, this seems to be to support an MBC hack or something?
         rom->ROMsize = 5;
         rom->RAMsize = 4;
         rom->mbcType = MEMORY_CAMERA;
@@ -601,7 +609,11 @@ void CartDetection::otherCartDetection(byte* cartridge, GBrom* rom, int romFileS
         return;
     }
 
-    // Other "SGB Pack" (????)
+    // GB Pack V1.3 (PD) [C][h1]
+    // GB Pack V1.3 (PD) [C][h2]
+    // GB Pack V1.3 (PD) [M][h1]
+    // GB Pack Vx.x (16Mbit) (PD) [h1]
+    // GB Pack Vx.x (16Mbit) (PD) [h2]
     if(!strcmp(rom->header.name,"SGBPACK")) {
         rom->ROMsize = 0;
         return;
@@ -609,6 +621,7 @@ void CartDetection::otherCartDetection(byte* cartridge, GBrom* rom, int romFileS
 
     // Not sure what this is for
     // A couple Rocket Games games trip this check but seem to work without it?
+    // Some bad dumps also trip it but, eh
     if(romFileSize == 262144 && rom->ROMsize == 4) {
         rom->ROMsize--;
         return;
