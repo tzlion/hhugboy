@@ -45,7 +45,7 @@
 #include "mbc/MbcNin1.h"
 #include "mbc/MbcNin2.h"
 #include "mbc/MbcUnlRockman8.h"
-#include "mbc/MbcLicHuColl.h"
+#include "mbc/MbcNin1Multi.h"
 #include "mbc/MbcLicMmm01.h"
 #include "mbc/MbcUnlPoke2in1.h"
 #include "mbc/MbcUnlSachen8in1.h"
@@ -198,8 +198,8 @@ void gb_mbc::setMemoryReadWrite(MbcType memory_type) {
         case MEMORY_NTOLD2:
             mbc = new MbcUnlNtOld2((*gbRom)->ROMsize);
             break;
-        case MEMORY_BC:
-            mbc = new MbcLicHuColl();
+        case MEMORY_MBC1MULTI:
+            mbc = new MbcNin1Multi();
             break;
         case MEMORY_MMM01:
             mbc = new MbcLicMmm01();

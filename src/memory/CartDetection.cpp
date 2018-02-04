@@ -541,7 +541,7 @@ bool CartDetection::detectMbc1ComboPacks(GBrom *rom)
     // (momocol2 uses MMM01 and doesn't currently work)
     if(!strcmp(rom->header.name,"BOMCOL") || !strcmp(rom->header.name,"BOMSEL") || !strcmp(rom->header.name,"GENCOL")
        || strstr(rom->header.name,"MOMOCOL") || strstr(rom->header.name,"SUPERCHINESE 12")) {
-        rom->mbcType = MEMORY_BC;
+        rom->mbcType = MEMORY_MBC1MULTI;
         return true;
     }
 

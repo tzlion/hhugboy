@@ -21,9 +21,9 @@
    51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
 
-#include "MbcLicHuColl.h"
+#include "MbcNin1Multi.h"
 
-void MbcLicHuColl::updateMemoryMap() {
+void MbcNin1Multi::updateMemoryMap() {
 
     rom_bank = MBClo|(MBChi<<4);
 
@@ -43,7 +43,7 @@ void MbcLicHuColl::updateMemoryMap() {
     gbMemMap[0x7] = &(*gbCartridge)[cadr+0x3000];
 }
 
-void MbcLicHuColl::writeMemory(unsigned short address, register byte data) {
+void MbcNin1Multi::writeMemory(unsigned short address, register byte data) {
     if(address < 0x2000)// Is it a RAM bank enable/disable?
     {
         RAMenable = ( (data&0x0A) == 0x0A ? 1 : 0);
