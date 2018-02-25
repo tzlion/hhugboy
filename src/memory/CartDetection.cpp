@@ -35,17 +35,22 @@ int fourBytesToInt(byte* bytePtr)
 
 bool CartDetection::parseFooter(byte* cartROM, Cartridge *cartridge, int romFileSize)
 {
-    byte signature[4] = {0xF0, 0x9F, 0xA6, 0x81};
+    byte signature[4] = {'G', 'B', 'X', '!'};
     if (memcmp(cartROM + romFileSize - 4, signature, 4)) {
         return false;
     }
-    debug_win("HAS LION FOOTER");
     int footerSize = fourBytesToInt(cartROM + romFileSize - 16);
+    int footerMajVer = fourBytesToInt(cartROM + romFileSize - 12);
+    int footerMinVer = fourBytesToInt(cartROM + romFileSize - 8);
     char ass[60];
-    sprintf(ass,"footer size %d",footerSize);
+    sprintf(ass,"GBX footer found - ver %d.%d, size %d bytes",footerMajVer,footerMinVer,footerSize);
     debug_win(ass);
     if (footerSize > romFileSize || footerSize < 16) {
         debug_win("invalid footer size!!");
+        return false;
+    }
+    if (footerMajVer != 1) {
+        debug_win("GBX version not supported!!");
         return false;
     }
 
@@ -62,13 +67,21 @@ bool CartDetection::parseFooter(byte* cartROM, Cartridge *cartridge, int romFile
     cartridge->RTC = (bool)footer[6];
     int romSize = fourBytesToInt(footer+8); // todo map sizes
     int ramSize = fourBytesToInt(footer+12); // todo map sizes
-    if (mapper == "MMM1") cartridge->mbcType = MEMORY_MMM01;
-    if (romSize == 0x100000) cartridge->ROMsize = 0x05;
-    if (ramSize == 0x2000) cartridge->RAMsize = 0x02;
 
-    char ass22[60];
-    sprintf(ass22,"%s %d %d %d %d %d",mapper, cartridge->battery, cartridge->rumble, cartridge->RTC, cartridge->ROMsize, cartridge->RAMsize);
-    debug_win(ass22);
+    sprintf(ass,"Mapper %s / Batt %d / Rumble %d / RTC %d / ROM %d bytes / RAM %d bytes",mapper, footer[4], footer[5], footer[6], romSize, ramSize);
+    debug_win(ass);
+
+    //if (mapper == "MMM1") cartridge->mbcType = MEMORY_MMM01;
+    if (!strcmp(mapper,"NTN")) cartridge->mbcType = MEMORY_NTNEW;
+    if (romSize == 0x100000) cartridge->ROMsize = 0x05;
+    if (ramSize == 0x2000) cartridge->RAMsize = 0x02; // hmm but for some mappers the ram size is kind of a guess
+    // in the copy of Digimon 02 4 I have there's a 128k ram chip lol
+    // and in their multicart, the same
+    // Digimon Pocket has a 32k one
+    // How much is made available? And on multicarts? Do we just trust what the header says here?
+
+    sprintf(ass,"Mapped to internal MBC type %d / ROM size / %d RAM size %d",cartridge->ROMsize, cartridge->RAMsize);
+    debug_win(ass);
 
     return true;
 }
