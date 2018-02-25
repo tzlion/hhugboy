@@ -26,15 +26,27 @@
 #include "CartDetection.h"
 #include "../GB.h"
 #include "../config.h"
+#include "GbxParser.h"
 
 Cartridge* CartDetection::processRomInfo(byte* rom, int romFileSize)
 {
     Cartridge* cartridge = new Cartridge();
     readHeader(rom, cartridge);
+
+    if (GbxParser::isGbx(rom, romFileSize)) {
+        bool parseSuccess = GbxParser::parseFooter(rom, cartridge, romFileSize);
+        if (parseSuccess) {
+            return cartridge;
+        } else {
+            debug_print("Couldn't process GBX format ROM");
+        }
+    }
+
     setCartridgeAttributesFromHeader(cartridge);
     detectMbc1ComboPacks(cartridge, romFileSize);
     detectUnlicensedCarts(rom, cartridge, romFileSize);
     detectFlashCartHomebrew(cartridge, romFileSize);
+
     return cartridge;
 }
 
