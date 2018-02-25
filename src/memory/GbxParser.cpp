@@ -12,9 +12,6 @@
 #include "GbxParser.h"
 #include "../debug.h"
 
-const int k = 1024;
-const int m = 1024 * k;
-
 bool GbxParser::isGbx(byte* cartROM, int romFileSize)
 {
     byte signature[4] = {'G', 'B', 'X', '!'};
@@ -23,16 +20,19 @@ bool GbxParser::isGbx(byte* cartROM, int romFileSize)
 
 bool GbxParser::parseFooter(byte* cartROM, Cartridge *cartridge, int romFileSize)
 {
+    char msg[420];
+
     int footerMajVer = fourBytesToInt(cartROM + romFileSize - 12);
     int footerMinVer = fourBytesToInt(cartROM + romFileSize - 8);
-    if (footerMajVer != 1) {
+    int footerSize = fourBytesToInt(cartROM + romFileSize - 16);
+
+    sprintf(msg,"GBX footer found - ver %d.%d, size %d bytes", footerMajVer, footerMinVer, footerSize);
+    debug_win(msg);
+
+    if (footerMajVer != MAX_SUPPORTED_MAJOR_VERSION) {
         debug_win("GBX version not supported!!");
         return false;
     }
-    int footerSize = fourBytesToInt(cartROM + romFileSize - 16);
-    char msg[60];
-    sprintf(msg,"GBX footer found - ver %d.%d, size %d bytes",footerMajVer,footerMinVer,footerSize);
-    debug_win(msg);
     if (footerSize > romFileSize || footerSize < 16) {
         debug_win("invalid footer size!!");
         return false;
@@ -67,23 +67,23 @@ bool GbxParser::parseFooter(byte* cartROM, Cartridge *cartridge, int romFileSize
 int GbxParser::mapRomSize(int romSize)
 {
     switch(romSize) {
-        case 32 * k:
+        case 32 * KB:
             return 0x00;
-        case 64 * k:
+        case 64 * KB:
             return 0x01;
-        case 128 * k:
+        case 128 * KB:
             return 0x02;
-        case 256 * k:
+        case 256 * KB:
             return 0x03;
-        case 512 * k:
+        case 512 * KB:
             return 0x04;
-        case m:
+        case MB:
             return 0x05;
-        case 2 * m:
+        case 2 * MB:
             return 0x06;
-        case 4 * m:
+        case 4 * MB:
             return 0x07;
-        case 8 * m:
+        case 8 * MB:
             return 0x08;
         default:
             debug_win("Unsupported ROM size!");
@@ -96,15 +96,15 @@ int GbxParser::mapRamSize(int ramSize)
     switch(ramSize) {
         case 0:
             return 0x00;
-        case 2 * k:
+        case 2 * KB:
             return 0x01;
-        case 8 * k:
+        case 8 * KB:
             return 0x02;
-        case 32 * k:
+        case 32 * KB:
             return 0x03;
-        case 128 * k:
+        case 128 * KB:
             return 0x04;
-        case 64 * k:
+        case 64 * KB:
             return 0x05;
         default:
             debug_win("Unsupported RAM size!");

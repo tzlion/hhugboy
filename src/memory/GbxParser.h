@@ -14,14 +14,24 @@
 #include "../rom.h"
 
 class GbxParser {
-public:
-    static bool isGbx(byte* cartROM, int romFileSize);
-    static bool parseFooter(byte* cartROM, Cartridge *cartridge, int romFileSize);
-private:
-    static int fourBytesToInt(byte* bytePtr);
-    static int mapRomSize(int romSize);
-    static int mapRamSize(int ramSize);
-    static MbcType mapMapper(char* mapperType);
+
+    public:
+
+        static bool isGbx(byte* cartROM, int romFileSize);
+        static bool parseFooter(byte* cartROM, Cartridge *cartridge, int romFileSize);
+
+    private:
+
+        static const int MAX_SUPPORTED_MAJOR_VERSION = 1;
+
+        static const int KB = 1024;
+        static const int MB = 1024 * KB;
+
+        static int fourBytesToInt(byte* bytePtr);
+        static int mapRomSize(int romSize);
+        static int mapRamSize(int ramSize);
+        static MbcType mapMapper(char* mapperType);
+
 };
 
 #endif //HHUGBOY_GBXPARSER_H
