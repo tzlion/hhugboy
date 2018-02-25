@@ -128,6 +128,8 @@ set(SOURCE_FILES
         src/ui/window.h
         src/memory/mbc/MbcUnlNtNew.cpp
         src/memory/mbc/MbcUnlNtNew.h
+        src/memory/GbxParser.cpp
+        src/memory/GbxParser.h
 )
 
 include_directories(
