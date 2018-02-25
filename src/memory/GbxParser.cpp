@@ -15,12 +15,14 @@
 const int k = 1024;
 const int m = 1024 * k;
 
-bool GbxParser::parseFooter(byte* cartROM, Cartridge *cartridge, int romFileSize)
+bool GbxParser::isGbx(byte* cartROM, int romFileSize)
 {
     byte signature[4] = {'G', 'B', 'X', '!'};
-    if (memcmp(cartROM + romFileSize - 4, signature, 4)) {
-        return false;
-    }
+    return !memcmp(cartROM + romFileSize - 4, signature, 4);
+}
+
+bool GbxParser::parseFooter(byte* cartROM, Cartridge *cartridge, int romFileSize)
+{
     int footerMajVer = fourBytesToInt(cartROM + romFileSize - 12);
     int footerMinVer = fourBytesToInt(cartROM + romFileSize - 8);
     if (footerMajVer != 1) {
