@@ -40,7 +40,7 @@
 int gb_system::gfx_bit_count = 16;
 
 gb_system::gb_system():
-        mbc(new gb_mbc(mem_map,&cartridge,&rom,&cartRAM,&rumble_counter,&memory)),
+        mbc(new gb_mbc(mem_map,&cartROM,&cartridge,&cartRAM,&rumble_counter,&memory)),
         frames(0),
         LCD_clear_needed(false),
         skip_frame(0),
@@ -75,7 +75,7 @@ gb_system::gb_system():
         cartRAM(NULL),
         VRAM(NULL),
         WRAM(NULL),
-        cartridge(NULL),
+        cartROM(NULL),
         hdma_source(0x0000),
         hdma_destination(0x8000),
         hdma_bytes(0),
@@ -87,7 +87,7 @@ gb_system::gb_system():
         gfx_buffer4(NULL),
         romloaded(false),
         system_type(SYS_AUTO),
-        rom(NULL),
+        cartridge(NULL),
         gbc_mode(0),
         A(1),
         F(0xB0),
@@ -209,8 +209,8 @@ bool gb_system::init()
    if(!WRAM)
       return false;
       
-   rom = new GBrom;
-   if(!rom)
+   cartridge = new Cartridge;
+   if(!cartridge)
       return false;
            
    return true;
@@ -298,15 +298,15 @@ gb_system::~gb_system()
          delete [] (DWORD*)gfx_buffer4;
       gfx_buffer4 = NULL;
    }
+   if(cartROM != NULL)
+   {
+      delete [] cartROM;
+      cartROM = NULL;
+   }
    if(cartridge != NULL)
    {
-      delete [] cartridge;
+      delete cartridge;
       cartridge = NULL;
-   }
-   if(rom != NULL)
-   {
-      delete rom;
-      rom = NULL;
    }
 }
 
@@ -317,8 +317,8 @@ void gb_system::reset(bool change_mode, bool preserveMulticartState)
 
    emulating = true;
 
-    int cgbState = rom->CGB;
-    int sgbState = rom->SGB;
+    int cgbState = cartridge->header.CGB;
+    int sgbState = cartridge->header.SGB;
 
    
    //change mode according to user selection

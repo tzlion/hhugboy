@@ -1,6 +1,6 @@
 /*
    hhugboy Game Boy emulator
-   copyright 2013-2016 taizou
+   copyright 2013-2018 taizou
    Based on GEST
    Copyright (C) 2003-2010 TM
    Incorporating code from VisualBoyAdvance
@@ -21,20 +21,20 @@
    51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
 
-#ifndef HHUGBOY_MBCLICHUCOLL_H
-#define HHUGBOY_MBCLICHUCOLL_H
+#ifndef HHUGBOY_MBCNIN1MULTI_H
+#define HHUGBOY_MBCNIN1MULTI_H
 
 
 #include "MbcNin1.h"
 //-------------------------------------------------------------------------
-// for JP Collection Carts - Hudson + Culture Brain
-// MBC1 derived
+// for MBC1 Collection Carts - Hudson, Culture Brain, MK1+2
 //-------------------------------------------------------------------------
-class MbcLicHuColl : public MbcNin1 {
+class MbcNin1Multi : public MbcNin1 {
 public:
     virtual void writeMemory(unsigned short address, register byte data) override;
-
+private:
+    void updateMemoryMap();
 };
 
 
-#endif //HHUGBOY_MBCLICHUCOLL_H
+#endif //HHUGBOY_MBCNIN1MULTI_H

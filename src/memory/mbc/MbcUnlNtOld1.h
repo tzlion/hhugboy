@@ -7,14 +7,14 @@
  * See "license.txt" in the project root
  */
 
-#ifndef HHUGBOY_MBCUNLNTKL1_H
-#define HHUGBOY_MBCUNLNTKL1_H
+#ifndef HHUGBOY_MBCUNLNTOLD1_H
+#define HHUGBOY_MBCUNLNTOLD1_H
 
 #include "MbcNin1.h"
 
-class MbcUnlNtK11: public BasicMbc {
+class MbcUnlNtOld1: public BasicMbc {
    public:
-        MbcUnlNtK11(int originalRomSize);
+        MbcUnlNtOld1(int originalRomSize);
         virtual void writeMemory(unsigned short address, register byte data) override;
 
         virtual void resetVars(bool preserveMulticartState) override;
@@ -32,4 +32,4 @@ class MbcUnlNtK11: public BasicMbc {
         byte flippo1[8] = {0,1,2,4,3,6,5,7};
 };
 
-#endif //HHUGBOY_MBCUNLNTKL1_H
+#endif //HHUGBOY_MBCUNLNTOLD1_H

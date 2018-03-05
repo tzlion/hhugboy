@@ -1,4 +1,4 @@
-hhugboy v1.2.1
+hhugboy v1.2.5
 a Game Boy/Game Boy Color emulator for Windows
 by taizou (cactusgunman@gmail.com)
 http://hhug.me/
@@ -9,6 +9,7 @@ https://github.com/tzlion/hhugboy
   * Unicode filename support!
   * Unlicensed Mapper support! (Sintax, Li Cheng, BBD, Hitek, more!)
   * Support for Vast Fame and some other multicarts!
+  * GBX ROM format support!
   * Screenshots!
   * Recent ROM list
   * Support for simple cheat format
@@ -60,11 +61,19 @@ https://github.com/tzlion/hhugboy
 
  Hitek     For games by Hitek.
 
- NT KL type 1/2
-           Earlier carts released by NT with "KL" PCB codes, including older
-           Makon games and some multicarts.
+ NT old type 1/2
+           Earlier carts released by NT, including older Makon games and some
+           multicarts.
            Type 1: Rockman 8
            Type 2: Super Mario 3, Donkey Kong 5, rumble carts
+
+ NT new    Later carts released by NT, specifically Makon single carts.
+           No multicart support yet.
+
+ Liebao Technology
+           Currently only known to support 'Dragon Ball Z 3', the pirate
+           English translation of DBZ Goku Gekitouden. Other games may use this
+           too, especially Chinese translations.
 
  'Last Bible' multicart
            A type of multicart using menu music taken from 'Megami Tensei
@@ -78,8 +87,8 @@ https://github.com/tzlion/hhugboy
 
  Disabled  No compatibility mode
 
- * Also, 'Dragon Ball Z 3', the pirate English translation of DBZ Goku
-   Gekitouden, will work in auto mode only for now
+ * If a GBX format ROM is loaded, this setting will be ignored, and the mapper
+   specified in the GBX footer will be used instead.
 
 [ KEYS ] - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 
@@ -154,8 +163,20 @@ https://github.com/tzlion/hhugboy
  * Action Replay cheats
  * Implement a rendering engine other than DirectDraw
  * Other language translations
+ * Proper MMM01 support
 
 [ RELEASE HISTORY ]- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+
+ v1.2.5 5th March 2018
+ * Add support for GBX file format
+ * Add support for NT new carts supporting later Makon single cart games
+ * Rename 'NT KL' compatibility mode to 'NT Old'
+   (since KL PCB codes were also used on at least one cart with the new mapper)
+ * Support for Mortal Kombat 1&2 1MB dump
+ * Cart detection code updates, mostly should have no effect aside from a
+   couple bad ROMs no longer being picked up
+ * Added ability to select Liebao Technology mode manually
+ * Refactored UI code & added secret debug window, which is a secret
 
  v1.2.1 24th August 2017
  * Detection for more NT KL carts

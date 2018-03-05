@@ -61,16 +61,16 @@ void PrintROMinfo()
     wchar_t text[500];
 
     wchar_t nl[3]; // get the new licensee
-    nl[0] = GB1->rom->newlic[0];
-    nl[1] = GB1->rom->newlic[1];
+    nl[0] = GB1->cartridge->header.newlic[0];
+    nl[1] = GB1->cartridge->header.newlic[1];
     nl[2] = 0x0000;
     // I have no idea why but if you make nl[2] its not terminated or anything and you get garbage data after it
 
     wchar_t newname[16];
-    mbstowcs(newname,GB1->rom->name,16);
+    mbstowcs(newname,GB1->cartridge->header.name,16);
 
     //sprintf(text, "Rom name: \t%s\nGBC feature: \t%s\nNew Licensee: \t%X\nSGB feature: \t%s\nCardridge Type: \t%X\nROM Size: \t%d KBytes\nRAM Size: \t%d KBytes\nCountry: \t\t%X ,%s\nLicensee: \t%X - %s\nVersion: \t\t%X\nComplement check: %X - %s\nChecksum: \t%X", rom->name, rom->CGB==1?"yes":rom->CGB==2?"GBC only":"no", rom->newlic, rom->SGB?"yes":"no", rom->carttype,romsize(rom->ROMsize),ramsize[rom->RAMsize], rom->destcode, rom->destcode==0?"Japan":"non-Japan",rom->lic,lic_names[rom->lic],rom->version,rom->complement,rom->complementok?"(ok)":"(wrong)",rom->checksum);
-    wsprintf(text, str_table[ROM_INFO], newname, GB1->rom->CGB==1?str_table[STR_YES]:GB1->rom->CGB==2?str_table[GBC_ONLY]:str_table[STR_NO], nl, GB1->rom->SGB?str_table[STR_YES]:str_table[STR_NO], GB1->rom->carttype,romsize(GB1->rom->ROMsize),ramsize[GB1->rom->RAMsize], GB1->rom->destcode, GB1->rom->destcode==0?str_table[STR_JAPAN]:str_table[STR_NON_JAPAN],GB1->rom->lic,lic_names[GB1->rom->lic],GB1->rom->version,GB1->rom->complement,GB1->rom->complementok?str_table[CHECK_OK]:str_table[CHECK_WRONG],GB1->rom->checksum);
+    wsprintf(text, str_table[ROM_INFO], newname, GB1->cartridge->header.CGB==1?str_table[STR_YES]:GB1->cartridge->header.CGB==2?str_table[GBC_ONLY]:str_table[STR_NO], nl, GB1->cartridge->header.SGB?str_table[STR_YES]:str_table[STR_NO], GB1->cartridge->header.carttype,romsize(GB1->cartridge->ROMsize),ramsize[GB1->cartridge->RAMsize], GB1->cartridge->header.destcode, GB1->cartridge->header.destcode==0?str_table[STR_JAPAN]:str_table[STR_NON_JAPAN],GB1->cartridge->header.lic,lic_names[GB1->cartridge->header.lic],GB1->cartridge->header.version,GB1->cartridge->header.complement,GB1->cartridge->header.complementok?str_table[CHECK_OK]:str_table[CHECK_WRONG],GB1->cartridge->header.checksum);
     debug_print(text);
 }
 
@@ -140,7 +140,7 @@ void menuAction(int menuOption)
                 if(!paused)
                     FSOUND_SetMute(FSOUND_ALL,FALSE);
             } else
-            if(romwasloaded && GB1->cartridge != NULL)
+            if(romwasloaded && GB1->cartROM != NULL)
             {
                 GB1->romloaded = true;
                 if(!paused)
@@ -183,7 +183,7 @@ void menuAction(int menuOption)
                 if(!paused)
                     FSOUND_SetMute(FSOUND_ALL,FALSE);
             } else
-            if(romwasloaded && GB2->cartridge != NULL)
+            if(romwasloaded && GB2->cartROM != NULL)
             {
                 GB2->romloaded = true;
 
@@ -231,10 +231,10 @@ void menuAction(int menuOption)
                 if(!GB1->write_save())
                     debug_print(str_table[ERROR_SAVE_FILE_WRITE]);
             }
-            if(GB1->cartridge)
+            if(GB1->cartROM)
             {
-                delete [] GB1->cartridge;
-                GB1->cartridge = NULL;
+                delete [] GB1->cartROM;
+                GB1->cartROM = NULL;
             }
             GB1->romloaded = false;
 
@@ -279,10 +279,10 @@ void menuAction(int menuOption)
                 swprintf(w_title_text,L"%s - %s",w_emu_title,GB1->rom_filename);
                 SetWindowText(hwnd,w_title_text);
             }
-            if(GB2->cartridge)
+            if(GB2->cartROM)
             {
-                delete [] GB2->cartridge;
-                GB2->cartridge = NULL;
+                delete [] GB2->cartROM;
+                GB2->cartROM = NULL;
             }
             GB2->romloaded = false;
             multiple_gb = 0;
@@ -501,13 +501,21 @@ void menuAction(int menuOption)
             options->unl_compat_mode = UNL_LBMULTI;
             emuMenu.checkOption(IDM_UNLLBMULTI);
             break;
-        case IDM_UNLNTKL1:
-            options->unl_compat_mode = UNL_NTKL1;
-            emuMenu.checkOption(IDM_UNLNTKL1);
+        case IDM_UNLNTOLD1:
+            options->unl_compat_mode = UNL_NTOLD1;
+            emuMenu.checkOption(IDM_UNLNTOLD1);
             break;
-        case IDM_UNLNTKL2:
-            options->unl_compat_mode = UNL_NTKL2;
-            emuMenu.checkOption(IDM_UNLNTKL2);
+        case IDM_UNLNTOLD2:
+            options->unl_compat_mode = UNL_NTOLD2;
+            emuMenu.checkOption(IDM_UNLNTOLD2);
+            break;
+        case IDM_UNLNTNEW:
+            options->unl_compat_mode = UNL_NTNEW;
+            emuMenu.checkOption(IDM_UNLNTNEW);
+            break;
+        case IDM_UNLLIEBAO:
+            options->unl_compat_mode = UNL_DBZTR;
+            emuMenu.checkOption(IDM_UNLLIEBAO);
             break;
         case IDM_UNLMBC1COMPAT:
             options->unl_compat_mode = UNL_MBC1SAVE;
@@ -666,7 +674,7 @@ void menuAction(int menuOption)
             options->video_GB_color = BLACK_WHITE;
             emuMenu.checkOption(IDM_OPTIONVIDEOBW);
 
-            if(!GB->gbc_mode || !GB->rom->CGB)
+            if(!GB->gbc_mode || !GB->cartridge->header.CGB)
             {
                 memcpy(GB->GBC_BGP,GBC_DMGBG_palettes[0],sizeof(unsigned int)*4);
                 memcpy(GB->GBC_OBP,GBC_DMGOBJ0_palettes[0],sizeof(unsigned int)*4);
@@ -678,7 +686,7 @@ void menuAction(int menuOption)
             options->video_GB_color = LCD_BROWN;
             emuMenu.checkOption(IDM_OPTIONVIDEOLCDBROWN);
 
-            if(!GB->gbc_mode || !GB->rom->CGB)
+            if(!GB->gbc_mode || !GB->cartridge->header.CGB)
             {
                 memcpy(GB->GBC_BGP,LCD_palette_brown,sizeof(unsigned int)*4);
                 memcpy(GB->GBC_OBP,LCD_palette_brown,sizeof(unsigned int)*4);
@@ -690,7 +698,7 @@ void menuAction(int menuOption)
             options->video_GB_color = LCD_GREEN;
             emuMenu.checkOption(IDM_OPTIONVIDEOLCDGREEN);
 
-            if(!GB->gbc_mode || !GB->rom->CGB)
+            if(!GB->gbc_mode || !GB->cartridge->header.CGB)
             {
                 memcpy(GB->GBC_BGP,LCD_palette_green,sizeof(unsigned int)*4);
                 memcpy(GB->GBC_OBP,LCD_palette_green,sizeof(unsigned int)*4);
@@ -702,7 +710,7 @@ void menuAction(int menuOption)
             options->video_GB_color = GRAY;
             emuMenu.checkOption(IDM_OPTIONVIDEOGRAY);
 
-            if(!GB->gbc_mode || !GB->rom->CGB)
+            if(!GB->gbc_mode || !GB->cartridge->header.CGB)
             {
                 memcpy(GB->GBC_BGP,GB_palette_gray,sizeof(unsigned int)*4);
                 memcpy(GB->GBC_OBP,GB_palette_gray,sizeof(unsigned int)*4);

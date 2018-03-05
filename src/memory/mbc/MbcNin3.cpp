@@ -28,7 +28,7 @@ byte MbcNin3::readMemory(register unsigned short address) {
 
     if(address >= 0xA000 && address < 0xC000)
     {
-        if((*gbRom)->RTC && RTCIO)
+        if((*gbCartridge)->RTC && RTCIO)
         {
             switch(rtc.cur_register)
             {
@@ -52,7 +52,7 @@ byte MbcNin3::readMemory(register unsigned short address) {
 }
 
 void MbcNin3::readMbcSpecificVarsFromStateFile(FILE *statefile) {
-    if((*gbRom)->RTC)
+    if((*gbCartridge)->RTC)
     {
         fread(&(rtc).s, sizeof(int), 1, statefile);
         fread(&(rtc).m, sizeof(int), 1, statefile);
@@ -71,7 +71,7 @@ void MbcNin3::readMbcSpecificVarsFromStateFile(FILE *statefile) {
 }
 
 void MbcNin3::writeMbcSpecificVarsToStateFile(FILE *statefile) {
-    if((*gbRom)->RTC)
+    if((*gbCartridge)->RTC)
     {
         fwrite(&(rtc).s, sizeof(int), 1, statefile);
         fwrite(&(rtc).m, sizeof(int), 1, statefile);
@@ -106,17 +106,17 @@ void MbcNin3::writeMemory(unsigned short address, register byte data) {
         rom_bank = data;
 
         int cadr = data<<14;
-        cadr &= rom_size_mask[(*gbRom)->ROMsize];
-        gbMemMap[0x4] = &(*gbCartridge)[cadr];
-        gbMemMap[0x5] = &(*gbCartridge)[cadr+0x1000];
-        gbMemMap[0x6] = &(*gbCartridge)[cadr+0x2000];
-        gbMemMap[0x7] = &(*gbCartridge)[cadr+0x3000];
+        cadr &= rom_size_mask[(*gbCartridge)->ROMsize];
+        gbMemMap[0x4] = &(*gbCartRom)[cadr];
+        gbMemMap[0x5] = &(*gbCartRom)[cadr+0x1000];
+        gbMemMap[0x6] = &(*gbCartRom)[cadr+0x2000];
+        gbMemMap[0x7] = &(*gbCartRom)[cadr+0x3000];
         return;
     }
 
     if(address < 0x6000) // Is it a RAM bank switch?
     {
-        if((*gbRom)->RTC && data>8)
+        if((*gbCartridge)->RTC && data>8)
         {
             RTCIO = 1;
             rtc.cur_register = data;
@@ -124,13 +124,13 @@ void MbcNin3::writeMemory(unsigned short address, register byte data) {
             return;
         } else RTCIO = 0;
 
-        if((*gbRom)->RAMsize <= 2) // no need to change it if there isn't over 8KB ram
+        if((*gbCartridge)->RAMsize <= 2) // no need to change it if there isn't over 8KB ram
             return;
 
         data &= 0x03;
 
-        if(data > maxRAMbank[(*gbRom)->RAMsize])
-            data = maxRAMbank[(*gbRom)->RAMsize];
+        if(data > maxRAMbank[(*gbCartridge)->RAMsize])
+            data = maxRAMbank[(*gbCartridge)->RAMsize];
 
         ram_bank = data;
 
@@ -153,7 +153,7 @@ void MbcNin3::writeMemory(unsigned short address, register byte data) {
 
     if(address >= 0xA000 && address < 0xC000)
     {
-        if(RAMenable && (*gbRom)->RTC && RTCIO)
+        if(RAMenable && (*gbCartridge)->RTC && RTCIO)
         {
             time(&(rtc).last_time);
             switch(rtc.cur_register)

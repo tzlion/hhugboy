@@ -33,7 +33,7 @@ byte MbcLicHuc3::readMemory(register unsigned short address) {
                 return 1;
             return HuC3_RAMvalue;
         }
-        if(!(*gbRom)->RAMsize)
+        if(!(*gbCartridge)->RAMsize)
             return 0xFF;
     }
 
@@ -74,16 +74,16 @@ void MbcLicHuc3::writeMemory(unsigned short address, register byte data) {
     {
         if(data == 0)
             data = 1;
-        if(data > maxROMbank[(*gbRom)->ROMsize])
-            data = maxROMbank[(*gbRom)->ROMsize];
+        if(data > maxROMbank[(*gbCartridge)->ROMsize])
+            data = maxROMbank[(*gbCartridge)->ROMsize];
 
         rom_bank = data;
 
         int cadr = data<<14;
-        gbMemMap[0x4] = &(*gbCartridge)[cadr];
-        gbMemMap[0x5] = &(*gbCartridge)[cadr+0x1000];
-        gbMemMap[0x6] = &(*gbCartridge)[cadr+0x2000];
-        gbMemMap[0x7] = &(*gbCartridge)[cadr+0x3000];
+        gbMemMap[0x4] = &(*gbCartRom)[cadr];
+        gbMemMap[0x5] = &(*gbCartRom)[cadr+0x1000];
+        gbMemMap[0x6] = &(*gbCartRom)[cadr+0x2000];
+        gbMemMap[0x7] = &(*gbCartRom)[cadr+0x3000];
         return;
     }
 
@@ -91,8 +91,8 @@ void MbcLicHuc3::writeMemory(unsigned short address, register byte data) {
     {
         data &= 0x0F;
 
-        if(data > maxRAMbank[(*gbRom)->RAMsize])
-            data = maxRAMbank[(*gbRom)->RAMsize];
+        if(data > maxRAMbank[(*gbCartridge)->RAMsize])
+            data = maxRAMbank[(*gbCartridge)->RAMsize];
 
         ram_bank = data;
 
@@ -109,7 +109,7 @@ void MbcLicHuc3::writeMemory(unsigned short address, register byte data) {
     {
         if(HuC3_RAMflag < 0x0b || HuC3_RAMflag > 0x0e) // write to RAM
         {
-            if(!RAMenable || !(*gbRom)->RAMsize)
+            if(!RAMenable || !(*gbCartridge)->RAMsize)
                 return;
         } else
         {

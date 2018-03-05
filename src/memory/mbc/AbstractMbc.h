@@ -70,7 +70,7 @@ public:
 
     AbstractMbc();
 
-    void init(byte** gbMemMap, GBrom** gbRom, byte** gbMemory, byte** gbCartridge, byte** gbCartRam, int* gbRumbleCounter);
+    void init(byte** gbMemMap, Cartridge** gbCartridge, byte** gbMemory, byte** gbCartRom, byte** gbCartRam, int* gbRumbleCounter);
     virtual byte readMemory(register unsigned short address) = 0;
     virtual void writeMemory(unsigned short address, register byte data) = 0;
     virtual void resetVars(bool preserveMulticartState);
@@ -90,8 +90,8 @@ public:
 protected:
     byte** gbMemMap;
     byte** gbMemory;
-    GBrom** gbRom;
-    byte** gbCartridge;
+    Cartridge** gbCartridge;
+    byte** gbCartRom;
     byte** gbCartRam;
     int* gbRumbleCounter;
 

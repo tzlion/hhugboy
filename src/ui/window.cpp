@@ -216,7 +216,7 @@ LRESULT CALLBACK WindowProcedure(HWND hwnd, UINT message, WPARAM wParam, LPARAM 
             HDROP d_handle = (HDROP)wParam;
             wchar_t drag_filename[500];
             DragQueryFileW(d_handle,0,drag_filename,500);
-            if(!wcsstr(drag_filename,L".zip") && !wcsstr(drag_filename,L".ZIP") && !wcsstr(drag_filename,L".sgb") && !wcsstr(drag_filename,L".SGB") && !wcsstr(drag_filename,L".GB") && !wcsstr(drag_filename,L".gb"))
+            if(!wcsstr(drag_filename,L".zip") && !wcsstr(drag_filename,L".ZIP") && !wcsstr(drag_filename,L".sgb") && !wcsstr(drag_filename,L".SGB") && !wcsstr(drag_filename,L".GB") && !wcsstr(drag_filename,L".gb") && !wcsstr(drag_filename,L".GBX") && !wcsstr(drag_filename,L".gbx"))
             {
                 debug_print(str_table[NOT_A_ROM]);
                 GB1->romloaded = false;
@@ -249,7 +249,7 @@ LRESULT CALLBACK WindowProcedure(HWND hwnd, UINT message, WPARAM wParam, LPARAM 
                 if(!paused)
                     FSOUND_SetMute(FSOUND_ALL,FALSE);
             } else
-            if(romwasloaded && GB1->cartridge != NULL)
+            if(romwasloaded && GB1->cartROM != NULL)
                 GB1->romloaded = true;
 
             DragFinish(d_handle);

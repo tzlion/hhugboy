@@ -73,7 +73,7 @@ bool DoFileOpen(HWND hwnd,int gb_number)
    wchar_t w_ctrl_str[150];
    mbstowcs(w_ctrl_str,ctrl_str,150);
    //ofn.lpstrFilter =  w_ctrl_str; */ //removed for now, just to get it working..
-   ofn.lpstrFilter =  L"GB roms (*.gb,*.gbc,*.sgb,*.zip)\0*.gb;*.gbc;*.sgb;*.zip\0All files (*.*)\0*.*\0\0";
+   ofn.lpstrFilter =  L"GB roms (*.gb,*.gbc,*.gbx,*.sgb,*.zip)\0*.gb;*.gbc;*.gbx;*.sgb;*.zip\0All files (*.*)\0*.*\0\0";
    ofn.lpstrFile = szFileName;
    ofn.nMaxFile = MAX_PATH;
    ofn.lpstrDefExt = L"gb";
@@ -137,6 +137,9 @@ BOOL CALLBACK DebugLogProc(HWND hwndDlg, UINT message, WPARAM wParam, LPARAM lPa
                     EndDialog(hwndDlg, wParam);
                     return TRUE;
             }
+            break;
+        case WM_VKEYTOITEM:
+            return -2;
     }
     return FALSE;
 }
