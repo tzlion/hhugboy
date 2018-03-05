@@ -1,4 +1,4 @@
-hhugboy v1.2.1+++dev
+hhugboy v1.2.5
 a Game Boy/Game Boy Color emulator for Windows
 by taizou (cactusgunman@gmail.com)
 http://hhug.me/
@@ -167,7 +167,7 @@ https://github.com/tzlion/hhugboy
 
 [ RELEASE HISTORY ]- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 
- v1.x.x xxth xxxxxxx 20xx
+ v1.2.5 5th March 2018
  * Add support for GBX file format
  * Add support for NT new carts supporting later Makon single cart games
  * Rename 'NT KL' compatibility mode to 'NT Old'
