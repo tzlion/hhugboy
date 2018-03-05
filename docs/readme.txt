@@ -9,6 +9,7 @@ https://github.com/tzlion/hhugboy
   * Unicode filename support!
   * Unlicensed Mapper support! (Sintax, Li Cheng, BBD, Hitek, more!)
   * Support for Vast Fame and some other multicarts!
+  * GBX ROM format support!
   * Screenshots!
   * Recent ROM list
   * Support for simple cheat format
@@ -81,8 +82,11 @@ https://github.com/tzlion/hhugboy
 
  Disabled  No compatibility mode
 
- * Also, 'Dragon Ball Z 3', the pirate English translation of DBZ Goku
-   Gekitouden, will work in auto mode only for now
+ * 'Dragon Ball Z 3', the pirate English translation of DBZ Goku Gekitouden,
+   will work in auto mode only for now.
+
+ * If a GBX format ROM is loaded, this setting will be ignored, and the mapper
+   specified in the GBX footer will be used instead.
 
 [ KEYS ] - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 
@@ -162,13 +166,14 @@ https://github.com/tzlion/hhugboy
 [ RELEASE HISTORY ]- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 
  v1.x.x xxth xxxxxxx 20xx
+ * Add support for GBX file format
  * Add support for NT new carts supporting later Makon single cart games
  * Rename 'NT KL' compatibility mode to 'NT Old'
    (since KL PCB codes were also used on at least one cart with the new mapper)
  * Support for Mortal Kombat 1&2 1MB dump
  * Cart detection code updates, mostly should have no effect aside from a
    couple bad ROMs no longer being picked up
- * Refactored UI code & added secret debug window (not really used yet)
+ * Refactored UI code & added secret debug window, which is a secret
 
  v1.2.1 24th August 2017
  * Detection for more NT KL carts
