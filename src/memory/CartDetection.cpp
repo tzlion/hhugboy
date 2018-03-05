@@ -428,7 +428,8 @@ bool CartDetection::detectUnlicensedCarts(byte *rom, Cartridge *cartridge, int r
             cartridge->RAMsize=03; // assumption for now
             break;
         case UNL_NTNEW:
-            cartridge->RAMsize = 2; // assumption
+            cartridge->battery = true; // not all of them have battery + RAM, but some that have it don't declare it
+            cartridge->RAMsize = 3; // most with RAM seem to have a 32k chip on board even if <=8k is actually used
             cartridge->mbcType = MEMORY_NTNEW;
             break;
         case UNL_LBMULTI:
