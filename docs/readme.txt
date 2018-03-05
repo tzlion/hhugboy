@@ -70,6 +70,11 @@ https://github.com/tzlion/hhugboy
  NT new    Later carts released by NT, specifically Makon single carts.
            No multicart support yet.
 
+ Liebao Technology
+           Currently only known to support 'Dragon Ball Z 3', the pirate
+           English translation of DBZ Goku Gekitouden. Other games may use this
+           too, especially Chinese translations.
+
  'Last Bible' multicart
            A type of multicart using menu music taken from 'Megami Tensei
            Gaiden: Last Bible' aka 'Revelations: The Demon Slayer'.
@@ -81,9 +86,6 @@ https://github.com/tzlion/hhugboy
            compatible with common mappers.
 
  Disabled  No compatibility mode
-
- * 'Dragon Ball Z 3', the pirate English translation of DBZ Goku Gekitouden,
-   will work in auto mode only for now.
 
  * If a GBX format ROM is loaded, this setting will be ignored, and the mapper
    specified in the GBX footer will be used instead.
@@ -173,6 +175,7 @@ https://github.com/tzlion/hhugboy
  * Support for Mortal Kombat 1&2 1MB dump
  * Cart detection code updates, mostly should have no effect aside from a
    couple bad ROMs no longer being picked up
+ * Added ability to select Liebao Technology mode manually
  * Refactored UI code & added secret debug window, which is a secret
 
  v1.2.1 24th August 2017

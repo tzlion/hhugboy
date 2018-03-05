@@ -172,6 +172,9 @@ void init_menu_options()
       case UNL_NTNEW:
       	emuMenu.checkOption(IDM_UNLNTNEW);
       break;
+      case UNL_DBZTR:
+      	emuMenu.checkOption(IDM_UNLLIEBAO);
+      break;
       default:
          emuMenu.checkOption(IDM_UNLAUTO);    
       break;
