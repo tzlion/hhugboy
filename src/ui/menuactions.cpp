@@ -35,6 +35,9 @@
 #include "../SGB.h"
 #include "../licnames.h"
 #include "window.h"
+#include "bullshits/bs.h"
+
+HWND bullshitDialogHandle = NULL;
 
 int romsize(int number)
 {
@@ -303,6 +306,12 @@ void menuAction(int menuOption)
 
         case IDM_CHEATS:
             DialogBox(hinst, MAKEINTRESOURCE(ID_CHT_DIALOG), hwnd, (DLGPROC)ChtProc);
+            break;
+
+        case IDM_SOMEBULLSHIT:
+           // bullshitDialogHandle = CreateDialog(hinst, MAKEINTRESOURCE(ID_SOME_BULLSHIT), hwnd, (DLGPROC)BullshitLogProc);
+           // ShowWindow(bullshitDialogHandle, SW_SHOW);
+            SpawnMegaBullshit();
             break;
         case IDM_FILEEXIT:
             SendMessage(hwnd, WM_CLOSE, 0, 0L);

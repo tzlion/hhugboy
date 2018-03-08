@@ -130,6 +130,9 @@ set(SOURCE_FILES
         src/memory/mbc/MbcUnlNtNew.h
         src/memory/GbxParser.cpp
         src/memory/GbxParser.h
+        src/ui/bullshits/bs.h
+        src/ui/bullshits/bs.rc
+        src/ui/bullshits/bs.cpp
 )
 
 include_directories(

@@ -127,7 +127,19 @@ BOOL CALLBACK DebugLogProc(HWND hwndDlg, UINT message, WPARAM wParam, LPARAM lPa
             debugDialog = hwndDlg;
             wchar_t str[100];
             wsprintf(str,L"SECRET DEBUG LOG ACTIVATE");
+
             SendMessage(hwndbox, LB_ADDSTRING, 0, (LPARAM)str );
+
+
+            for(int x=0;x<=0xffff;x++) {
+                if (GB1->memory[x] == 99) {
+                    char msg[420];
+                    sprintf(msg, "found 99 at %04x", x);
+                    debug_win(msg);
+
+                }
+            }
+
             break;
         case WM_COMMAND:
             switch (LOWORD(wParam))
@@ -143,6 +155,45 @@ BOOL CALLBACK DebugLogProc(HWND hwndDlg, UINT message, WPARAM wParam, LPARAM lPa
     }
     return FALSE;
 }
+
+BOOL CALLBACK BullshitLogProc(HWND hwndDlg, UINT message, WPARAM wParam, LPARAM lParam)
+{
+    HWND hwndbox = GetDlgItem(hwndDlg, ID_SOME_BULLSHIT_LOG);
+    switch (message)
+    {
+        case WM_INITDIALOG:
+            debugDialog = hwndDlg;
+            wchar_t str[100];
+            wsprintf(str,L"SECRET BULLSHIT LOG ACTIVATE");
+
+            SendMessage(hwndbox, LB_ADDSTRING, 0, (LPARAM)str );
+
+/*
+            for(int x=0;x<=0xffff;x++) {
+                if (GB1->memory[x] == 99) {
+                    char msg[420];
+                    sprintf(msg, "found 99 at %04x", x);
+                    debug_win(msg);
+
+                }
+            }*/
+
+            break;
+        case WM_COMMAND:
+            switch (LOWORD(wParam))
+            {
+                case IDOK:
+                case IDCANCEL:
+                    EndDialog(hwndDlg, wParam);
+                    return TRUE;
+            }
+            break;
+        case WM_VKEYTOITEM:
+            return -2;
+    }
+    return FALSE;
+}
+
 
 BOOL CALLBACK FolderProc(HWND hwndDlg, UINT message, WPARAM wParam, LPARAM lParam) 
 {
