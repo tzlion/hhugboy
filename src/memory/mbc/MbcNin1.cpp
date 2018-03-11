@@ -98,7 +98,7 @@ void MbcNin1::writeMemory(unsigned short address, register byte data) {
         data &= 0x03;
 
         if(data > maxRAMbank[(*gbCartridge)->RAMsize])
-            data = maxRAMbank[(*gbCartridge)->RAMsize];
+            data &= maxRAMbank[(*gbCartridge)->RAMsize];
 
         ram_bank = data;
 

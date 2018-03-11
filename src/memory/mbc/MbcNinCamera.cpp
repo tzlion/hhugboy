@@ -75,7 +75,7 @@ void MbcNinCamera::writeMemory(unsigned short address, register byte data) {
         data &= 0x0F;
 
         if(data > maxRAMbank[(*gbCartridge)->RAMsize])
-            data = maxRAMbank[(*gbCartridge)->RAMsize];
+            data &= maxRAMbank[(*gbCartridge)->RAMsize];
 
         ram_bank = data;
 

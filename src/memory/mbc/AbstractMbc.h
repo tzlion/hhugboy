@@ -63,7 +63,7 @@ public:
     unsigned int cart_address = 0; // this is dodgy just get rid of it eventually kthx
 
     int maxROMbank[9] = { 1, 3, 7, 15, 31, 63, 127, 255, 511 };
-    int maxRAMbank[10] = { 0, 0, 0, 4, 15, 7, 0, 0, 0, 4 };
+    int maxRAMbank[10] = { 0, 0, 0, 3, 15, 7, 0, 0, 0, 4 };
     int rom_size_mask[9] = { 0x00007fff, 0x0000ffff, 0x0001ffff, 0x0003ffff, 0x0007ffff, 0x000fffff, 0x001fffff, 0x003fffff, 0x007fffff };
 
 /*** STUFF THAT SHOULD GO SOMEWHERE ELSE END ***/

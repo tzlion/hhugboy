@@ -1,4 +1,4 @@
-hhugboy v1.2.5
+hhugboy v1.2.6
 a Game Boy/Game Boy Color emulator for Windows
 by taizou (cactusgunman@gmail.com)
 http://hhug.me/
@@ -167,6 +167,10 @@ https://github.com/tzlion/hhugboy
 
 [ RELEASE HISTORY ]- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 
+ v1.2.6 11th March 2018
+ * Fix MBC5 RAM banking bug observed to affect unlicensed games
+   e.g. Fengkuang Dafuweng (V.Fame), Digimon Pocket (Makon)
+
  v1.2.5 5th March 2018
  * Add support for GBX file format
  * Add support for NT new carts supporting later Makon single cart games
@@ -231,7 +235,7 @@ https://github.com/tzlion/hhugboy
 [ COPYRIGHT/LICENSE ]- - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 
  hhugboy Game Boy emulator
- copyright 2013-2017 taizou
+ copyright 2013-2018 taizou
 
  Based on GEST
  Copyright (C) 2003-2010 TM
