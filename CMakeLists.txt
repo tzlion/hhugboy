@@ -130,6 +130,8 @@ set(SOURCE_FILES
         src/memory/mbc/MbcUnlNtNew.h
         src/memory/GbxParser.cpp
         src/memory/GbxParser.h
+        src/linker.cpp
+        src/linker.h
 )
 
 include_directories(
