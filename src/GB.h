@@ -309,7 +309,7 @@ public:
             if(address == cheat[i].address && (!(cheat[i].long_code) || (cheat[i].old_value == mem_map[address>>12][address&0x0fff])))
                return cheat[i].new_value;
               
-      if ((address >= 0x4000 && address < 0x8000)) {
+      if ((address >= 0x0000 && address < 0x8000)|| (address >= 0xa000 && address < 0xc000) ) {
       	return mbc->readmemory_cart(address);
       }
 
@@ -318,7 +318,7 @@ public:
 
    unsigned short readword(register unsigned short address) //for fast memory access
    {
-      if ((address >= 0x4000 && address < 0x8000)) {
+      if ((address >= 0x0000 && address < 0x8000) || (address >= 0xa000 && address < 0xc000) ) {
       	return  (unsigned short) ( mbc->readmemory_cart(address) | mbc->readmemory_cart(address+1) << 8  );
       }
 
@@ -333,7 +333,7 @@ public:
 
    void copy_memory(unsigned short to,unsigned short from,int count)
    {
-		if ( from >= 0x4000 && from < 0x8000 ) {
+		if ( (from >= 0x0000 && from < 0x8000)  || (from >= 0xa000 && from < 0xc000) ) {
 			
 			while(count)
 		      {
