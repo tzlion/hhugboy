@@ -57,6 +57,7 @@
 #include "mbc/MbcUnlNtNew.h"
 #include "mbc/MbcUnlNtOld1.h"
 #include "mbc/MbcUnlNtOld2.h"
+#include "../linker.h"
 
 // So maybe this should be "cart" and a lot of whats in rom.cpp now e.g. autodetection should go in here..
 
@@ -84,11 +85,72 @@ void gb_mbc::resetMbcVariables(bool preserveMulticartState = false)
     mbc->resetVars(preserveMulticartState);
 }
 
+bool readBank0 = false;
+U8 bank0[0x4000];
+bool readBank1 = false;
+U8 bank1[0x4000];
+
+byte last4000 = 00;
+
 byte gb_mbc::readmemory_cart(register unsigned short address) {
-    return mbc->readMemory(address);
+
+    if (address < 0x8000 || last4000 < 0x08) {
+        return mbc->readMemory(address);
+    }
+    // super fights still doesnt work like this.. does that mean bank 0 changes maybe?
+    if (address < 0x4000) {
+        if (!readBank0) {
+            debug_win("DUMPING BANK 0");
+            linker::gb_readbank(bank0,0,0x4000);
+            readBank0=true;
+        }
+        return bank0[address];
+    }
+    if (address < 0x8000) {
+        // for PB Dreams this is slower.. you could probably cache the banks for an official game
+        if (!readBank1) {
+            debug_win("DUMPING BANK 1");
+            linker::gb_readbank(bank1,0x4000,0x4000);
+            readBank1=true;
+        }
+        return bank1[address-0x4000];
+    }
+    //if (address<0x4000) return linker::bank0[address]; // quicker maybe // tho not sure if working
+    // super fighter 2001 doesnt work this way but ping ball dreams works pretty well
+    linker::gb_sendblockread(address,01);
+    byte datum = linker::gb_readbyte();
+    if (address >= 0x8000) {
+        char fart[420];
+        sprintf(fart, "read %02x from %04x", datum, address);
+        debug_win(fart);
+    }
+    return datum;
+
+    byte data = mbc->readMemory(address);
+    if (address >= 0x8000) {
+        char fart[420];
+        sprintf(fart, "read %02x from %04x", data, address);
+        debug_win(fart);
+    }
+    return data;
 }
 
 void gb_mbc::writememory_cart(unsigned short address, register byte data) {
+
+    readBank1 = false;
+    if (address == 0x4000) last4000 = data;
+    if (address == 0x4000 /*&& data >= 0x08*/)
+        linker::gb_sendwrite(address,data);
+    mbc->writeMemory(address,data);
+    // then read the current banks into mem and use them
+    return;
+
+  //  if (!((address == 0x2000 && data == 0x01)||(address == 0x3000 && data == 0x00))) {
+        char fart[420];
+        sprintf(fart, "write %02x to %04x", data, address);
+        debug_win(fart);
+  //  }
+
     mbc->writeMemory(address,data);
 }
 
