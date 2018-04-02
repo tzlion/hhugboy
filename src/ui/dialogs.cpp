@@ -113,6 +113,10 @@ HWND debugDialog;
 void addDebugLogMessage(const wchar_t* message)
 {
     if (debugDialog) {
+        FILE* logfile;
+        logfile = fopen("ARSE.TXT","a");
+        fputws(message, logfile);
+        fclose(logfile);
         HWND hwndbox = GetDlgItem(debugDialog, ID_DEBUG_LOG);
         SendMessage(hwndbox, LB_ADDSTRING, 0, (LPARAM)message );
         SendMessage(hwndbox, LB_SETCARETINDEX, SendMessage(hwndbox,LB_GETCOUNT,0,0)-1, true );
@@ -121,6 +125,8 @@ void addDebugLogMessage(const wchar_t* message)
 
 BOOL CALLBACK DebugLogProc(HWND hwndDlg, UINT message, WPARAM wParam, LPARAM lParam)
 {
+
+
     HWND hwndbox = GetDlgItem(hwndDlg, ID_DEBUG_LOG);
     switch (message)
     {
