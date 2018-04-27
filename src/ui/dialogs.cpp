@@ -130,16 +130,6 @@ BOOL CALLBACK DebugLogProc(HWND hwndDlg, UINT message, WPARAM wParam, LPARAM lPa
 
             SendMessage(hwndbox, LB_ADDSTRING, 0, (LPARAM)str );
 
-
-            for(int x=0;x<=0xffff;x++) {
-                if (GB1->memory[x] == 99) {
-                    char msg[420];
-                    sprintf(msg, "found 99 at %04x", x);
-                    debug_win(msg);
-
-                }
-            }
-
             break;
         case WM_COMMAND:
             switch (LOWORD(wParam))

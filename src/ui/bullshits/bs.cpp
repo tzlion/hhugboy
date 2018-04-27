@@ -3,8 +3,10 @@
 #include <windows.h>
 
 #include <string>
+#include <cstdio>
 #include "bs.h"
 #include "../../debug.h"
+#include "../../GB.h"
 
 using namespace std;
 
@@ -13,6 +15,22 @@ extern HWND hwnd;
 
 HWND megaBullshitDialog;
 HWND megaBullshitDialogHandle = NULL;
+
+void addMessage(const wchar_t* message)
+{
+    if (megaBullshitDialog) {
+        HWND hwndbox = GetDlgItem(megaBullshitDialog, ID_SOME_BULLSHITS_LOG);
+        SendMessage(hwndbox, LB_ADDSTRING, 0, (LPARAM)message );
+        SendMessage(hwndbox, LB_SETCARETINDEX, SendMessage(hwndbox,LB_GETCOUNT,0,0)-1, true );
+    }
+}
+
+void addMessage(const char* message)
+{
+    wchar_t wmessage[1000];
+    mbstowcs(wmessage,message,1000);
+    addMessage(wmessage);
+}
 
 BOOL CALLBACK MegaBullshitLogProc(HWND hwndDlg, UINT message, WPARAM wParam, LPARAM lParam)
 {
@@ -26,15 +44,13 @@ BOOL CALLBACK MegaBullshitLogProc(HWND hwndDlg, UINT message, WPARAM wParam, LPA
 
             SendMessage(hwndbox, LB_ADDSTRING, 0, (LPARAM)str );
 
-/*
             for(int x=0;x<=0xffff;x++) {
                 if (GB1->memory[x] == 99) {
                     char msg[420];
                     sprintf(msg, "found 99 at %04x", x);
-                    debug_win(msg);
-
+                    addMessage(msg);
                 }
-            }*/
+            }
 
             break;
         case WM_COMMAND:
@@ -51,7 +67,6 @@ BOOL CALLBACK MegaBullshitLogProc(HWND hwndDlg, UINT message, WPARAM wParam, LPA
     }
     return FALSE;
 }
-
 
 void SpawnMegaBullshit()
 {
