@@ -32,6 +32,34 @@ void addMessage(const char* message)
     addMessage(wmessage);
 }
 
+int parseStringPart2( wchar_t* string, int start, int length )
+{
+    // copied from cheats whatever
+    char parser_str[10];
+    for(int i=0;i<length;++i)
+        parser_str[i] = string[i+start];
+    return (int)strtol(parser_str, NULL, 16);
+}
+
+void searchForValue(wchar_t* string)
+{
+    debug_print(string);
+    int fart = parseStringPart2(string, 0, 2);
+
+    char msg[420];
+    sprintf(msg, "Searching for %02x...", fart);
+    addMessage(msg);
+
+    for(int x=0;x<=0xffff;x++) {
+        if (GB1->memory[x] == fart) {
+            char msg[420];
+            sprintf(msg, "Found %02x at %04x", fart, x);
+            addMessage(msg);
+        }
+    }
+
+}
+
 BOOL CALLBACK MegaBullshitLogProc(HWND hwndDlg, UINT message, WPARAM wParam, LPARAM lParam)
 {
     HWND hwndbox = GetDlgItem(hwndDlg, ID_SOME_BULLSHITS_LOG);
@@ -40,22 +68,19 @@ BOOL CALLBACK MegaBullshitLogProc(HWND hwndDlg, UINT message, WPARAM wParam, LPA
         case WM_INITDIALOG:
             megaBullshitDialog = hwndDlg;
             wchar_t str[100];
-            wsprintf(str,L"SECRET BULLSHIT2 LOG ACTIVATE");
+            wsprintf(str,L"RUDIMENTARY MEMORY SEARCH ACTIVATED");
 
             SendMessage(hwndbox, LB_ADDSTRING, 0, (LPARAM)str );
-
-            for(int x=0;x<=0xffff;x++) {
-                if (GB1->memory[x] == 99) {
-                    char msg[420];
-                    sprintf(msg, "found 99 at %04x", x);
-                    addMessage(msg);
-                }
-            }
 
             break;
         case WM_COMMAND:
             switch (LOWORD(wParam))
             {
+                case ID_SOME_BULLSHITS_BTN:
+                    wchar_t cheat_str[10];
+                    GetDlgItemText(hwndDlg, ID_SOME_BULLSHITS_BOX, cheat_str, 4);
+                    searchForValue(cheat_str);
+                    break;
                 case IDOK:
                 case IDCANCEL:
                     EndDialog(hwndDlg, wParam);
