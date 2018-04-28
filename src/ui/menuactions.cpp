@@ -35,9 +35,7 @@
 #include "../SGB.h"
 #include "../licnames.h"
 #include "window.h"
-#include "bullshits/bs.h"
-
-HWND bullshitDialogHandle = NULL;
+#include "memsearch/memsearch.h"
 
 int romsize(int number)
 {
@@ -308,11 +306,10 @@ void menuAction(int menuOption)
             DialogBox(hinst, MAKEINTRESOURCE(ID_CHT_DIALOG), hwnd, (DLGPROC)ChtProc);
             break;
 
-        case IDM_SOMEBULLSHIT:
-           // bullshitDialogHandle = CreateDialog(hinst, MAKEINTRESOURCE(ID_SOME_BULLSHIT), hwnd, (DLGPROC)BullshitLogProc);
-           // ShowWindow(bullshitDialogHandle, SW_SHOW);
-            SpawnMegaBullshit();
+        case IDM_MEMSEARCH:
+            SpawnMemorySearcher();
             break;
+
         case IDM_FILEEXIT:
             SendMessage(hwnd, WM_CLOSE, 0, 0L);
             break;
