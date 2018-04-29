@@ -169,6 +169,7 @@ BOOL CALLBACK MemorySearcher::MemorySearcherDialogProc(HWND hwndDlg, UINT messag
                 case IDOK:
                 case IDCANCEL:
                     EndDialog(hwndDlg, wParam);
+                    memorySearcherDialog = NULL;
                     return TRUE;
             }
             break;
@@ -180,6 +181,8 @@ BOOL CALLBACK MemorySearcher::MemorySearcherDialogProc(HWND hwndDlg, UINT messag
 
 void MemorySearcher::SpawnMemorySearcher()
 {
-    HWND memorySearcherDialogHandle = CreateDialog(hinst, MAKEINTRESOURCE(ID_MEM_SEARCH), hwnd, (DLGPROC)MemorySearcher::MemorySearcherDialogProc);
-    ShowWindow(memorySearcherDialogHandle, SW_SHOW);
+    if (!memorySearcherDialog) {
+        memorySearcherDialog = CreateDialog(hinst, MAKEINTRESOURCE(ID_MEM_SEARCH), hwnd, (DLGPROC)MemorySearcher::MemorySearcherDialogProc);
+        ShowWindow(memorySearcherDialog, SW_SHOW);
+    }
 }
