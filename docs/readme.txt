@@ -1,4 +1,4 @@
-hhugboy v1.2.6
+hhugboy v1.2.6+dev
 a Game Boy/Game Boy Color emulator for Windows
 by taizou (cactusgunman@gmail.com)
 http://hhug.me/
@@ -11,11 +11,11 @@ https://github.com/tzlion/hhugboy
   * Support for Vast Fame and some other multicarts!
   * GBX ROM format support!
   * Screenshots!
+  * Memory searching
   * Recent ROM list
   * Support for simple cheat format
   * Nearest neighbour scaling up to 8x for super sharpness
   * New onscreen text font, PCPaint Bold by codeman38
-  * (Visual) rumble always on for Makon games
   * Bunch of minor tweaks/fixes
 
  Requires DirectX runtime 7+
@@ -132,6 +132,16 @@ https://github.com/tzlion/hhugboy
  Address/Value  xxxx=yy
                 xxxx = address, yy = value, in hexadecimal. e.g. 1234=1F
 
+ The Memory Search functionality can assist in finding memory addresses to use
+ with the address/value format. It allows you to search for specific values in
+ memory, and by checking the "in previous result set" option, you can then
+ search only in the results of the previous search, allowing you to narrow down
+ memory locations that may contain something of interest (lives, time, etc).
+
+ * Note this currently has the limitation that you have to know the *exact*
+   value you are searching for- it doesn't allow you to do "greater than/
+   less than" type searches like some other emulators)
+
 [ COMPATIBILITY ]- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 
  This emulator was primarily designed for Windows, but it will also run on
@@ -166,6 +176,9 @@ https://github.com/tzlion/hhugboy
  * Proper MMM01 support
 
 [ RELEASE HISTORY ]- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+
+ v1.x.x xxth xxxxx 20xx
+ * Add memory searcher
 
  v1.2.6 11th March 2018
  * Fix MBC5 RAM banking bug observed to affect unlicensed games
