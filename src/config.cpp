@@ -157,17 +157,23 @@ void init_menu_options()
       case UNL_LBMULTI:
       	emuMenu.checkOption(IDM_UNLLBMULTI);
       break;
-      case UNL_NTKL1:
-      	emuMenu.checkOption(IDM_UNLNTKL1);
+      case UNL_NTOLD1:
+      	emuMenu.checkOption(IDM_UNLNTOLD1);
       break;
-      case UNL_NTKL2:
-      	emuMenu.checkOption(IDM_UNLNTKL2);
+      case UNL_NTOLD2:
+      	emuMenu.checkOption(IDM_UNLNTOLD2);
       break;
       case UNL_MBC1SAVE:
       	emuMenu.checkOption(IDM_UNLMBC1COMPAT);
       break;
       case UNL_MBC5SAVE:
       	emuMenu.checkOption(IDM_UNLMBC5COMPAT);
+      break;
+      case UNL_NTNEW:
+      	emuMenu.checkOption(IDM_UNLNTNEW);
+      break;
+      case UNL_DBZTR:
+      	emuMenu.checkOption(IDM_UNLLIEBAO);
       break;
       default:
          emuMenu.checkOption(IDM_UNLAUTO);    

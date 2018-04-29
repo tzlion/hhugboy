@@ -73,7 +73,7 @@ bool DoFileOpen(HWND hwnd,int gb_number)
    wchar_t w_ctrl_str[150];
    mbstowcs(w_ctrl_str,ctrl_str,150);
    //ofn.lpstrFilter =  w_ctrl_str; */ //removed for now, just to get it working..
-   ofn.lpstrFilter =  L"GB roms (*.gb,*.gbc,*.sgb,*.zip)\0*.gb;*.gbc;*.sgb;*.zip\0All files (*.*)\0*.*\0\0";
+   ofn.lpstrFilter =  L"GB roms (*.gb,*.gbc,*.gbx,*.sgb,*.zip)\0*.gb;*.gbc;*.gbx;*.sgb;*.zip\0All files (*.*)\0*.*\0\0";
    ofn.lpstrFile = szFileName;
    ofn.nMaxFile = MAX_PATH;
    ofn.lpstrDefExt = L"gb";
@@ -112,6 +112,13 @@ HWND debugDialog;
 void addDebugLogMessage(const wchar_t* message)
 {
     if (debugDialog) {
+        if (SendDlgItemMessage(debugDialog, ID_DEBUG_LOG_CHECKBOX, BM_GETCHECK, 0, 0)) {
+            FILE* logfile;
+            logfile = fopen("debuglog.txt","a");
+            fputws(message, logfile);
+            fputws(L"\r\n", logfile);
+            fclose(logfile);
+        }
         HWND hwndbox = GetDlgItem(debugDialog, ID_DEBUG_LOG);
         SendMessage(hwndbox, LB_ADDSTRING, 0, (LPARAM)message );
         SendMessage(hwndbox, LB_SETCARETINDEX, SendMessage(hwndbox,LB_GETCOUNT,0,0)-1, true );
@@ -120,14 +127,11 @@ void addDebugLogMessage(const wchar_t* message)
 
 BOOL CALLBACK DebugLogProc(HWND hwndDlg, UINT message, WPARAM wParam, LPARAM lParam)
 {
-    HWND hwndbox = GetDlgItem(hwndDlg, ID_DEBUG_LOG);
     switch (message)
     {
         case WM_INITDIALOG:
             debugDialog = hwndDlg;
-            wchar_t str[100];
-            wsprintf(str,L"SECRET DEBUG LOG ACTIVATE");
-            SendMessage(hwndbox, LB_ADDSTRING, 0, (LPARAM)str );
+            addDebugLogMessage(L"SECRET DEBUG LOG ACTIVATE");
             break;
         case WM_COMMAND:
             switch (LOWORD(wParam))
@@ -137,6 +141,9 @@ BOOL CALLBACK DebugLogProc(HWND hwndDlg, UINT message, WPARAM wParam, LPARAM lPa
                     EndDialog(hwndDlg, wParam);
                     return TRUE;
             }
+            break;
+        case WM_VKEYTOITEM:
+            return -2;
     }
     return FALSE;
 }

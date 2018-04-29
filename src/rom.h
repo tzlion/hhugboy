@@ -1,6 +1,6 @@
 /*
    hhugboy Game Boy emulator
-   copyright 2013 taizou
+   copyright 2013-2018 taizou
 
    Based on GEST
    Copyright (C) 2003-2010 TM
@@ -27,26 +27,38 @@
 
 #define ROM_FILENAME_SIZE 1024
 
-struct GBrom
+struct Header
 {
-   char name[15];
-   char newlic[2];
-   byte lic;
-   byte carttype;
+    char name[15];
+    char newlic[2];
+    byte lic;
+    byte carttype;
+    int ROMsize;
+    int RAMsize;
+    byte destcode;
+    byte version;
+    byte complement;
+    bool complementok;
+    unsigned short checksum;
+    int SGB;
+    int CGB; // this gets modified but it shouldn't
+};
+
+struct Cartridge
+{
    int ROMsize;
    int RAMsize;
-   int realFileSize;
+    // these are the real/effective values as opposed to the headers which could be wrong
+    // maybe something here like:
+    // - rom size (the full)
+    // - addressable rom size (for multicarts) ...
+    // and same for ram
+    // or maybe do a struct for rom/ram sizes by header no idk
+   Header header;
    MbcType mbcType;
-   byte destcode;
-   byte version;
-   byte complement;
-   bool complementok;
-   unsigned short checksum;
    bool battery;
    bool RTC;
    bool rumble;
-   int CGB;
-   int SGB;
 };
 
 #endif

@@ -1,0 +1,44 @@
+/*
+   Memory searcher for hhugboy Game Boy emulator
+   copyright 2018 taizou
+
+   This program is free software; you can redistribute it and/or
+   modify it under the terms of the GNU General Public License
+   as published by the Free Software Foundation; either version 2
+   of the License, or (at your option) any later version.
+
+   This program is distributed in the hope that it will be useful,
+   but WITHOUT ANY WARRANTY; without even the implied warranty of
+   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+   GNU General Public License for more details.
+
+   You should have received a copy of the GNU General Public License
+   along with this program; if not, write to the Free Software Foundation, Inc.,
+   51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
+*/
+
+#include <windows.h>
+
+#include "MemorySearcher.h"
+
+ID_MEM_SEARCH DIALOGEX 300, 0, 340, 220
+STYLE DS_MODALFRAME | WS_POPUP | WS_CAPTION | WS_SYSMENU
+CAPTION "Memory Searcher"
+LANGUAGE LANG_ENGLISH, SUBLANG_ENGLISH_US
+FONT 8, "Courier New"
+{
+    LISTBOX         ID_MEM_SEARCH_LOG, 0, 0, 340, 200,  LBS_NOTIFY | WS_VSCROLL | LBS_EXTENDEDSEL | LBS_WANTKEYBOARDINPUT
+
+    LTEXT           "Value", -1, 5, 202, 20, 8
+    EDITTEXT        ID_MEM_SEARCH_BOX, 28, 200, 20, 12, ES_AUTOHSCROLL
+
+    LTEXT           "From", -1, 55, 202, 20, 8
+    EDITTEXT        ID_MEM_SEARCH_START_BOX, 75, 200, 30, 12, ES_AUTOHSCROLL
+
+    LTEXT           "To", -1, 110, 202, 20, 8
+    EDITTEXT        ID_MEM_SEARCH_END_BOX, 123, 200, 30, 12, ES_AUTOHSCROLL
+
+    AUTOCHECKBOX        "In previous result set", ID_MEM_SEARCH_PREV_CHECKBOX, 160, 200, 100, 12
+
+    PUSHBUTTON      "Search", ID_MEM_SEARCH_BTN, 285, 198, 52, 15
+}

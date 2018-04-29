@@ -41,16 +41,16 @@ void MbcNin5::writeMemory(unsigned short address, register byte data) {
         rom_bank = data|(MBChi<<8);
         cart_address = rom_bank<<14;
 
-        cart_address &= rom_size_mask[(*gbRom)->ROMsize];
+        cart_address &= rom_size_mask[(*gbCartridge)->ROMsize];
 
         cart_address += multicartOffset;
 
         MBClo = data;
 
-        gbMemMap[0x4] = &(*gbCartridge)[cart_address];
-        gbMemMap[0x5] = &(*gbCartridge)[cart_address+0x1000];
-        gbMemMap[0x6] = &(*gbCartridge)[cart_address+0x2000];
-        gbMemMap[0x7] = &(*gbCartridge)[cart_address+0x3000];
+        gbMemMap[0x4] = &(*gbCartRom)[cart_address];
+        gbMemMap[0x5] = &(*gbCartRom)[cart_address+0x1000];
+        gbMemMap[0x6] = &(*gbCartRom)[cart_address+0x2000];
+        gbMemMap[0x7] = &(*gbCartRom)[cart_address+0x3000];
 
         //  if(origData == 0x69) {
         //    	char buff[100];
@@ -71,23 +71,23 @@ void MbcNin5::writeMemory(unsigned short address, register byte data) {
 
         cart_address = rom_bank<<14;
 
-        cart_address &= rom_size_mask[(*gbRom)->ROMsize];
+        cart_address &= rom_size_mask[(*gbCartridge)->ROMsize];
 
         cart_address += multicartOffset;
 
         MBChi = data;
 
-        gbMemMap[0x4] = &(*gbCartridge)[cart_address];
-        gbMemMap[0x5] = &(*gbCartridge)[cart_address+0x1000];
-        gbMemMap[0x6] = &(*gbCartridge)[cart_address+0x2000];
-        gbMemMap[0x7] = &(*gbCartridge)[cart_address+0x3000];
+        gbMemMap[0x4] = &(*gbCartRom)[cart_address];
+        gbMemMap[0x5] = &(*gbCartRom)[cart_address+0x1000];
+        gbMemMap[0x6] = &(*gbCartRom)[cart_address+0x2000];
+        gbMemMap[0x7] = &(*gbCartRom)[cart_address+0x3000];
 
         return;
     }
 
     if(address < 0x6000) // Is it a RAM bank switch?
     {
-        if((*gbRom)->rumble)
+        if((*gbCartridge)->rumble)
         {
             if(data&0x08) {
                 *gbRumbleCounter += 4;
@@ -98,13 +98,13 @@ void MbcNin5::writeMemory(unsigned short address, register byte data) {
             data &= 0x07;
         }
 
-        if((*gbRom)->RAMsize <= 2) // no need to change it if there isn't over 8KB ram
+        if((*gbCartridge)->RAMsize <= 2) // no need to change it if there isn't over 8KB ram
             return;
 
         data &= 0x0F;
 
-        if(data > maxRAMbank[(*gbRom)->RAMsize])
-            data = maxRAMbank[(*gbRom)->RAMsize];
+        if(data > maxRAMbank[(*gbCartridge)->RAMsize])
+            data &= maxRAMbank[(*gbCartridge)->RAMsize];
 
         ram_bank = data;
 

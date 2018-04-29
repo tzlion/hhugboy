@@ -7,14 +7,14 @@
  * See "license.txt" in the project root
  */
 
-#include "MbcUnlNtKl2.h"
+#include "MbcUnlNtOld2.h"
 #include "../../debug.h"
 
-MbcUnlNtKl2::MbcUnlNtKl2(int originalRomSize) : MbcUnlNtK11(originalRomSize)
+MbcUnlNtOld2::MbcUnlNtOld2(int originalRomSize) : MbcUnlNtOld1(originalRomSize)
 {
 }
 
-void MbcUnlNtKl2::writeMemory(unsigned short address, register byte data) {
+void MbcUnlNtOld2::writeMemory(unsigned short address, register byte data) {
 
     if (address >= 0x2000 && address <= 0x3FFF) {
         if (data == 0) data = 1; // MBC3 stylez
@@ -31,13 +31,13 @@ void MbcUnlNtKl2::writeMemory(unsigned short address, register byte data) {
     // But single carts like DK have it enabled already
     if (address == 0x5001) {
         if (data & 0x80) {
-            (*gbRom)->rumble = true;
+            (*gbCartridge)->rumble = true;
         } else {
-            (*gbRom)->rumble = false;
+            (*gbCartridge)->rumble = false;
         }
     }
 
-    if ((*gbRom)->rumble && address >= 0x4000 && address <= 0x5FFF) {
+    if ((*gbCartridge)->rumble && address >= 0x4000 && address <= 0x5FFF) {
         // In initialised weird-Makon mode it works on the same writes as official rumble carts
         // In uninitialised mode it's different (so official rumble games wouldn't rumble on these carts?)
         if(isWeirdMode ? (data & 0x08) : (data & 0x02)) {
@@ -54,5 +54,5 @@ void MbcUnlNtKl2::writeMemory(unsigned short address, register byte data) {
         // Have tweaked both this and MBC5 to approximate this behaviour a bit closer
     }
 
-    MbcUnlNtK11::writeMemory(address, data);
+    MbcUnlNtOld1::writeMemory(address, data);
 }
