@@ -112,11 +112,13 @@ HWND debugDialog;
 void addDebugLogMessage(const wchar_t* message)
 {
     if (debugDialog) {
-        FILE* logfile;
-        logfile = fopen("debuglog.txt","a");
-        fputws(message, logfile);
-        fputws(L"\r\n", logfile);
-        fclose(logfile);
+        if (SendDlgItemMessage(debugDialog, ID_DEBUG_LOG_CHECKBOX, BM_GETCHECK, 0, 0)) {
+            FILE* logfile;
+            logfile = fopen("debuglog.txt","a");
+            fputws(message, logfile);
+            fputws(L"\r\n", logfile);
+            fclose(logfile);
+        }
         HWND hwndbox = GetDlgItem(debugDialog, ID_DEBUG_LOG);
         SendMessage(hwndbox, LB_ADDSTRING, 0, (LPARAM)message );
         SendMessage(hwndbox, LB_SETCARETINDEX, SendMessage(hwndbox,LB_GETCOUNT,0,0)-1, true );

@@ -77,6 +77,7 @@
 
 #define ID_DEBUG_DIALOG 768
 #define ID_DEBUG_LOG 769
+#define ID_DEBUG_LOG_CHECKBOX 770
 
 // Menu group definitions (ie check one of this group and the rest will uncheck)
 
