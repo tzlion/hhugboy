@@ -13,6 +13,10 @@ using namespace std;
 extern HINSTANCE hinst;
 extern HWND hwnd;
 
+HWND MemorySearcher::memorySearcherDialog;
+bool MemorySearcher::resultSet[0xffff];
+int MemorySearcher::searchCount = 0;
+
 void MemorySearcher::addMessage(const wchar_t* message)
 {
     if (memorySearcherDialog) {
