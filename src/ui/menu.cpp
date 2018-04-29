@@ -22,7 +22,6 @@
 
 #include "menu.h"
 
-
 // constructor
 menu::menu(HINSTANCE instance)
 {

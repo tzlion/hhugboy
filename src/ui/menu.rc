@@ -30,6 +30,7 @@
 ID_ICON ICON MOVEABLE DISCARDABLE "../hhugboy.ico"
 
 #include "dialogs.rc"
+#include "dialogs/MemorySearcher.rc"
 
 ID_MENU MENU 
 BEGIN
@@ -161,6 +162,7 @@ BEGIN
                 MENUITEM "Reduce &CPU Usage", IDM_OPTIONCPUUSAGE
                 MENUITEM SEPARATOR
                 MENUITEM "Ch&eats...", IDM_CHEATS
+                MENUITEM "&Memory Search...", IDM_MEMSEARCH
         END
 	   POPUP "&Video"
       BEGIN

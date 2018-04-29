@@ -141,6 +141,7 @@
 #define IDM_FILEEXIT        0x0b
 #define IDM_FOLDERS         0x0c
 #define IDM_CHEATS          0x0d
+#define IDM_MEMSEARCH       0x69
 
 #define IDM_CPURESET        0x0e
 #define IDM_CPUSOFTRESET    0x0f

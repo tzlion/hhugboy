@@ -35,6 +35,7 @@
 #include "../SGB.h"
 #include "../licnames.h"
 #include "window.h"
+#include "dialogs/MemorySearcher.h"
 
 int romsize(int number)
 {
@@ -304,6 +305,11 @@ void menuAction(int menuOption)
         case IDM_CHEATS:
             DialogBox(hinst, MAKEINTRESOURCE(ID_CHT_DIALOG), hwnd, (DLGPROC)ChtProc);
             break;
+
+        case IDM_MEMSEARCH:
+            MemorySearcher::SpawnMemorySearcher();
+            break;
+
         case IDM_FILEEXIT:
             SendMessage(hwnd, WM_CLOSE, 0, 0L);
             break;
