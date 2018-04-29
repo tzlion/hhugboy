@@ -1,6 +1,6 @@
 /*
    Memory searcher for hhugboy Game Boy emulator
-   copyright 2013-2018 taizou
+   copyright 2018 taizou
 
    This program is free software; you can redistribute it and/or
    modify it under the terms of the GNU General Public License
