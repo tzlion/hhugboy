@@ -185,4 +185,5 @@ void MemorySearcher::SpawnMemorySearcher()
         memorySearcherDialog = CreateDialog(hinst, MAKEINTRESOURCE(ID_MEM_SEARCH), hwnd, (DLGPROC)MemorySearcher::MemorySearcherDialogProc);
         ShowWindow(memorySearcherDialog, SW_SHOW);
     }
+    SetFocus(memorySearcherDialog);
 }
