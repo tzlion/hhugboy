@@ -130,6 +130,9 @@ set(SOURCE_FILES
         src/memory/mbc/MbcUnlNtNew.h
         src/memory/GbxParser.cpp
         src/memory/GbxParser.h
+        src/ui/dialogs/MemorySearcher.h
+        src/ui/dialogs/MemorySearcher.rc
+        src/ui/dialogs/MemorySearcher.cpp
         src/linker.cpp
         src/linker.h
 )
