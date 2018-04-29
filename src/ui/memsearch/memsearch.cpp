@@ -17,6 +17,8 @@ HWND memorySearcherDialog;
 
 int searchCount = 0;
 
+bool resultSet[0xffff];
+
 void addMessage(const wchar_t* message)
 {
     if (memorySearcherDialog) {
@@ -33,14 +35,29 @@ void addMessage(const char* message)
     addMessage(wmessage);
 }
 
-void searchForValue(wchar_t* string, wchar_t* fromString, wchar_t* toString)
+void resetResultSet()
+{
+    for(int x=0; x<=0xffff; x++) {
+        resultSet[x] = false;
+    }
+}
+
+void searchForValue(wchar_t* string, wchar_t* fromString, wchar_t* toString, bool inLastResultSet)
 {
     int searchVal = wcstol(string, nullptr, 16) & 0xff;
     int searchFrom = wcstol(fromString, nullptr, 16) & 0xffff;
     int searchTo = wcstol(toString, nullptr, 16) & 0xffff;
 
+    if (!inLastResultSet) {
+        resetResultSet();
+    }
+
     char msg[420];
-    sprintf(msg, "Searching for %02X from %04X to %04X...", searchVal, searchFrom, searchTo);
+    if (inLastResultSet) {
+        sprintf(msg, "Searching for %02X from %04X to %04X and within previous result set...", searchVal, searchFrom, searchTo);
+    } else {
+        sprintf(msg, "Searching for %02X from %04X to %04X...", searchVal, searchFrom, searchTo);
+    }
     addMessage(msg);
 
     char addressesOnRow[16][5];
@@ -51,6 +68,9 @@ void searchForValue(wchar_t* string, wchar_t* fromString, wchar_t* toString)
     int count = 0;
 
     for(int x=searchFrom;x<=searchTo;x++) {
+        if (inLastResultSet && !resultSet[x]) {
+            continue;
+        }
         if (GB1->memory[x] == searchVal) {
             if (count == 0) {
                 addMessage(" ");
@@ -59,6 +79,7 @@ void searchForValue(wchar_t* string, wchar_t* fromString, wchar_t* toString)
             }
             count++;
             sprintf(addressesOnRow[rowPos], "%04X", x);
+            resultSet[x] = true;
             rowPos++;
             if (rowPos == 16) {
                 sprintf(msg, " %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s",
@@ -73,6 +94,8 @@ void searchForValue(wchar_t* string, wchar_t* fromString, wchar_t* toString)
                 }
                 rowPos = 0;
             }
+        } else {
+            resultSet[x] = false;
         }
     }
     if (rowPos > 0) {
@@ -104,9 +127,10 @@ BOOL CALLBACK MemorySearcherDialogProc(HWND hwndDlg, UINT message, WPARAM wParam
         case WM_INITDIALOG:
             memorySearcherDialog = hwndDlg;
             SetDlgItemTextW(hwndDlg, ID_MEM_SEARCH_BOX, L"00");
-            SetDlgItemTextW(hwndDlg, ID_MEM_SEARCH_START_BOX, L"0000");
-            SetDlgItemTextW(hwndDlg, ID_MEM_SEARCH_END_BOX, L"7FFF");
+            SetDlgItemTextW(hwndDlg, ID_MEM_SEARCH_START_BOX, L"C000");
+            SetDlgItemTextW(hwndDlg, ID_MEM_SEARCH_END_BOX, L"DFFF");
             searchCount = 0;
+            resetResultSet();
             break;
         case WM_COMMAND:
             switch (LOWORD(wParam))
@@ -123,7 +147,7 @@ BOOL CALLBACK MemorySearcherDialogProc(HWND hwndDlg, UINT message, WPARAM wParam
                         addMessage(" ");
                     }
                     searchCount++;
-                    searchForValue(valueStr, fromStr, toStr);
+                    searchForValue(valueStr, fromStr, toStr, SendDlgItemMessage(hwndDlg, ID_MEM_SEARCH_PREV_CHECKBOX, BM_GETCHECK, 0, 0));
                     break;
                 case IDOK:
                 case IDCANCEL:

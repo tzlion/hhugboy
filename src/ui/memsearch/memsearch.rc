@@ -20,5 +20,7 @@ FONT 8, "Courier New"
     LTEXT           "To", -1, 110, 202, 20, 8
     EDITTEXT        ID_MEM_SEARCH_END_BOX, 123, 200, 30, 12, ES_AUTOHSCROLL
 
-    PUSHBUTTON      "Search", ID_MEM_SEARCH_BTN, 165, 198, 52, 15
+    AUTOCHECKBOX        "In prev result set", ID_MEM_SEARCH_PREV_CHECKBOX, 160, 200, 90, 12
+
+    PUSHBUTTON      "Search", ID_MEM_SEARCH_BTN, 285, 198, 52, 15
 }
