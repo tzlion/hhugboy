@@ -1,6 +1,6 @@
 /*
    hhugboy Game Boy emulator
-   copyright 2013-16 taizou
+   copyright 2013-18 taizou
 
    Based on GEST
    Copyright (C) 2003-2010 TM
@@ -53,7 +53,7 @@ gb_system* GB = NULL;
 gb_system* GB1 = NULL;
 gb_system* GB2 = NULL;
 
-const wchar_t* prg_version = L"1.2.1";
+const wchar_t* prg_version = L"1.2.6+dev";
 
 // Window stuff? ----------------------------------------
 
@@ -315,9 +315,9 @@ int WINAPI WinMain(HINSTANCE hThisInstance,HINSTANCE hPrevInstance, LPSTR  lpszA
    GB1 = new gb_system;
 
    if(!options || !GB1 || !GB1->init() || !sgb_init())
-   { 
-      debug_print(str_table[ERROR_MEMORY]); 
-      PostMessage(hwnd, WM_QUIT, 0, 0L);  
+   {
+      debug_print(str_table[ERROR_MEMORY]);
+      PostMessage(hwnd, WM_QUIT, 0, 0L);
    }
 
    GB = GB1;
@@ -330,7 +330,7 @@ int WINAPI WinMain(HINSTANCE hThisInstance,HINSTANCE hPrevInstance, LPSTR  lpszA
    if(!Init_DI())
    {
       debug_print(str_table[ERROR_DINPUT]);
-      PostMessage(hwnd, WM_QUIT, 0, 0L);        
+      PostMessage(hwnd, WM_QUIT, 0, 0L);
    }
 
    initSound();

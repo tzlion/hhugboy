@@ -45,7 +45,7 @@
 #include "mbc/MbcNin1.h"
 #include "mbc/MbcNin2.h"
 #include "mbc/MbcUnlRockman8.h"
-#include "mbc/MbcLicHuColl.h"
+#include "mbc/MbcNin1Multi.h"
 #include "mbc/MbcLicMmm01.h"
 #include "mbc/MbcUnlPoke2in1.h"
 #include "mbc/MbcUnlSachen8in1.h"
@@ -54,8 +54,9 @@
 #include "mbc/MbcUnlBbd.h"
 #include "mbc/MbcUnlDbzTrans.h"
 #include "mbc/MbcUnlHitek.h"
-#include "mbc/MbcUnlNtK11.h"
-#include "mbc/MbcUnlNtKl2.h"
+#include "mbc/MbcUnlNtNew.h"
+#include "mbc/MbcUnlNtOld1.h"
+#include "mbc/MbcUnlNtOld2.h"
 
 // So maybe this should be "cart" and a lot of whats in rom.cpp now e.g. autodetection should go in here..
 
@@ -63,14 +64,14 @@
 //int RTC_latched = 0;
 
 // Eventually GB should contain cart and cart should contain MBC
-gb_mbc::gb_mbc(byte** gbMemMap, byte** gbCartridge, GBrom** gbRom, byte** gbCartRam, int* gbRumbleCounter, byte** gbMemory):
+gb_mbc::gb_mbc(byte** gbMemMap, byte** gbCartRom, Cartridge** gbCartridge, byte** gbCartRam, int* gbRumbleCounter, byte** gbMemory):
 
         mbcType(MEMORY_DEFAULT)
 
 {
-    this->gbCartridge = gbCartridge;
+    this->gbCartRom = gbCartRom;
     this->gbMemMap = gbMemMap;
-    this->gbRom = gbRom;
+    this->gbCartridge = gbCartridge;
     this->gbCartRam = gbCartRam;
     this->gbRumbleCounter = gbRumbleCounter;
     this->gbMemory = gbMemory;
@@ -191,14 +192,14 @@ void gb_mbc::setMemoryReadWrite(MbcType memory_type) {
         case MEMORY_ROCKMAN8:
             mbc = new MbcUnlRockman8();
             break;
-        case MEMORY_NTKL1:
-            mbc = new MbcUnlNtK11((*gbRom)->ROMsize);
+        case MEMORY_NTOLD1:
+            mbc = new MbcUnlNtOld1((*gbCartridge)->ROMsize);
             break;
-        case MEMORY_NTKL2:
-            mbc = new MbcUnlNtKl2((*gbRom)->ROMsize);
+        case MEMORY_NTOLD2:
+            mbc = new MbcUnlNtOld2((*gbCartridge)->ROMsize);
             break;
-        case MEMORY_BC:
-            mbc = new MbcLicHuColl();
+        case MEMORY_MBC1MULTI:
+            mbc = new MbcNin1Multi();
             break;
         case MEMORY_MMM01:
             mbc = new MbcLicMmm01();
@@ -218,13 +219,16 @@ void gb_mbc::setMemoryReadWrite(MbcType memory_type) {
         case MEMORY_LBMULTI:
             mbc = new MbcUnlLbMulti();
             break;
+        case MEMORY_NTNEW:
+            mbc = new MbcUnlNtNew();
+            break;
         case MEMORY_DEFAULT:
         default:
             mbc = new BasicMbc();
             break;
     }
 
-    mbc->init( gbMemMap, gbRom, gbMemory, gbCartridge, gbCartRam, gbRumbleCounter );
+    mbc->init( gbMemMap, gbCartridge, gbMemory, gbCartRom, gbCartRam, gbRumbleCounter );
 }
 
 bool gb_mbc::shouldReset() {

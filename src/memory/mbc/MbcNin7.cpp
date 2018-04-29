@@ -103,12 +103,12 @@ void MbcNin7::writeMemory(unsigned short address, register byte data) {
 
         cart_address = data<<14;
 
-        cart_address &= rom_size_mask[(*gbRom)->ROMsize];
+        cart_address &= rom_size_mask[(*gbCartridge)->ROMsize];
 
-        gbMemMap[0x4] = &(*gbCartridge)[cart_address];
-        gbMemMap[0x5] = &(*gbCartridge)[cart_address+0x1000];
-        gbMemMap[0x6] = &(*gbCartridge)[cart_address+0x2000];
-        gbMemMap[0x7] = &(*gbCartridge)[cart_address+0x3000];
+        gbMemMap[0x4] = &(*gbCartRom)[cart_address];
+        gbMemMap[0x5] = &(*gbCartRom)[cart_address+0x1000];
+        gbMemMap[0x6] = &(*gbCartRom)[cart_address+0x2000];
+        gbMemMap[0x7] = &(*gbCartRom)[cart_address+0x3000];
         return;
     }
 
@@ -118,13 +118,13 @@ void MbcNin7::writeMemory(unsigned short address, register byte data) {
         {
             RAMenable = 0;
 
-            if((*gbRom)->RAMsize <= 2) // no need to change it if there isn't over 8KB ram
+            if((*gbCartridge)->RAMsize <= 2) // no need to change it if there isn't over 8KB ram
                 return;
 
             data &= 0x03;
 
-            if(data > maxRAMbank[(*gbRom)->RAMsize])
-                data = maxRAMbank[(*gbRom)->RAMsize];
+            if(data > maxRAMbank[(*gbCartridge)->RAMsize])
+                data &= maxRAMbank[(*gbCartridge)->RAMsize];
 
             ram_bank = data;
 

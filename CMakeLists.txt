@@ -97,8 +97,8 @@ set(SOURCE_FILES
         src/memory/mbc/MbcUnlRockman8.h
         src/memory/mbc/MbcLicMk12.cpp
         src/memory/mbc/MbcLicMk12.h
-        src/memory/mbc/MbcLicHuColl.cpp
-        src/memory/mbc/MbcLicHuColl.h
+        src/memory/mbc/MbcNin1Multi.cpp
+        src/memory/mbc/MbcNin1Multi.h
         src/memory/mbc/MbcLicMmm01.cpp
         src/memory/mbc/MbcLicMmm01.h
         src/memory/mbc/MbcNin1.cpp
@@ -114,10 +114,10 @@ set(SOURCE_FILES
         src/memory/MbcType.h
         src/memory/mbc/MbcUnlHitek.cpp
         src/memory/mbc/MbcUnlHitek.h
-        src/memory/mbc/MbcUnlNtK11.cpp
-        src/memory/mbc/MbcUnlNtK11.h
-        src/memory/mbc/MbcUnlNtKl2.cpp
-        src/memory/mbc/MbcUnlNtKl2.h
+        src/memory/mbc/MbcUnlNtOld1.cpp
+        src/memory/mbc/MbcUnlNtOld1.h
+        src/memory/mbc/MbcUnlNtOld2.cpp
+        src/memory/mbc/MbcUnlNtOld2.h
         src/memory/CartDetection.h
         src/memory/CartDetection.cpp
         src/ui/menuactions.cpp
@@ -126,6 +126,13 @@ set(SOURCE_FILES
         src/ui/keyactions.h
         src/ui/window.cpp
         src/ui/window.h
+        src/memory/mbc/MbcUnlNtNew.cpp
+        src/memory/mbc/MbcUnlNtNew.h
+        src/memory/GbxParser.cpp
+        src/memory/GbxParser.h
+        src/ui/dialogs/MemorySearcher.h
+        src/ui/dialogs/MemorySearcher.rc
+        src/ui/dialogs/MemorySearcher.cpp
         src/rendering/DirectBollocksContainer.cpp
         src/rendering/DirectBollocksContainer.h
 )

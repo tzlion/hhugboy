@@ -1,6 +1,6 @@
 /*
    hhugboy Game Boy emulator
-   copyright 2013-2016 taizou
+   copyright 2013-2018 taizou
    Based on GEST
    Copyright (C) 2003-2010 TM
    Incorporating code from VisualBoyAdvance
@@ -20,9 +20,30 @@
    along with this program; if not, write to the Free Software Foundation, Inc.,
    51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
-#include "MbcLicHuColl.h"
 
-void MbcLicHuColl::writeMemory(unsigned short address, register byte data) {
+#include "MbcNin1Multi.h"
+
+void MbcNin1Multi::updateMemoryMap() {
+
+    rom_bank = MBClo|(MBChi<<4);
+
+    int bank0addr = (MBChi<<4)<<14;
+
+    gbMemMap[0x0] = &(*gbCartRom)[bank0addr];
+    gbMemMap[0x1] = &(*gbCartRom)[bank0addr+0x1000];
+    gbMemMap[0x2] = &(*gbCartRom)[bank0addr+0x2000];
+    gbMemMap[0x3] = &(*gbCartRom)[bank0addr+0x3000];
+
+    int cadr = rom_bank<<14;
+    cadr &= rom_size_mask[(*gbCartridge)->ROMsize];
+
+    gbMemMap[0x4] = &(*gbCartRom)[cadr];
+    gbMemMap[0x5] = &(*gbCartRom)[cadr+0x1000];
+    gbMemMap[0x6] = &(*gbCartRom)[cadr+0x2000];
+    gbMemMap[0x7] = &(*gbCartRom)[cadr+0x3000];
+}
+
+void MbcNin1Multi::writeMemory(unsigned short address, register byte data) {
     if(address < 0x2000)// Is it a RAM bank enable/disable?
     {
         RAMenable = ( (data&0x0A) == 0x0A ? 1 : 0);
@@ -31,44 +52,15 @@ void MbcLicHuColl::writeMemory(unsigned short address, register byte data) {
 
     if(address < 0x4000) // Is it a ROM bank switch?
     {
-        data &= 0x0F;
-
-        if(data == 0)
-            data = 1;
-
-        rom_bank = data|(MBChi<<4);
-
-        int cadr = rom_bank<<14;
-
-        cadr &= rom_size_mask[(*gbRom)->ROMsize];
-
-        gbMemMap[0x4] = &(*gbCartridge)[cadr];
-        gbMemMap[0x5] = &(*gbCartridge)[cadr+0x1000];
-        gbMemMap[0x6] = &(*gbCartridge)[cadr+0x2000];
-        gbMemMap[0x7] = &(*gbCartridge)[cadr+0x3000];
+        MBClo = (data & 0x0F) ?: 1;
+        updateMemoryMap();
         return;
     }
 
     if(address < 0x6000)
     {
-        if(address == 0x4000 || address == 0x5fff) // game select
-        {
-            MBClo = 0;
-            MBChi = (data&0x03);
-
-            cart_address = (MBChi<<4)<<14;
-
-            gbMemMap[0x0] = &(*gbCartridge)[cart_address];
-            gbMemMap[0x1] = &(*gbCartridge)[cart_address+0x1000];
-            gbMemMap[0x2] = &(*gbCartridge)[cart_address+0x2000];
-            gbMemMap[0x3] = &(*gbCartridge)[cart_address+0x3000];
-
-            gbMemMap[0x4] = &(*gbCartridge)[cart_address+0x4000];
-            gbMemMap[0x5] = &(*gbCartridge)[cart_address+0x5000];
-            gbMemMap[0x6] = &(*gbCartridge)[cart_address+0x6000];
-            gbMemMap[0x7] = &(*gbCartridge)[cart_address+0x7000];
-            return;
-        }
+        MBChi = (data&0x03);
+        updateMemoryMap();
         return;
     }
 

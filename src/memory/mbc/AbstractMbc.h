@@ -63,14 +63,14 @@ public:
     unsigned int cart_address = 0; // this is dodgy just get rid of it eventually kthx
 
     int maxROMbank[9] = { 1, 3, 7, 15, 31, 63, 127, 255, 511 };
-    int maxRAMbank[10] = { 0, 0, 0, 4, 15, 7, 0, 0, 0, 4 };
+    int maxRAMbank[10] = { 0, 0, 0, 3, 15, 7, 0, 0, 0, 4 };
     int rom_size_mask[9] = { 0x00007fff, 0x0000ffff, 0x0001ffff, 0x0003ffff, 0x0007ffff, 0x000fffff, 0x001fffff, 0x003fffff, 0x007fffff };
 
 /*** STUFF THAT SHOULD GO SOMEWHERE ELSE END ***/
 
     AbstractMbc();
 
-    void init(byte** gbMemMap, GBrom** gbRom, byte** gbMemory, byte** gbCartridge, byte** gbCartRam, int* gbRumbleCounter);
+    void init(byte** gbMemMap, Cartridge** gbCartridge, byte** gbMemory, byte** gbCartRom, byte** gbCartRam, int* gbRumbleCounter);
     virtual byte readMemory(register unsigned short address) = 0;
     virtual void writeMemory(unsigned short address, register byte data) = 0;
     virtual void resetVars(bool preserveMulticartState);
@@ -90,8 +90,8 @@ public:
 protected:
     byte** gbMemMap;
     byte** gbMemory;
-    GBrom** gbRom;
-    byte** gbCartridge;
+    Cartridge** gbCartridge;
+    byte** gbCartRom;
     byte** gbCartRam;
     int* gbRumbleCounter;
 

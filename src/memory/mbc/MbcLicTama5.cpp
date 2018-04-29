@@ -267,10 +267,10 @@ void MbcLicTama5::writeMemory(unsigned short address, register byte data) {
                     rom_bank = MBClo|(MBChi<<4);
 
                     int cadr = rom_bank<<14;
-                    gbMemMap[0x4] = &(*gbCartridge)[cadr];
-                    gbMemMap[0x5] = &(*gbCartridge)[cadr+0x1000];
-                    gbMemMap[0x6] = &(*gbCartridge)[cadr+0x2000];
-                    gbMemMap[0x7] = &(*gbCartridge)[cadr+0x3000];
+                    gbMemMap[0x4] = &(*gbCartRom)[cadr];
+                    gbMemMap[0x5] = &(*gbCartRom)[cadr+0x1000];
+                    gbMemMap[0x6] = &(*gbCartRom)[cadr+0x2000];
+                    gbMemMap[0x7] = &(*gbCartRom)[cadr+0x3000];
                 }
                     return;
                 case 1: // rom bank high bit
@@ -282,10 +282,10 @@ void MbcLicTama5::writeMemory(unsigned short address, register byte data) {
                     rom_bank = MBClo|(MBChi<<4);
 
                     int cadr = rom_bank<<14;
-                    gbMemMap[0x4] = &(*gbCartridge)[cadr];
-                    gbMemMap[0x5] = &(*gbCartridge)[cadr+0x1000];
-                    gbMemMap[0x6] = &(*gbCartridge)[cadr+0x2000];
-                    gbMemMap[0x7] = &(*gbCartridge)[cadr+0x3000];
+                    gbMemMap[0x4] = &(*gbCartRom)[cadr];
+                    gbMemMap[0x5] = &(*gbCartRom)[cadr+0x1000];
+                    gbMemMap[0x6] = &(*gbCartRom)[cadr+0x2000];
+                    gbMemMap[0x7] = &(*gbCartRom)[cadr+0x3000];
                 }
                     return;
                 case 4: // RTC controls
