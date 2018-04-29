@@ -162,7 +162,6 @@ BEGIN
                 MENUITEM "Reduce &CPU Usage", IDM_OPTIONCPUUSAGE
                 MENUITEM SEPARATOR
                 MENUITEM "Ch&eats...", IDM_CHEATS
-                MENUITEM SEPARATOR
                 MENUITEM "&Memory Search...", IDM_MEMSEARCH
         END
 	   POPUP "&Video"

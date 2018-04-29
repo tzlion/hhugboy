@@ -83,10 +83,10 @@ void searchForValue(wchar_t* string, wchar_t* fromString, wchar_t* toString, boo
             rowPos++;
             if (rowPos == 16) {
                 sprintf(msg, " %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s",
-                        addressesOnRow[0], addressesOnRow[1], addressesOnRow[2],  addressesOnRow[3],
-                        addressesOnRow[4],  addressesOnRow[5], addressesOnRow[6],  addressesOnRow[7],
-                        addressesOnRow[8], addressesOnRow[9], addressesOnRow[10],  addressesOnRow[11],
-                        addressesOnRow[12],  addressesOnRow[13], addressesOnRow[14],  addressesOnRow[15]
+                        addressesOnRow[0], addressesOnRow[1], addressesOnRow[2], addressesOnRow[3],
+                        addressesOnRow[4], addressesOnRow[5], addressesOnRow[6], addressesOnRow[7],
+                        addressesOnRow[8], addressesOnRow[9], addressesOnRow[10], addressesOnRow[11],
+                        addressesOnRow[12], addressesOnRow[13], addressesOnRow[14], addressesOnRow[15]
                 );
                 addMessage(msg);
                 for(int y=0;y<16;y++) {
@@ -100,10 +100,10 @@ void searchForValue(wchar_t* string, wchar_t* fromString, wchar_t* toString, boo
     }
     if (rowPos > 0) {
         sprintf(msg, " %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s",
-                addressesOnRow[0], addressesOnRow[1], addressesOnRow[2],  addressesOnRow[3],
-                addressesOnRow[4],  addressesOnRow[5], addressesOnRow[6],  addressesOnRow[7],
-                addressesOnRow[8], addressesOnRow[9], addressesOnRow[10],  addressesOnRow[11],
-                addressesOnRow[12],  addressesOnRow[13], addressesOnRow[14],  addressesOnRow[15]
+                addressesOnRow[0], addressesOnRow[1], addressesOnRow[2], addressesOnRow[3],
+                addressesOnRow[4], addressesOnRow[5], addressesOnRow[6], addressesOnRow[7],
+                addressesOnRow[8], addressesOnRow[9], addressesOnRow[10], addressesOnRow[11],
+                addressesOnRow[12], addressesOnRow[13], addressesOnRow[14], addressesOnRow[15]
         );
         addMessage(msg);
     }
