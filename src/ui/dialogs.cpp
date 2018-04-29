@@ -127,9 +127,7 @@ BOOL CALLBACK DebugLogProc(HWND hwndDlg, UINT message, WPARAM wParam, LPARAM lPa
             debugDialog = hwndDlg;
             wchar_t str[100];
             wsprintf(str,L"SECRET DEBUG LOG ACTIVATE");
-
             SendMessage(hwndbox, LB_ADDSTRING, 0, (LPARAM)str );
-
             break;
         case WM_COMMAND:
             switch (LOWORD(wParam))
