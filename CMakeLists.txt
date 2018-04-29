@@ -130,9 +130,9 @@ set(SOURCE_FILES
         src/memory/mbc/MbcUnlNtNew.h
         src/memory/GbxParser.cpp
         src/memory/GbxParser.h
-        src/ui/memsearch/memsearch.h
-        src/ui/memsearch/memsearch.rc
-        src/ui/memsearch/memsearch.cpp
+        src/ui/dialogs/MemorySearcher.h
+        src/ui/dialogs/MemorySearcher.rc
+        src/ui/dialogs/MemorySearcher.cpp
 )
 
 include_directories(

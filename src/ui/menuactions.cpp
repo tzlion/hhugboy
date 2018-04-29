@@ -35,7 +35,7 @@
 #include "../SGB.h"
 #include "../licnames.h"
 #include "window.h"
-#include "memsearch/memsearch.h"
+#include "dialogs/MemorySearcher.h"
 
 int romsize(int number)
 {
@@ -307,7 +307,7 @@ void menuAction(int menuOption)
             break;
 
         case IDM_MEMSEARCH:
-            SpawnMemorySearcher();
+            MemorySearcher::SpawnMemorySearcher();
             break;
 
         case IDM_FILEEXIT:

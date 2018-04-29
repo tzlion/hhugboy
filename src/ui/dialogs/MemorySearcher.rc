@@ -1,7 +1,7 @@
 
 #include <windows.h>
 
-#include "memsearch.h"
+#include "MemorySearcher.h"
 
 ID_MEM_SEARCH DIALOGEX 300, 0, 340, 220
 STYLE DS_MODALFRAME | WS_POPUP | WS_CAPTION | WS_SYSMENU

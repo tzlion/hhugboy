@@ -30,7 +30,7 @@
 ID_ICON ICON MOVEABLE DISCARDABLE "../hhugboy.ico"
 
 #include "dialogs.rc"
-#include "memsearch/memsearch.rc"
+#include "dialogs/MemorySearcher.rc"
 
 ID_MENU MENU 
 BEGIN

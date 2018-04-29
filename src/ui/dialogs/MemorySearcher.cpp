@@ -4,7 +4,7 @@
 
 #include <string>
 #include <cstdio>
-#include "memsearch.h"
+#include "MemorySearcher.h"
 #include "../../debug.h"
 #include "../../GB.h"
 
@@ -13,13 +13,7 @@ using namespace std;
 extern HINSTANCE hinst;
 extern HWND hwnd;
 
-HWND memorySearcherDialog;
-
-int searchCount = 0;
-
-bool resultSet[0xffff];
-
-void addMessage(const wchar_t* message)
+void MemorySearcher::addMessage(const wchar_t* message)
 {
     if (memorySearcherDialog) {
         HWND hwndbox = GetDlgItem(memorySearcherDialog, ID_MEM_SEARCH_LOG);
@@ -28,21 +22,21 @@ void addMessage(const wchar_t* message)
     }
 }
 
-void addMessage(const char* message)
+void MemorySearcher::addMessage(const char* message)
 {
     wchar_t wmessage[1000];
     mbstowcs(wmessage,message,1000);
     addMessage(wmessage);
 }
 
-void resetResultSet()
+void MemorySearcher::resetResultSet()
 {
     for(int x=0; x<=0xffff; x++) {
         resultSet[x] = false;
     }
 }
 
-void searchForValue(wchar_t* string, wchar_t* fromString, wchar_t* toString, bool inLastResultSet)
+void MemorySearcher::searchForValue(wchar_t* string, wchar_t* fromString, wchar_t* toString, bool inLastResultSet)
 {
     int searchVal = wcstol(string, nullptr, 16) & 0xff;
     int searchFrom = wcstol(fromString, nullptr, 16) & 0xffff;
@@ -120,7 +114,7 @@ void searchForValue(wchar_t* string, wchar_t* fromString, wchar_t* toString, boo
 
 }
 
-BOOL CALLBACK MemorySearcherDialogProc(HWND hwndDlg, UINT message, WPARAM wParam, LPARAM lParam)
+BOOL CALLBACK MemorySearcher::MemorySearcherDialogProc(HWND hwndDlg, UINT message, WPARAM wParam, LPARAM lParam)
 {
     switch (message)
     {
@@ -161,8 +155,8 @@ BOOL CALLBACK MemorySearcherDialogProc(HWND hwndDlg, UINT message, WPARAM wParam
     return FALSE;
 }
 
-void SpawnMemorySearcher()
+void MemorySearcher::SpawnMemorySearcher()
 {
-    HWND memorySearcherDialogHandle = CreateDialog(hinst, MAKEINTRESOURCE(ID_MEM_SEARCH), hwnd, (DLGPROC)MemorySearcherDialogProc);
+    HWND memorySearcherDialogHandle = CreateDialog(hinst, MAKEINTRESOURCE(ID_MEM_SEARCH), hwnd, (DLGPROC)MemorySearcher::MemorySearcherDialogProc);
     ShowWindow(memorySearcherDialogHandle, SW_SHOW);
 }
