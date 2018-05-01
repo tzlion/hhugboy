@@ -98,6 +98,8 @@ class DirectDraw: public Renderer {
 		void drawScreenGeneric(TYPE* buffer);
 		void drawScreen16();
 		void drawScreen32();
+        template<typename TYPE>
+        void drawScreenMixGeneric(TYPE* buffer);
 		void drawScreenMix16();
 		void drawScreenMix32();
 
