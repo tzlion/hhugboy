@@ -35,7 +35,7 @@
 #include "palette.h"
 
 #include "filters/filters.h"
-#include "DirectBollocksContainer.h"
+#include "DirectDrawStuff.h"
 
 
 #include <string>
@@ -78,7 +78,7 @@ class DirectDraw: public Renderer {
 
     private:
 
-        DirectBollocksContainer* directBollocksContainer;
+        DirectDrawStuff* directBollocksContainer;
         
 		void *dxBorderBufferRender;
 		void *dxBufferMix;

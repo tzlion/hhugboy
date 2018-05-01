@@ -1,9 +1,9 @@
-#ifndef HHUGBOY_DIRECTBOLLOCKSCONTAINER_H
-#define HHUGBOY_DIRECTBOLLOCKSCONTAINER_H
+#ifndef HHUGBOY_DIRECTDRAWSTUFF_H
+#define HHUGBOY_DIRECTDRAWSTUFF_H
 
 #include <ddraw.h>
 
-class DirectBollocksContainer {
+class DirectDrawStuff {
     public:
         IDirectDrawClipper* ddClip;
         IDirectDraw7* dd;
@@ -13,4 +13,4 @@ class DirectBollocksContainer {
 };
 
 
-#endif //HHUGBOY_DIRECTBOLLOCKSCONTAINER_H
+#endif //HHUGBOY_DIRECTDRAWSTUFF_H

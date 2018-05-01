@@ -51,7 +51,7 @@ int RGB_BIT_MASK = 0;
 
 DirectDraw::DirectDraw(HWND* inHwnd)
 {
-   this->directBollocksContainer = new DirectBollocksContainer();
+   this->directBollocksContainer = new DirectDrawStuff();
    //debug_print("Emu Center HX DirectDraw ON");
    this->borderFilterWidth = this->borderFilterHeight = this->gameboyFilterWidth = this->gameboyFilterHeight = 1;
    gbFilter = new NoFilter();
