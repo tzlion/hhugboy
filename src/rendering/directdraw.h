@@ -99,7 +99,6 @@ class DirectDraw: public Renderer {
 		void drawScreen16();
 		void drawScreen32();
 		void drawScreenMix16();
-		void drawScreenMix16_Aesthetic();
 		void drawScreenMix32();
 
         template<typename TYPE>
