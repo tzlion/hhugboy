@@ -474,40 +474,37 @@ void DirectDraw::drawScreenMixGeneric(TYPE *buffer)
     TYPE mix_temp1 = 0;
     TYPE mix_temp2 = 0;
 
-    int effectiveBitCount = this->bitCount == 16 ? 16 : 32;
-
-    WORD mask = ~RGB_BIT_MASK;
-    if (AESTHETIC_MODE) { //16bit only
-        mask = 0xffff;
+    TYPE mask;
+    if (this->bitCount == 16) {
+        if (AESTHETIC_MODE) { //16bit only
+            mask = 0xffff;
+        } else {
+            mask = ~RGB_BIT_MASK;
+        }
+    } else {
+        mask = 0xffffffff;
     }
 
     if(options->video_mix_frames == MIX_FRAMES_MORE && !(GB->gbc_mode || sgb_mode)) { // Options and modes and stuff ugh
-        if (effectiveBitCount == 32) {
-            for(int y = 0;y < 144*160;y++) {// mix it
-                mix_temp1 = ((*current) + (*old)) >> 1;
-                mix_temp2 = ((*older) + (*oldest)) >> 1;
 
-                *target = ((mix_temp1*3 + mix_temp2) >> 2);
+        for(int y = 0;y < 144*160;y++) {// mix it
 
-                ++target;
-                ++current;
-                ++old;
-                ++older;
-                ++oldest;
-            }
-        } else {
-            for(int y = 0;y < 144*160;y++) {// mix it
-                mix_temp1 = ((*current&mask)>>1) + ((*old&mask)>>1);
-                mix_temp2 = ((*older&mask)>>1) + ((*oldest&mask)>>1);
+            /// Orig 32-bit version for reference was
+            //mix_temp1 = ((*current) + (*old)) >> 1;
+            //mix_temp2 = ((*older) + (*oldest)) >> 1;
+            //target = ((mix_temp1*3 + mix_temp2) >> 2);
+            //++target;
 
-                *target++ = ((((mix_temp1&mask)>>1) + ((mix_temp1&mask)>>1)&mask)>>1) +
-                            ((((mix_temp1&mask)>>1) + ((mix_temp2&mask)>>1)&mask)>>1);
+            mix_temp1 = ((*current&mask)>>1) + ((*old&mask)>>1);
+            mix_temp2 = ((*older&mask)>>1) + ((*oldest&mask)>>1);
 
-                ++current;
-                ++old;
-                ++older;
-                ++oldest;
-            }
+            *target++ = ((((mix_temp1&mask)>>1) + ((mix_temp1&mask)>>1)&mask)>>1) +
+                        ((((mix_temp1&mask)>>1) + ((mix_temp2&mask)>>1)&mask)>>1);
+
+            ++current;
+            ++old;
+            ++older;
+            ++oldest;
         }
 
         void* temp1 = GB->gfx_buffer;
@@ -518,18 +515,17 @@ void DirectDraw::drawScreenMixGeneric(TYPE *buffer)
         GB->gfx_buffer_oldest = temp2;
 
     } else {
-        if (effectiveBitCount == 32) {
-            for(int y = 0;y < 144*160;y++) {// mix it
-                *target++ = ((*current++) + (*old++)) >> 1;
-            }
-        } else {
-            for(int y = 0;y < 144*160;y++){ // mix it
-                *target++ = (((*current++)&mask)>>1)+(((*old++)&mask)>>1);
-            }
+
+        for(int y = 0;y < 144*160;y++){ // mix it
+            // Orig 32-bit version for reference was
+            // *target++ = ((*current++) + (*old++)) >> 1;
+            *target++ = (((*current++)&mask)>>1)+(((*old++)&mask)>>1);
         }
+
         void* temp = GB->gfx_buffer;
         GB->gfx_buffer = GB->gfx_buffer_old;
         GB->gfx_buffer_old = temp;
+
     }
 
     this->drawScreenGeneric((TYPE*)dxBufferMix);
