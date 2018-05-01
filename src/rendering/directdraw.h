@@ -78,7 +78,7 @@ class DirectDraw: public Renderer {
 
     private:
 
-        DirectDrawStuff* directBollocksContainer;
+        DirectDrawStuff* directDrawStuff;
         
 		void *dxBorderBufferRender;
 		void *dxBufferMix;

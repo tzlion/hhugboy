@@ -51,7 +51,7 @@ int RGB_BIT_MASK = 0;
 
 DirectDraw::DirectDraw(HWND* inHwnd)
 {
-   this->directBollocksContainer = new DirectDrawStuff();
+   this->directDrawStuff = new DirectDrawStuff();
    //debug_print("Emu Center HX DirectDraw ON");
    this->borderFilterWidth = this->borderFilterHeight = this->gameboyFilterWidth = this->gameboyFilterHeight = 1;
    gbFilter = new NoFilter();
@@ -80,11 +80,11 @@ DirectDraw::~DirectDraw()
         this->dxBorderBufferRender = NULL; 
     }   
       
-    SafeRelease(directBollocksContainer->bSurface);
-    SafeRelease(directBollocksContainer->borderSurface);
-    SafeRelease(directBollocksContainer->ddSurface);
-    SafeRelease(directBollocksContainer->ddClip);
-    SafeRelease(directBollocksContainer->dd);
+    SafeRelease(directDrawStuff->bSurface);
+    SafeRelease(directDrawStuff->borderSurface);
+    SafeRelease(directDrawStuff->ddSurface);
+    SafeRelease(directDrawStuff->ddClip);
+    SafeRelease(directDrawStuff->dd);
     
     DeleteObject(this->afont);
 }
@@ -133,39 +133,39 @@ bool DirectDraw::init(Palette* palette)
     DDSURFACEDESC2 ddsd;
     //DDSCAPS2 ddscaps;
     
-    ddrval = DirectDrawCreateEx(NULL, (void**)&(directBollocksContainer->dd), IID_IDirectDraw7, NULL);
+    ddrval = DirectDrawCreateEx(NULL, (void**)&(directDrawStuff->dd), IID_IDirectDraw7, NULL);
     if(ddrval!=DD_OK)
     {
         debug_print("DirectDraw Create failed!"); 
         return false;
     }
-    ddrval = directBollocksContainer->dd->SetCooperativeLevel(*hwnd, DDSCL_NORMAL);
+    ddrval = directDrawStuff->dd->SetCooperativeLevel(*hwnd, DDSCL_NORMAL);
     if(ddrval!=DD_OK)
     {
         debug_print("DirectDraw: SetCooperativelevel failed!"); 
         return false;
     }
     
-    ddrval = directBollocksContainer->dd->CreateClipper(0,&(directBollocksContainer->ddClip),NULL);
+    ddrval = directDrawStuff->dd->CreateClipper(0,&(directDrawStuff->ddClip),NULL);
     if(ddrval!=DD_OK)
     {
         debug_print("DirectDraw: CreateClipper failed!"); 
         return false;
     }
-    directBollocksContainer->ddClip->SetHWnd(0,*(this->hwnd));
+    directDrawStuff->ddClip->SetHWnd(0,*(this->hwnd));
     
     ZeroMemory(&ddsd,sizeof(ddsd));
     ddsd.dwSize = sizeof(DDSURFACEDESC2);
     ddsd.dwFlags = DDSD_CAPS;
     ddsd.ddsCaps.dwCaps = DDSCAPS_PRIMARYSURFACE;
-    ddrval = directBollocksContainer->dd->CreateSurface(&ddsd,&(directBollocksContainer->ddSurface),NULL);
+    ddrval = directDrawStuff->dd->CreateSurface(&ddsd,&(directDrawStuff->ddSurface),NULL);
     if(ddrval != DD_OK) 
     {
         debug_print("DirectDraw: Create main surface failed!"); 
         return false;
     }
     
-    directBollocksContainer->ddSurface->SetClipper(directBollocksContainer->ddClip);
+    directDrawStuff->ddSurface->SetClipper(directDrawStuff->ddClip);
 
     bool res = createSurfaces(1,1,1,1);
     if (!res) return false;
@@ -175,13 +175,13 @@ bool DirectDraw::init(Palette* palette)
     ZeroMemory(&clrblt,sizeof(DDBLTFX));
     clrblt.dwSize=sizeof(DDBLTFX);
     clrblt.dwFillColor = RGB(0,0,0);
-    directBollocksContainer->bSurface->Blt(NULL,NULL,NULL,DDBLT_COLORFILL,&clrblt);
-    directBollocksContainer->borderSurface->Blt(NULL,NULL,NULL,DDBLT_COLORFILL,&clrblt);
+    directDrawStuff->bSurface->Blt(NULL,NULL,NULL,DDBLT_COLORFILL,&clrblt);
+    directDrawStuff->borderSurface->Blt(NULL,NULL,NULL,DDBLT_COLORFILL,&clrblt);
     
     ZeroMemory(&ddsd,sizeof(ddsd));
     ddsd.dwSize = sizeof(DDSURFACEDESC2);
     ddsd.dwFlags = DDSD_PIXELFORMAT;
-    directBollocksContainer->bSurface->Lock(NULL,&ddsd,DDLOCK_WAIT|DDLOCK_SURFACEMEMORYPTR,NULL);
+    directDrawStuff->bSurface->Lock(NULL,&ddsd,DDLOCK_WAIT|DDLOCK_SURFACEMEMORYPTR,NULL);
 
     this->bitCount = ddsd.ddpfPixelFormat.dwRGBBitCount;
 
@@ -190,7 +190,7 @@ bool DirectDraw::init(Palette* palette)
     if ( ddsd.ddpfPixelFormat.dwRGBBitCount == 32 )
         showMessage(L"thirtytwo",69,GB);
     
-    directBollocksContainer->bSurface->Unlock(NULL);
+    directDrawStuff->bSurface->Unlock(NULL);
     
     this->palette = palette;
     
@@ -231,7 +231,7 @@ void DirectDraw::applyPaletteShifts()
     
     px.dwSize = sizeof(px);
     
-    directBollocksContainer->bSurface->GetPixelFormat(&px);
+    directDrawStuff->bSurface->GetPixelFormat(&px);
     
     int rs = ffs(px.dwRBitMask);
     int gs = ffs(px.dwGBitMask);
@@ -277,7 +277,7 @@ void DirectDraw::gbTextOut()
     if(this->messageDuration && GB == messageGb) {
         --this->messageDuration;
         HDC aDC;
-        if(directBollocksContainer->bSurface->GetDC(&aDC)==DD_OK) {
+        if(directDrawStuff->bSurface->GetDC(&aDC)==DD_OK) {
             SelectObject(aDC,this->afont);
             SetBkMode(aDC, TRANSPARENT);
             SetTextColor(aDC,RGB(255,0,128));
@@ -294,7 +294,7 @@ void DirectDraw::gbTextOut()
 
             SetTextColor(aDC,RGB(255,255,255));
             TextOut(aDC,2*this->gameboyFilterWidth,2*this->gameboyFilterHeight,this->messageText.c_str(),this->messageText.length());
-            directBollocksContainer->bSurface->ReleaseDC(aDC);
+            directDrawStuff->bSurface->ReleaseDC(aDC);
         }
     }
 
@@ -315,8 +315,8 @@ void DirectDraw::setGameboyFilter(videofiltertype type)
 
 bool DirectDraw::createSurfaces(int gbWidthMulti, int gbHeightMulti, int borderWidthMulti, int borderHeightMulti)
 {
-    SafeRelease(directBollocksContainer->bSurface);
-    SafeRelease(directBollocksContainer->borderSurface);
+    SafeRelease(directDrawStuff->bSurface);
+    SafeRelease(directDrawStuff->borderSurface);
 
     HRESULT ddrval;
     DDSURFACEDESC2 ddsd;
@@ -328,7 +328,7 @@ bool DirectDraw::createSurfaces(int gbWidthMulti, int gbHeightMulti, int borderW
     ddsd.dwWidth = 160 * gbWidthMulti;
     ddsd.dwHeight = 144 * gbHeightMulti;
 
-    ddrval = directBollocksContainer->dd->CreateSurface(&ddsd,&(directBollocksContainer->bSurface),NULL);
+    ddrval = directDrawStuff->dd->CreateSurface(&ddsd,&(directDrawStuff->bSurface),NULL);
     if(ddrval != DD_OK)
     {
         debug_print("DirectDraw: Create gb surface failed!");
@@ -336,7 +336,7 @@ bool DirectDraw::createSurfaces(int gbWidthMulti, int gbHeightMulti, int borderW
     }
     ddsd.dwWidth = 256 * borderWidthMulti;
     ddsd.dwHeight = 224 * borderHeightMulti;
-    ddrval = directBollocksContainer->dd->CreateSurface(&ddsd,&(directBollocksContainer->borderSurface),NULL);
+    ddrval = directDrawStuff->dd->CreateSurface(&ddsd,&(directDrawStuff->borderSurface),NULL);
     if(ddrval != DD_OK)
     {
         debug_print("DirectDraw: Create border surface failed!");
@@ -357,9 +357,9 @@ bool DirectDraw::changeFilters()
     DDSURFACEDESC2 ddsd;
 	ZeroMemory(&ddsd,sizeof(ddsd));
 	ddsd.dwSize = sizeof(DDSURFACEDESC2);
-	directBollocksContainer->bSurface->Lock(NULL,&ddsd,DDLOCK_WAIT|DDLOCK_SURFACEMEMORYPTR,NULL);
+	directDrawStuff->bSurface->Lock(NULL,&ddsd,DDLOCK_WAIT|DDLOCK_SURFACEMEMORYPTR,NULL);
 	
-	directBollocksContainer->bSurface->Unlock(NULL);
+	directDrawStuff->bSurface->Unlock(NULL);
 	
 	int effectiveBitCount = this->bitCount == 16 ? 16 : 32;
 
@@ -596,13 +596,13 @@ void DirectDraw::drawScreenGeneric(TYPE* buffer)
 	
 	ZeroMemory(&ddsd,sizeof(ddsd));
 	ddsd.dwSize = sizeof(DDSURFACEDESC2);
-	directBollocksContainer->bSurface->Lock(NULL,&ddsd,DDLOCK_WRITEONLY|DDLOCK_SURFACEMEMORYPTR,NULL);
+	directDrawStuff->bSurface->Lock(NULL,&ddsd,DDLOCK_WRITEONLY|DDLOCK_SURFACEMEMORYPTR,NULL);
 
     int effectiveBitCount = this->bitCount == 16 ? 16 : 32;
     int lPitch = ddsd.lPitch >>= (effectiveBitCount / 16);
 	this->gameboyFilter((TYPE*)ddsd.lpSurface,buffer,160,144,lPitch);
 	
-	directBollocksContainer->bSurface->Unlock(NULL);
+	directDrawStuff->bSurface->Unlock(NULL);
 	// Options accessed in here
 	if(options->video_visual_rumble && GB->rumble_counter) {
 		--GB->rumble_counter;
@@ -621,9 +621,9 @@ void DirectDraw::drawScreenGeneric(TYPE* buffer)
 		this->targetBltRect.right += screen_real_width;
 	}
 	
-	if(directBollocksContainer->ddSurface->Blt(&(this->targetBltRect),directBollocksContainer->bSurface,NULL,0,NULL) == DDERR_SURFACELOST)	{
-		directBollocksContainer->ddSurface->Restore();
-		directBollocksContainer->bSurface->Restore();
+	if(directDrawStuff->ddSurface->Blt(&(this->targetBltRect),directDrawStuff->bSurface,NULL,0,NULL) == DDERR_SURFACELOST)	{
+		directDrawStuff->ddSurface->Restore();
+		directDrawStuff->bSurface->Restore();
 	}
 	
 	if(multiple_gb && GB == GB2) {
@@ -650,7 +650,7 @@ void DirectDraw::drawBorderGeneric(TYPE* buffer, TYPE* paletteSrc)
 
     ZeroMemory(&ddsd,sizeof(ddsd));
     ddsd.dwSize = sizeof(DDSURFACEDESC2);
-    directBollocksContainer->borderSurface->Lock(NULL,&ddsd,DDLOCK_WRITEONLY|DDLOCK_SURFACEMEMORYPTR,NULL);
+    directDrawStuff->borderSurface->Lock(NULL,&ddsd,DDLOCK_WRITEONLY|DDLOCK_SURFACEMEMORYPTR,NULL);
 
     int temp_w = this->gameboyFilterWidth;
     int temp_h = this->gameboyFilterHeight;
@@ -664,7 +664,7 @@ void DirectDraw::drawBorderGeneric(TYPE* buffer, TYPE* paletteSrc)
     this->gameboyFilterWidth = temp_w;
     this->gameboyFilterHeight = temp_h;
 
-    directBollocksContainer->borderSurface->Unlock(NULL);
+    directDrawStuff->borderSurface->Unlock(NULL);
 
     POINT pt;
     RECT rect;
@@ -674,9 +674,9 @@ void DirectDraw::drawBorderGeneric(TYPE* buffer, TYPE* paletteSrc)
     ClientToScreen(*(this->hwnd),&pt);
     OffsetRect(&rect,pt.x,pt.y);
 
-    if(directBollocksContainer->ddSurface->Blt(&rect,directBollocksContainer->borderSurface,NULL,0,NULL) == DDERR_SURFACELOST){
-        directBollocksContainer->ddSurface->Restore();
-        directBollocksContainer->borderSurface->Restore();
+    if(directDrawStuff->ddSurface->Blt(&rect,directDrawStuff->borderSurface,NULL,0,NULL) == DDERR_SURFACELOST){
+        directDrawStuff->ddSurface->Restore();
+        directDrawStuff->borderSurface->Restore();
     }
 
 }
