@@ -464,17 +464,19 @@ void DirectDraw::borderzFilter(DWORD *target,DWORD *src,int width,int height,int
 template<typename TYPE>
 void DirectDraw::drawScreenMixGeneric(TYPE *buffer)
 {
+    TYPE* current = (TYPE*)GB->gfx_buffer;
+    TYPE* old = (TYPE*)GB->gfx_buffer_old;
+    TYPE* older = (TYPE*)GB->gfx_buffer_older;
+    TYPE* oldest = (TYPE*)GB->gfx_buffer_oldest;
+
+    TYPE* target = (TYPE*)dxBufferMix;
+
+    TYPE mix_temp1 = 0;
+    TYPE mix_temp2 = 0;
+
     int effectiveBitCount = this->bitCount == 16 ? 16 : 32;
+
     if (effectiveBitCount == 32) {
-        DWORD* current = (DWORD*)GB->gfx_buffer;
-        DWORD* old = (DWORD*)GB->gfx_buffer_old;
-        DWORD* older = (DWORD*)GB->gfx_buffer_older;
-        DWORD* oldest = (DWORD*)GB->gfx_buffer_oldest;
-
-        DWORD* target = (DWORD*)dxBufferMix;
-
-        DWORD mix_temp1 = 0;
-        DWORD mix_temp2 = 0;
 
         if(options->video_mix_frames == MIX_FRAMES_MORE && !(GB->gbc_mode || sgb_mode)) { // Options and modes and stuff ugh
             for(int y = 0;y < 144*160;y++) {// mix it
@@ -506,17 +508,7 @@ void DirectDraw::drawScreenMixGeneric(TYPE *buffer)
             GB->gfx_buffer_old = temp;
         }
 
-        this->drawScreenGeneric((DWORD*)dxBufferMix);
     } else {
-        WORD* current = (WORD*)GB->gfx_buffer;
-        WORD* old = (WORD*)GB->gfx_buffer_old;
-        WORD* older = (WORD*)GB->gfx_buffer_older;
-        WORD* oldest = (WORD*)GB->gfx_buffer_oldest;
-
-        WORD* target = (WORD*)dxBufferMix;
-
-        WORD mix_temp1 = 0;
-        WORD mix_temp2 = 0;
 
         WORD mask = ~RGB_BIT_MASK;
         if (AESTHETIC_MODE) {
@@ -552,9 +544,9 @@ void DirectDraw::drawScreenMixGeneric(TYPE *buffer)
             GB->gfx_buffer = GB->gfx_buffer_old;
             GB->gfx_buffer_old = temp;
         }
-
-        this->drawScreenGeneric((WORD*)dxBufferMix);
     }
+
+    this->drawScreenGeneric((TYPE*)dxBufferMix);
 }
 
 template<typename TYPE>
