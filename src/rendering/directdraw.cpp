@@ -186,11 +186,6 @@ bool DirectDraw::init(Palette* palette)
     directDrawStuff->bSurface->Lock(NULL,&ddsd,DDLOCK_WAIT|DDLOCK_SURFACEMEMORYPTR,NULL);
 
     this->bitCount = ddsd.ddpfPixelFormat.dwRGBBitCount;
-
-    if ( ddsd.ddpfPixelFormat.dwRGBBitCount == 16 )
-        showMessage(L"sixteen",69,GB);
-    if ( ddsd.ddpfPixelFormat.dwRGBBitCount == 32 )
-        showMessage(L"thirtytwo",69,GB);
     
     directDrawStuff->bSurface->Unlock(NULL);
     
