@@ -40,7 +40,6 @@ using namespace std;
 #include "GB.h"
 #include "memory/GB_MBC.h"
 #include "directinput.h"
-//#include "directdraw.h"
 #include "config.h"
 
 #include "ui/strings.h"
