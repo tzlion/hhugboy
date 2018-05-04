@@ -65,7 +65,7 @@ typedef struct {
 class linker {
 public:
     static U8 bank0[0x4000];
-    static int initlinker(/*int argc, char* argv[]*/);
+    static int initlinker();
     static int deinitlinker();
     static void gb_sendwrite(U16 addr, U8 val);
     static void gb_sendblockread(U16 addr, U16 length);
