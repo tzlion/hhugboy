@@ -35,8 +35,8 @@
 #include "palette.h"
 
 #include "filters/filters.h"
+#include "DirectDrawStuff.h"
 
-#include <ddraw.h>
 
 #include <string>
 
@@ -77,6 +77,8 @@ class DirectDraw: public Renderer {
         void toggleFiltering(bool on);
 
     private:
+
+        DirectDrawStuff* directDrawStuff;
         
 		void *dxBorderBufferRender;
 		void *dxBufferMix;
@@ -89,8 +91,6 @@ class DirectDraw: public Renderer {
         wstring messageText;
         int messageDuration;
         gb_system* messageGb;
-        
-		IDirectDrawClipper* ddClip;
 		
         int changeRect;
             
@@ -98,30 +98,30 @@ class DirectDraw: public Renderer {
 		void drawScreenGeneric(TYPE* buffer);
 		void drawScreen16();
 		void drawScreen32();
+        template<typename TYPE>
+        void drawScreenMixGeneric(TYPE* buffer);
 		void drawScreenMix16();
 		void drawScreenMix32();
-		
+
+        template<typename TYPE>
+        void drawBorderGeneric(TYPE* buffer, TYPE* paletteSrc);
 		void drawBorder16();
 		void drawBorder32();
 		
 		void gameboyFilter(WORD *target,WORD *src,int width,int height,int pitch);
 		void gameboyFilter(DWORD *target,DWORD *src,int width,int height,int pitch);
+		void borderzFilter(WORD *target,WORD *src,int width,int height,int pitch);
+		void borderzFilter(DWORD *target,DWORD *src,int width,int height,int pitch);
 		        
         void gbTextOut();
-        
-		IDirectDraw7* dd;
-		IDirectDrawSurface7* ddSurface;
-		IDirectDrawSurface7* bSurface;
-		IDirectDrawSurface7* borderSurface;       
-        
-        int borderFilterHeight;
+
+	    bool createSurfaces(int gbWidthMulti, int gbHeightMulti, int borderWidthMulti, int borderHeightMulti);
+
+    int borderFilterHeight;
         int borderFilterWidth;
         int gameboyFilterHeight;
         int gameboyFilterWidth;
-        
-        int lPitch;
-        int borderLPitch;
-        
+
         HFONT afont;
         
         RECT targetBltRect;

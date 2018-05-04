@@ -49,15 +49,17 @@ using namespace std;
 
 int RGB_BIT_MASK = 0;
 
+const bool AESTHETIC_MODE = false;
+
 DirectDraw::DirectDraw(HWND* inHwnd)
 {
+   this->directDrawStuff = new DirectDrawStuff();
    //debug_print("Emu Center HX DirectDraw ON");
    this->borderFilterWidth = this->borderFilterHeight = this->gameboyFilterWidth = this->gameboyFilterHeight = 1;
    gbFilter = new NoFilter();
    borderFilter = new NoFilter();
    this->hwnd = inHwnd;
    //RECT this->targetBltRect;
-   this->lPitch = 160;
    this->changeRect = 0;
 }
 
@@ -80,11 +82,11 @@ DirectDraw::~DirectDraw()
         this->dxBorderBufferRender = NULL; 
     }   
       
-    SafeRelease(this->bSurface);
-    SafeRelease(this->borderSurface);
-    SafeRelease(this->ddSurface);
-    SafeRelease(this->ddClip);
-    SafeRelease(this->dd);
+    SafeRelease(directDrawStuff->bSurface);
+    SafeRelease(directDrawStuff->borderSurface);
+    SafeRelease(directDrawStuff->ddSurface);
+    SafeRelease(directDrawStuff->ddClip);
+    SafeRelease(directDrawStuff->dd);
     
     DeleteObject(this->afont);
 }
@@ -133,79 +135,59 @@ bool DirectDraw::init(Palette* palette)
     DDSURFACEDESC2 ddsd;
     //DDSCAPS2 ddscaps;
     
-    ddrval = DirectDrawCreateEx(NULL, (void**)&(this->dd), IID_IDirectDraw7, NULL); 
+    ddrval = DirectDrawCreateEx(NULL, (void**)&(directDrawStuff->dd), IID_IDirectDraw7, NULL);
     if(ddrval!=DD_OK)
     {
         debug_print("DirectDraw Create failed!"); 
         return false;
     }
-    ddrval = this->dd->SetCooperativeLevel(*hwnd, DDSCL_NORMAL);
+    ddrval = directDrawStuff->dd->SetCooperativeLevel(*hwnd, DDSCL_NORMAL);
     if(ddrval!=DD_OK)
     {
         debug_print("DirectDraw: SetCooperativelevel failed!"); 
         return false;
     }
     
-    ddrval = dd->CreateClipper(0,&(this->ddClip),NULL);
+    ddrval = directDrawStuff->dd->CreateClipper(0,&(directDrawStuff->ddClip),NULL);
     if(ddrval!=DD_OK)
     {
         debug_print("DirectDraw: CreateClipper failed!"); 
         return false;
     }
-    ddClip->SetHWnd(0,*(this->hwnd));
+    directDrawStuff->ddClip->SetHWnd(0,*(this->hwnd));
     
     ZeroMemory(&ddsd,sizeof(ddsd));
     ddsd.dwSize = sizeof(DDSURFACEDESC2);
     ddsd.dwFlags = DDSD_CAPS;
     ddsd.ddsCaps.dwCaps = DDSCAPS_PRIMARYSURFACE;
-    ddrval = this->dd->CreateSurface(&ddsd,&(this->ddSurface),NULL);
+    ddrval = directDrawStuff->dd->CreateSurface(&ddsd,&(directDrawStuff->ddSurface),NULL);
     if(ddrval != DD_OK) 
     {
         debug_print("DirectDraw: Create main surface failed!"); 
         return false;
     }
     
-    this->ddSurface->SetClipper(this->ddClip);
-    
-    ZeroMemory(&ddsd,sizeof(ddsd));
-    ddsd.dwSize = sizeof(DDSURFACEDESC2);
-    ddsd.dwFlags = DDSD_CAPS|DDSD_WIDTH|DDSD_HEIGHT;
-    ddsd.ddsCaps.dwCaps = DDSCAPS_OFFSCREENPLAIN|DDSCAPS_VIDEOMEMORY;//DDSCAPS_SYSTEMMEMORY;
-    ddsd.dwWidth = 160;
-    ddsd.dwHeight = 144;
-    
-    ddrval = this->dd->CreateSurface(&ddsd,&(this->bSurface),NULL);
-    if(ddrval != DD_OK) 
-    {
-        debug_print("DirectDraw: Create gb surface failed!"); 
-        return false;
-    }
-    ddsd.dwWidth = 256;
-    ddsd.dwHeight = 224;   
-    ddrval = this->dd->CreateSurface(&ddsd,&(this->borderSurface),NULL);
-    if(ddrval != DD_OK) 
-    {
-        debug_print("DirectDraw: Create border surface failed!"); 
-        return false;
-    }   
+    directDrawStuff->ddSurface->SetClipper(directDrawStuff->ddClip);
+
+    bool res = createSurfaces(1,1,1,1);
+    if (!res) return false;
     
     // empty the new surface
     DDBLTFX clrblt;
     ZeroMemory(&clrblt,sizeof(DDBLTFX));
     clrblt.dwSize=sizeof(DDBLTFX);
     clrblt.dwFillColor = RGB(0,0,0);
-    this->bSurface->Blt(NULL,NULL,NULL,DDBLT_COLORFILL,&clrblt);
-    this->borderSurface->Blt(NULL,NULL,NULL,DDBLT_COLORFILL,&clrblt);
+    directDrawStuff->bSurface->Blt(NULL,NULL,NULL,DDBLT_COLORFILL,&clrblt);
+    directDrawStuff->borderSurface->Blt(NULL,NULL,NULL,DDBLT_COLORFILL,&clrblt);
     
     ZeroMemory(&ddsd,sizeof(ddsd));
     ddsd.dwSize = sizeof(DDSURFACEDESC2);
     ddsd.dwFlags = DDSD_PIXELFORMAT;
-    this->bSurface->Lock(NULL,&ddsd,DDLOCK_WAIT|DDLOCK_SURFACEMEMORYPTR,NULL);
+    directDrawStuff->bSurface->Lock(NULL,&ddsd,DDLOCK_WAIT|DDLOCK_SURFACEMEMORYPTR,NULL);
+
+    this->bitCount = ddsd.ddpfPixelFormat.dwRGBBitCount;
     
-    this->bitCount = ddsd.ddpfPixelFormat.dwRGBBitCount; 
-    this->lPitch = ddsd.lPitch;
-    
-    this->bSurface->Unlock(NULL);
+    directDrawStuff->bSurface->Unlock(NULL);
     
     this->palette = palette;
     
@@ -220,19 +202,15 @@ bool DirectDraw::init(Palette* palette)
         this->dxBorderBufferRender = new WORD[256*224];
         
         this->drawBorder = &DirectDraw::drawBorder16;
-        gbFilter = new NoFilter();
-        
-        this->lPitch >>= 1;
     } else {
         this->dxBufferMix = new DWORD[140*166];  
         this->dxBorderBufferRender = new DWORD[256*224];
         
         this->drawBorder = &DirectDraw::drawBorder32;
-        gbFilter = new NoFilter();
-        
-        this->lPitch >>= 2;
     }
-    
+
+    gbFilter = new NoFilter();
+
     if(!this->dxBufferMix || !this->dxBorderBufferRender) {
         debug_print(str_table[ERROR_MEMORY]); 
         return false;
@@ -250,7 +228,7 @@ void DirectDraw::applyPaletteShifts()
     
     px.dwSize = sizeof(px);
     
-    this->bSurface->GetPixelFormat(&px);
+    directDrawStuff->bSurface->GetPixelFormat(&px);
     
     int rs = ffs(px.dwRBitMask);
     int gs = ffs(px.dwGBitMask);
@@ -296,7 +274,7 @@ void DirectDraw::gbTextOut()
     if(this->messageDuration && GB == messageGb) {
         --this->messageDuration;
         HDC aDC;
-        if(this->bSurface->GetDC(&aDC)==DD_OK) {
+        if(directDrawStuff->bSurface->GetDC(&aDC)==DD_OK) {
             SelectObject(aDC,this->afont);
             SetBkMode(aDC, TRANSPARENT);
             SetTextColor(aDC,RGB(255,0,128));
@@ -313,7 +291,7 @@ void DirectDraw::gbTextOut()
 
             SetTextColor(aDC,RGB(255,255,255));
             TextOut(aDC,2*this->gameboyFilterWidth,2*this->gameboyFilterHeight,this->messageText.c_str(),this->messageText.length());
-            this->bSurface->ReleaseDC(aDC);
+            directDrawStuff->bSurface->ReleaseDC(aDC);
         }
     }
 
@@ -331,50 +309,57 @@ void DirectDraw::setGameboyFilter(videofiltertype type)
 	this->changeFilters();
 }
 
+
+bool DirectDraw::createSurfaces(int gbWidthMulti, int gbHeightMulti, int borderWidthMulti, int borderHeightMulti)
+{
+    SafeRelease(directDrawStuff->bSurface);
+    SafeRelease(directDrawStuff->borderSurface);
+
+    HRESULT ddrval;
+    DDSURFACEDESC2 ddsd;
+
+    ZeroMemory(&ddsd,sizeof(ddsd));
+    ddsd.dwSize = sizeof(DDSURFACEDESC2);
+    ddsd.dwFlags = DDSD_CAPS|DDSD_WIDTH|DDSD_HEIGHT;
+    ddsd.ddsCaps.dwCaps = DDSCAPS_OFFSCREENPLAIN|DDSCAPS_VIDEOMEMORY;//DDSCAPS_SYSTEMMEMORY;
+    ddsd.dwWidth = 160 * gbWidthMulti;
+    ddsd.dwHeight = 144 * gbHeightMulti;
+
+    ddrval = directDrawStuff->dd->CreateSurface(&ddsd,&(directDrawStuff->bSurface),NULL);
+    if(ddrval != DD_OK)
+    {
+        debug_print("DirectDraw: Create gb surface failed!");
+        return false;
+    }
+    ddsd.dwWidth = 256 * borderWidthMulti;
+    ddsd.dwHeight = 224 * borderHeightMulti;
+    ddrval = directDrawStuff->dd->CreateSurface(&ddsd,&(directDrawStuff->borderSurface),NULL);
+    if(ddrval != DD_OK)
+    {
+        debug_print("DirectDraw: Create border surface failed!");
+        return false;
+    }
+
+    return true;
+}
+
 bool DirectDraw::changeFilters()
 {
 	borderFilterWidth = borderFilterHeight = borderFilter->getFilterDimension(); // width/height the same for now
 	gameboyFilterWidth = gameboyFilterHeight = gbFilter->getFilterDimension(); // width/height the same for now
-	
-	HRESULT ddrval;
-	DDSURFACEDESC2 ddsd;
-	
-	SafeRelease(this->bSurface);
-	SafeRelease(this->borderSurface);
-	
+
+    bool res = createSurfaces(this->gameboyFilterWidth,this->gameboyFilterHeight,this->borderFilterHeight,this->borderFilterWidth);
+    if (!res) return false;
+
+    DDSURFACEDESC2 ddsd;
 	ZeroMemory(&ddsd,sizeof(ddsd));
 	ddsd.dwSize = sizeof(DDSURFACEDESC2);
-	ddsd.dwFlags = DDSD_CAPS|DDSD_WIDTH|DDSD_HEIGHT;
-	ddsd.ddsCaps.dwCaps = DDSCAPS_OFFSCREENPLAIN|DDSCAPS_VIDEOMEMORY;//DDSCAPS_SYSTEMMEMORY;
-	ddsd.dwWidth = 160*this->gameboyFilterWidth;
-	ddsd.dwHeight = 144*this->gameboyFilterHeight;
-
-	ddrval = this->dd->CreateSurface(&ddsd,&(this->bSurface),NULL);
-	if(ddrval != DD_OK) {
-		debug_print("DirectDraw Createsurface failed!"); 
-		return false;
-	}
-
-	ddsd.dwWidth = 256*this->borderFilterWidth;
-	ddsd.dwHeight = 224*this->borderFilterHeight;
-	ddrval = this->dd->CreateSurface(&ddsd,&(this->borderSurface),NULL);
-	if(ddrval != DD_OK)  {
-		debug_print("DirectDraw Createsurface failed!"); 
-		return false;
-	} 
-	   
-	ZeroMemory(&ddsd,sizeof(ddsd));
-	ddsd.dwSize = sizeof(DDSURFACEDESC2);
-	this->bSurface->Lock(NULL,&ddsd,DDLOCK_WAIT|DDLOCK_SURFACEMEMORYPTR,NULL);
-   
-	this->lPitch = ddsd.lPitch;
+	directDrawStuff->bSurface->Lock(NULL,&ddsd,DDLOCK_WAIT|DDLOCK_SURFACEMEMORYPTR,NULL);
 	
-	this->bSurface->Unlock(NULL);
+	directDrawStuff->bSurface->Unlock(NULL);
 	
 	int effectiveBitCount = this->bitCount == 16 ? 16 : 32;
 
-	this->lPitch >>= ( effectiveBitCount / 16 );
-    
    if(GB1->romloaded && sgb_mode)
 		(this->*DirectDraw::drawBorder)();  // totally not sure about this either 
 	
@@ -437,48 +422,8 @@ void DirectDraw::drawScreen32() {
 
 // draw the screen mixing frames
 void DirectDraw::drawScreenMix32()
-{   
-	DWORD* current = (DWORD*)GB->gfx_buffer;
-	DWORD* old = (DWORD*)GB->gfx_buffer_old;
-	DWORD* older = (DWORD*)GB->gfx_buffer_older;
-	DWORD* oldest = (DWORD*)GB->gfx_buffer_oldest;
-	
-	DWORD* target = (DWORD*)dxBufferMix;
-	
-	DWORD mix_temp1 = 0;
-	DWORD mix_temp2 = 0;
-	
-	if(options->video_mix_frames == MIX_FRAMES_MORE && !(GB->gbc_mode || sgb_mode)) { // Options and modes and stuff ugh
-		for(int y = 0;y < 144*160;y++) {// mix it
-			mix_temp1 = ((*current) + (*old)) >> 1;
-			mix_temp2 = ((*older) + (*oldest)) >> 1;
-			
-			*target = ((mix_temp1*3 + mix_temp2) >> 2);
-			
-			++target;
-			++current;
-			++old;
-			++older;
-			++oldest;
-		}
-	
-		void* temp1 = GB->gfx_buffer;
-		void* temp2 = GB->gfx_buffer_older;
-		GB->gfx_buffer = GB->gfx_buffer_oldest;
-		GB->gfx_buffer_older = GB->gfx_buffer_old;
-		GB->gfx_buffer_old = temp1;
-		GB->gfx_buffer_oldest = temp2;
-	} else {
-		for(int y = 0;y < 144*160;y++) {// mix it
-			*target++ = ((*current++) + (*old++)) >> 1;
-		}
-		
-		void* temp = GB->gfx_buffer;
-		GB->gfx_buffer = GB->gfx_buffer_old;
-		GB->gfx_buffer_old = temp;
-	}
-
-    this->drawScreenGeneric((DWORD*)dxBufferMix);
+{
+    this->drawScreenMixGeneric((DWORD*)GB->gfx_buffer);
 }
 
 void DirectDraw::drawScreen16()
@@ -488,49 +433,7 @@ void DirectDraw::drawScreen16()
 
 void DirectDraw::drawScreenMix16()
 {
-	WORD* current = (WORD*)GB->gfx_buffer;
-	WORD* old = (WORD*)GB->gfx_buffer_old;
-	WORD* older = (WORD*)GB->gfx_buffer_older;
-	WORD* oldest = (WORD*)GB->gfx_buffer_oldest;
-	
-	WORD* target = (WORD*)dxBufferMix;
-	
-	WORD mix_temp1 = 0;
-	WORD mix_temp2 = 0;
-	
-	WORD mask = ~RGB_BIT_MASK;
-   
-	if(options->video_mix_frames == MIX_FRAMES_MORE && !(GB->gbc_mode || sgb_mode)) {
-		for(int y = 0;y < 144*160;y++) {// mix it
-			mix_temp1 = ((*current&mask)>>1) + ((*old&mask)>>1);
-			mix_temp2 = ((*older&mask)>>1) + ((*oldest&mask)>>1);
-			
-			*target++ = ((((mix_temp1&mask)>>1) + ((mix_temp1&mask)>>1)&mask)>>1) +
-			((((mix_temp1&mask)>>1) + ((mix_temp2&mask)>>1)&mask)>>1);
-			
-			++current;
-			++old;
-			++older;
-			++oldest;
-		}
-		
-		void* temp1 = GB->gfx_buffer;
-		void* temp2 = GB->gfx_buffer_older;
-		GB->gfx_buffer = GB->gfx_buffer_oldest;
-		GB->gfx_buffer_older = GB->gfx_buffer_old;
-		GB->gfx_buffer_old = temp1;
-		GB->gfx_buffer_oldest = temp2;
-	} else {
-		for(int y = 0;y < 144*160;y++){ // mix it
-			*target++ = (((*current++)&mask)>>1)+(((*old++)&mask)>>1);
-		}
-		
-		void* temp = GB->gfx_buffer;
-		GB->gfx_buffer = GB->gfx_buffer_old;
-		GB->gfx_buffer_old = temp;
-	}
-   
-	this->drawScreenGeneric((WORD*)dxBufferMix);
+    this->drawScreenMixGeneric((WORD*)GB->gfx_buffer);
 }
 
 void DirectDraw::gameboyFilter(WORD *target,WORD *src,int width,int height,int pitch)
@@ -543,6 +446,86 @@ void DirectDraw::gameboyFilter(DWORD *target,DWORD *src,int width,int height,int
     gbFilter->filter32(target,src,width,height,pitch);
 }
 
+void DirectDraw::borderzFilter(WORD *target,WORD *src,int width,int height,int pitch)
+{
+    borderFilter->filter16(target,src,width,height,pitch);
+}
+
+void DirectDraw::borderzFilter(DWORD *target,DWORD *src,int width,int height,int pitch)
+{
+    borderFilter->filter32(target,src,width,height,pitch);
+}
+
+template<typename TYPE>
+void DirectDraw::drawScreenMixGeneric(TYPE *buffer)
+{
+    TYPE* current = (TYPE*)GB->gfx_buffer;
+    TYPE* old = (TYPE*)GB->gfx_buffer_old;
+    TYPE* older = (TYPE*)GB->gfx_buffer_older;
+    TYPE* oldest = (TYPE*)GB->gfx_buffer_oldest;
+
+    TYPE* target = (TYPE*)dxBufferMix;
+
+    TYPE mix_temp1 = 0;
+    TYPE mix_temp2 = 0;
+
+    TYPE mask;
+    if (this->bitCount == 16) {
+        if (AESTHETIC_MODE) { //16bit only
+            mask = 0xffff;
+        } else {
+            mask = ~RGB_BIT_MASK;
+        }
+    } else {
+        mask = 0xffffffff;
+    }
+
+    if(options->video_mix_frames == MIX_FRAMES_MORE && !(GB->gbc_mode || sgb_mode)) { // Options and modes and stuff ugh
+
+        for(int y = 0;y < 144*160;y++) {// mix it
+
+            /// Orig 32-bit version for reference was
+            //mix_temp1 = ((*current) + (*old)) >> 1;
+            //mix_temp2 = ((*older) + (*oldest)) >> 1;
+            //target = ((mix_temp1*3 + mix_temp2) >> 2);
+            //++target;
+
+            mix_temp1 = ((*current&mask)>>1) + ((*old&mask)>>1);
+            mix_temp2 = ((*older&mask)>>1) + ((*oldest&mask)>>1);
+
+            *target++ = ((((mix_temp1&mask)>>1) + ((mix_temp1&mask)>>1)&mask)>>1) +
+                        ((((mix_temp1&mask)>>1) + ((mix_temp2&mask)>>1)&mask)>>1);
+
+            ++current;
+            ++old;
+            ++older;
+            ++oldest;
+        }
+
+        void* temp1 = GB->gfx_buffer;
+        void* temp2 = GB->gfx_buffer_older;
+        GB->gfx_buffer = GB->gfx_buffer_oldest;
+        GB->gfx_buffer_older = GB->gfx_buffer_old;
+        GB->gfx_buffer_old = temp1;
+        GB->gfx_buffer_oldest = temp2;
+
+    } else {
+
+        for(int y = 0;y < 144*160;y++){ // mix it
+            // Orig 32-bit version for reference was
+            // *target++ = ((*current++) + (*old++)) >> 1;
+            *target++ = (((*current++)&mask)>>1)+(((*old++)&mask)>>1);
+        }
+
+        void* temp = GB->gfx_buffer;
+        GB->gfx_buffer = GB->gfx_buffer_old;
+        GB->gfx_buffer_old = temp;
+
+    }
+
+    this->drawScreenGeneric((TYPE*)dxBufferMix);
+}
+
 template<typename TYPE>
 void DirectDraw::drawScreenGeneric(TYPE* buffer)
 {
@@ -550,11 +533,13 @@ void DirectDraw::drawScreenGeneric(TYPE* buffer)
 	
 	ZeroMemory(&ddsd,sizeof(ddsd));
 	ddsd.dwSize = sizeof(DDSURFACEDESC2);
-	bSurface->Lock(NULL,&ddsd,DDLOCK_WRITEONLY|DDLOCK_SURFACEMEMORYPTR,NULL);
+	directDrawStuff->bSurface->Lock(NULL,&ddsd,DDLOCK_WRITEONLY|DDLOCK_SURFACEMEMORYPTR,NULL);
+
+    int effectiveBitCount = this->bitCount == 16 ? 16 : 32;
+    int lPitch = ddsd.lPitch >>= (effectiveBitCount / 16);
+	this->gameboyFilter((TYPE*)ddsd.lpSurface,buffer,160,144,lPitch);
 	
-	this->gameboyFilter((TYPE*)ddsd.lpSurface,buffer,160,144,this->lPitch);
-	
-	this->bSurface->Unlock(NULL);   
+	directDrawStuff->bSurface->Unlock(NULL);
 	// Options accessed in here
 	if(options->video_visual_rumble && GB->rumble_counter) {
 		--GB->rumble_counter;
@@ -573,9 +558,9 @@ void DirectDraw::drawScreenGeneric(TYPE* buffer)
 		this->targetBltRect.right += screen_real_width;
 	}
 	
-	if(this->ddSurface->Blt(&(this->targetBltRect),this->bSurface,NULL,0,NULL) == DDERR_SURFACELOST)	{
-		this->ddSurface->Restore();
-		this->bSurface->Restore();
+	if(directDrawStuff->ddSurface->Blt(&(this->targetBltRect),directDrawStuff->bSurface,NULL,0,NULL) == DDERR_SURFACELOST)	{
+		directDrawStuff->ddSurface->Restore();
+		directDrawStuff->bSurface->Restore();
 	}
 	
 	if(multiple_gb && GB == GB2) {
@@ -588,100 +573,59 @@ void DirectDraw::drawScreenGeneric(TYPE* buffer)
 		this->targetBltRect.right += VISUAL_RUMBLE_STRENGTH;
     }
 }
+template<typename TYPE>
+void DirectDraw::drawBorderGeneric(TYPE* buffer, TYPE* paletteSrc)
+{
+    unsigned short* source = sgb_border_buffer; // sgb_border_buffer == ?
+    TYPE* target = (TYPE*)(this->dxBorderBufferRender);
 
+    for(register int y=0;y<256*224;y++) {
+        *target++ = *(paletteSrc+*source++);
+    }
+
+    DDSURFACEDESC2 ddsd;
+
+    ZeroMemory(&ddsd,sizeof(ddsd));
+    ddsd.dwSize = sizeof(DDSURFACEDESC2);
+    directDrawStuff->borderSurface->Lock(NULL,&ddsd,DDLOCK_WRITEONLY|DDLOCK_SURFACEMEMORYPTR,NULL);
+
+    int temp_w = this->gameboyFilterWidth;
+    int temp_h = this->gameboyFilterHeight;
+    this->gameboyFilterWidth = this->borderFilterWidth;
+    this->gameboyFilterHeight = this->borderFilterHeight;
+
+    int effectiveBitCount = this->bitCount == 16 ? 16 : 32;
+    int lPitch = ddsd.lPitch >>= (effectiveBitCount / 16);
+    this->borderzFilter((TYPE*)ddsd.lpSurface,buffer,256,224,lPitch);
+
+    this->gameboyFilterWidth = temp_w;
+    this->gameboyFilterHeight = temp_h;
+
+    directDrawStuff->borderSurface->Unlock(NULL);
+
+    POINT pt;
+    RECT rect;
+
+    GetClientRect(*(this->hwnd),&rect);
+    pt.x=pt.y=0;
+    ClientToScreen(*(this->hwnd),&pt);
+    OffsetRect(&rect,pt.x,pt.y);
+
+    if(directDrawStuff->ddSurface->Blt(&rect,directDrawStuff->borderSurface,NULL,0,NULL) == DDERR_SURFACELOST){
+        directDrawStuff->ddSurface->Restore();
+        directDrawStuff->borderSurface->Restore();
+    }
+
+}
 
 void DirectDraw::drawBorder32()
 {
-	unsigned short* source = sgb_border_buffer; // sgb_border_buffer == ?
-	DWORD* target = (DWORD*)(this->dxBorderBufferRender);
-	
-	for(register int y=0;y<256*224;y+=8) { 
-		*target++ = *(this->palette->gfxPal32+*source++);
-		*target++ = *(this->palette->gfxPal32+*source++);
-		*target++ = *(this->palette->gfxPal32+*source++);
-		*target++ = *(this->palette->gfxPal32+*source++);
-		*target++ = *(this->palette->gfxPal32+*source++);
-		*target++ = *(this->palette->gfxPal32+*source++);
-		*target++ = *(this->palette->gfxPal32+*source++);
-		*target++ = *(this->palette->gfxPal32+*source++);                                                                                                                                                   
-	} 
-	
-	DDSURFACEDESC2 ddsd;
-	
-	ZeroMemory(&ddsd,sizeof(ddsd));
-	ddsd.dwSize = sizeof(DDSURFACEDESC2);
-	this->borderSurface->Lock(NULL,&ddsd,DDLOCK_WRITEONLY|DDLOCK_SURFACEMEMORYPTR,NULL);
-	this->borderLPitch = ddsd.lPitch>>2;
-	
-	int temp_w = gameboyFilterWidth;
-	int temp_h = gameboyFilterHeight;   
-	this->gameboyFilterWidth = this->borderFilterWidth;
-	this->gameboyFilterHeight = this->borderFilterHeight;   
-	borderFilter->filter32((DWORD*)ddsd.lpSurface,(DWORD*)(this->dxBorderBufferRender),256,224,this->borderLPitch);
-	this->gameboyFilterWidth = temp_w;
-	this->gameboyFilterHeight = temp_h;
-	
-	this->borderSurface->Unlock(NULL);   
-	
-	POINT pt;
-	RECT rect;
-	
-	GetClientRect(*(this->hwnd),&rect);
-	pt.x=pt.y=0;
-	ClientToScreen(*(this->hwnd),&pt);
-	OffsetRect(&rect,pt.x,pt.y);
-	
-	if(this->ddSurface->Blt(&rect,this->borderSurface,NULL,0,NULL) == DDERR_SURFACELOST){
-	    this->ddSurface->Restore();
-		this->borderSurface->Restore();
-	}
+    drawBorderGeneric((DWORD*)(this->dxBorderBufferRender),this->palette->gfxPal32);
 }
 
 void DirectDraw::drawBorder16()
 {
-	WORD* target = (WORD*)(this->dxBorderBufferRender);
-	unsigned short* source = sgb_border_buffer;
-	
-	for(register int y=0;y<256*224;y+=8) { 
-		*target++ = *(this->palette->gfxPal16+*source++);
-		*target++ = *(this->palette->gfxPal16+*source++);
-		*target++ = *(this->palette->gfxPal16+*source++);
-		*target++ = *(this->palette->gfxPal16+*source++);
-		*target++ = *(this->palette->gfxPal16+*source++);
-		*target++ = *(this->palette->gfxPal16+*source++);
-		*target++ = *(this->palette->gfxPal16+*source++);
-		*target++ = *(this->palette->gfxPal16+*source++);                                                                                                                                                   
-	} 
-	
-	DDSURFACEDESC2 ddsd;
-	
-	ZeroMemory(&ddsd,sizeof(ddsd));
-	ddsd.dwSize = sizeof(DDSURFACEDESC2);
-	this->borderSurface->Lock(NULL,&ddsd,DDLOCK_WRITEONLY|DDLOCK_SURFACEMEMORYPTR,NULL);
-	this->borderLPitch = ddsd.lPitch>>1;
-	
-	int temp_w = this->gameboyFilterWidth;
-	int temp_h = this->gameboyFilterHeight;   
-	this->gameboyFilterWidth = this->borderFilterWidth;
-	this->gameboyFilterHeight = this->borderFilterHeight;   
-	borderFilter->filter16((WORD*)ddsd.lpSurface,(WORD*)(this->dxBorderBufferRender),256,224,this->borderLPitch);
-	this->gameboyFilterWidth = temp_w;
-	this->gameboyFilterHeight = temp_h;   
-	
-	this->borderSurface->Unlock(NULL);   
-	
-	POINT pt;
-	RECT rect;
-	
-	GetClientRect(*(this->hwnd),&rect);
-	pt.x=pt.y=0;
-	ClientToScreen(*(this->hwnd),&pt);
-	OffsetRect(&rect,pt.x,pt.y);
-	
-	if(this->ddSurface->Blt(&rect,this->borderSurface,NULL,0,NULL) == DDERR_SURFACELOST){
-		this->ddSurface->Restore();
-		this->borderSurface->Restore();
-	}
+    drawBorderGeneric((WORD*)(this->dxBorderBufferRender),this->palette->gfxPal16);
 }
 
 #ifdef ALLOW_DEBUG

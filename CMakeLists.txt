@@ -133,6 +133,8 @@ set(SOURCE_FILES
         src/ui/dialogs/MemorySearcher.h
         src/ui/dialogs/MemorySearcher.rc
         src/ui/dialogs/MemorySearcher.cpp
+        src/rendering/DirectDrawStuff.cpp
+        src/rendering/DirectDrawStuff.h
         src/linker.cpp
         src/linker.h
 )
