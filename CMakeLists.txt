@@ -137,6 +137,9 @@ set(SOURCE_FILES
         src/rendering/DirectDrawStuff.h
         src/linker.cpp
         src/linker.h
+        src/ui/dialogs/LinkerLog.cpp
+        src/ui/dialogs/LinkerLog.h
+        src/ui/dialogs/LinkerLog.rc
 )
 
 include_directories(

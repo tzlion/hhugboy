@@ -40,7 +40,6 @@ extern wstring gb1_loaded_file_name;
 #include "../directinput.h"
 #include "../GB.h"
 #include "window.h"
-#include "../linker.h"
 
 int change_index = 0; // currently changing which button? 
 
@@ -133,7 +132,6 @@ BOOL CALLBACK DebugLogProc(HWND hwndDlg, UINT message, WPARAM wParam, LPARAM lPa
         case WM_INITDIALOG:
             debugDialog = hwndDlg;
             addDebugLogMessage(L"SECRET DEBUG LOG ACTIVATE");
-            linker::initlinker();
             break;
         case WM_COMMAND:
             switch (LOWORD(wParam))

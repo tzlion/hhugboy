@@ -14,6 +14,7 @@
 
 #include "windows.h"
 #include "debug.h"
+#include "ui/dialogs/LinkerLog.h"
 
 #include <iostream>
 #include <string>
@@ -115,7 +116,7 @@ void gb_sendbankwrite(U16 start, U16 end, U8 val)
     gb_sendbyte(start&0xFF);
     gb_sendbyte(val);
     sprintf(msg,"  Wrote %02X -> %04X\n",val,start);
-    debug_win(msg);
+    LinkerLog::addMessage(msg);
 
 }
 /******************************************************************************/
@@ -126,7 +127,7 @@ void linker::gb_sendwrite(U16 addr, U8 val)
     gb_sendbyte(addr&0xFF);
     gb_sendbyte(val);
     sprintf(msg,"  Wrote %02X -> %04X\n",val,addr);
-    debug_win(msg);
+    LinkerLog::addMessage(msg);
 }
 /******************************************************************************/
 void linker::gb_sendblockread(U16 addr, U16 length)
@@ -137,13 +138,13 @@ void linker::gb_sendblockread(U16 addr, U16 length)
     gb_sendbyte(length>>8);
     gb_sendbyte(length&0xFF);
     sprintf(msg,"  Starting Block Read: %04X (%04X in size)\n",addr, length);
-    //debug_win(msg);
+    //LinkerLog::addMessage(msg);
 }
 /******************************************************************************/
 void gb_readblock(FILE *f, U16 addr, int len)
 {
     sprintf(msg,"READ BLOCK: %04X, %04X\n",addr,len);
-    debug_win(msg);
+    LinkerLog::addMessage(msg);
     linker::gb_sendblockread(addr,len);
     for(int i=0;i<len;i++)
         fputc(linker::gb_readbyte(),f);
@@ -152,7 +153,7 @@ void gb_readblock(FILE *f, U16 addr, int len)
 void linker::gb_readbank(U8* dest, U16 addr, int len)
 {
     sprintf(msg,"READ BLOCK: %04X, %04X\n",addr,len);
-    debug_win(msg);
+    LinkerLog::addMessage(msg);
     linker::gb_sendblockread(addr,len);
     for(int i=0;i<len;i++)
         dest[i] = linker::gb_readbyte();
@@ -161,7 +162,7 @@ void linker::gb_readbank(U8* dest, U16 addr, int len)
 void readBankZero()
 {
     // read the first bank of ROM
-    debug_win("\nDownloading first bank...\n");
+    LinkerLog::addMessage("\nDownloading first bank...\n");
     for(int i=0;i<0x4000;i++) {
         linker::bank0[i] = linker::gb_readbyte();
     }
@@ -180,16 +181,16 @@ int linker::initlinker()
         gfpOut32 = (lpOut32)GetProcAddress(hInpOutDll, "Out32");
         gfpInp32 = (lpInp32)GetProcAddress(hInpOutDll, "Inp32");
     } else {
-        debug_win("Unable to load inpout32.dll\n");
+        LinkerLog::addMessage("Unable to load inpout32.dll\n");
         return -1;
     }
 
-    debug_win(
+    LinkerLog::addMessage(
             "GBlinkDX PC Client v0.2\n"
                     "Original GBlinkdl by Brian Provinciano November 2nd, 2005 http://www.bripro.com\n"
                     "Modified by taizou 2016-2017\n\n");
 
-    debug_win("Setting up ports...\n");
+    LinkerLog::addMessage("Setting up ports...\n");
 
     // set up the parallel port
     outportb(LPTREG_CONTROL, inportb(LPTREG_CONTROL)&(~CTL_MODE_DATAIN));
@@ -197,15 +198,15 @@ int linker::initlinker()
     outportb(LPTREG_DATA, D_CLOCK_HIGH);
 
     // perform communication
-    debug_win("Waiting for Game Boy...\n");
+    LinkerLog::addMessage("Waiting for Game Boy...\n");
     while(gb_sendbyte(0x9A)!=0xB4) {}
     lptdelay(2000);
     if(gb_sendbyte(0x9A)!=0x1D) {
-        debug_win("Bad connection\n");
+        LinkerLog::addMessage("Bad connection\n");
         return 1;
     }
 
-    debug_win("Connected.\n\n");
+    LinkerLog::addMessage("Connected.\n\n");
 
     // read header info (not really needed anymore as I read the first block later)
     hdr.carttype = gb_readbyte();
@@ -224,22 +225,22 @@ int linker::initlinker()
                     "CHECKSUM: %04Xh\n\n",
             hdr.gamename,hdr.carttype,hdr.romsize,hdr.ramsize,hdr.checksum
     );
-    debug_win(msg);
+    LinkerLog::addMessage(msg);
 
-    debug_win("press enter to continue");
+    LinkerLog::addMessage("press enter to continue");
     std::string z;
     //getline(std::cin,z);
 
     if(gb_readbyte() != 0) {// verify we're done
-        debug_win("expected 0x00 from GB, bad connection\n");
+        LinkerLog::addMessage("expected 0x00 from GB, bad connection\n");
         return 1;
     }
     if(gb_readbyte() != 0xFF) {// verify we're done
-        debug_win("expected 0xFF from GB, bad connection\n");
+        LinkerLog::addMessage("expected 0xFF from GB, bad connection\n");
         return 1;
     }
 
-    debug_win("\nReceiving...\n");
+    LinkerLog::addMessage("\nReceiving...\n");
 
 
     readBankZero();
