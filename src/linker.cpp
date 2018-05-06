@@ -1,13 +1,11 @@
+/*
+  SIMPLIFIED GBLINK IMPLEMENTATION
+  Based on: original gblinkdl by Brian Provinciano
+  Modified gblinkdx by taizou
+*/
 
 #include "linker.h"
 
-/******************************************************************************/
-// gblinkdl.cpp
-// Original by Brian Provinciano
-// http://www.bripro.com
-// November 2nd, 2005
-// Modified by taizou 2016-2017
-/******************************************************************************/
 #include "stdio.h"
 #include "string.h"
 #include "stdlib.h"
@@ -20,39 +18,35 @@
 #include <string>
 #include <sstream>
 #include <vector>
-using namespace std;
-/******************************************************************************/
-GBHDR hdr;
-U8 linker::bank0[0x4000];
-char szt[1000];
 
-#ifdef _WIN32
+using namespace std;
+
+U8 linker::bank0[0x4000];
+HINSTANCE hInpOutDll;
+
 typedef void(__stdcall *lpOut32)(short, short);
 typedef short(__stdcall *lpInp32)(short);
 lpOut32 gfpOut32;
 lpInp32 gfpInp32;
-#endif
 
 char msg[420];
 
-/******************************************************************************/
 unsigned char inportb(unsigned short port)
 {
     return gfpInp32(port);
 }
-/******************************************************************************/
+
 void outportb(unsigned short port, unsigned char value)
 {
     gfpOut32(port,value);
 }
 
-/******************************************************************************/
 void lptdelay(int amt)
 {
     for(int i=0;i<amt;i++)
         inportb(LPTREG_DATA);
 }
-/******************************************************************************/
+
 U8 gb_sendbyte(U8 value)
 {
     U8 read = 0;
@@ -72,7 +66,7 @@ U8 gb_sendbyte(U8 value)
     lptdelay(64);
     return read;
 }
-/******************************************************************************/
+
 U8 linker::gb_readbyte()
 {
     U8 read = 0;
@@ -88,38 +82,14 @@ U8 linker::gb_readbyte()
     lptdelay(64);
     return read;
 }
-/******************************************************************************/
-U16 gb_readword()
-{
-    return (linker::gb_readbyte()<<8) | (linker::gb_readbyte());
-}
-/******************************************************************************/
+
 char *gb_readstring(char *out, int len)
 {
     for(int i=0;i<len;i++)
         out[i] = linker::gb_readbyte();
     return out;
 }
-/******************************************************************************/
-// can try to write to an area with the same value in case of bus conflicts
-void gb_sendbankwrite(U16 start, U16 end, U8 val)
-{
-    // This isn't used BUT must have bank0 populated before its run
-    while(start<=end) {
-        if(linker::bank0[start]==val)
-            break;
-        start++;
-    }
-    if(start>end)
-        start = end;
-    gb_sendbyte(start>>8);
-    gb_sendbyte(start&0xFF);
-    gb_sendbyte(val);
-    sprintf(msg,"  Wrote %02X -> %04X\n",val,start);
-    LinkerLog::addMessage(msg);
 
-}
-/******************************************************************************/
 void linker::gb_sendwrite(U16 addr, U8 val)
 {
     gb_sendbyte(0x49);
@@ -129,7 +99,7 @@ void linker::gb_sendwrite(U16 addr, U8 val)
     sprintf(msg,"  Wrote %02X -> %04X\n",val,addr);
     LinkerLog::addMessage(msg);
 }
-/******************************************************************************/
+
 void linker::gb_sendblockread(U16 addr, U16 length)
 {
     gb_sendbyte(0x59);
@@ -140,16 +110,7 @@ void linker::gb_sendblockread(U16 addr, U16 length)
     sprintf(msg,"  Starting Block Read: %04X (%04X in size)\n",addr, length);
     //LinkerLog::addMessage(msg);
 }
-/******************************************************************************/
-void gb_readblock(FILE *f, U16 addr, int len)
-{
-    sprintf(msg,"READ BLOCK: %04X, %04X\n",addr,len);
-    LinkerLog::addMessage(msg);
-    linker::gb_sendblockread(addr,len);
-    for(int i=0;i<len;i++)
-        fputc(linker::gb_readbyte(),f);
-}
-/******************************************************************************/
+
 void linker::gb_readbank(U8* dest, U16 addr, int len)
 {
     sprintf(msg,"READ BLOCK: %04X, %04X\n",addr,len);
@@ -158,7 +119,7 @@ void linker::gb_readbank(U8* dest, U16 addr, int len)
     for(int i=0;i<len;i++)
         dest[i] = linker::gb_readbyte();
 }
-/******************************************************************************/
+
 void readBankZero()
 {
     // read the first bank of ROM
@@ -168,14 +129,8 @@ void readBankZero()
     }
 }
 
-/******************************************************************************/
-
-HINSTANCE hInpOutDll;
-
-/******************************************************************************/
 int linker::initlinker()
 {
-
     hInpOutDll = LoadLibrary("inpout32.dll");
     if (hInpOutDll != NULL) {
         gfpOut32 = (lpOut32)GetProcAddress(hInpOutDll, "Out32");
@@ -185,10 +140,8 @@ int linker::initlinker()
         return -1;
     }
 
-    LinkerLog::addMessage(
-            "GBlinkDX PC Client v0.2\n"
-                    "Original GBlinkdl by Brian Provinciano November 2nd, 2005 http://www.bripro.com\n"
-                    "Modified by taizou 2016-2017\n\n");
+    LinkerLog::addMessage("GBlinkDX client adaptation for hhugboy");
+    LinkerLog::addMessage("Based on original GBlinkdl by Brian Provinciano & GBlinkDX by taizou");
 
     LinkerLog::addMessage("Setting up ports...\n");
 
@@ -208,28 +161,20 @@ int linker::initlinker()
 
     LinkerLog::addMessage("Connected.\n\n");
 
-    // read header info (not really needed anymore as I read the first block later)
-    hdr.carttype = gb_readbyte();
-    hdr.romsize = gb_readbyte();
-    hdr.ramsize = gb_readbyte();
-    hdr.checksum = gb_readword();
+    U8 carttype = gb_readbyte();
+    U8 romsize = gb_readbyte();
+    U8 ramsize = gb_readbyte();
+    U16 checksum = (gb_readbyte()<<8) | (gb_readbyte());
 
-    gb_readstring(hdr.gamename,16);
-    hdr.gamename[16] = '\0';
+    char gamename[17];
+    gb_readstring(gamename,16);
+    gamename[16] = '\0';
 
     sprintf(msg,
-            "GAME:     %s\n"
-                    "CARTTYPE: %02Xh\n"
-                    "ROMSIZE:  %02Xh\n"
-                    "RAMSIZE:  %02Xh\n"
-                    "CHECKSUM: %04Xh\n\n",
-            hdr.gamename,hdr.carttype,hdr.romsize,hdr.ramsize,hdr.checksum
+            "Cartridge header: Title %s / Cart type %02X / ROM size %02X / RAM size %02X / Checksum %04X",
+            gamename,carttype,romsize,ramsize,checksum
     );
     LinkerLog::addMessage(msg);
-
-    LinkerLog::addMessage("press enter to continue");
-    std::string z;
-    //getline(std::cin,z);
 
     if(gb_readbyte() != 0) {// verify we're done
         LinkerLog::addMessage("expected 0x00 from GB, bad connection\n");
@@ -242,10 +187,7 @@ int linker::initlinker()
 
     LinkerLog::addMessage("\nReceiving...\n");
 
-
     readBankZero();
-
-
 
     return 0;
 
@@ -257,4 +199,3 @@ int linker::deinitlinker() {
     outportb(LPTREG_DATA, 0xFF);
     FreeLibrary(hInpOutDll);
 }
-/******************************************************************************/

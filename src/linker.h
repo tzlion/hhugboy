@@ -2,21 +2,9 @@
 #ifndef HHUGBOY_LINKER_H
 #define HHUGBOY_LINKER_H
 
-/*********************************************************************/
-#ifndef _typedefs_h_
-#define _typedefs_h_
-/*********************************************************************/
-
 /* data types */
 typedef unsigned char		U8;
-typedef signed char			S8;
 typedef unsigned short		U16;
-typedef signed short		S16;
-typedef unsigned long		U32;
-typedef signed long			S32;
-#ifndef _WIN32
-typedef unsigned short		BOOL;
-#endif
 
 //data		register(baseaddress + 0)  	0x378  	0x278
 #define LPTREG_DATA					0x378
@@ -50,18 +38,6 @@ enum {
             D_CLOCK_HIGH	= 0x02,
 };
 
-typedef struct {
-    U8 carttype,romsize,ramsize;
-    U16 checksum;
-    char gamename[17];
-
-    int totalbanks;
-} GBHDR;
-
-/******************************************************************************/
-#endif
-/******************************************************************************/
-
 class linker {
 public:
     static U8 bank0[0x4000];
@@ -72,6 +48,5 @@ public:
     static void gb_readbank(U8* dest, U16 addr, int len);
     static U8 gb_readbyte();
 };
-
 
 #endif //HHUGBOY_LINKER_H
