@@ -57,6 +57,7 @@ BOOL CALLBACK LinkerLog::LinkerLogDialogProc(HWND hwndDlg, UINT message, WPARAM 
                     }
                     linker::initlinker();
                     linkerInitialised = true;
+                    break;
                 case IDOK:
                 case IDCANCEL:
                     if (linkerInitialised) {
