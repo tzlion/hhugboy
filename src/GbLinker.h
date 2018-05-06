@@ -38,15 +38,24 @@ enum {
             D_CLOCK_HIGH	= 0x02,
 };
 
-class linker {
-public:
-    static U8 bank0[0x4000];
-    static int initlinker();
-    static int deinitlinker();
-    static void gb_sendwrite(U16 addr, U8 val);
-    static void gb_sendblockread(U16 addr, U16 length);
-    static void gb_readbank(U8* dest, U16 addr, int len);
+class GbLinker {
+private:
+    static unsigned char inportb(unsigned short port);
+    static void outportb(unsigned short port, unsigned char value);
+    static void lptdelay(int amt);
     static U8 gb_readbyte();
+    static U8 gb_sendbyte(U8 value);
+    static void gb_sendblockread(U16 addr, U16 length);
+    static void gb_sendwrite(U16 addr, U8 val);
+    static void readBankZero();
+public:
+    static bool linkerActive;
+    static U8 bank0[0x4000];
+    static int initLinker();
+    static int deinitLinker();
+    static void readBlock(U8 *dest, U16 addr, int len);
+    static U8 readByte(U16 addr);
+    static void writeByte(U16 addr, U8 val);
 };
 
 #endif //HHUGBOY_LINKER_H

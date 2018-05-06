@@ -8,7 +8,7 @@
 #include "LinkerLog.h"
 #include "../../debug.h"
 #include "../../GB.h"
-#include "../../linker.h"
+#include "../../GbLinker.h"
 
 using namespace std;
 
@@ -53,15 +53,15 @@ BOOL CALLBACK LinkerLog::LinkerLogDialogProc(HWND hwndDlg, UINT message, WPARAM 
             {
                 case ID_LINKER_LOG_BTN:
                     if (linkerInitialised) {
-                        linker::deinitlinker();
+                        GbLinker::deinitLinker();
                     }
-                    linker::initlinker();
+                    GbLinker::initLinker();
                     linkerInitialised = true;
                     break;
                 case IDOK:
                 case IDCANCEL:
                     if (linkerInitialised) {
-                        linker::deinitlinker();
+                        GbLinker::deinitLinker();
                     }
                     linkerInitialised = false;
                     EndDialog(hwndDlg, wParam);

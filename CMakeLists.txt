@@ -135,8 +135,8 @@ set(SOURCE_FILES
         src/ui/dialogs/MemorySearcher.cpp
         src/rendering/DirectDrawStuff.cpp
         src/rendering/DirectDrawStuff.h
-        src/linker.cpp
-        src/linker.h
+        src/GbLinker.cpp
+        src/GbLinker.h
         src/ui/dialogs/LinkerLog.cpp
         src/ui/dialogs/LinkerLog.h
         src/ui/dialogs/LinkerLog.rc

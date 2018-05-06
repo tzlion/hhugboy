@@ -4,7 +4,7 @@
   Modified gblinkdx by taizou
 */
 
-#include "linker.h"
+#include "GbLinker.h"
 
 #include "stdio.h"
 #include "string.h"
@@ -21,7 +21,8 @@
 
 using namespace std;
 
-U8 linker::bank0[0x4000];
+U8 GbLinker::bank0[0x4000];
+bool GbLinker::linkerActive = false;
 HINSTANCE hInpOutDll;
 
 typedef void(__stdcall *lpOut32)(short, short);
@@ -31,23 +32,23 @@ lpInp32 gfpInp32;
 
 char msg[420];
 
-unsigned char inportb(unsigned short port)
+unsigned char GbLinker::inportb(unsigned short port)
 {
     return gfpInp32(port);
 }
 
-void outportb(unsigned short port, unsigned char value)
+void GbLinker::outportb(unsigned short port, unsigned char value)
 {
     gfpOut32(port,value);
 }
 
-void lptdelay(int amt)
+void GbLinker::lptdelay(int amt)
 {
     for(int i=0;i<amt;i++)
         inportb(LPTREG_DATA);
 }
 
-U8 gb_sendbyte(U8 value)
+U8 GbLinker::gb_sendbyte(U8 value)
 {
     U8 read = 0;
     for(int i=7;i>=0;i--) {
@@ -67,7 +68,7 @@ U8 gb_sendbyte(U8 value)
     return read;
 }
 
-U8 linker::gb_readbyte()
+U8 GbLinker::gb_readbyte()
 {
     U8 read = 0;
     for(int i=7;i>=0;i--) {
@@ -83,14 +84,7 @@ U8 linker::gb_readbyte()
     return read;
 }
 
-char *gb_readstring(char *out, int len)
-{
-    for(int i=0;i<len;i++)
-        out[i] = linker::gb_readbyte();
-    return out;
-}
-
-void linker::gb_sendwrite(U16 addr, U8 val)
+void GbLinker::gb_sendwrite(U16 addr, U8 val)
 {
     gb_sendbyte(0x49);
     gb_sendbyte(addr>>8);
@@ -100,7 +94,7 @@ void linker::gb_sendwrite(U16 addr, U8 val)
     LinkerLog::addMessage(msg);
 }
 
-void linker::gb_sendblockread(U16 addr, U16 length)
+void GbLinker::gb_sendblockread(U16 addr, U16 length)
 {
     gb_sendbyte(0x59);
     gb_sendbyte(addr>>8);
@@ -111,25 +105,38 @@ void linker::gb_sendblockread(U16 addr, U16 length)
     //LinkerLog::addMessage(msg);
 }
 
-void linker::gb_readbank(U8* dest, U16 addr, int len)
+void GbLinker::readBlock(U8 *dest, U16 addr, int len)
 {
     sprintf(msg,"READ BLOCK: %04X, %04X\n",addr,len);
     LinkerLog::addMessage(msg);
-    linker::gb_sendblockread(addr,len);
+    GbLinker::gb_sendblockread(addr,len);
     for(int i=0;i<len;i++)
-        dest[i] = linker::gb_readbyte();
+        dest[i] = GbLinker::gb_readbyte();
 }
 
-void readBankZero()
+U8 GbLinker::readByte(U16 addr)
+{
+    //sprintf(msg,"READ BYTE: %04X\n",addr);
+    //LinkerLog::addMessage(msg);
+    GbLinker::gb_sendblockread(addr,1);
+    return GbLinker::gb_readbyte();
+}
+
+void GbLinker::writeByte(U16 addr, U8 val)
+{
+    gb_sendwrite(addr, val);
+}
+
+void GbLinker::readBankZero()
 {
     // read the first bank of ROM
     LinkerLog::addMessage("\nDownloading first bank...\n");
     for(int i=0;i<0x4000;i++) {
-        linker::bank0[i] = linker::gb_readbyte();
+        GbLinker::bank0[i] = GbLinker::gb_readbyte();
     }
 }
 
-int linker::initlinker()
+int GbLinker::initLinker()
 {
     hInpOutDll = LoadLibrary("inpout32.dll");
     if (hInpOutDll != NULL) {
@@ -167,7 +174,8 @@ int linker::initlinker()
     U16 checksum = (gb_readbyte()<<8) | (gb_readbyte());
 
     char gamename[17];
-    gb_readstring(gamename,16);
+    for(int i=0;i<16;i++)
+        gamename[i] = GbLinker::gb_readbyte();
     gamename[16] = '\0';
 
     sprintf(msg,
@@ -189,11 +197,14 @@ int linker::initlinker()
 
     readBankZero();
 
+    linkerActive = true;
+
     return 0;
 
 }
 
-int linker::deinitlinker() {
+int GbLinker::deinitLinker() {
+    linkerActive = false;
     outportb(LPTREG_DATA, D_CLOCK_HIGH);
     outportb(LPTREG_CONTROL, inportb(LPTREG_CONTROL)&(~CTL_MODE_DATAIN));
     outportb(LPTREG_DATA, 0xFF);
