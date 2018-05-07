@@ -93,15 +93,19 @@ U8 bank1[0x4000];
 
 byte last4000 = 00;
 
-byte gb_mbc::readmemory_cart(register unsigned short address) {
-
+bool shouldReadThroughLinker(unsigned short address)
+{
     if (!GbLinker::linkerActive) {
-        return mbc->readMemory(address);
+        return false;
     }
-
     if (address < 0x8000 || last4000 < 0x08) {
-        return mbc->readMemory(address);
+        return false;
     }
+    return true;
+}
+
+byte readThroughLinker(unsigned short address)
+{
     // super fights still doesnt work like this.. does that mean bank 0 changes maybe?
     if (address < 0x4000) {
         if (!readBank0) {
@@ -130,36 +134,39 @@ byte gb_mbc::readmemory_cart(register unsigned short address) {
     }
     return datum;
 
-    byte data = mbc->readMemory(address);
-    if (address >= 0x8000) {
-        char fart[420];
-        sprintf(fart, "read %02x from %04x", data, address);
-        debug_win(fart);
+}
+
+bool shouldWriteThroughLinker(unsigned short address, byte data)
+{
+    if (!GbLinker::linkerActive) {
+        return false;
     }
-    return data;
+    readBank1 = false;
+    if (address == 0x4000) {
+        last4000 = data;
+}
+    if (address == 0x4000 /*&& data >= 0x08*/) {
+        return true;
+    }
+    return false;
+}
+
+bool writeThroughLinker(unsigned short address, byte data)
+{
+    GbLinker::writeByte(address,data);
+}
+
+byte gb_mbc::readmemory_cart(register unsigned short address) {
+    if (shouldReadThroughLinker(address)) {
+        return readThroughLinker(address);
+    }
+    return mbc->readMemory(address);
 }
 
 void gb_mbc::writememory_cart(unsigned short address, register byte data) {
-
-    if (!GbLinker::linkerActive) {
-        mbc->writeMemory(address,data);
-        return;
+    if (shouldWriteThroughLinker(address, data)) {
+        writeThroughLinker(address,data);
     }
-
-    readBank1 = false;
-    if (address == 0x4000) last4000 = data;
-    if (address == 0x4000 /*&& data >= 0x08*/)
-        GbLinker::writeByte(address,data);
-    mbc->writeMemory(address,data);
-    // then read the current banks into mem and use them
-    return;
-
-  //  if (!((address == 0x2000 && data == 0x01)||(address == 0x3000 && data == 0x00))) {
-        char fart[420];
-        sprintf(fart, "write %02x to %04x", data, address);
-        debug_win(fart);
-  //  }
-
     mbc->writeMemory(address,data);
 }
 
