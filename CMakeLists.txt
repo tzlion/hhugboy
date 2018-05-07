@@ -135,11 +135,13 @@ set(SOURCE_FILES
         src/ui/dialogs/MemorySearcher.cpp
         src/rendering/DirectDrawStuff.cpp
         src/rendering/DirectDrawStuff.h
-        src/GbLinker.cpp
-        src/GbLinker.h
+        src/memory/linker/GbLinker.cpp
+        src/memory/linker/GbLinker.h
         src/ui/dialogs/LinkerLog.cpp
         src/ui/dialogs/LinkerLog.h
         src/ui/dialogs/LinkerLog.rc
+        src/memory/linker/LinkerWrangler.cpp
+        src/memory/linker/LinkerWrangler.h
 )
 
 include_directories(

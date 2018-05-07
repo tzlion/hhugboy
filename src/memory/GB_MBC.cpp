@@ -57,8 +57,7 @@
 #include "mbc/MbcUnlNtNew.h"
 #include "mbc/MbcUnlNtOld1.h"
 #include "mbc/MbcUnlNtOld2.h"
-#include "../GbLinker.h"
-#include "../ui/dialogs/LinkerLog.h"
+#include "linker/LinkerWrangler.h"
 
 // So maybe this should be "cart" and a lot of whats in rom.cpp now e.g. autodetection should go in here..
 
@@ -86,86 +85,16 @@ void gb_mbc::resetMbcVariables(bool preserveMulticartState = false)
     mbc->resetVars(preserveMulticartState);
 }
 
-bool readBank0 = false;
-U8 bank0[0x4000];
-bool readBank1 = false;
-U8 bank1[0x4000];
-
-byte last4000 = 00;
-
-bool shouldReadThroughLinker(unsigned short address)
-{
-    if (!GbLinker::linkerActive) {
-        return false;
-    }
-    if (address < 0x8000 || last4000 < 0x08) {
-        return false;
-    }
-    return true;
-}
-
-byte readThroughLinker(unsigned short address)
-{
-    // super fights still doesnt work like this.. does that mean bank 0 changes maybe?
-    if (address < 0x4000) {
-        if (!readBank0) {
-            LinkerLog::addMessage("DUMPING BANK 0");
-            GbLinker::readBlock(bank0,0,0x4000);
-            readBank0=true;
-        }
-        return bank0[address];
-    }
-    if (address < 0x8000) {
-        // for PB Dreams this is slower.. you could probably cache the banks for an official game
-        if (!readBank1) {
-            LinkerLog::addMessage("DUMPING BANK 1");
-            GbLinker::readBlock(bank1,0x4000,0x4000);
-            readBank1=true;
-        }
-        return bank1[address-0x4000];
-    }
-    //if (address<0x4000) return linker::bank0[address]; // quicker maybe // tho not sure if working
-    // super fighter 2001 doesnt work this way but ping ball dreams works pretty well
-    byte datum = GbLinker::readByte(address);
-    if (address >= 0x8000) {
-        char fart[420];
-        sprintf(fart, "read %02x from %04x", datum, address);
-        LinkerLog::addMessage(fart);
-    }
-    return datum;
-
-}
-
-bool shouldWriteThroughLinker(unsigned short address, byte data)
-{
-    if (!GbLinker::linkerActive) {
-        return false;
-    }
-    readBank1 = false;
-    if (address == 0x4000) {
-        last4000 = data;
-}
-    if (address == 0x4000 /*&& data >= 0x08*/) {
-        return true;
-    }
-    return false;
-}
-
-bool writeThroughLinker(unsigned short address, byte data)
-{
-    GbLinker::writeByte(address,data);
-}
-
 byte gb_mbc::readmemory_cart(register unsigned short address) {
-    if (shouldReadThroughLinker(address)) {
-        return readThroughLinker(address);
+    if (LinkerWrangler::shouldReadThroughLinker(address)) {
+        return LinkerWrangler::readThroughLinker(address);
     }
     return mbc->readMemory(address);
 }
 
 void gb_mbc::writememory_cart(unsigned short address, register byte data) {
-    if (shouldWriteThroughLinker(address, data)) {
-        writeThroughLinker(address,data);
+    if (LinkerWrangler::shouldWriteThroughLinker(address, data)) {
+        LinkerWrangler::writeThroughLinker(address,data);
     }
     mbc->writeMemory(address,data);
 }

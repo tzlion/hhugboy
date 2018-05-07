@@ -8,7 +8,7 @@
 #include "LinkerLog.h"
 #include "../../debug.h"
 #include "../../GB.h"
-#include "../../GbLinker.h"
+#include "../../memory/linker/GbLinker.h"
 
 using namespace std;
 
