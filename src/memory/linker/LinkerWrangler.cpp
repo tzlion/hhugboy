@@ -71,5 +71,8 @@ bool LinkerWrangler::writeThroughLinker(unsigned short address, byte data)
     if (address == 0x4000) {
         last4000 = data;
     }
+    char fart[420];
+    sprintf(fart, "write %02x to %04x", data, address);
+    LinkerLog::addMessage(fart);
     GbLinker::writeByte(address,data);
 }

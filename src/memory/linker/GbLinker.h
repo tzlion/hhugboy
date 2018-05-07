@@ -50,9 +50,10 @@ private:
     static void readBankZero();
 public:
     static bool linkerActive;
+    static bool linkerInitialising;
     static U8 bank0[0x4000];
-    static int initLinker();
-    static int deinitLinker();
+    static bool initLinker();
+    static void deinitLinker();
     static void readBlock(U8 *dest, U16 addr, int len);
     static U8 readByte(U16 addr);
     static void writeByte(U16 addr, U8 val);
