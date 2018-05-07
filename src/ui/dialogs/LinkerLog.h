@@ -7,7 +7,8 @@
 #define ID_LINKER_LOG 189
 #define ID_LINKER_LOG_LOG 188
 #define ID_LINKER_LOG_BTN 187
-#define ID_LINKER_LOG_CHECKBOX 186
+#define ID_LINKER_LOG_BTN_STOP 186
+#define ID_LINKER_LOG_CHECKBOX 185
 
 class LinkerLog {
 private:

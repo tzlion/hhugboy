@@ -58,12 +58,14 @@ BOOL CALLBACK LinkerLog::LinkerLogDialogProc(HWND hwndDlg, UINT message, WPARAM 
                     GbLinker::initLinker();
                     linkerInitialised = true;
                     break;
-                case IDOK:
-                case IDCANCEL:
+                case ID_LINKER_LOG_BTN_STOP:
                     if (linkerInitialised) {
                         GbLinker::deinitLinker();
+                        linkerInitialised = false;
                     }
-                    linkerInitialised = false;
+                    break;
+                case IDOK:
+                case IDCANCEL:
                     EndDialog(hwndDlg, wParam);
                     linkerLogDialog = NULL;
                     return TRUE;
