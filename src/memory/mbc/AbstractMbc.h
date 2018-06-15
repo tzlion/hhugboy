@@ -55,7 +55,6 @@ public:
 
     int rom_bank;
     int ram_bank;
-    int RAMenable;
 
 /*** SHOULD BE PROTECTED END ***/
 
@@ -95,6 +94,7 @@ protected:
     byte** gbCartRom;
     byte** gbCartRam;
     int* gbRumbleCounter;
+    int RAMenable;
 
     unsigned short MBChi;
     unsigned short MBClo;
