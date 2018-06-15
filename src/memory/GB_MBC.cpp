@@ -63,6 +63,10 @@
 //int RTCIO = 0;
 //int RTC_latched = 0;
 
+byte rambankno =0;
+byte ramd = 0;
+byte rame = 0;
+
 // Eventually GB should contain cart and cart should contain MBC
 gb_mbc::gb_mbc(byte** gbMemMap, byte** gbCartRom, Cartridge** gbCartridge, byte** gbCartRam, int* gbRumbleCounter, byte** gbMemory):
 
@@ -77,18 +81,64 @@ gb_mbc::gb_mbc(byte** gbMemMap, byte** gbCartRom, Cartridge** gbCartridge, byte*
     this->gbMemory = gbMemory;
 
     setMemoryReadWrite(mbcType);
+    rambankno=0;
+    ramd=0;
+    rame=0;
 }
 
 void gb_mbc::resetMbcVariables(bool preserveMulticartState = false)
 {
     mbc->resetVars(preserveMulticartState);
+    rambankno=0;
+    ramd=0;
+    rame=0;
 }
 
 byte gb_mbc::readmemory_cart(register unsigned short address) {
-    return mbc->readMemory(address);
+    byte data = mbc->readMemory(address);
+    if (address >= 0xa000) {
+        if (!mbc->RAMenable) {
+            return 0xff;
+        }
+        if (rambankno == 0x0d) data= ramd;
+        else if (rambankno == 0x0e) data= rame;
+        else if (rambankno >= 0x04) {
+            char msg[69];
+            sprintf(msg,"trying to read undefined ram bank %02x", rambankno);
+            debug_win(msg);
+            debug_print(msg);
+        }
+    }
+    return data;
 }
 
 void gb_mbc::writememory_cart(unsigned short address, register byte data) {
+    if (address == 0x4000 && address <= 0x5fff) {
+        rambankno = data;
+    }
+    if (address >= 0xa000 && !mbc->RAMenable) {
+        return;
+    }
+    if (address >= 0xa000 && rambankno >= 0x08) {
+        if (rambankno == 0x0d) ramd = data;
+        if (rambankno == 0x0e) rame = data;
+        if (rambankno == 0x0f) {
+            if (data == 0x51) {
+                ramd++;
+            } else if (data == 0x12) {
+                rame--;
+            } else {
+                char msg[69];
+                sprintf(msg,"UNKNOWN RAM BANK F WRITE. %02x to %04x", rambankno, data, address);
+                debug_print(msg);
+            }
+        }
+
+        char msg[69];
+        sprintf(msg,"%02x RAM BANK WRITE. %02x to %04x", rambankno, data, address);
+        debug_win(msg);
+        return;
+    }
     mbc->writeMemory(address,data);
 }
 

@@ -55,6 +55,7 @@ public:
 
     int rom_bank;
     int ram_bank;
+    int RAMenable;
 
 /*** SHOULD BE PROTECTED END ***/
 
@@ -97,7 +98,6 @@ protected:
 
     unsigned short MBChi;
     unsigned short MBClo;
-    int RAMenable;
 
     void setRom0Offset(int offset);
     void setRom1Offset(int offset);
