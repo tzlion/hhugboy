@@ -75,13 +75,18 @@ https://github.com/tzlion/hhugboy
            English translation of DBZ Goku Gekitouden. Other games may use this
            too, especially Chinese translations.
 
+ Pokemon Jade/Diamond
+           For the original protected versions of the Telefang translations.
+           Currently only verified working with Jade.
+           (Not necessary for most common dumps which are hacks/reprints)
+
  'Last Bible' multicart
            A type of multicart using menu music taken from 'Megami Tensei
            Gaiden: Last Bible' aka 'Revelations: The Demon Slayer'.
            This notably covers all of Vast Fame's multicarts, in addition to a
            number of more generic carts.
 
- MBC1/5 compatible
+ MBC1/3/5 compatible
            For unknown carts that fake their header value but are actually
            compatible with common mappers.
 
@@ -179,6 +184,8 @@ https://github.com/tzlion/hhugboy
 
  v1.x.x xxth xxxxx 20xx
  * Add memory searcher
+ * Add support for original Pokemon Jade/Diamond
+ * Add selectable MBC3 compatible mode
 
  v1.2.6 11th March 2018
  * Fix MBC5 RAM banking bug observed to affect unlicensed games
