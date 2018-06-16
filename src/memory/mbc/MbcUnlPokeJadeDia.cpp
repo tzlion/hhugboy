@@ -12,81 +12,94 @@
 #include "../../debug.h"
 
 MbcUnlPokeJadeDia::MbcUnlPokeJadeDia() {
-    rambankno = 0;
-    ramd = 0;
-    rame = 0;
+    notRtcRegister = 0;
+    registerDValue = 0;
+    registerEValue = 0;
 }
 
 byte MbcUnlPokeJadeDia::readMemory(unsigned short address) {
-    byte data = MbcNin3::readMemory(address);
     if (address >= 0xa000) {
         if (!RAMenable) {
+            // if RAM is not enabled we got nothing for you here
             return 0xff;
         }
-        if (rambankno == 0x0d) data= ramd;
-        else if (rambankno == 0x0e) data= rame;
-        else if (rambankno >= 0x04) {
-            char msg[69];
-            sprintf(msg,"trying to read undefined ram bank %02x", rambankno);
-            debug_win(msg);
-            debug_print(msg);
+        if (notRtcRegister >= 0x08 && notRtcRegister <= 0x0c && !(*gbCartridge)->RTC) {
+            // attempting to read from one of the actual RTC registers
+            // the cart I have just returns 00 for all, not sure if any version of this mapper exists with RTC populated
+            // but if such a cart exists we can just let it fall through to the real MBC3's implementation for now
+            return 0;
         }
+        // the 3 not-RTC registers
+        if (notRtcRegister == 0x0d) return registerDValue;
+        if (notRtcRegister == 0x0e) return registerEValue;
+        if (notRtcRegister == 0x0f) return 0; // F seems to be write only
     }
-    return data;
+    return MbcNin3::readMemory(address);
 }
 
 void MbcUnlPokeJadeDia::writeMemory(unsigned short address, register byte data) {
-    if (address == 0x4000 && address <= 0x5fff) {
-        rambankno = data;
+    if (address >= 0x4000 && address <= 0x5fff) {
+        // this cart's protection more or less extends MBC3's RTC register functionality
+        // using the unused D, E and F registers for shenanigans
+        notRtcRegister = data;
     }
-    if (address >= 0xa000 && !RAMenable) {
-        return;
-    }
-    if (address >= 0xa000 && rambankno >= 0x08) {
-        if (rambankno == 0x0d) ramd = data;
-        if (rambankno == 0x0e) rame = data;
-        if (rambankno == 0x0f) {
-            // now observed:
-            // 11 - reduces D by 1
-            // 12 - reduces E by 1
-            // 41 - adds E to D
-            // 42 - adds D to E
-            // 51 - increases D by 1
-            // 52 - increases E by 1
-            if (data == 0x51) {
-                ramd++;
-            } else if (data == 0x12) {
-                rame--;
-            } else {
-                char msg[69];
-                sprintf(msg,"UNKNOWN RAM BANK F WRITE. %02x to %04x", rambankno, data, address);
-                debug_print(msg);
-            }
+    if (address >= 0xa000 && address <= 0xbfff) {
+        if (!RAMenable) {
+            // if RAM is NOT enabled and you try to write to that area, don't do anything
+            // (pretty sure this behaviour should also occur on real MBC3 but haven't tested it yet)
+            return;
         }
-
-        char msg[69];
-        sprintf(msg,"%02x RAM BANK WRITE. %02x to %04x", rambankno, data, address);
-        debug_win(msg);
-        return;
+        switch (notRtcRegister) {
+            case 0x0d:
+                registerDValue = data;
+                return;
+            case 0x0e:
+                registerEValue = data;
+                return;
+            case 0x0f:
+                // Certain writes to F can manipulate the value in D and E
+                // this is basically the weak protection scheme of these carts
+                switch (data) {
+                    case 0x11:
+                        registerDValue--;
+                        break;
+                    case 0x12:
+                        registerEValue--;
+                        break;
+                    case 0x41:
+                        registerDValue += registerEValue;
+                        break;
+                    case 0x42:
+                        registerEValue += registerDValue;
+                        break;
+                    case 0x51:
+                        registerDValue++;
+                        break;
+                    case 0x52:
+                        registerEValue--;
+                        break;
+                }
+                return;
+        }
     }
     MbcNin3::writeMemory(address, data);
 }
 
 void MbcUnlPokeJadeDia::resetVars(bool preserveMulticartState) {
-    rambankno = 0;
-    ramd = 0;
-    rame = 0;
+    notRtcRegister = 0;
+    registerDValue = 0;
+    registerEValue = 0;
     AbstractMbc::resetVars(preserveMulticartState);
 }
 
 void MbcUnlPokeJadeDia::readMbcSpecificVarsFromStateFile(FILE *statefile) {
-    fread(&(rambankno), sizeof(byte), 1, statefile);
-    fread(&(ramd), sizeof(byte), 1, statefile);
-    fread(&(rame), sizeof(byte), 1, statefile);
+    fread(&(notRtcRegister), sizeof(byte), 1, statefile);
+    fread(&(registerDValue), sizeof(byte), 1, statefile);
+    fread(&(registerEValue), sizeof(byte), 1, statefile);
 }
 
 void MbcUnlPokeJadeDia::writeMbcSpecificVarsToStateFile(FILE *statefile) {
-    fwrite(&(rambankno), sizeof(byte), 1, statefile);
-    fwrite(&(ramd), sizeof(byte), 1, statefile);
-    fwrite(&(rame), sizeof(byte), 1, statefile);
+    fwrite(&(notRtcRegister), sizeof(byte), 1, statefile);
+    fwrite(&(registerDValue), sizeof(byte), 1, statefile);
+    fwrite(&(registerEValue), sizeof(byte), 1, statefile);
 }

@@ -26,9 +26,9 @@ class MbcUnlPokeJadeDia : public MbcNin3 {
         virtual void writeMbcSpecificVarsToStateFile(FILE *statefile) override;
 
     private:
-        byte rambankno;
-        byte ramd;
-        byte rame;
+        byte notRtcRegister;
+        byte registerDValue;
+        byte registerEValue;
 };
 
 
