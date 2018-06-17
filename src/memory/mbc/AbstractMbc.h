@@ -94,10 +94,10 @@ protected:
     byte** gbCartRom;
     byte** gbCartRam;
     int* gbRumbleCounter;
-    int RAMenable;
 
     unsigned short MBChi;
     unsigned short MBClo;
+    int RAMenable;
 
     void setRom0Offset(int offset);
     void setRom1Offset(int offset);

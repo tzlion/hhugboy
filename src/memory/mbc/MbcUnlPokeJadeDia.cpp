@@ -93,12 +93,14 @@ void MbcUnlPokeJadeDia::resetVars(bool preserveMulticartState) {
 }
 
 void MbcUnlPokeJadeDia::readMbcSpecificVarsFromStateFile(FILE *statefile) {
+    MbcNin3::readMbcSpecificVarsFromStateFile(statefile);
     fread(&(notRtcRegister), sizeof(byte), 1, statefile);
     fread(&(registerDValue), sizeof(byte), 1, statefile);
     fread(&(registerEValue), sizeof(byte), 1, statefile);
 }
 
 void MbcUnlPokeJadeDia::writeMbcSpecificVarsToStateFile(FILE *statefile) {
+    MbcNin3::writeMbcSpecificVarsToStateFile(statefile);
     fwrite(&(notRtcRegister), sizeof(byte), 1, statefile);
     fwrite(&(registerDValue), sizeof(byte), 1, statefile);
     fwrite(&(registerEValue), sizeof(byte), 1, statefile);

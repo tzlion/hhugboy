@@ -135,7 +135,9 @@ set(SOURCE_FILES
         src/ui/dialogs/MemorySearcher.cpp
         src/rendering/DirectDrawStuff.cpp
         src/rendering/DirectDrawStuff.h
-        src/memory/mbc/MbcUnlPokeJadeDia.cpp src/memory/mbc/MbcUnlPokeJadeDia.h)
+        src/memory/mbc/MbcUnlPokeJadeDia.cpp
+        src/memory/mbc/MbcUnlPokeJadeDia.h
+)
 
 include_directories(
         includes
