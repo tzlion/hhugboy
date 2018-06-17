@@ -33,7 +33,7 @@ extern HINSTANCE hinst;
 extern HWND hwnd;
 
 HWND MemorySearcher::memorySearcherDialog;
-bool MemorySearcher::resultSet[0xffff];
+bool MemorySearcher::resultSet[0x10000];
 int MemorySearcher::searchCount = 0;
 
 void MemorySearcher::addMessage(const wchar_t* message)

@@ -33,7 +33,7 @@
 class MemorySearcher {
     private:
         static HWND memorySearcherDialog;
-        static bool resultSet[0xffff];
+        static bool resultSet[0x10000];
         static int searchCount;
         static void resetResultSet();
         static void searchForValue(wchar_t* string, wchar_t* fromString, wchar_t* toString, bool inLastResultSet);
