@@ -58,16 +58,6 @@ public:
 
 /*** SHOULD BE PROTECTED END ***/
 
-/*** THESE SHOULD GO SOMEWHERE ELSE ***/
-
-    unsigned int cart_address = 0; // this is dodgy just get rid of it eventually kthx
-
-    int maxROMbank[9] = { 1, 3, 7, 15, 31, 63, 127, 255, 511 };
-    int maxRAMbank[10] = { 0, 0, 0, 3, 15, 7, 0, 0, 0, 4 };
-    int rom_size_mask[9] = { 0x00007fff, 0x0000ffff, 0x0001ffff, 0x0003ffff, 0x0007ffff, 0x000fffff, 0x001fffff, 0x003fffff, 0x007fffff };
-
-/*** STUFF THAT SHOULD GO SOMEWHERE ELSE END ***/
-
     AbstractMbc();
 
     void init(byte** gbMemMap, Cartridge** gbCartridge, byte** gbMemory, byte** gbCartRom, byte** gbCartRam, int* gbRumbleCounter);
@@ -103,9 +93,17 @@ protected:
     void setRom1Offset(int offset);
     void setRom1Bank(int bankNo);
 
-/*** THESE SHOULD BE IN SUB CLASSES ***/
+/*** THESE SHOULD GO SOMEWHERE ELSE ***/
 
-    byte romBankXor;
+    unsigned int cart_address = 0; // this is dodgy just get rid of it eventually kthx
+
+    int maxROMbank[9] = { 1, 3, 7, 15, 31, 63, 127, 255, 511 };
+    int maxRAMbank[10] = { 0, 0, 0, 3, 15, 7, 0, 0, 0, 4 };
+    int rom_size_mask[9] = { 0x00007fff, 0x0000ffff, 0x0001ffff, 0x0003ffff, 0x0007ffff, 0x000fffff, 0x001fffff, 0x003fffff, 0x007fffff };
+
+/*** STUFF THAT SHOULD GO SOMEWHERE ELSE END ***/
+
+/*** THESE SHOULD BE IN SUB CLASSES ***/
 
     int MBC1memorymodel;
 

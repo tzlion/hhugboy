@@ -37,6 +37,7 @@ private:
     byte sintaxXor02;
     byte sintaxXor03;
     byte sintaxBankNo;
+    byte romBankXor;
 
     byte reordering00[8] = {0,7,2,1,4,3,6,5};
     byte reordering01[8] = {7,6,1,0,3,2,5,4};
