@@ -166,6 +166,9 @@ void init_menu_options()
       case UNL_MBC1SAVE:
       	emuMenu.checkOption(IDM_UNLMBC1COMPAT);
       break;
+      case UNL_MBC3SAVE:
+      	emuMenu.checkOption(IDM_UNLMBC3COMPAT);
+      break;
       case UNL_MBC5SAVE:
       	emuMenu.checkOption(IDM_UNLMBC5COMPAT);
       break;
@@ -174,6 +177,9 @@ void init_menu_options()
       break;
       case UNL_DBZTR:
       	emuMenu.checkOption(IDM_UNLLIEBAO);
+      break;
+      case UNL_POKEJD:
+      	emuMenu.checkOption(IDM_UNLPOKEJD);
       break;
       default:
          emuMenu.checkOption(IDM_UNLAUTO);    
