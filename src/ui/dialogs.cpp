@@ -112,6 +112,13 @@ HWND debugDialog;
 void addDebugLogMessage(const wchar_t* message)
 {
     if (debugDialog) {
+        if (SendDlgItemMessage(debugDialog, ID_DEBUG_LOG_CHECKBOX, BM_GETCHECK, 0, 0)) {
+            FILE* logfile;
+            logfile = fopen("debuglog.txt","a");
+            fputws(message, logfile);
+            fputws(L"\r\n", logfile);
+            fclose(logfile);
+        }
         HWND hwndbox = GetDlgItem(debugDialog, ID_DEBUG_LOG);
         SendMessage(hwndbox, LB_ADDSTRING, 0, (LPARAM)message );
         SendMessage(hwndbox, LB_SETCARETINDEX, SendMessage(hwndbox,LB_GETCOUNT,0,0)-1, true );
@@ -120,14 +127,11 @@ void addDebugLogMessage(const wchar_t* message)
 
 BOOL CALLBACK DebugLogProc(HWND hwndDlg, UINT message, WPARAM wParam, LPARAM lParam)
 {
-    HWND hwndbox = GetDlgItem(hwndDlg, ID_DEBUG_LOG);
     switch (message)
     {
         case WM_INITDIALOG:
             debugDialog = hwndDlg;
-            wchar_t str[100];
-            wsprintf(str,L"SECRET DEBUG LOG ACTIVATE");
-            SendMessage(hwndbox, LB_ADDSTRING, 0, (LPARAM)str );
+            addDebugLogMessage(L"SECRET DEBUG LOG ACTIVATE");
             break;
         case WM_COMMAND:
             switch (LOWORD(wParam))

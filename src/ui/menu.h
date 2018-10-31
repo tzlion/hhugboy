@@ -77,6 +77,7 @@
 
 #define ID_DEBUG_DIALOG 768
 #define ID_DEBUG_LOG 769
+#define ID_DEBUG_LOG_CHECKBOX 770
 
 // Menu group definitions (ie check one of this group and the rest will uncheck)
 
@@ -141,6 +142,7 @@
 #define IDM_FILEEXIT        0x0b
 #define IDM_FOLDERS         0x0c
 #define IDM_CHEATS          0x0d
+#define IDM_MEMSEARCH       0x69
 
 #define IDM_CPURESET        0x0e
 #define IDM_CPUSOFTRESET    0x0f
@@ -281,9 +283,11 @@
 #define IDM_UNLNTOLD1  	    IDM_GROUP_UNL | 0x07
 #define IDM_UNLNTOLD2       IDM_GROUP_UNL | 0x08
 #define IDM_UNLMBC1COMPAT   IDM_GROUP_UNL | 0x09
-#define IDM_UNLMBC5COMPAT   IDM_GROUP_UNL | 0x0A
-#define IDM_UNLNTNEW        IDM_GROUP_UNL | 0x0B
-#define IDM_UNLLIEBAO       IDM_GROUP_UNL | 0x0C
+#define IDM_UNLMBC3COMPAT   IDM_GROUP_UNL | 0x0A
+#define IDM_UNLMBC5COMPAT   IDM_GROUP_UNL | 0x0B
+#define IDM_UNLNTNEW        IDM_GROUP_UNL | 0x0C
+#define IDM_UNLLIEBAO       IDM_GROUP_UNL | 0x0D
+#define IDM_UNLPOKEJD       IDM_GROUP_UNL | 0x0E
 
 #define WIN32_LEAN_AND_MEAN
 #define UNICODE

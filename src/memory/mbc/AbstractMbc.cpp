@@ -50,9 +50,7 @@ AbstractMbc::AbstractMbc():
         RTC_latched(0),
 
         multicartOffset(0),
-        multicartRamOffset(0),
-
-        romBankXor(0)
+        multicartRamOffset(0)
 {
 
 }

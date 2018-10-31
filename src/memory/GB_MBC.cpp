@@ -57,6 +57,7 @@
 #include "mbc/MbcUnlNtNew.h"
 #include "mbc/MbcUnlNtOld1.h"
 #include "mbc/MbcUnlNtOld2.h"
+#include "mbc/MbcUnlPokeJadeDia.h"
 
 // So maybe this should be "cart" and a lot of whats in rom.cpp now e.g. autodetection should go in here..
 
@@ -221,6 +222,9 @@ void gb_mbc::setMemoryReadWrite(MbcType memory_type) {
             break;
         case MEMORY_NTNEW:
             mbc = new MbcUnlNtNew();
+            break;
+        case MEMORY_POKEJD:
+            mbc = new MbcUnlPokeJadeDia();
             break;
         case MEMORY_DEFAULT:
         default:

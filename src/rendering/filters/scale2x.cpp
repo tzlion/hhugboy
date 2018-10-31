@@ -27,7 +27,6 @@
  * - the whole source code of the program is released with the binary.
  */
 #include "scale2x.h"
-#include "../directdraw.h"
 #include "../../config.h"
 
 #define ASM_JUMP_ALIGN ".p2align 4\n"

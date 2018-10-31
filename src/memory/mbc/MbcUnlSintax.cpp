@@ -129,7 +129,8 @@ MbcUnlSintax::MbcUnlSintax() :
         sintaxXor01(0),
         sintaxXor02(0),
         sintaxXor03(0),
-        sintaxBankNo(1) {
+        sintaxBankNo(1),
+        romBankXor(0) {
 
 }
 

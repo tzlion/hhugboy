@@ -130,6 +130,13 @@ set(SOURCE_FILES
         src/memory/mbc/MbcUnlNtNew.h
         src/memory/GbxParser.cpp
         src/memory/GbxParser.h
+        src/ui/dialogs/MemorySearcher.h
+        src/ui/dialogs/MemorySearcher.rc
+        src/ui/dialogs/MemorySearcher.cpp
+        src/rendering/DirectDrawStuff.cpp
+        src/rendering/DirectDrawStuff.h
+        src/memory/mbc/MbcUnlPokeJadeDia.cpp
+        src/memory/mbc/MbcUnlPokeJadeDia.h
 )
 
 include_directories(

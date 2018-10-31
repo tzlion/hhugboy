@@ -35,6 +35,7 @@
 #include "../SGB.h"
 #include "../licnames.h"
 #include "window.h"
+#include "dialogs/MemorySearcher.h"
 
 int romsize(int number)
 {
@@ -304,6 +305,11 @@ void menuAction(int menuOption)
         case IDM_CHEATS:
             DialogBox(hinst, MAKEINTRESOURCE(ID_CHT_DIALOG), hwnd, (DLGPROC)ChtProc);
             break;
+
+        case IDM_MEMSEARCH:
+            MemorySearcher::SpawnMemorySearcher();
+            break;
+
         case IDM_FILEEXIT:
             SendMessage(hwnd, WM_CLOSE, 0, 0L);
             break;
@@ -517,9 +523,17 @@ void menuAction(int menuOption)
             options->unl_compat_mode = UNL_DBZTR;
             emuMenu.checkOption(IDM_UNLLIEBAO);
             break;
+        case IDM_UNLPOKEJD:
+            options->unl_compat_mode = UNL_POKEJD;
+            emuMenu.checkOption(IDM_UNLPOKEJD);
+            break;
         case IDM_UNLMBC1COMPAT:
             options->unl_compat_mode = UNL_MBC1SAVE;
             emuMenu.checkOption(IDM_UNLMBC1COMPAT);
+            break;
+        case IDM_UNLMBC3COMPAT:
+            options->unl_compat_mode = UNL_MBC3SAVE;
+            emuMenu.checkOption(IDM_UNLMBC3COMPAT);
             break;
         case IDM_UNLMBC5COMPAT:
             options->unl_compat_mode = UNL_MBC5SAVE;
