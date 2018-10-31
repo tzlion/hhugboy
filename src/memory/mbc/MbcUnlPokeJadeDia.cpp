@@ -49,6 +49,7 @@ void MbcUnlPokeJadeDia::writeMemory(unsigned short address, register byte data) 
             // (pretty sure this behaviour should also occur on real MBC3 but haven't tested it yet)
             return;
         }
+
         switch (notRtcRegister) {
             case 0x0d:
                 registerDValue = data;

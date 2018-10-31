@@ -1,4 +1,4 @@
-hhugboy v1.2.6+dev
+hhugboy v1.2.7
 a Game Boy/Game Boy Color emulator for Windows
 by taizou (cactusgunman@gmail.com)
 http://hhug.me/
@@ -182,7 +182,7 @@ https://github.com/tzlion/hhugboy
 
 [ RELEASE HISTORY ]- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 
- v1.x.x xxth xxxxx 20xx
+ v1.2.7 31st October 2018 (BOO)
  * Add memory searcher
  * Add support for original Pokemon Jade/Diamond
  * Add selectable MBC3 compatible mode
