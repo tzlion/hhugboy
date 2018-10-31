@@ -186,6 +186,7 @@ https://github.com/tzlion/hhugboy
  * Add memory searcher
  * Add support for original Pokemon Jade/Diamond
  * Add selectable MBC3 compatible mode
+ * Some refactoring of graphics code which should hopefully have no effect
 
  v1.2.6 11th March 2018
  * Fix MBC5 RAM banking bug observed to affect unlicensed games
