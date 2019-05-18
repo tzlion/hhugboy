@@ -1,4 +1,4 @@
-hhugboy v1.2.7
+hhugboy v1.2.7+dev
 a Game Boy/Game Boy Color emulator for Windows
 by taizou (cactusgunman@gmail.com)
 http://hhug.me/
@@ -181,6 +181,9 @@ https://github.com/tzlion/hhugboy
  * Proper MMM01 support
 
 [ RELEASE HISTORY ]- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+
+ vx.x.x xxth xx 20xx
+ * Improve accuracy of Li Cheng mapper emulation
 
  v1.2.7 31st October 2018 (BOO)
  * Add memory searcher
