@@ -16,6 +16,7 @@ void MbcUnlLiCheng::writeMemory(unsigned short address, register byte data) {
         // different carts can be configured differently here, annoyingly
         // e.g. tested zoids ignores writes with 0x80 set and cannon fodder ignores writes with 0x800
         // i have not yet encountered a game that fails if you skip both, but...
+        // oh wait yeah i found a game, it's Yingxiong Tianxia. shite
         if ((address & 0x80) || (address & 0x800)) {
             return;
         }
