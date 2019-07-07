@@ -184,7 +184,7 @@ https://github.com/tzlion/hhugboy
 
  vx.x.x xxth xx 20xx
  * Improve accuracy of Li Cheng mapper emulation (WIP, breaks stuff)
- * Support every Sintax bank reordering mode
+ * Support every Sintax bank reordering mode (WIP, breaks stuff too)
 
  v1.2.7 31st October 2018 (BOO)
  * Add memory searcher
