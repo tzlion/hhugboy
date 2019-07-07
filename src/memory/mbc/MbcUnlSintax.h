@@ -40,22 +40,22 @@ private:
     byte romBankXor;
 
     byte reordering[16][8] = {
-        {6,1,0,3,2,5,4,7},
-        {7,6,1,0,3,2,5,4},
-        {6,1,0,3,2,5,4,7},
-        {1,0,3,2,5,4,7,6},
-        {6,1,0,3,2,5,4,7},
-        {4,5,2,3,0,1,6,7},
-        {6,1,0,3,2,5,4,7},
-        {6,7,4,5,2,3,0,1},
-        {6,1,0,3,2,5,4,7},
-        {3,2,5,4,7,6,1,0},
-        {6,1,0,3,2,5,4,7},
-        {5,4,7,6,1,0,3,2},
-        {6,1,0,3,2,5,4,7},
-        {6,7,0,1,2,3,4,5},
-        {6,1,0,3,2,5,4,7},
-        {0,1,2,3,4,5,6,7}
+        {0,7,2,1,4,3,6,5}, // 0 - Lion King, Golden Sun
+        {7,6,1,0,3,2,5,4}, // 1 - Langrisser
+        {0,7,2,1,4,3,6,5}, // 2 - not seen in games but seems to be same as 0
+        {1,0,3,2,5,4,7,6}, // 3 - not seen in games but tested on cart
+        {0,7,2,1,4,3,6,5}, // 4 - not seen in games but seems to be same as 0
+        {0,1,6,7,4,5,2,3}, // 5 - Maple Story, Pokemon Platinum
+        {0,7,2,1,4,3,6,5}, // 6 - not seen in games but seems to be same as 0
+        {6,7,4,5,2,3,0,1}, // 7 - Bynasty Warriors 5, may have had this slightly wrong before
+        {0,7,2,1,4,3,6,5}, // 8 - not seen in games but seems to be same as 0
+        {3,2,5,4,7,6,1,0}, // 9 - ???
+        {0,7,2,1,4,3,6,5}, // a - not seen in games but seems to be same as 0
+        {5,4,7,6,1,0,3,2}, // b - Shaolin Legend
+        {0,7,2,1,4,3,6,5}, // c - not seen in games but seems to be same as 0
+        {6,7,0,1,2,3,4,5}, // d - Older games
+        {0,7,2,1,4,3,6,5}, // e - not seen in games but seems to be same as 0
+        {0,1,2,3,4,5,6,7}, // f - no reordering
     };
 };
 
