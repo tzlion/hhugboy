@@ -28,34 +28,7 @@ void MbcUnlSintax::writeMemory(unsigned short address, register byte data) {
     {
         sintaxBankNo = data;
 
-        byte* romBankNoReordering;
-
-        switch(sintaxMode & 0x0f) {
-            case 0x0D:
-                romBankNoReordering = reordering0d;
-                break;
-            case 0x09:
-                romBankNoReordering = reordering09;
-                break;
-            case 0x00:
-                romBankNoReordering = reordering00;
-                break;
-            case 0x01:
-                romBankNoReordering = reordering01;
-                break;
-            case 0x05:
-                romBankNoReordering = reordering05;
-                break;
-            case 0x07:
-                romBankNoReordering = reordering07;
-                break;
-            case 0x0B:
-                romBankNoReordering = reordering0b;
-                break;
-            case 0x0F:
-            default:
-                romBankNoReordering = noReordering;
-        }
+        byte* romBankNoReordering = reordering[sintaxMode & 0x0f];
 
         data = switchOrder(data, romBankNoReordering);
 
@@ -69,24 +42,6 @@ void MbcUnlSintax::writeMemory(unsigned short address, register byte data) {
         // and that game writes to a bunch of other 5xxx addresses before battles
 
         sintaxMode = (byte)(0x0F & data);
-
-        switch (sintaxMode) {
-            // Supported modes
-            case 0x00: // Lion King, Golden Sun
-            case 0x01: // Langrisser
-            case 0x05: // Maple Story, Pokemon Platinum
-            case 0x07: // Bynasty Warriors 5
-            case 0x09: // ???
-            case 0x0B: // Shaolin Legend
-            case 0x0D: // Older games
-            case 0x0F: // Default mode, no reordering
-                break;
-            default:
-                char buff[100];
-                sprintf(buff, "Unknown Sintax Mode %X Addr %X - probably won't work!", data, address);
-                debug_print(buff);
-                break;
-        }
 
         writeMemory(0x2000, sintaxBankNo); // fake a bank switch to select the correct bank
 
