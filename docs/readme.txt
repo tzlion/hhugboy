@@ -182,9 +182,6 @@ https://github.com/tzlion/hhugboy
 
 [ RELEASE HISTORY ]- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 
- vx.x.x xxth xx 20xx
- * Improve accuracy of Li Cheng mapper emulation (WIP, breaks stuff)
-
  v1.2.7 31st October 2018 (BOO)
  * Add memory searcher
  * Add support for original Pokemon Jade/Diamond
