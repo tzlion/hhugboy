@@ -30,18 +30,25 @@ void MbcUnlBbd::writeMemory(unsigned short address, register byte data) {
 
         bankSwapMode = (byte)(data & 0x07);
 
+        char buff[100];
+        sprintf(buff,"BBD bank reorder mode: %X", data);
+        debug_win(buff);
+
         if ( !isBankSwapModeSupported() ) { // 00 = normal
-            char buff[1000];
-            sprintf(buff,"Bankswap mode unsupported - %02x",bankSwapMode);
+            sprintf(buff,"Bank reorder mode unsupported - %02x",bankSwapMode);
             debug_print(buff);
         }
 
     } else if ( ( address & 0xF0FF ) == 0x2001 ) {
 
         bitSwapMode = (byte)(data & 0x07);
+
+        char buff[100];
+        sprintf(buff,"BBD bit scramble mode: %X", data);
+        debug_win(buff);
+
         if ( !isDataSwapModeSupported() ) { // 00 = normal
-            char buff[1000];
-            sprintf(buff,"Bitswap mode unsupported - %02x",bitSwapMode);
+            sprintf(buff,"Bit scramble mode unsupported - %02x",bitSwapMode);
             debug_print(buff);
         }
 

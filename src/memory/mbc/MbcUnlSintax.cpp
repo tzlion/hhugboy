@@ -70,6 +70,10 @@ void MbcUnlSintax::writeMemory(unsigned short address, register byte data) {
 
         sintaxMode = (byte)(0x0F & data);
 
+        char buff[100];
+        sprintf(buff,"Sintax bank reorder mode: %X", data);
+        debug_win(buff);
+
         switch (sintaxMode) {
             // Supported modes
             case 0x00: // Lion King, Golden Sun
@@ -82,8 +86,7 @@ void MbcUnlSintax::writeMemory(unsigned short address, register byte data) {
             case 0x0F: // Default mode, no reordering
                 break;
             default:
-                char buff[100];
-                sprintf(buff, "Unknown Sintax Mode %X Addr %X - probably won't work!", data, address);
+                sprintf(buff, "Bank reorder mode unsupported - %X", data);
                 debug_print(buff);
                 break;
         }
@@ -96,19 +99,29 @@ void MbcUnlSintax::writeMemory(unsigned short address, register byte data) {
 
     if (address >= 0x7000 && address < 0x8000) {
 
+        char buff[100];
+
         int xorNo = (address & 0x00F0) >> 4;
         switch (xorNo) {
             case 2:
                 sintaxXor00 = data;
+                sprintf(buff, "Sintax XOR 0: %X", data);
+                debug_win(buff);
                 break;
             case 3:
                 sintaxXor01 = data;
+                sprintf(buff, "Sintax XOR 1: %X", data);
+                debug_win(buff);
                 break;
             case 4:
                 sintaxXor02 = data;
+                sprintf(buff, "Sintax XOR 2: %X", data);
+                debug_win(buff);
                 break;
             case 5:
                 sintaxXor03 = data;
+                sprintf(buff, "Sintax XOR 3: %X", data);
+                debug_win(buff);
                 break;
         }
 
