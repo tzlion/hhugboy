@@ -182,6 +182,10 @@ https://github.com/tzlion/hhugboy
 
 [ RELEASE HISTORY ]- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 
+ vx.x.x xxst xxxxx 20xx
+ * Add debug logging for Sintax & BBD protection initialisation modes
+   (to work with Sintaxinator in hhugtools)
+
  v1.2.7 31st October 2018 (BOO)
  * Add memory searcher
  * Add support for original Pokemon Jade/Diamond
