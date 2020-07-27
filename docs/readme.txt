@@ -1,4 +1,4 @@
-hhugboy v1.2.7+dev
+hhugboy v1.2.8
 a Game Boy/Game Boy Color emulator for Windows
 by taizou (cactusgunman@gmail.com)
 http://hhug.me/
@@ -182,7 +182,7 @@ https://github.com/tzlion/hhugboy
 
 [ RELEASE HISTORY ]- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 
- vx.x.x xxst xxxxx 20xx
+ v1.2.8 27th July 2020
  * Add debug logging for Sintax & BBD protection initialisation modes
    (to work with Sintaxinator in hhugtools)
 
