@@ -133,6 +133,7 @@ enum unlCompatMode
 	UNL_DBZTR,
 	UNL_NTNEW,
 	UNL_POKEJD,
+	UNL_MAVF,
 	UNL_RM8OLD,
 	UNL_SAC8IN1
 };

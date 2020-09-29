@@ -137,6 +137,8 @@ set(SOURCE_FILES
         src/rendering/DirectDrawStuff.h
         src/memory/mbc/MbcUnlPokeJadeDia.cpp
         src/memory/mbc/MbcUnlPokeJadeDia.h
+        src/memory/mbc/MbcUnlMaVf.cpp
+        src/memory/mbc/MbcUnlMaVf.h
 )
 
 include_directories(
