@@ -14,6 +14,9 @@
 
 // "ma" "GB Full Colour Chinese" carts with vast fame games - mainland china releases
 // DSHGGB-81 PCB observed so far for Harvest Moon 6..
+// Also runs Digimon Pocket (which cart was this even from? do i have it?) aka Zelda Shi kong Zhi Zhang
+// ok so digi pocket had a "game gb color" logo but same pcb
+// digimon sapphire works too - this is an english publication by ngca
 // No consistent logos
 // * HM6 has "digi" logo swap
 // * LOTR has "TD-SOFT" logo swap
