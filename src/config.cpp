@@ -394,11 +394,19 @@ void read_comment_line(ifstream& in)
     getline(in, commentline); // comment line
 }
 
-void getlinew(ifstream& in,wstring& dest){
-    string tmpstr;
-    getline(in,tmpstr);
-    dest = (wchar_t*)tmpstr.c_str();
-    dest.resize(tmpstr.size()/2); // sometimes dest would end up 2 chars bigger than it should be and idfk why
+void getlinew(ifstream& file, wstring& stringWide) {
+    string stringUTF8;
+    getline(file, stringUTF8);
+    auto sizeNeeded = MultiByteToWideChar(CP_UTF8, 0, &stringUTF8[0], stringUTF8.size(), NULL, 0);
+    stringWide.resize(sizeNeeded);
+    MultiByteToWideChar                  (CP_UTF8, 0, &stringUTF8[0], stringUTF8.size(), &stringWide[0], sizeNeeded);
+}
+
+void putlinew(ostream& file, const wstring& stringWide) {
+    auto sizeNeeded = WideCharToMultiByte(CP_UTF8, 0, &stringWide[0], stringWide.size(), NULL, 0, NULL, NULL);
+    string stringUTF8(sizeNeeded, 0);
+    WideCharToMultiByte                  (CP_UTF8, 0, &stringWide[0], stringWide.size(), &stringUTF8[0], sizeNeeded, NULL, NULL);
+    file.write(stringUTF8.c_str(), stringUTF8.size());
 }
 
 ifstream& operator>>(ifstream& in, program_configuration& config)
@@ -570,23 +578,23 @@ ifstream& operator>>(ifstream& in, program_configuration& config)
 ostream& operator<<(ostream& out, const program_configuration& config)
 {
     out << "#ROM Directory:\n";
-    //out << config.rom_directory << "\n\n";
-    out.write ((char*)config.rom_directory.c_str(), config.rom_directory.size()*2);
+					    
+    putlinew(out, config.rom_directory);
     out << "\n\n";
 
     out << "#Save Directory:\n";
-    //out << config.save_directory << "\n\n";
-    out.write ((char*)config.save_directory.c_str(), config.save_directory.size()*2);
+					     
+    putlinew(out, config.save_directory);
     out << "\n\n";
 
     out << "#Save State Directory:\n";
-    //out << config.state_directory << "\n\n";
-    out.write ((char*)config.state_directory.c_str(), config.state_directory.size()*2);
+					      
+    putlinew(out, config.state_directory);
     out << "\n\n";
 
     out << "#Recent ROMs:\n";
     for(int x=0;x<10;x++) {
-        out.write ((char*)config.recent_rom_names[x].c_str(), config.recent_rom_names[x].size()*2);
+	putlinew(out, config.recent_rom_names[x]);
         out << "\n";
     }
     out << "\n";
@@ -754,7 +762,7 @@ bool read_config_file()
 
    options->rom_directory = options->program_directory;
 
-   ifstream configfile("hhugboy.cfg", ifstream::in);
+   ifstream configfile("hhugboy.cfg", ifstream::in | ifstream::binary);
    if(configfile.fail())
    {
        cout << "Config file load failed, using defaults.";

@@ -39,7 +39,8 @@ void init_menu_options();
 
 using namespace std;
 
-void getlinew(ifstream&, string);
+void getlinew(ifstream&, wstring&);
+void putlinew(ostream&, const wstring&);
 
 class program_configuration
 {
