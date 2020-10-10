@@ -49,8 +49,6 @@ using namespace std;
 
 int RGB_BIT_MASK = 0;
 
-const bool AESTHETIC_MODE = false;
-
 DirectDraw::DirectDraw(HWND* inHwnd)
 {
    this->directDrawStuff = new DirectDrawStuff();
@@ -243,6 +241,7 @@ void DirectDraw::applyPaletteShifts()
         gs++;
         RGB_BIT_MASK = 0x821;
     } else if(this->bitCount == 32 || this->bitCount == 24) {// 32-bit or 24-bit
+        RGB_BIT_MASK = 0x010101;
         rs += 3;
         gs += 3;
         bs += 3;
@@ -466,42 +465,33 @@ void DirectDraw::drawScreenMixGeneric(TYPE *buffer)
 
     TYPE* target = (TYPE*)dxBufferMix;
 
-    TYPE mix_temp1 = 0;
-    TYPE mix_temp2 = 0;
-
-    TYPE mask;
-    if (this->bitCount == 16) {
-        if (AESTHETIC_MODE) { //16bit only
-            mask = 0xffff;
-        } else {
-            mask = ~RGB_BIT_MASK;
-        }
-    } else {
-        mask = 0xffffffff;
-    }
-
-    if(options->video_mix_frames == MIX_FRAMES_MORE && !(GB->gbc_mode || sgb_mode)) { // Options and modes and stuff ugh
-
-        for(int y = 0;y < 144*160;y++) {// mix it
-
-            /// Orig 32-bit version for reference was
-            //mix_temp1 = ((*current) + (*old)) >> 1;
-            //mix_temp2 = ((*older) + (*oldest)) >> 1;
-            //target = ((mix_temp1*3 + mix_temp2) >> 2);
-            //++target;
-
-            mix_temp1 = ((*current&mask)>>1) + ((*old&mask)>>1);
-            mix_temp2 = ((*older&mask)>>1) + ((*oldest&mask)>>1);
-
-            *target++ = ((((mix_temp1&mask)>>1) + ((mix_temp1&mask)>>1)&mask)>>1) +
-                        ((((mix_temp1&mask)>>1) + ((mix_temp2&mask)>>1)&mask)>>1);
-
-            ++current;
-            ++old;
-            ++older;
-            ++oldest;
-        }
-
+    if(options->video_mix_frames == MIX_FRAMES_MORE && !(GB->gbc_mode || sgb_mode)) { // More mixing for classic GB: 3/8 current, 3/8 old, 1/8 older, 1/8 oldest
+	if (RGB_BIT_MASK ==0x421) for (int y = 0; y <144*160; y++) { // 15-bit
+		*target++ =((*current &0x00001F)*3 +(*old &0x00001F)*3 +(*older &0x00001F) +(*oldest &0x00001F)) >>3 &0x00001F |
+		           ((*current &0x0003E0)*3 +(*old &0x0003E0)*3 +(*older &0x0003E0) +(*oldest &0x0003E0)) >>3 &0x0003E0 |
+		           ((*current &0x007C00)*3 +(*old &0x007C00)*3 +(*older &0x007C00) +(*oldest &0x007C00)) >>3 &0x007C00;
+		++current;
+		++old;
+		++older;
+		++oldest;
+	} else
+	if (bitCount ==16) for (int y = 0; y <144*160; y++) { // 16-bit, green 6 bits
+		*target++ =((*current &0x00001F)*3 +(*old &0x00001F)*3 +(*older &0x00001F) +(*oldest &0x00001F)) >>3 &0x00001F |
+		           ((*current &0x0007E0)*3 +(*old &0x0007E0)*3 +(*older &0x0007E0) +(*oldest &0x0007E0)) >>3 &0x0007E0 |
+		           ((*current &0x00F800)*3 +(*old &0x00F800)*3 +(*older &0x00F800) +(*oldest &0x00F800)) >>3 &0x00F800;
+		++current;
+		++old;
+		++older;
+		++oldest;
+	} else for (int y = 0; y <144*160; y++){ // 32-bit
+		*target++ =((*current &0x0000FF)*3 +(*old &0x0000FF)*3 +(*older &0x0000FF) +(*oldest &0x0000FF)) >>3 &0x0000FF |
+		           ((*current &0x00FF00)*3 +(*old &0x00FF00)*3 +(*older &0x00FF00) +(*oldest &0x00FF00)) >>3 &0x00FF00 |
+		           ((*current &0xFF0000)*3 +(*old &0xFF0000)*3 +(*older &0xFF0000) +(*oldest &0xFF0000)) >>3 &0xFF0000;
+		++current;
+		++old;
+		++older;
+		++oldest;
+	}
         void* temp1 = GB->gfx_buffer;
         void* temp2 = GB->gfx_buffer_older;
         GB->gfx_buffer = GB->gfx_buffer_oldest;
@@ -509,13 +499,27 @@ void DirectDraw::drawScreenMixGeneric(TYPE *buffer)
         GB->gfx_buffer_old = temp1;
         GB->gfx_buffer_oldest = temp2;
 
-    } else {
-
-        for(int y = 0;y < 144*160;y++){ // mix it
-            // Orig 32-bit version for reference was
-            // *target++ = ((*current++) + (*old++)) >> 1;
-            *target++ = (((*current++)&mask)>>1)+(((*old++)&mask)>>1);
-        }
+    } else { // Average previous and current picture
+	if (RGB_BIT_MASK ==0x421) for (int y = 0; y <144*160; y++) { // 15-bit
+		*target++ =((*current &0x00001F) + (*old &0x00001F)) >>1 &0x00001F |
+		           ((*current &0x0003E0) + (*old &0x0003E0)) >>1 &0x0003E0 |
+		           ((*current &0x007C00) + (*old &0x007C00)) >>1 &0x007C00;
+		++current;
+		++old;
+	} else
+	if (bitCount ==16) for (int y = 0; y <144*160; y++) { // 16-bit, green 6 bits
+		*target++ =((*current &0x00001F) + (*old &0x00001F)) >>1 &0x00001F |
+		           ((*current &0x0007E0) + (*old &0x0007E0)) >>1 &0x0007E0 |
+		           ((*current &0x00F800) + (*old &0x00F800)) >>1 &0x00F800;
+		++current;
+		++old;
+	} else for (int y = 0; y <144*160; y++){ // 32-bit
+		*target++ =((*current &0x0000FF) + (*old &0x0000FF)) >>1 &0x0000FF |
+		           ((*current &0x00FF00) + (*old &0x00FF00)) >>1 &0x00FF00 |
+		           ((*current &0xFF0000) + (*old &0xFF0000)) >>1 &0xFF0000;
+		++current;
+		++old;
+	}
 
         void* temp = GB->gfx_buffer;
         GB->gfx_buffer = GB->gfx_buffer_old;
