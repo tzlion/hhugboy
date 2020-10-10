@@ -140,6 +140,7 @@ MbcType GbxParser::mapMapper(char* mapperType)
     if (!strcmp(mapperType,"SAM1")) return MEMORY_SACHENMMC1;
     if (!strcmp(mapperType,"SAM2")) return MEMORY_SACHENMMC2;
     if (!strcmp(mapperType,"M161")) return MEMORY_M161;
+    if (!strcmp(mapperType,"ROCK")) return MEMORY_ROCKET;
     debug_win("Unsupported mapper type!");
     return MEMORY_DEFAULT;
 }
