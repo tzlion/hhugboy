@@ -67,7 +67,11 @@ void Palette::mixGbcColours()
            if(this->bitCount == 16)
               this->gfxPal16[i] = (red<<this->rs) | (green<<this->gs) | (blue<<this->bs);              
            else
-              this->gfxPal32[i] = (red<<this->rs) | (green<<this->gs) | (blue<<this->bs);
+              this->gfxPal32[i] = (red<<this->rs) | (green<<this->gs) | (blue<<this->bs) |
+				  ((red &0x7)   <<(this->rs -3)) |
+				  ((green &0x7) <<(this->gs -3)) |
+				  ((blue &0x7)  <<(this->bs -3))
+	      ; 
         }
      }     
      else
@@ -91,7 +95,11 @@ void Palette::mixGbcColours()
            if(this->bitCount == 16)
               this->gfxPal16[i] = (red<<this->rs) | (green<<this->gs) | (blue<<this->bs);
            else        
-              this->gfxPal32[i] = (red<<this->rs) | (green<<this->gs) | (blue<<this->bs);
+              this->gfxPal32[i] = (red<<this->rs) | (green<<this->gs) | (blue<<this->bs) |
+				  ((red &0x7)   <<(this->rs -3)) |
+				  ((green &0x7) <<(this->gs -3)) |
+				  ((blue &0x7)  <<(this->bs -3))
+	      ;
         }
      }
   } else
@@ -103,7 +111,11 @@ void Palette::mixGbcColours()
      } else
      {
         for(int i=0;i<0x10000;++i)
-            this->gfxPal32[i] = ((i & 0x1F) << this->rs) | (((i & 0x3E0) >> 5) << this->gs) | (((i & 0x7C00) >> 10) << this->bs);
+            this->gfxPal32[i] = ((i & 0x1F) << this->rs) | (((i & 0x3E0) >> 5) << this->gs) | (((i & 0x7C00) >> 10) << this->bs)
+		| (i >>0  &0x07) << (this->rs -3)
+		| (i >>5  &0x07) << (this->gs -3)
+		| (i >>10 &0x07) << (this->bs -3)
+	    ;
            //gfx_pal32[i] = (((i & 0x1F) << rs) | (((i & 0x3E0) >> 5) << gs) | (((i & 0x7C00) >> 10) << bs)) ^ 0xFFFFFFFF; = negative
            //gfx_pal32[i] = ((i & 0x1F) << rs) | (((i & 0x3E0) >> 5) << gs) | (((i & 0x7C00) >> 10) << bs) ^ 0xFFFFFFFF; = super yellow ridiculousness. i actually quite enjoy this
      }  
