@@ -23,6 +23,7 @@
 */
 
 #include <cstring>
+#include <algorithm>
 #include "CartDetection.h"
 #include "../GB.h"
 #include "../config.h"
@@ -31,7 +32,7 @@
 Cartridge* CartDetection::processRomInfo(byte* rom, int romFileSize)
 {
     Cartridge* cartridge = new Cartridge();
-    readHeader(rom, cartridge);
+    readHeader(rom, cartridge, romFileSize);
 
     if (GbxParser::isGbx(rom, romFileSize)) {
         bool parseSuccess = GbxParser::parseFooter(rom, cartridge, romFileSize);
@@ -55,7 +56,7 @@ void CartDetection::setCartridgeAttributesFromHeader(Cartridge *cartridge)
     cartridge->RTC = false;
     cartridge->rumble = false;
     cartridge->battery = false;
-    cartridge->mbcType = MEMORY_DEFAULT;
+    //cartridge->mbcType = MEMORY_DEFAULT; // Don't do this here anymore, as readHeader may already have detected an MBC type from the header position in the ROM
     cartridge->ROMsize = 0;
     cartridge->RAMsize = 0;
 
@@ -128,13 +129,18 @@ void CartDetection::setCartridgeAttributesFromHeader(Cartridge *cartridge)
             break;
 
         case 0x10: // MBC3+TIMER+RAM+BATTERY
-            cartridge->battery = true;
-            cartridge->RTC = true;
-            cartridge->mbcType = MEMORY_MBC3;
+	    if (strstr(cartridge->header.name,"TETRIS SET")) // Mani 4-in-1 Tetris Set uses value 0x10 as well, so detect the one cart using this mapper via game name
+		cartridge->mbcType = MEMORY_M161;
+	    else {
+		cartridge->battery = true;
+		cartridge->RTC = true;
+		cartridge->mbcType = MEMORY_MBC3;
+	    }
             break;
 
         case 0x11: // MBC3
-            cartridge->mbcType = MEMORY_MBC3;
+	    // Mani 4-in-1 put 0x11 there as well even though it uses MMM01. So if MMM01 was already detected by readHeader, don't override that
+            if (cartridge->mbcType !=MEMORY_MMM01) cartridge->mbcType = MEMORY_MBC3;
             break;
 
         case 0x12: // MBC3+RAM
@@ -202,10 +208,47 @@ void CartDetection::setCartridgeAttributesFromHeader(Cartridge *cartridge)
     }
 }
 
-void CartDetection::readHeader(byte* rom, Cartridge* cartridge)
+void CartDetection::readHeader(byte* rom, Cartridge* cartridge, int romFileSize)
 {
     byte rominfo[30];
-    memcpy(rominfo,rom+0x0134,0x1C);
+    cartridge->mbcType = MEMORY_DEFAULT; // Was originally in setCartridgeAttributesFromHeader, but since we are already detecting three MBC types here, put it here as well.
+    
+    // Determine whether we have a scrambled header, or a header at the end of the file. If so, we have already detected Sachen MMC1/2 or MMM01.
+    int logoChecksum0104Scrambled =0; for(int lb=0;lb<0x30;++lb) { int address =0x104 +lb; address =address &~0x53 | address >>6 &0x01 | address >>3 &0x02 | address <<3 &0x10 | address <<6 &0x40; logoChecksum0104Scrambled+=rom[address] ; }
+    int logoChecksum0184Scrambled =0; for(int lb=0;lb<0x30;++lb) { int address =0x184 +lb; address =address &~0x53 | address >>6 &0x01 | address >>3 &0x02 | address <<3 &0x10 | address <<6 &0x40; logoChecksum0184Scrambled+=rom[address] ; }
+    if (logoChecksum0104Scrambled ==5542 || logoChecksum0104Scrambled ==7484) cartridge->mbcType =MEMORY_SACHENMMC2;
+    if (logoChecksum0184Scrambled ==5542 || logoChecksum0184Scrambled ==7484) cartridge->mbcType =MEMORY_SACHENMMC1;
+    
+    int logoChecksumEnd =0;
+    int cartridgeHeaderAtEnd =(romFileSize &~0x7FFF) -0x8000;
+    if (cartridgeHeaderAtEnd >=0) {
+	for(int lb=0; lb <0x30; ++lb) logoChecksumEnd +=rom[cartridgeHeaderAtEnd +0x0104 +lb];
+	byte cartridgeType =rom[cartridgeHeaderAtEnd +0x147];
+	if (logoChecksumEnd ==5446 && (cartridgeType ==0x0B || cartridgeType ==0x0C || cartridgeType ==0x0D || cartridgeType ==0x11)) cartridge->mbcType =MEMORY_MMM01;
+    }
+    
+    // Read unscrambled header from the correct file position
+    switch (cartridge->mbcType) {
+	    case MEMORY_MMM01:
+		memcpy(rominfo,rom+(romFileSize &~0x7FFF) -0x8000 +0x0134,0x1C);
+		break;
+	    case MEMORY_SACHENMMC1:
+	    case MEMORY_SACHENMMC2:
+		for (int i =0; i <0x1C; i++) {
+			int address =i +0x0134;
+			address =address &~0x53 |
+				address >>6 &0x01 |
+				address >>3 &0x02 |
+				address <<3 &0x10 |
+				address <<6 &0x40
+			;
+			rominfo[i] =rom[address];
+		}
+		break;
+	    default: // Unscrambled from beginning of file
+		memcpy(rominfo,rom+0x0134,0x1C);
+		break;
+    }
 
     int addr = 0;
     for(;addr<=14; ++addr)
@@ -250,17 +293,27 @@ void CartDetection::readHeader(byte* rom, Cartridge* cartridge)
 
 unlCompatMode CartDetection::detectUnlCompatMode(byte* rom, Cartridge* cartridge, int romFileSize)
 {
-    byte logo1[0x30];
-    byte logo2[0x30];
-    memcpy(logo1,rom+0x0104,0x30); // Real logo
-    memcpy(logo2,rom+0x0184,0x30); // Unlicensed game's logo. Sometimes.
+    if (cartridge->mbcType ==MEMORY_MMM01) return UNL_NONE; // Might be misdetected as something else, so don't even try
+    int logoChecksum0104=0; for(int lb=0;lb<0x30;++lb) logoChecksum0104+=rom[0x0104 +lb];
+    int logoChecksum0184=0; for(int lb=0;lb<0x30;++lb) logoChecksum0184+=rom[0x0184 +lb];
+    int logoChecksum0104Scrambled =0; for(int lb=0;lb<0x30;++lb) { int address =0x104 +lb; address =address &~0x53 | address >>6 &0x01 | address >>3 &0x02 | address <<3 &0x10 | address <<6 &0x40; logoChecksum0104Scrambled+=rom[address] ; }
 
-    int logoChecksum= 0;
-    for(int lb=0;lb<0x30;++lb) {
-        logoChecksum+=logo2[lb];
-    }
+			
+    int logoChecksum0184Scrambled =0; for(int lb=0;lb<0x30;++lb) { int address =0x184 +lb; address =address &~0x53 | address >>6 &0x01 | address >>3 &0x02 | address <<3 &0x10 | address <<6 &0x40; logoChecksum0184Scrambled+=rom[address] ; }
+    
+    /*char buff[100];
+    sprintf(buff,"logo: 0104=%d, 0184=%d", logoChecksum0104, logoChecksum0184);
+    debug_win(buff);*/
 
-    switch ( logoChecksum ) {
+    if (logoChecksum0104Scrambled ==5542 || logoChecksum0104Scrambled ==7484) return UNL_SACHENMMC2;
+    if (logoChecksum0184Scrambled ==5542 || logoChecksum0184Scrambled ==7484) return UNL_SACHENMMC1;
+    
+    switch ( logoChecksum0104 ) {
+	case 2756: // Rocket Games
+	case 4850: // Smartcom
+	    return UNL_ROCKET;
+    }    
+    switch ( logoChecksum0184 ) {
         case 4048: // "GK.RX" = Gaoke(Hitek) x Ruanxin
             // (All known hacked versions of Hitek games are Li Cheng so have the Niutoude logo instead)
             return UNL_HITEK;
@@ -358,10 +411,6 @@ unlCompatMode CartDetection::detectUnlCompatMode(byte* rom, Cartridge* cartridge
     if(!strcmp(cartridge->header.name,"TETRIS") && romFileSize > 32768 && cartridge->ROMsize==0) {
         return UNL_MBC1NOSAVE;
     }
-    // Sachen 8 in 1
-    if(!strcmp(cartridge->header.name,"\0") && romFileSize > 32768 && cartridge->ROMsize==0) {
-        return UNL_SAC8IN1;
-    }
     // Bokujou Monogatari 3 Chinese
     if((strstr(cartridge->header.name,"BOKUMONOGB3BWAJ") || strstr(cartridge->header.name,"BOYGIRLD640BWAJ")) && cartridge->ROMsize == 1) {
         return UNL_MBC5SAVE;
@@ -377,6 +426,16 @@ unlCompatMode CartDetection::detectUnlCompatMode(byte* rom, Cartridge* cartridge
     // Digimon 3 saving
     if(!strcmp(cartridge->header.name,"DIGIMON") && cartridge->header.checksum == 0xE11B) {
         return UNL_MBC5SAVE;
+    }
+    // Wisdom Tree
+    static const char strWisdomTree1[12] ="WISDOM TREE";
+    static const char strWisdomTree2[12] ="WISDOM\0TREE";
+    
+    if(rom[0x147] ==0xC0 && rom[0x14A] ==0xD1 ||
+       std::search(rom, rom +romFileSize, strWisdomTree1, strWisdomTree1 +11) !=(rom +romFileSize) ||
+       std::search(rom, rom +romFileSize, strWisdomTree2, strWisdomTree2 +11) !=(rom +romFileSize)) {
+        debug_win("Detected: Wisdom Tree");
+	return UNL_WISDOMTREE;
     }
     return UNL_NONE;
 }
@@ -493,10 +552,21 @@ bool CartDetection::detectUnlicensedCarts(byte *rom, Cartridge *cartridge, int r
         case UNL_RM8OLD: // Can't be manually selected currently
             cartridge->mbcType = MEMORY_ROCKMAN8;
             break;
-        case UNL_SAC8IN1: // Can't be manually selected currently
-            cartridge->mbcType = MEMORY_8IN1;
-            cartridge->ROMsize = 4;
-            break;
+	case UNL_WISDOMTREE:
+	    cartridge->ROMsize = detectGbRomSize(romFileSize);
+	    cartridge->mbcType = MEMORY_WISDOMTREE;
+	    break;
+	case UNL_SACHENMMC1:
+	    cartridge->ROMsize = detectGbRomSize(romFileSize);
+	    cartridge->mbcType = MEMORY_SACHENMMC1;
+	    break;
+	case UNL_SACHENMMC2:
+	    cartridge->ROMsize = detectGbRomSize(romFileSize);
+	    cartridge->mbcType = MEMORY_SACHENMMC2;
+	    break;
+	case UNL_ROCKET:
+	    cartridge->mbcType = MEMORY_ROCKET;
+	    break;
         case UNL_NONE: default:
             break;
     }
@@ -569,7 +639,7 @@ bool CartDetection::detectMbc1ComboPacks(Cartridge *cartridge, int romFileSize)
     // momocol should have a battery, the others not
     // (momocol2 uses MMM01 and doesn't currently work)
     if(!strcmp(cartridge->header.name,"BOMCOL") || !strcmp(cartridge->header.name,"BOMSEL") || !strcmp(cartridge->header.name,"GENCOL")
-       || strstr(cartridge->header.name,"MOMOCOL") || strstr(cartridge->header.name,"SUPERCHINESE 12")
+       || strstr(cartridge->header.name,"MOMOCOL") && !strstr(cartridge->header.name,"MOMOCOL2") || strstr(cartridge->header.name,"SUPERCHINESE 12")
        || strstr(cartridge->header.name,"MORTALKOMBATI&I")) {
         cartridge->mbcType = MEMORY_MBC1MULTI;
         return true;

@@ -39,6 +39,7 @@ public:
 
     byte readmemory_cart(register unsigned short address);
     void writememory_cart(unsigned short address,register byte data);
+    void signalMemoryWrite(unsigned short address,register byte data);
     void resetMbcVariables(bool preserveMulticartState);
     void resetRomMemoryMap(bool preserveMulticartState);
 

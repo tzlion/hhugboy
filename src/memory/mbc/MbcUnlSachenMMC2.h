@@ -21,22 +21,25 @@
    51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
 
-#ifndef HHUGBOY_MBCLICMMM01_H
-#define HHUGBOY_MBCLICMMM01_H
+#ifndef HHUGBOY_MBCUNLSACHENMMC2_H
+#define HHUGBOY_MBCUNLSACHENMMC2_H
 
 
 #include "BasicMbc.h"
-class MbcLicMmm01 : public BasicMbc {
+class MbcUnlSachenMMC2 : public BasicMbc {
 public:
+        virtual byte readMemory(unsigned short address) override;
 	virtual void writeMemory(unsigned short address, register byte data) override;
+	virtual void signalMemoryWrite(unsigned short address, register byte data) override;
         virtual void resetVars(bool preserveMulticartState) override;
         virtual void readMbcSpecificVarsFromStateFile(FILE *statefile) override;
         virtual void writeMbcSpecificVarsToStateFile(FILE *statefile) override;
 private:
 	byte	outerBank;
-	bool	locked;
-	void	sync();
+	byte	outerMask;
+	byte	mode;
+	byte	unlockCount;
 };
 
 
-#endif //HHUGBOY_MBCLICMMM01_H
+#endif //HHUGBOY_MBCUNLSACHENMMC2_H

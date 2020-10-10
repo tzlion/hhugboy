@@ -595,6 +595,17 @@ void menuAction(int menuOption)
                 options->reduce_cpu_usage = true;
             }
             break;
+        case IDM_OPTIONBOOTSTRAP:
+            if(options->use_bootstrap)
+            {
+                emuMenu.uncheckOption(IDM_OPTIONBOOTSTRAP);
+                options->use_bootstrap = false;
+            } else
+            {
+                emuMenu.checkOption(IDM_OPTIONBOOTSTRAP);
+                options->use_bootstrap = true;
+            }
+            break;
         case IDM_OPTIONOPPOSITEDIRECTIONS:
             if(options->opposite_directions_allowed)
             {

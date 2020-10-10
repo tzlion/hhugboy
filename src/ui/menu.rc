@@ -162,6 +162,7 @@ BEGIN
                 END
                 MENUITEM "&Halt on Unknown Opcode", IDM_CPUOPCODE, CHECKED
                 MENUITEM "Reduce &CPU Usage", IDM_OPTIONCPUUSAGE
+		MENUITEM "Use &Bootstrap ROM if available", IDM_OPTIONBOOTSTRAP
                 MENUITEM SEPARATOR
                 MENUITEM "Ch&eats...", IDM_CHEATS
                 MENUITEM "&Memory Search...", IDM_MEMSEARCH

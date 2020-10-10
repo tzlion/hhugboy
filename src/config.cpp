@@ -66,6 +66,7 @@ menu emuMenu;
 program_configuration::program_configuration():
         halt_on_unknown_opcode(true),
         reduce_cpu_usage(false),
+	use_bootstrap(false),
         speedup_skip_9frames(false),
         speedup_sound_off(false),
         speedup_filter_off(true),
@@ -308,8 +309,11 @@ void init_menu_options()
    if(!options->halt_on_unknown_opcode)
       emuMenu.uncheckOption(IDM_CPUOPCODE);
    
-   if(!options->reduce_cpu_usage)
-      emuMenu.uncheckOption(IDM_OPTIONCPUUSAGE);  
+   if(options->reduce_cpu_usage)
+      emuMenu.checkOption(IDM_OPTIONCPUUSAGE);  
+  
+   if(options->use_bootstrap)
+      emuMenu.checkOption(IDM_OPTIONBOOTSTRAP);  
   
    if(options->opposite_directions_allowed)
       emuMenu.checkOption(IDM_OPTIONOPPOSITEDIRECTIONS);
@@ -572,6 +576,10 @@ ifstream& operator>>(ifstream& in, program_configuration& config)
 
     in >> config.speedup_filter_off;
 
+    read_comment_line(in);
+    
+    in >> config.use_bootstrap;
+
    return in;
 }
 
@@ -748,6 +756,9 @@ ostream& operator<<(ostream& out, const program_configuration& config)
     
     out << "#On speedup filter off:\n";
     out << config.speedup_filter_off << "\n\n";
+
+    out << "#Use bootstrap ROM if available:\n";
+    out << config.use_bootstrap << "\n\n";
 
     return out;
 }

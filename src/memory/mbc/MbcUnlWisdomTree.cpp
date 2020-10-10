@@ -21,22 +21,25 @@
    51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
 
-#ifndef HHUGBOY_MBCLICMMM01_H
-#define HHUGBOY_MBCLICMMM01_H
+#include "MbcUnlWisdomTree.h"
 
+byte MbcUnlWisdomTree::readMemory(register unsigned short address) {
+    return gbMemMap[address>>12][address&0x0FFF];
+}
 
-#include "BasicMbc.h"
-class MbcLicMmm01 : public BasicMbc {
-public:
-	virtual void writeMemory(unsigned short address, register byte data) override;
-        virtual void resetVars(bool preserveMulticartState) override;
-        virtual void readMbcSpecificVarsFromStateFile(FILE *statefile) override;
-        virtual void writeMbcSpecificVarsToStateFile(FILE *statefile) override;
-private:
-	byte	outerBank;
-	bool	locked;
-	void	sync();
-};
-
-
-#endif //HHUGBOY_MBCLICMMM01_H
+void MbcUnlWisdomTree::writeMemory(unsigned short address, register byte data) {
+    if(address < 0x4000)
+    {
+	rom_bank = address &0xF;
+	int bank_start =rom_bank <<15 &rom_size_mask[(*gbCartridge)->ROMsize];
+	gbMemMap[0x0] = &(*gbCartRom)[bank_start +0x0000];
+	gbMemMap[0x1] = &(*gbCartRom)[bank_start +0x1000];
+	gbMemMap[0x2] = &(*gbCartRom)[bank_start +0x2000];
+	gbMemMap[0x3] = &(*gbCartRom)[bank_start +0x3000];
+	gbMemMap[0x4] = &(*gbCartRom)[bank_start +0x4000];
+	gbMemMap[0x5] = &(*gbCartRom)[bank_start +0x5000];
+	gbMemMap[0x6] = &(*gbCartRom)[bank_start +0x6000];
+	gbMemMap[0x7] = &(*gbCartRom)[bank_start +0x7000];
+        return;
+    }
+}

@@ -20,23 +20,33 @@
    along with this program; if not, write to the Free Software Foundation, Inc.,
    51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
+#include <cstdio>
+#include "MbcLicM161.h"
 
-#ifndef HHUGBOY_MBCLICMMM01_H
-#define HHUGBOY_MBCLICMMM01_H
+void MbcLicM161::resetVars(bool preserveMulticartState) {
+    AbstractMbc::resetVars(preserveMulticartState);
+    locked =false;
+    rom_bank =0;
+    sync();
+}
 
+void MbcLicM161::readMbcSpecificVarsFromStateFile(FILE *statefile) {
+    fread(&(locked), sizeof(bool), 1, statefile);
+}
 
-#include "BasicMbc.h"
-class MbcLicMmm01 : public BasicMbc {
-public:
-	virtual void writeMemory(unsigned short address, register byte data) override;
-        virtual void resetVars(bool preserveMulticartState) override;
-        virtual void readMbcSpecificVarsFromStateFile(FILE *statefile) override;
-        virtual void writeMbcSpecificVarsToStateFile(FILE *statefile) override;
-private:
-	byte	outerBank;
-	bool	locked;
-	void	sync();
-};
+void MbcLicM161::writeMbcSpecificVarsToStateFile(FILE *statefile) {
+    fwrite(&(locked), sizeof(bool), 1, statefile);
+}
 
+void MbcLicM161::writeMemory(unsigned short address, register byte data) {
+	if (address <0x8000) {
+		rom_bank =data;
+		locked =true;
+		sync();
+	} else
+		gbMemMap[address>>12][address&0x0FFF] = data;
+}
 
-#endif //HHUGBOY_MBCLICMMM01_H
+void MbcLicM161::sync() {
+	for (int bank =0; bank<=7; bank++) gbMemMap[bank] =&(*gbCartRom)[(rom_bank <<15 &rom_size_mask[(*gbCartridge)->ROMsize]) +bank*0x1000];
+}

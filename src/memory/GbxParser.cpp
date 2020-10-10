@@ -136,6 +136,10 @@ MbcType GbxParser::mapMapper(char* mapperType)
     if (!strcmp(mapperType,"LBMC")) return MEMORY_LBMULTI;
     if (!strcmp(mapperType,"LIBA")) return MEMORY_DBZTRANS;
     if (!strcmp(mapperType,"PKJD")) return MEMORY_POKEJD;
+    if (!strcmp(mapperType,"WISD")) return MEMORY_WISDOMTREE;
+    if (!strcmp(mapperType,"SAM1")) return MEMORY_SACHENMMC1;
+    if (!strcmp(mapperType,"SAM2")) return MEMORY_SACHENMMC2;
+    if (!strcmp(mapperType,"M161")) return MEMORY_M161;
     debug_win("Unsupported mapper type!");
     return MEMORY_DEFAULT;
 }

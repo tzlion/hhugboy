@@ -20,75 +20,58 @@
    along with this program; if not, write to the Free Software Foundation, Inc.,
    51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
-
+#include <cstdio>
 #include "MbcLicMmm01.h"
 
+void MbcLicMmm01::resetVars(bool preserveMulticartState) {
+    outerBank =0;
+    locked =false;
+    ram_bank =0;
+    rom_bank =0;
+    RAMenable =0;
+    AbstractMbc::resetVars(preserveMulticartState);
+    sync();
+}
+
+void MbcLicMmm01::readMbcSpecificVarsFromStateFile(FILE *statefile) {
+    fread(&(outerBank), sizeof(byte), 1, statefile);
+    fread(&(locked), sizeof(bool), 1, statefile);
+}
+
+void MbcLicMmm01::writeMbcSpecificVarsToStateFile(FILE *statefile) {
+    fwrite(&(outerBank), sizeof(byte), 1, statefile);
+    fwrite(&(locked), sizeof(bool), 1, statefile);
+}
+
 void MbcLicMmm01::writeMemory(unsigned short address, register byte data) {
-    if(address < 0x2000)
-        return;
+	switch(address >>13) {
+		case 0:	if (locked)
+				RAMenable =(data &0xF) ==0xA;
+			else
+				locked =true;
+			break;
+		case 1:	if (locked)
+				rom_bank =data;
+			else
+				outerBank =data;
+			break;
+		case 2:	if (locked) ram_bank =data;
+			break;
+		case 3:	break;
+		default:
+			if (RAMenable) gbMemMap[address>>12][address&0x0FFF] = data;
+			return; // No memory map update needed
+	}
+	sync();	
+}
 
-    if(address < 0x4000) // Is it a ROM bank switch?
-    {
-        if(data == 0)
-            data = 1;
-
-        rom_bank = data;
-
-        int cadr = (rom_bank<<14)+(MBChi<<14);
-
-        cadr &= rom_size_mask[(*gbCartridge)->ROMsize];
-
-        gbMemMap[0x4] = &(*gbCartRom)[cadr];
-        gbMemMap[0x5] = &(*gbCartRom)[cadr+0x1000];
-        gbMemMap[0x6] = &(*gbCartRom)[cadr+0x2000];
-        gbMemMap[0x7] = &(*gbCartRom)[cadr+0x3000];
-        return;
-    }
-
-    if(address < 0x6000) // Is it a RAM bank switch?
-    {
-        if(address == 0x5fff && !bc_select)
-        {
-            bc_select = 1;
-
-            data &= 0x2f;
-            MBClo = 0;
-
-            MBChi = data;
-            cart_address = MBChi<<14;
-
-            gbMemMap[0x0] = &(*gbCartRom)[cart_address];
-            gbMemMap[0x1] = &(*gbCartRom)[cart_address+0x1000];
-            gbMemMap[0x2] = &(*gbCartRom)[cart_address+0x2000];
-            gbMemMap[0x3] = &(*gbCartRom)[cart_address+0x3000];
-
-            gbMemMap[0x4] = &(*gbCartRom)[cart_address+0x4000];
-            gbMemMap[0x5] = &(*gbCartRom)[cart_address+0x5000];
-            gbMemMap[0x6] = &(*gbCartRom)[cart_address+0x6000];
-            gbMemMap[0x7] = &(*gbCartRom)[cart_address+0x7000];
-            return;
-        }
-
-        if((*gbCartridge)->RAMsize <= 2) // no need to change it if there isn't over 8KB ram
-            return;
-
-        data &= 0x03;
-
-        if(data > maxRAMbank[(*gbCartridge)->RAMsize])
-            data = maxRAMbank[(*gbCartridge)->RAMsize];
-
-        ram_bank = data;
-
-        int madr = data<<13;
-        gbMemMap[0xA] = &(*gbCartRam)[madr];
-        gbMemMap[0xB] = &(*gbCartRam)[madr+0x1000];
-        return;
-    }
-
-    if(address < 0x8000)
-        return;
-
-    // Always allow RAM writes.
-
-    gbMemMap[address>>12][address&0x0FFF] = data;
+void MbcLicMmm01::sync() {
+	// ROM
+	if (locked) {
+		for (int bank =0; bank<=3; bank++) gbMemMap[bank] =&(*gbCartRom)[((outerBank          ) <<14 &rom_size_mask[(*gbCartridge)->ROMsize]) +bank*0x1000];
+		for (int bank =4; bank<=7; bank++) gbMemMap[bank] =&(*gbCartRom)[((outerBank +rom_bank) <<14 &rom_size_mask[(*gbCartridge)->ROMsize]) +bank*0x1000 -0x4000];
+	} else
+		for (int bank =0; bank<=7; bank++) gbMemMap[bank] =&(*gbCartRom)[(                0xFF  <<15 &rom_size_mask[(*gbCartridge)->ROMsize]) +bank*0x1000];
+	// RAM
+	for (int bank =0xA; bank<=0xB; bank++) gbMemMap[bank] =&(*gbCartRam)[(ram_bank &maxRAMbank[(*gbCartridge)->ROMsize])<<13  | bank*0x1000];
 }

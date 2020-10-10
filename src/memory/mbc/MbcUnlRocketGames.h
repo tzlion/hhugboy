@@ -21,20 +21,24 @@
    51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
 
-#ifndef HHUGBOY_MBCUNLSACHEN8IN1_H
-#define HHUGBOY_MBCUNLSACHEN8IN1_H
+#ifndef HHUGBOY_MBCUNLROCKETGAMES_H
+#define HHUGBOY_MBCUNLROCKETGAMES_H
 
 
 #include "BasicMbc.h"
-//-------------------------------------------------------------------------
-// for Sachen 8in1
-// todo: Sky Ace, Flea War and Explosive don't boot?
-//-------------------------------------------------------------------------
-class MbcUnlSachen8in1 : public BasicMbc {
+class MbcUnlRocketGames : public BasicMbc {
 public:
-    virtual void writeMemory(unsigned short address, register byte data) override;
-
+        virtual byte readMemory(unsigned short address) override;
+	virtual void writeMemory(unsigned short address, register byte data) override;
+	virtual void signalMemoryWrite(unsigned short address, register byte data) override;
+        virtual void resetVars(bool preserveMulticartState) override;
+        virtual void readMbcSpecificVarsFromStateFile(FILE *statefile) override;
+        virtual void writeMbcSpecificVarsToStateFile(FILE *statefile) override;
+private:
+	byte	outerBank;
+	byte	mode;
+	byte	unlockCount;
 };
 
 
-#endif //HHUGBOY_MBCUNLSACHEN8IN1_H
+#endif //HHUGBOY_MBCUNLROCKETGAMES_H
