@@ -111,14 +111,7 @@ void MbcUnlSachenMMC1::writeMemory(unsigned short address, register byte data) {
 			rom_bank =data? data: 1;
 			break;
 		case 2:	// ROM bank mask register
-			if ((rom_bank &0x30) ==0x30) {
-				outerMask =data;
-				
-				// Print outer bank information for extraction script
-				char buff[100];
-				sprintf(buff,"FE MULTI.GB GAME%02u.GB %06X,%05X", outerBank >>1, (outerBank &outerMask) <<14, ((~outerMask &0x0F) +1) <<14);
-				debug_win(buff);				
-			}
+			if ((rom_bank &0x30) ==0x30) outerMask =data;
 			break;
 		case 3:	break;
 		default:// Write to RAM, if present
