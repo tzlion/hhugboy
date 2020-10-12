@@ -87,6 +87,9 @@ DirectDraw::~DirectDraw()
     SafeRelease(directDrawStuff->dd);
     
     DeleteObject(this->afont);
+    
+    if (options) SetCurrentDirectory(options->program_directory.c_str());
+    RemoveFontResource(L"PCPaintBoldSmall.ttf");
 }
 
 Filter* oldGbFilter;
