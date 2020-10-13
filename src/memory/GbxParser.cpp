@@ -57,6 +57,7 @@ bool GbxParser::parseFooter(byte* cartROM, Cartridge *cartridge, int romFileSize
     cartridge->battery = (bool)footer[4];
     cartridge->rumble = (bool)footer[5];
     cartridge->RTC = (bool)footer[6];
+    memcpy(cartridge->mbcConfig, footer +16, 32);
 
     sprintf(msg,"Mapped to internal MBC type %d / ROM size %d / RAM size %d",cartridge->mbcType, cartridge->ROMsize, cartridge->RAMsize);
     debug_win(msg);

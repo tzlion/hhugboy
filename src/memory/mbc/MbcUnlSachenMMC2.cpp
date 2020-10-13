@@ -61,8 +61,13 @@ byte MbcUnlSachenMMC2::readMemory(unsigned short address) {
 				address <<3 &0x10 |
 				address <<6 &0x40
 			;
+		// Depending on solder pad settings, 512 KiB and 1 MiB outer banks will return open bus.
+		if ((*gbCartridge)->mbcConfig[0] &1 && outerBank &outerMask &0x40 ||
+		(*gbCartridge)->mbcConfig[0] &2 && outerBank &outerMask &0x20)
+			return 0xFF;
 	}
 	// No Sachen MMC2 game seems to have a logo check, so no need to put the logo into video memory when not emulating the bootstrap ROM.
+	
 	return BasicMbc::readMemory(address);
 }
 
