@@ -41,7 +41,13 @@ using namespace std;
 #include "../GB.h"
 #include "GB_MBC.h"
 
+unsigned char bootstrapDMG[256], bootstrapCGB[2304], *bootstrap;
+bool haveBootstrap_DMG =false;
+bool haveBootstrap_CGB =false;
+bool haveBootstrap =false;
+
 extern int ramsize[9];
+bool mapBootstrap =true;
 
 byte gb_system::readmemory(unsigned short address)
 {
@@ -50,6 +56,9 @@ byte gb_system::readmemory(unsigned short address)
             if(address == cheat[i].address && (!(cheat[i].long_code) || (cheat[i].old_value == mem_map[address>>12][address&0x0fff])))
                 return cheat[i].new_value;
 
+    if (mapBootstrap && (address <0x0100 || gbc_mode && address >=0x0200 && address <0x0900)) {
+	return bootstrap[address];
+    } else
     if ( address <= 0x7FFF || ( address >= 0xA000 && address <= 0xBFFF ) ) {
         return mbc->readmemory_cart(address);
     } else {
@@ -59,16 +68,26 @@ byte gb_system::readmemory(unsigned short address)
 
 void gb_system::writememory(unsigned short address,byte data)
 {
+    if ( address ==0xFF50)
+	mapBootstrap =false;
+
     if ( address <= 0x7FFF || ( address >= 0xA000 && address <= 0xBFFF ) ) {
         mbc->writememory_cart(address,data);
     } else {
         if(io_reg_write(address,data)) return;
         mem_map[address>>12][address&0x0FFF] = data;
     }
+    
+    // The cartridge needs to see any writes as well, even without the chip enable signal
+    mbc->signalMemoryWrite(address,data);
 }
 
 void gb_system::mem_reset(bool preserveMulticartState)
 {
+   bootstrap =gbc_mode? bootstrapCGB: bootstrapDMG;
+   haveBootstrap =gbc_mode? haveBootstrap_CGB: haveBootstrap_DMG;
+   mapBootstrap =haveBootstrap && options->use_bootstrap;
+   
    memset(memory+0x8000,0x00,0x1FFF);
    memset(memory+0xFE00,0x00,0xA0);
 

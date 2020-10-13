@@ -183,3 +183,6 @@ void AbstractMbc::setRom1Bank(int bankNo) {
     bankAddress += multicartOffset;
     setRom1Offset(bankAddress);
 }
+
+void AbstractMbc::signalMemoryWrite(unsigned short address, register byte data) {
+}

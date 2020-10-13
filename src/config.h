@@ -57,6 +57,7 @@ public:
 
     bool halt_on_unknown_opcode;
     bool reduce_cpu_usage;
+    bool use_bootstrap;
 
     bool speedup_skip_9frames;
     bool speedup_sound_off;

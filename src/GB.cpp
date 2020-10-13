@@ -480,7 +480,7 @@ void gb_system::cpu_reset()
    DE.W = 0x00D8;
    HL.W = 0x014D;
    SP.W = 0xFFFE;
-   PC.W = 0x0100;
+   PC.W = haveBootstrap && options->use_bootstrap? 0x0000: 0x100;
    
    CPUHalt = 0;
    IME = 0;
