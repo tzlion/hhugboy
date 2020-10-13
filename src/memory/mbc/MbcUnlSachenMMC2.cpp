@@ -84,9 +84,11 @@ void MbcUnlSachenMMC2::writeMemory(unsigned short address, register byte data) {
 			break;
 		default:break;
 	}
+	// OPT1 solder pad
+	byte opt1bank =(*gbCartridge)->mbcConfig[0] &4? 0x10: 0x00;
 	// Update memory map
-	for (int bank =0; bank<=3; bank++) gbMemMap[bank] =&(*gbCartRom)[((outerBank &outerMask |                    0) <<14 &rom_size_mask[(*gbCartridge)->ROMsize]) +bank*0x1000];
-	for (int bank =4; bank<=7; bank++) gbMemMap[bank] =&(*gbCartRom)[((outerBank &outerMask | rom_bank &~outerMask) <<14 &rom_size_mask[(*gbCartridge)->ROMsize]) +bank*0x1000 -0x4000];
+	for (int bank =0; bank<=3; bank++) gbMemMap[bank] =&(*gbCartRom)[((outerBank &outerMask |                    0 | opt1bank) <<14 &rom_size_mask[(*gbCartridge)->ROMsize]) +bank*0x1000];
+	for (int bank =4; bank<=7; bank++) gbMemMap[bank] =&(*gbCartRom)[((outerBank &outerMask | rom_bank &~outerMask | opt1bank) <<14 &rom_size_mask[(*gbCartridge)->ROMsize]) +bank*0x1000 -0x4000];
 }
 
 void MbcUnlSachenMMC2::signalMemoryWrite(unsigned short address, register byte data) {
