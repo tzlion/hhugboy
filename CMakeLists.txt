@@ -145,6 +145,8 @@ set(SOURCE_FILES
         src/memory/mbc/MbcLicM161.h
         src/memory/mbc/MbcUnlRocketGames.cpp
         src/memory/mbc/MbcUnlRocketGames.h
+        src/memory/mbc/MbcNin5_LogoSwitch.cpp
+        src/memory/mbc/MbcNin5_LogoSwitch.h
 )
 
 include_directories(

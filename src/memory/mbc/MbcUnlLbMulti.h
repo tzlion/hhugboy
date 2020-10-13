@@ -11,11 +11,11 @@
 #define HHUGBOY_MBCUNLLBMULTI_H
 
 
-#include "MbcNin5.h"
+#include "MbcNin5_LogoSwitch.h"
 //-------------------------------------------------------------------------
 // for multicarts with Last Bible music ex. VFame's ones
 //-------------------------------------------------------------------------
-class MbcUnlLbMulti : public MbcNin5 {
+class MbcUnlLbMulti : public MbcNin5_LogoSwitch {
 public:
     virtual void writeMemory(unsigned short address, register byte data) override;
     virtual void resetVars(bool preserveMulticartState) override;

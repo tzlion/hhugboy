@@ -106,7 +106,7 @@ void MbcUnlLbMulti::resetVars(bool preserveMulticartState) {
         mbc1Mode =false;
     }
 
-    AbstractMbc::resetVars(preserveMulticartState);
+    MbcNin5_LogoSwitch::resetVars(preserveMulticartState);
 }
 
 void MbcUnlLbMulti::writeMbcSpecificVarsToStateFile(FILE *statefile) {
@@ -119,6 +119,7 @@ void MbcUnlLbMulti::writeMbcSpecificVarsToStateFile(FILE *statefile) {
     fwrite(&(multicartRamOffset),sizeof(int),1,statefile);
     fwrite(&(mbc1Mode),sizeof(bool),1,statefile);
     fwrite(&((*gbCartridge)->ROMsize),sizeof(bool),1,statefile);
+    MbcNin5_LogoSwitch::writeMbcSpecificVarsToStateFile(statefile);
 }
 
 void MbcUnlLbMulti::readMbcSpecificVarsFromStateFile(FILE *statefile) {
@@ -131,6 +132,6 @@ void MbcUnlLbMulti::readMbcSpecificVarsFromStateFile(FILE *statefile) {
     fread(&(multicartRamOffset),sizeof(int),1,statefile);
     fread(&(mbc1Mode),sizeof(bool),1,statefile);
     fread(&((*gbCartridge)->ROMsize),sizeof(bool),1,statefile);
-
+    MbcNin5_LogoSwitch::readMbcSpecificVarsFromStateFile(statefile);
     resetRomMemoryMap(true);
 }
