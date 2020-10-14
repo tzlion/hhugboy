@@ -17,7 +17,7 @@
 void MbcNin5_LogoSwitch::resetVars(bool preserveMulticartState) {
     MbcNin5::resetVars(preserveMulticartState);
     if (!preserveMulticartState) {
-	logoMode =haveBootstrap && options->use_bootstrap? MODE_LOCKED_DMG: MODE_UNLOCKED;
+	logoMode =haveBootstrap && options->use_bootstrap? MODE_LOCKED_DMG: MODE_DONE;
 	logoCount =0;
     }	
 }
