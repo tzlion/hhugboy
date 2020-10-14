@@ -213,11 +213,12 @@ void CartDetection::readHeader(byte* rom, Cartridge* cartridge, int romFileSize)
     byte rominfo[30];
     cartridge->mbcType = MEMORY_DEFAULT; // Was originally in setCartridgeAttributesFromHeader, but since we are already detecting three MBC types here, put it here as well.
     
-    // Determine whether we have a scrambled header, or a header at the end of the file. If so, we have already detected Sachen MMC1/2 or MMM01.
-    int logoChecksum0104Scrambled =0; for(int lb=0;lb<0x30;++lb) { int address =0x104 +lb; address =address &~0x53 | address >>6 &0x01 | address >>3 &0x02 | address <<3 &0x10 | address <<6 &0x40; logoChecksum0104Scrambled+=rom[address] ; }
-    int logoChecksum0184Scrambled =0; for(int lb=0;lb<0x30;++lb) { int address =0x184 +lb; address =address &~0x53 | address >>6 &0x01 | address >>3 &0x02 | address <<3 &0x10 | address <<6 &0x40; logoChecksum0184Scrambled+=rom[address] ; }
-    if (logoChecksum0104Scrambled ==5542 || logoChecksum0104Scrambled ==7484) cartridge->mbcType =MEMORY_SACHENMMC2;
-    if (logoChecksum0184Scrambled ==5542 || logoChecksum0184Scrambled ==7484) cartridge->mbcType =MEMORY_SACHENMMC1;
+    // Determine whether we have a scrambled header, or a header at the end of the file, *and* that there is no unscrambled Nintendo logo. If so, we have already detected Sachen MMC1/2 or MMM01.
+    int logoChecksum0104          =0; for(int lb=0;lb<0x30;++lb) { logoChecksum0104+=rom[0x104 +lb]; }
+    int logoChecksum0104Scrambled =0; for(int lb=0;lb<0x30;++lb) { int address =0x104 +lb; address =address &~0x53 | address >>6 &0x01 | address >>3 &0x02 | address <<3 &0x10 | address <<6 &0x40; logoChecksum0104Scrambled+=rom[address]; }
+    int logoChecksum0184Scrambled =0; for(int lb=0;lb<0x30;++lb) { int address =0x184 +lb; address =address &~0x53 | address >>6 &0x01 | address >>3 &0x02 | address <<3 &0x10 | address <<6 &0x40; logoChecksum0184Scrambled+=rom[address]; }
+    if (logoChecksum0104 !=5446 && (logoChecksum0104Scrambled ==5542 || logoChecksum0104Scrambled ==7484)) cartridge->mbcType =MEMORY_SACHENMMC2;
+    if (logoChecksum0104 !=5446 && (logoChecksum0184Scrambled ==5542 || logoChecksum0184Scrambled ==7484)) cartridge->mbcType =MEMORY_SACHENMMC1;
     
     int logoChecksumEnd =0;
     int cartridgeHeaderAtEnd =(romFileSize &~0x7FFF) -0x8000;
@@ -297,16 +298,14 @@ unlCompatMode CartDetection::detectUnlCompatMode(byte* rom, Cartridge* cartridge
     int logoChecksum0104=0; for(int lb=0;lb<0x30;++lb) logoChecksum0104+=rom[0x0104 +lb];
     int logoChecksum0184=0; for(int lb=0;lb<0x30;++lb) logoChecksum0184+=rom[0x0184 +lb];
     int logoChecksum0104Scrambled =0; for(int lb=0;lb<0x30;++lb) { int address =0x104 +lb; address =address &~0x53 | address >>6 &0x01 | address >>3 &0x02 | address <<3 &0x10 | address <<6 &0x40; logoChecksum0104Scrambled+=rom[address] ; }
-
-			
     int logoChecksum0184Scrambled =0; for(int lb=0;lb<0x30;++lb) { int address =0x184 +lb; address =address &~0x53 | address >>6 &0x01 | address >>3 &0x02 | address <<3 &0x10 | address <<6 &0x40; logoChecksum0184Scrambled+=rom[address] ; }
     
     /*char buff[100];
     sprintf(buff,"logo: 0104=%d, 0184=%d", logoChecksum0104, logoChecksum0184);
     debug_win(buff);*/
 
-    if (logoChecksum0104Scrambled ==5542 || logoChecksum0104Scrambled ==7484) return UNL_SACHENMMC2;
-    if (logoChecksum0184Scrambled ==5542 || logoChecksum0184Scrambled ==7484) return UNL_SACHENMMC1;
+    if (logoChecksum0104 !=5446 && (logoChecksum0104Scrambled ==5542 || logoChecksum0104Scrambled ==7484)) return UNL_SACHENMMC2;
+    if (logoChecksum0104 !=5446 && (logoChecksum0184Scrambled ==5542 || logoChecksum0184Scrambled ==7484)) return UNL_SACHENMMC1;
     
     switch ( logoChecksum0104 ) {
 	case 2756: // Rocket Games
@@ -434,7 +433,6 @@ unlCompatMode CartDetection::detectUnlCompatMode(byte* rom, Cartridge* cartridge
     if(rom[0x147] ==0xC0 && rom[0x14A] ==0xD1 ||
        std::search(rom, rom +romFileSize, strWisdomTree1, strWisdomTree1 +11) !=(rom +romFileSize) ||
        std::search(rom, rom +romFileSize, strWisdomTree2, strWisdomTree2 +11) !=(rom +romFileSize)) {
-        debug_win("Detected: Wisdom Tree");
 	return UNL_WISDOMTREE;
     }
     return UNL_NONE;
