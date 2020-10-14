@@ -19,7 +19,7 @@ byte MbcUnlSintax::readMemory(register unsigned short address) {
         return  data ^ romBankXor;
     }
 
-    return gbMemMap[address>>12][address&0x0FFF];
+    return MbcNin5_LogoSwitch::readMemory(address);						   
 }
 
 void MbcUnlSintax::writeMemory(unsigned short address, register byte data) {
@@ -154,7 +154,7 @@ void MbcUnlSintax::resetVars(bool preserveMulticartState) {
 
     romBankXor = 0;
 
-    AbstractMbc::resetVars(preserveMulticartState);
+    MbcNin5_LogoSwitch::resetVars(preserveMulticartState);
 }
 
 void MbcUnlSintax::readMbcSpecificVarsFromStateFile(FILE *statefile) {
@@ -164,6 +164,7 @@ void MbcUnlSintax::readMbcSpecificVarsFromStateFile(FILE *statefile) {
     fread(&(sintaxXor02), sizeof(byte), 1, statefile);
     fread(&(sintaxXor03), sizeof(byte), 1, statefile);
     fread(&(romBankXor), sizeof(byte), 1, statefile);
+    MbcNin5_LogoSwitch::readMbcSpecificVarsFromStateFile(statefile);
 }
 
 void MbcUnlSintax::writeMbcSpecificVarsToStateFile(FILE *statefile) {
@@ -173,6 +174,7 @@ void MbcUnlSintax::writeMbcSpecificVarsToStateFile(FILE *statefile) {
     fwrite(&(sintaxXor02), sizeof(byte), 1, statefile);
     fwrite(&(sintaxXor03), sizeof(byte), 1, statefile);
     fwrite(&(romBankXor), sizeof(byte), 1, statefile);
+    MbcNin5_LogoSwitch::writeMbcSpecificVarsToStateFile(statefile);
 }
 
 void MbcUnlSintax::setXorForBank(byte bankNo)
