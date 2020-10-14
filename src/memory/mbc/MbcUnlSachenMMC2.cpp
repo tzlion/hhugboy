@@ -61,8 +61,13 @@ byte MbcUnlSachenMMC2::readMemory(unsigned short address) {
 				address <<3 &0x10 |
 				address <<6 &0x40
 			;
+		// Depending on solder pad settings, 512 KiB and 1 MiB outer banks will return open bus.
+		if ((*gbCartridge)->mbcConfig[0] &1 && outerBank &outerMask &0x40 ||
+		(*gbCartridge)->mbcConfig[0] &2 && outerBank &outerMask &0x20)
+			return 0xFF;
 	}
 	// No Sachen MMC2 game seems to have a logo check, so no need to put the logo into video memory when not emulating the bootstrap ROM.
+	
 	return BasicMbc::readMemory(address);
 }
 
@@ -79,9 +84,11 @@ void MbcUnlSachenMMC2::writeMemory(unsigned short address, register byte data) {
 			break;
 		default:break;
 	}
+	// OPT1 solder pad
+	byte opt1bank =(*gbCartridge)->mbcConfig[0] &4? 0x10: 0x00;
 	// Update memory map
-	for (int bank =0; bank<=3; bank++) gbMemMap[bank] =&(*gbCartRom)[((outerBank &outerMask |                    0) <<14 &rom_size_mask[(*gbCartridge)->ROMsize]) +bank*0x1000];
-	for (int bank =4; bank<=7; bank++) gbMemMap[bank] =&(*gbCartRom)[((outerBank &outerMask | rom_bank &~outerMask) <<14 &rom_size_mask[(*gbCartridge)->ROMsize]) +bank*0x1000 -0x4000];
+	for (int bank =0; bank<=3; bank++) gbMemMap[bank] =&(*gbCartRom)[((outerBank &outerMask |                    0 | opt1bank) <<14 &rom_size_mask[(*gbCartridge)->ROMsize]) +bank*0x1000];
+	for (int bank =4; bank<=7; bank++) gbMemMap[bank] =&(*gbCartRom)[((outerBank &outerMask | rom_bank &~outerMask | opt1bank) <<14 &rom_size_mask[(*gbCartridge)->ROMsize]) +bank*0x1000 -0x4000];
 }
 
 void MbcUnlSachenMMC2::signalMemoryWrite(unsigned short address, register byte data) {

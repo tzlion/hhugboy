@@ -59,6 +59,7 @@ struct Cartridge
    bool battery;
    bool RTC;
    bool rumble;
+   byte mbcConfig[32];
 };
 
 #endif

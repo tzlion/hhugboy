@@ -32,6 +32,7 @@
 Cartridge* CartDetection::processRomInfo(byte* rom, int romFileSize)
 {
     Cartridge* cartridge = new Cartridge();
+    memset(cartridge->mbcConfig, 0, 32);
     readHeader(rom, cartridge, romFileSize);
 
     if (GbxParser::isGbx(rom, romFileSize)) {
