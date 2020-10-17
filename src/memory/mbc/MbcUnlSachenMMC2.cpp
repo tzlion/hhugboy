@@ -20,6 +20,7 @@ void MbcUnlSachenMMC2::resetVars(bool preserveMulticartState) {
     rom_bank =1;
     mode =haveBootstrap && options->use_bootstrap? MODE_LOCKED_DMG: MODE_UNLOCKED;
     unlockCount =0;
+    sync();
 }
 
 void MbcUnlSachenMMC2::readMbcSpecificVarsFromStateFile(FILE *statefile) {
@@ -82,13 +83,13 @@ void MbcUnlSachenMMC2::writeMemory(unsigned short address, register byte data) {
 		case 2:	// ROM bank mask register
 			if ((rom_bank &0x30) ==0x30) outerMask =data;
 			break;
-		default:break;
+		case 5: // Write to RAM, if present
+			gbMemMap[address>>12][address&0x0FFF] = data;
+			return; // No memory map update needed
+		default:// other, ignore
+			return; // No memory map update needed
 	}
-	// OPT1 solder pad
-	byte opt1bank =(*gbCartridge)->mbcConfig[0] &4? 0x10: 0x00;
-	// Update memory map
-	for (int bank =0; bank<=3; bank++) gbMemMap[bank] =&(*gbCartRom)[((outerBank &outerMask |                    0 | opt1bank) <<14 &rom_size_mask[(*gbCartridge)->ROMsize]) +bank*0x1000];
-	for (int bank =4; bank<=7; bank++) gbMemMap[bank] =&(*gbCartRom)[((outerBank &outerMask | rom_bank &~outerMask | opt1bank) <<14 &rom_size_mask[(*gbCartridge)->ROMsize]) +bank*0x1000 -0x4000];
+	sync();
 }
 
 void MbcUnlSachenMMC2::signalMemoryWrite(unsigned short address, register byte data) {
@@ -96,4 +97,12 @@ void MbcUnlSachenMMC2::signalMemoryWrite(unsigned short address, register byte d
 		unlockCount =0;
 		mode =MODE_LOCKED_CGB;
 	}
+}
+
+void MbcUnlSachenMMC2::sync() {
+	// OPT1 solder pad
+	byte opt1bank =(*gbCartridge)->mbcConfig[0] &4? 0x10: 0x00;
+	// Update memory map
+	for (int bank =0; bank<=3; bank++) gbMemMap[bank] =&(*gbCartRom)[((outerBank &outerMask |                    0 | opt1bank) <<14 &rom_size_mask[(*gbCartridge)->ROMsize]) +bank*0x1000];
+	for (int bank =4; bank<=7; bank++) gbMemMap[bank] =&(*gbCartRom)[((outerBank &outerMask | rom_bank &~outerMask | opt1bank) <<14 &rom_size_mask[(*gbCartridge)->ROMsize]) +bank*0x1000 -0x4000];
 }

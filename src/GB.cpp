@@ -470,17 +470,17 @@ void gb_system::reset(bool change_mode, bool preserveMulticartState)
 
 void gb_system::cpu_reset()
 {   
-   A = 0x01;
-   F = 0xB0;
+   A = gbc_mode? 0x11: 0x01;
+   F = gbc_mode? 0x80: 0xB0;
    ZFLAG = HFLAG = CFLAG = 1;
    NFLAG = 0;
 //   flags = 0x5100;
       
-   BC.W = 0x0013;
-   DE.W = 0x00D8;
-   HL.W = 0x014D;
+   BC.W = gbc_mode? 0x0000: 0x0013;
+   DE.W = gbc_mode? 0xFF56: 0x00D8;
+   HL.W = gbc_mode? 0x000D: 0x014D;
    SP.W = 0xFFFE;
-   PC.W = haveBootstrap && options->use_bootstrap? 0x0000: 0x100;
+   PC.W = haveBootstrap && options->use_bootstrap? 0x0000: 0x0100;
    
    CPUHalt = 0;
    IME = 0;

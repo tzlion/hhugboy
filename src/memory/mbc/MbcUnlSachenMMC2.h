@@ -20,6 +20,7 @@ public:
         virtual void resetVars(bool preserveMulticartState) override;
         virtual void readMbcSpecificVarsFromStateFile(FILE *statefile) override;
         virtual void writeMbcSpecificVarsToStateFile(FILE *statefile) override;
+	virtual void sync();
 private:
 	byte	outerBank;
 	byte	outerMask;
