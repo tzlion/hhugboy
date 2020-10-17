@@ -99,9 +99,10 @@ void MbcUnlSachenMMC1::writeMemory(unsigned short address, register byte data) {
 		case 2:	// ROM bank mask register
 			if ((rom_bank &0x30) ==0x30) outerMask =data;
 			break;
-		case 3:	break;
-		default:// Write to RAM, if present
+		case 5: // Write to RAM, if present
 			gbMemMap[address>>12][address&0x0FFF] = data;
+			return; // No memory map update needed
+		default:// other, ignore
 			return; // No memory map update needed
 	}
 	// Update memory map

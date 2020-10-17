@@ -82,7 +82,11 @@ void MbcUnlSachenMMC2::writeMemory(unsigned short address, register byte data) {
 		case 2:	// ROM bank mask register
 			if ((rom_bank &0x30) ==0x30) outerMask =data;
 			break;
-		default:break;
+		case 5: // Write to RAM, if present
+			gbMemMap[address>>12][address&0x0FFF] = data;
+			return; // No memory map update needed
+		default:// other, ignore
+			return; // No memory map update needed
 	}
 	// OPT1 solder pad
 	byte opt1bank =(*gbCartridge)->mbcConfig[0] &4? 0x10: 0x00;
