@@ -116,6 +116,10 @@ LRESULT CALLBACK WindowProcedure(HWND hwnd, UINT message, WPARAM wParam, LPARAM 
 {
     switch (message)
     {
+        case WM_SYSKEYDOWN:
+            if (wParam == VK_MENU) {
+                return 0;
+            }
         case WM_COMMAND:
             menuAction(wParam);
             //char txt[100];
