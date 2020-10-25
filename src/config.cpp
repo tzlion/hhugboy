@@ -92,8 +92,8 @@ program_configuration::program_configuration():
         autofire_speed(0),
         unl_compat_mode(UNL_AUTO)
 {
-    multi_key_config[PLAYER1][BUTTON_A] = DIK_Z;
-    multi_key_config[PLAYER1][BUTTON_B] = DIK_X;
+    multi_key_config[PLAYER1][BUTTON_A] = DIK_X;
+    multi_key_config[PLAYER1][BUTTON_B] = DIK_Z;
     multi_key_config[PLAYER1][BUTTON_START] = DIK_RETURN;
     multi_key_config[PLAYER1][BUTTON_SELECT] = DIK_BACK;
     multi_key_config[PLAYER1][BUTTON_TURBO_A] = DIK_A;
