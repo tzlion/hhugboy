@@ -24,13 +24,16 @@ https://github.com/tzlion/hhugboy
 [ UNLICENSED COMPATIBILITY MODES ] - - - - - - - - - - - - - - - - - - - - - - -
 
  Auto      For unlicensed publishers with unique boot logos, the emulator will
-           attempt to automatically determine which mode to use based on the
+           attempt to automatically determine which mapper to use based on the
            logo present in the ROM.
-           * "Niutoude" -> Li Cheng mode
-           * part-inverted Nintendo (looks like "Kwichvu") -> Sintax mode
+           * "Niutoude" -> Li Cheng
+           * part-inverted Nintendo (looks like "Kwichvu") -> Sintax
+           * "GK.RX" -> Hitek
+           * "Rocket", "Smartcom" -> Rocket Games
            This is not always a 100% reliable indicator though! 
            e.g. some Li Cheng games do not have the "Niutoude" logo.
            If a game doesn't work, try selecting the mode manually.
+           Sachen and Wisdom Tree games will also be detected by other means.
 
            For other games and multicarts, the detection is currently done
            based on the ROM title and size, meaning only certain predefined
