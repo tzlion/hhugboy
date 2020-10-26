@@ -96,8 +96,8 @@ program_configuration::program_configuration():
     multi_key_config[PLAYER1][BUTTON_B] = DIK_Z;
     multi_key_config[PLAYER1][BUTTON_START] = DIK_RETURN;
     multi_key_config[PLAYER1][BUTTON_SELECT] = DIK_BACK;
-    multi_key_config[PLAYER1][BUTTON_TURBO_A] = DIK_A;
-    multi_key_config[PLAYER1][BUTTON_TURBO_B] = DIK_S;
+    multi_key_config[PLAYER1][BUTTON_TURBO_A] = DIK_S;
+    multi_key_config[PLAYER1][BUTTON_TURBO_B] = DIK_A;
     multi_key_config[PLAYER1][BUTTON_TURBO_START] = 0;
     multi_key_config[PLAYER1][BUTTON_TURBO_SELECT] = 0;
     multi_key_config[PLAYER1][BUTTON_UP] = DIK_UP;

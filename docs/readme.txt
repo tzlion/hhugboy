@@ -197,6 +197,7 @@ https://github.com/tzlion/hhugboy
    when using colour mixing (NewRisingSun)
  * Fix font file handle being kept open (NewRisingSun)
  * Reverse default A and B buttons to X and Z to reflect real console order
+   (default turbo A and B buttons are also reversed accordingly)
  * Don't activate menus when pressing Alt alone so it can be used as an input
 
  v1.2.8 27th July 2020
