@@ -11,12 +11,12 @@
 #define HHUGBOY_MBCUNLLICHENG_H
 
 
-#include "MbcNin5.h"
+#include "MbcNin5_LogoSwitch.h"
 
 //-------------------------------------------------------------------------
 // For Li Cheng/Xing Xing/Niutoude Chinese carts
 //-------------------------------------------------------------------------
-class MbcUnlLiCheng : public MbcNin5 {
+class MbcUnlLiCheng : public MbcNin5_LogoSwitch {
 public:
     virtual void writeMemory(unsigned short address, register byte data) override;
 

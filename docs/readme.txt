@@ -1,4 +1,4 @@
-hhugboy v1.2.8
+hhugboy v1.3.0
 a Game Boy/Game Boy Color emulator for Windows
 by taizou (cactusgunman@gmail.com)
 http://hhug.me/
@@ -10,6 +10,7 @@ https://github.com/tzlion/hhugboy
   * Unlicensed Mapper support! (Sintax, Li Cheng, BBD, Hitek, more!)
   * Support for Vast Fame and some other multicarts!
   * GBX ROM format support!
+  * Bootstrap ROM support!
   * Screenshots!
   * Memory searching
   * Recent ROM list
@@ -23,13 +24,16 @@ https://github.com/tzlion/hhugboy
 [ UNLICENSED COMPATIBILITY MODES ] - - - - - - - - - - - - - - - - - - - - - - -
 
  Auto      For unlicensed publishers with unique boot logos, the emulator will
-           attempt to automatically determine which mode to use based on the
+           attempt to automatically determine which mapper to use based on the
            logo present in the ROM.
-           * "Niutoude" -> Li Cheng mode
-           * part-inverted Nintendo (looks like "Kwichvu") -> Sintax mode
+           * "Niutoude" -> Li Cheng
+           * part-inverted Nintendo (looks like "Kwichvu") -> Sintax
+           * "GK.RX" -> Hitek
+           * "Rocket", "Smartcom" -> Rocket Games
            This is not always a 100% reliable indicator though! 
            e.g. some Li Cheng games do not have the "Niutoude" logo.
            If a game doesn't work, try selecting the mode manually.
+           Sachen and Wisdom Tree games will also be detected by other means.
 
            For other games and multicarts, the detection is currently done
            based on the ROM title and size, meaning only certain predefined
@@ -101,10 +105,10 @@ https://github.com/tzlion/hhugboy
                            Down       Down
                            Left       Left
                            Right      Right
-                           Z          A
-                           X          B
-                           A          Turbo A
-                           S          Turbo B
+                           X          A
+                           Z          B
+                           S          Turbo A
+                           A          Turbo B
                            Q          L (stretch in GBA mode)
                            W          R (unstretch in GBA mode)
                            Enter      Start
@@ -178,9 +182,23 @@ https://github.com/tzlion/hhugboy
  * Action Replay cheats
  * Implement a rendering engine other than DirectDraw
  * Other language translations
- * Proper MMM01 support
 
 [ RELEASE HISTORY ]- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+
+ v1.3.0 29th October 2020
+ * New mapper support: Sachen MMC1, Sachen MMC2, Mani M161, Rocket Games,
+   Wisdom Tree (NewRisingSun)
+ * MMM01 mapper rewritten & implemented properly (NewRisingSun)
+ * Support bootstrap ROMs named cgb_boot.bin or dmg_boot.bin (NewRisingSun)
+ * Fix certain Unicode filenames corrupting config file (NewRisingSun)
+   Note this changes the encoding of file paths, so if you are using a config
+   file from an older version, you will have to redefine them
+ * Fix rendering issues causing wrong colours in 32-bit rendering and 16-bit
+   when using colour mixing (NewRisingSun)
+ * Fix font file handle being kept open (NewRisingSun)
+ * Reverse default A and B buttons to X and Z to reflect real console order
+   (default turbo A and B buttons are also reversed accordingly)
+ * Don't activate menus when pressing Alt alone so it can be used as an input
 
  v1.2.8 27th July 2020
  * Add debug logging for Sintax & BBD protection initialisation modes
@@ -260,7 +278,7 @@ https://github.com/tzlion/hhugboy
 [ COPYRIGHT/LICENSE ]- - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 
  hhugboy Game Boy emulator
- copyright 2013-2018 taizou
+ copyright 2013-2020 taizou
 
  Based on GEST
  Copyright (C) 2003-2010 TM
@@ -283,5 +301,6 @@ https://github.com/tzlion/hhugboy
 
 [ SPECIAL THANKS! ]- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 
+ Massive contributions by NewRisingSun
  PCPaint Bold font by codeman38 (http://www.zone38.net/)
  Beta testers - MLX, Robyn, KingPepe, JP
