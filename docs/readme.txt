@@ -1,4 +1,4 @@
-hhugboy v1.x.x-dev
+hhugboy v1.3.0
 a Game Boy/Game Boy Color emulator for Windows
 by taizou (cactusgunman@gmail.com)
 http://hhug.me/
@@ -185,7 +185,7 @@ https://github.com/tzlion/hhugboy
 
 [ RELEASE HISTORY ]- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 
- v1.x.x xxxx xxxx xxxx
+ v1.3.0 29th October 2020
  * New mapper support: Sachen MMC1, Sachen MMC2, Mani M161, Rocket Games,
    Wisdom Tree (NewRisingSun)
  * MMM01 mapper rewritten & implemented properly (NewRisingSun)
