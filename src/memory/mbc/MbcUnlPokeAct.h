@@ -18,6 +18,8 @@
 class MbcUnlPokeAct : public MbcNin5 {
     public:
         virtual byte readMemory(unsigned short address) override;
+    private:
+        byte bitwank(byte digits);
 };
 
 #endif //HHUGBOY_MBCUNLPOKEACT_H

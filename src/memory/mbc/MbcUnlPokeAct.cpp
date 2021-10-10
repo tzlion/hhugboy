@@ -1,5 +1,9 @@
 
+#include <cstdio>
 #include "MbcUnlPokeAct.h"
+#include "../../debug.h"
+
+byte lastpiss = 00;
 
 byte MbcUnlPokeAct::readMemory(unsigned short address) {
 
@@ -8,6 +12,12 @@ byte MbcUnlPokeAct::readMemory(unsigned short address) {
         if (address < 0x5000) {
             byte digits = (address >> 4) & 0xff;
             byte reverse[8] = {7,6,5,4,3,2,1,0};
+
+            byte lookedup = 0;
+            byte calculated = 0;
+
+            char buff[100];
+
             switch (digits & 7) {
                 case 0:
                     return digits;
@@ -22,41 +32,48 @@ byte MbcUnlPokeAct::readMemory(unsigned short address) {
                 case 5:
                     return switchOrder(digits, reverse);
                 case 6:
+                    calculated = bitwank(digits);
                     switch(digits) {
                         // idk the logic for this one yet
-                        case 0x06: return 0x30;
-                        case 0x0e: return 0x32;
-                        case 0x16: return 0x70;
-                        case 0x1e: return 0x72;
-                        case 0x26: return 0x70;
-                        case 0x2e: return 0x72;
-                        case 0x36: return 0x74;
-                        case 0x3e: return 0x76;
-                        case 0x46: return 0xb0;
-                        case 0x4e: return 0xb2;
-                        case 0x56: return 0xf0;
-                        case 0x5e: return 0xf2;
-                        case 0x66: return 0xf0;
-                        case 0x6e: return 0xf2;
-                        case 0x76: return 0xf4;
-                        case 0x7e: return 0xf6;
-                        case 0x86: return 0xb0;
-                        case 0x8e: return 0xb2;
-                        case 0x96: return 0xf0;
-                        case 0x9e: return 0xf2;
-                        case 0xa6: return 0xf0;
-                        case 0xae: return 0xf2;
-                        case 0xb6: return 0xf4;
-                        case 0xbe: return 0xf6;
-                        case 0xc6: return 0xb8;
-                        case 0xce: return 0xba;
-                        case 0xd6: return 0xf8;
-                        case 0xde: return 0xfa;
-                        case 0xe6: return 0xf8;
-                        case 0xee: return 0xfa;
-                        case 0xf6: return 0xfc;
-                        case 0xfe: return 0xfe;
+                        case 0x06: lookedup = 0x30; break;
+                        case 0x0e: lookedup = 0x32; break;
+                        case 0x16: lookedup = 0x70; break;
+                        case 0x1e: lookedup = 0x72; break;
+                        case 0x26: lookedup = 0x70; break;
+                        case 0x2e: lookedup = 0x72; break;
+                        case 0x36: lookedup = 0x74; break;
+                        case 0x3e: lookedup = 0x76; break;
+                        case 0x46: lookedup = 0xb0; break;
+                        case 0x4e: lookedup = 0xb2; break;
+                        case 0x56: lookedup = 0xf0; break;
+                        case 0x5e: lookedup = 0xf2; break;
+                        case 0x66: lookedup = 0xf0; break;
+                        case 0x6e: lookedup = 0xf2; break;
+                        case 0x76: lookedup = 0xf4; break;
+                        case 0x7e: lookedup = 0xf6; break;
+                        case 0x86: lookedup = 0xb0; break;
+                        case 0x8e: lookedup = 0xb2; break;
+                        case 0x96: lookedup = 0xf0; break;
+                        case 0x9e: lookedup = 0xf2; break;
+                        case 0xa6: lookedup = 0xf0; break;
+                        case 0xae: lookedup = 0xf2; break;
+                        case 0xb6: lookedup = 0xf4; break;
+                        case 0xbe: lookedup = 0xf6; break;
+                        case 0xc6: lookedup = 0xb8; break;
+                        case 0xce: lookedup = 0xba; break;
+                        case 0xd6: lookedup = 0xf8; break;
+                        case 0xde: lookedup = 0xfa; break;
+                        case 0xe6: lookedup = 0xf8; break;
+                        case 0xee: lookedup = 0xfa; break;
+                        case 0xf6: lookedup = 0xfc; break;
+                        case 0xfe: lookedup = 0xfe; break;
                     }
+                    if (digits != lastpiss) {
+                        lastpiss = digits;
+                        sprintf(buff,"digits %x = %x / %x", digits, lookedup, calculated);
+                        debug_win(buff);
+                    }
+                    return lookedup;
                 case 7:
                     switch(digits) {
                         // idk the logic for this one yet either
@@ -107,4 +124,17 @@ byte MbcUnlPokeAct::readMemory(unsigned short address) {
     // just noting it here in case any future dump needs it
 
     return MbcNin5::readMemory(address);
+}
+
+byte MbcUnlPokeAct::bitwank(byte digits) {
+    // here it ORs each pair of bits to create the first half of the returned byte
+    // then ANDs each pair of bits to create the second half
+    // is there a simpler way to do this? maybe?
+    byte evenbits = digits & 0xaa;
+    byte oddbits = digits & 0x55;
+    byte ors = evenbits | (oddbits << 1);
+    byte ands = evenbits & (oddbits << 1);
+    byte evensToFirstHalf[8] = {0,2,4,6,1,3,5,7};
+    byte evensToSecondHalf[8] = {1,3,5,7,0,2,4,6};
+    return (switchOrder(ors, evensToFirstHalf) & 0xf0) | (switchOrder(ands, evensToSecondHalf) & 0x0f);
 }
