@@ -19,7 +19,11 @@ class MbcUnlPokeAct : public MbcNin5 {
     public:
         virtual byte readMemory(unsigned short address) override;
     private:
-        byte bitwank(byte digits);
+        byte getValue6(byte digits);
+        byte getValue7(byte digits);
+        byte reverse[8] = {7,6,5,4,3,2,1,0};
+        byte evenBitsTwice[8] = {0,2,4,6,0,2,4,6};
+        byte oddBitsTwice[8] = {1,3,5,7,1,3,5,7};
 };
 
 #endif //HHUGBOY_MBCUNLPOKEACT_H
