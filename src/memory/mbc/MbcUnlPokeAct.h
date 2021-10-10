@@ -11,12 +11,13 @@
 
 #include "MbcNin5.h"
 
-// Simple protection only known to be used by 口袋怪獸-動作篇 with HK0819 pcb
+// Simple protection known to be used by:
+// 口袋怪獸-動作篇 [Pokemon Action Chapter] with HK0819 pcb
+// 怪獸 GO!GO! II [Monster Go! Go! II] with HK0701 pcb
 
 class MbcUnlPokeAct : public MbcNin5 {
     public:
         virtual byte readMemory(unsigned short address) override;
-        virtual void writeMemory(unsigned short address, register byte data) override;
 };
 
 #endif //HHUGBOY_MBCUNLPOKEACT_H
