@@ -191,7 +191,7 @@ https://github.com/tzlion/hhugboy
 [ RELEASE HISTORY ]- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 
  vx.x.x xxth xxxx 2021
- * New mapper support:
+ * New mapper support: New GB Color HKxxxx PCB (used for Pokémon hacks)
 
  v1.3.0 29th October 2020
  * New mapper support: Sachen MMC1, Sachen MMC2, Mani M161, Rocket Games,
