@@ -182,6 +182,9 @@ void init_menu_options()
       case UNL_POKEJD:
       	emuMenu.checkOption(IDM_UNLPOKEJD);
       break;
+      case UNL_NEWGBHK:
+      	emuMenu.checkOption(IDM_UNLNEWGBHK);
+      break;
       default:
          emuMenu.checkOption(IDM_UNLAUTO);    
       break;

@@ -119,7 +119,7 @@ protected:
     {
         byte newbyte=0;
         for( byte x=0;x<8;x++ ) {
-            newbyte += ( ( input >> ( 7 - reorder[x] ) ) & 1 ) << ( 7 - x );
+            newbyte |= ( ( input >> ( 7 - reorder[x] ) ) & 1 ) << ( 7 - x );
         }
 
         return newbyte;

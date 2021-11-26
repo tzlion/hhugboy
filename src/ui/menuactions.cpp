@@ -527,6 +527,10 @@ void menuAction(int menuOption)
             options->unl_compat_mode = UNL_POKEJD;
             emuMenu.checkOption(IDM_UNLPOKEJD);
             break;
+        case IDM_UNLNEWGBHK:
+            options->unl_compat_mode = UNL_NEWGBHK;
+            emuMenu.checkOption(IDM_UNLNEWGBHK);
+            break;
         case IDM_UNLMBC1COMPAT:
             options->unl_compat_mode = UNL_MBC1SAVE;
             emuMenu.checkOption(IDM_UNLMBC1COMPAT);

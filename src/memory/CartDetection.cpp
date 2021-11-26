@@ -545,8 +545,12 @@ bool CartDetection::detectUnlicensedCarts(byte *rom, Cartridge *cartridge, int r
             cartridge->ROMsize = detectGbRomSize(romFileSize);
             cartridge->mbcType = MEMORY_POKEJD;
             break;
-        case UNL_DBZTR: // Can't be manually selected currently
+        case UNL_DBZTR:
             cartridge->mbcType = MEMORY_DBZTRANS;
+            break;
+        case UNL_NEWGBHK:
+            cartridge->ROMsize = detectGbRomSize(romFileSize);
+            cartridge->mbcType = MEMORY_NEWGBHK;
             break;
         case UNL_RM8OLD: // Can't be manually selected currently
             cartridge->mbcType = MEMORY_ROCKMAN8;
