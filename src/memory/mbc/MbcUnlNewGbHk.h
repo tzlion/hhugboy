@@ -6,16 +6,16 @@
  * As part of the hhugboy project it is also licensed under the GNU General Public License v2
  * See "license.txt" in the project root
  */
-#ifndef HHUGBOY_MBCUNLPOKEACT_H
-#define HHUGBOY_MBCUNLPOKEACT_H
+#ifndef HHUGBOY_MBCUNLNEWGBHK_H
+#define HHUGBOY_MBCUNLNEWGBHK_H
 
 #include "MbcNin5.h"
 
-// Simple protection known to be used by:
+// Simple protection known to be used by "New GB Color" carts with HKxxxx PCBs as follows:
 // 口袋怪獸-動作篇 [Pokemon Action Chapter] with HK0819 pcb
 // 怪獸 GO!GO! II [Monster Go! Go! II] with HK0701 pcb
 
-class MbcUnlPokeAct : public MbcNin5 {
+class MbcUnlNewGbHk : public MbcNin5 {
     public:
         virtual byte readMemory(unsigned short address) override;
     private:
@@ -26,4 +26,4 @@ class MbcUnlPokeAct : public MbcNin5 {
         byte oddBitsTwice[8] = {1,3,5,7,1,3,5,7};
 };
 
-#endif //HHUGBOY_MBCUNLPOKEACT_H
+#endif //HHUGBOY_MBCUNLNEWGBHK_H

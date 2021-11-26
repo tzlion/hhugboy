@@ -7,9 +7,9 @@
  * See "license.txt" in the project root
  */
 
-#include "MbcUnlPokeAct.h"
+#include "MbcUnlNewGbHk.h"
 
-byte MbcUnlPokeAct::readMemory(unsigned short address) {
+byte MbcUnlNewGbHk::readMemory(unsigned short address) {
 
     if (address >= 0x4000 && address <= 0x7fff && rom_bank >= 0x80) {
         // protection values read
@@ -48,7 +48,7 @@ byte MbcUnlPokeAct::readMemory(unsigned short address) {
     return MbcNin5::readMemory(address);
 }
 
-byte MbcUnlPokeAct::getValue6(byte digits) {
+byte MbcUnlNewGbHk::getValue6(byte digits) {
     // OR each pair of bits to create the first half of the returned byte
     // then AND each pair to create the second half
     byte evenbits = switchOrder(digits, evenBitsTwice);
@@ -56,7 +56,7 @@ byte MbcUnlPokeAct::getValue6(byte digits) {
     return ((evenbits | oddbits) & 0xf0) | ((evenbits & oddbits) & 0x0f);
 }
 
-byte MbcUnlPokeAct::getValue7(byte digits) {
+byte MbcUnlNewGbHk::getValue7(byte digits) {
     // XOR each pair of bits & invert the result to create the first half of the returned byte
     // then XOR each pair without inverting to create the second half
     byte evenbits = switchOrder(digits, evenBitsTwice);
