@@ -63,6 +63,7 @@ public:
     void init(byte** gbMemMap, Cartridge** gbCartridge, byte** gbMemory, byte** gbCartRom, byte** gbCartRam, int* gbRumbleCounter);
     virtual byte readMemory(register unsigned short address) = 0;
     virtual void writeMemory(unsigned short address, register byte data) = 0;
+    virtual void signalMemoryWrite(unsigned short address, register byte data);
     virtual void resetVars(bool preserveMulticartState);
     virtual void writeMbcSpecificVarsToStateFile(FILE *statefile);
     virtual void writeSgbMbcSpecificVarsToStateFile(FILE *statefile);
@@ -118,7 +119,7 @@ protected:
     {
         byte newbyte=0;
         for( byte x=0;x<8;x++ ) {
-            newbyte += ( ( input >> ( 7 - reorder[x] ) ) & 1 ) << ( 7 - x );
+            newbyte |= ( ( input >> ( 7 - reorder[x] ) ) & 1 ) << ( 7 - x );
         }
 
         return newbyte;

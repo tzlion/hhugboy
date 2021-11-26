@@ -28,6 +28,10 @@
 #include "memory/GB_MBC.h"
 #include "options.h"
 
+extern unsigned char bootstrapDMG[256], bootstrapCGB[2304], *bootstrap;
+extern bool haveBootstrap_DMG, haveBootstrap_CGB, haveBootstrap;
+extern bool mapBootstrap;
+
 class gb_system
 {
 public:
@@ -308,7 +312,9 @@ public:
          for(int i=0;i<number_of_cheats;++i)
             if(address == cheat[i].address && (!(cheat[i].long_code) || (cheat[i].old_value == mem_map[address>>12][address&0x0fff])))
                return cheat[i].new_value;
-              
+      if (mapBootstrap && (address <0x0100 || gbc_mode && address >=0x0200 && address <0x0900))
+	return bootstrap[address];
+      else	    
       if ((address >= 0x0000 && address < 0x8000)|| (address >= 0xa000 && address < 0xc000) ) {
       	return mbc->readmemory_cart(address);
       }
@@ -318,6 +324,8 @@ public:
 
    unsigned short readword(register unsigned short address) //for fast memory access
    {
+      if (mapBootstrap && (address <0x0100 || gbc_mode && address >=0x0200 && address <0x0900))
+	return (unsigned short) bootstrap[address] | bootstrap[address +1] <<8;
       if ((address >= 0x0000 && address < 0x8000) || (address >= 0xa000 && address < 0xc000) ) {
       	return  (unsigned short) ( mbc->readmemory_cart(address) | mbc->readmemory_cart(address+1) << 8  );
       }

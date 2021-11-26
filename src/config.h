@@ -39,7 +39,8 @@ void init_menu_options();
 
 using namespace std;
 
-void getlinew(ifstream&, string);
+void getlinew(ifstream&, wstring&);
+void putlinew(ostream&, const wstring&);
 
 class program_configuration
 {
@@ -56,6 +57,7 @@ public:
 
     bool halt_on_unknown_opcode;
     bool reduce_cpu_usage;
+    bool use_bootstrap;
 
     bool speedup_skip_9frames;
     bool speedup_sound_off;

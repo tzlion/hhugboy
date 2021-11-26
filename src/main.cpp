@@ -44,6 +44,7 @@ using namespace std;
 #include "sound.h"
 #include "SGB.h"
 #include "rendering/render.h"
+#include "GB.h"
 
 #include "directinput.h"
 
@@ -53,7 +54,7 @@ gb_system* GB = NULL;
 gb_system* GB1 = NULL;
 gb_system* GB2 = NULL;
 
-const wchar_t* prg_version = L"1.2.8";
+const wchar_t* prg_version = L"1.3.0";
 
 // Window stuff? ----------------------------------------
 
@@ -294,6 +295,27 @@ void initConfigs()
         debug_print(str_table[ERROR_CFG_FILE_READ]);
 }
 
+void loadBootstrap() {
+	FILE* F;
+	SetCurrentDirectory(options->program_directory.c_str());
+
+	haveBootstrap_DMG =false;
+	F =fopen("dmg_boot.bin", "rb");
+	if (F) {
+		fread(bootstrapDMG, 1, 256, F);
+		fclose(F);
+		haveBootstrap_DMG =true;
+	}
+	
+	haveBootstrap_CGB =false;
+	F =fopen("cgb_boot.bin", "rb");
+	if (F) {
+		fread(bootstrapCGB, 1, 2304, F);
+		fclose(F);
+		haveBootstrap_CGB =true;
+	}
+}
+
 void initGraphics()
 {
     if(!renderer.init(&palette))
@@ -324,6 +346,7 @@ int WINAPI WinMain(HINSTANCE hThisInstance,HINSTANCE hPrevInstance, LPSTR  lpszA
 
    initGraphics();
    initConfigs();
+   loadBootstrap();
 
    showWindow();
 

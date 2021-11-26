@@ -21,7 +21,7 @@ byte MbcUnlBbd::readMemory(register unsigned short address) {
         return swapDataByte(data);
     }
 
-    return gbMemMap[address>>12][address&0x0FFF];
+    return MbcNin5_LogoSwitch::readMemory(address);
 }
 
 void MbcUnlBbd::writeMemory(unsigned short address, register byte data) {
@@ -75,17 +75,19 @@ MbcUnlBbd::MbcUnlBbd( byte bbdBitSwapMode, byte bbdBankSwapMode ) : bitSwapMode(
 void MbcUnlBbd::resetVars(bool preserveMulticartState) {
     bitSwapMode = 0;
     bankSwapMode = 0;
-    AbstractMbc::resetVars(preserveMulticartState);
+    MbcNin5_LogoSwitch::resetVars(preserveMulticartState);
 }
 
     void MbcUnlBbd::readMbcSpecificVarsFromStateFile(FILE *statefile) {
     fread(&(bitSwapMode), sizeof(byte), 1, statefile);
     fread(&(bankSwapMode), sizeof(byte), 1, statefile);
+    MbcNin5_LogoSwitch::readMbcSpecificVarsFromStateFile(statefile);
 }
 
 void MbcUnlBbd::writeMbcSpecificVarsToStateFile(FILE *statefile) {
     fwrite(&(bitSwapMode), sizeof(byte), 1, statefile);
     fwrite(&(bankSwapMode), sizeof(byte), 1, statefile);
+    MbcNin5_LogoSwitch::writeMbcSpecificVarsToStateFile(statefile);
 }
 
 byte MbcUnlBbd::swapDataByte(byte data) {

@@ -103,8 +103,6 @@ set(SOURCE_FILES
         src/memory/mbc/MbcLicMmm01.h
         src/memory/mbc/MbcNin1.cpp
         src/memory/mbc/MbcNin1.h
-        src/memory/mbc/MbcUnlSachen8in1.cpp
-        src/memory/mbc/MbcUnlSachen8in1.h
         src/memory/mbc/MbcUnlLbMulti.cpp
         src/memory/mbc/MbcUnlLbMulti.h
         src/memory/mbc/MbcUnlBbd.cpp
@@ -137,6 +135,20 @@ set(SOURCE_FILES
         src/rendering/DirectDrawStuff.h
         src/memory/mbc/MbcUnlPokeJadeDia.cpp
         src/memory/mbc/MbcUnlPokeJadeDia.h
+        src/memory/mbc/MbcUnlWisdomTree.cpp
+        src/memory/mbc/MbcUnlWisdomTree.h
+        src/memory/mbc/MbcUnlSachenMMC1.cpp
+        src/memory/mbc/MbcUnlSachenMMC1.h
+        src/memory/mbc/MbcUnlSachenMMC2.cpp
+        src/memory/mbc/MbcUnlSachenMMC2.h
+        src/memory/mbc/MbcLicM161.cpp
+        src/memory/mbc/MbcLicM161.h
+        src/memory/mbc/MbcUnlRocketGames.cpp
+        src/memory/mbc/MbcUnlRocketGames.h
+        src/memory/mbc/MbcNin5_LogoSwitch.cpp
+        src/memory/mbc/MbcNin5_LogoSwitch.h
+        src/memory/mbc/MbcUnlNewGbHk.cpp
+        src/memory/mbc/MbcUnlNewGbHk.h
         src/memory/mbc/MbcUnlMaVf.cpp
         src/memory/mbc/MbcUnlMaVf.h
 )

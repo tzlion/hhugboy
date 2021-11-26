@@ -48,7 +48,6 @@
 #include "mbc/MbcNin1Multi.h"
 #include "mbc/MbcLicMmm01.h"
 #include "mbc/MbcUnlPoke2in1.h"
-#include "mbc/MbcUnlSachen8in1.h"
 #include "mbc/MbcLicMk12.h"
 #include "mbc/MbcUnlLbMulti.h"
 #include "mbc/MbcUnlBbd.h"
@@ -58,6 +57,12 @@
 #include "mbc/MbcUnlNtOld1.h"
 #include "mbc/MbcUnlNtOld2.h"
 #include "mbc/MbcUnlPokeJadeDia.h"
+#include "mbc/MbcUnlWisdomTree.h"
+#include "mbc/MbcUnlSachenMMC1.h"
+#include "mbc/MbcUnlSachenMMC2.h"
+#include "mbc/MbcLicM161.h"
+#include "mbc/MbcUnlRocketGames.h"
+#include "mbc/MbcUnlNewGbHk.h"
 #include "mbc/MbcUnlMaVf.h"
 
 // So maybe this should be "cart" and a lot of whats in rom.cpp now e.g. autodetection should go in here..
@@ -92,6 +97,10 @@ byte gb_mbc::readmemory_cart(register unsigned short address) {
 
 void gb_mbc::writememory_cart(unsigned short address, register byte data) {
     mbc->writeMemory(address,data);
+}
+
+void gb_mbc::signalMemoryWrite(unsigned short address, register byte data) {
+    mbc->signalMemoryWrite(address,data);
 }
 
 void gb_mbc::writeMbcSpecificStuffToSaveFile(FILE *savefile) {
@@ -212,9 +221,6 @@ void gb_mbc::setMemoryReadWrite(MbcType memory_type) {
         case MEMORY_DBZTRANS:
             mbc = new MbcUnlDbzTrans();
             break;
-        case MEMORY_8IN1:
-            mbc = new MbcUnlSachen8in1();
-            break;
         case MEMORY_MK12:
             mbc = new MbcLicMk12();
             break;
@@ -226,6 +232,24 @@ void gb_mbc::setMemoryReadWrite(MbcType memory_type) {
             break;
         case MEMORY_POKEJD:
             mbc = new MbcUnlPokeJadeDia();
+            break;
+        case MEMORY_WISDOMTREE:
+            mbc = new MbcUnlWisdomTree();
+            break;
+        case MEMORY_SACHENMMC1:
+            mbc = new MbcUnlSachenMMC1();
+            break;
+        case MEMORY_SACHENMMC2:
+            mbc = new MbcUnlSachenMMC2();
+            break;
+        case MEMORY_M161:
+            mbc = new MbcLicM161();
+            break;
+        case MEMORY_ROCKET:
+            mbc = new MbcUnlRocketGames();
+            break;
+        case MEMORY_NEWGBHK:
+            mbc = new MbcUnlNewGbHk();
             break;
         case MEMORY_MAVF:
             mbc = new MbcUnlMaVf();
