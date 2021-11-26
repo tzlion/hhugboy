@@ -139,6 +139,7 @@ BEGIN
                     MENUITEM "L&iebao Technology", IDM_UNLLIEBAO
                     MENUITEM "&Pokémon Jade/Diamond", IDM_UNLPOKEJD
                     MENUITEM "&Sintax", IDM_UNLSINTAX
+                    MENUITEM "New GB Color Pokémon hacks", IDM_UNLNEWGBHK
                     MENUITEM SEPARATOR
                     MENUITEM "Multi&cart: 'Last Bible' (VFame etc)", IDM_UNLLBMULTI
                     MENUITEM SEPARATOR
