@@ -139,6 +139,7 @@ BEGIN
                     MENUITEM "L&iebao Technology", IDM_UNLLIEBAO
                     MENUITEM "&Pokémon Jade/Diamond", IDM_UNLPOKEJD
                     MENUITEM "&Sintax", IDM_UNLSINTAX
+                    MENUITEM "New GB Color P&okémon hacks", IDM_UNLNEWGBHK
                     MENUITEM SEPARATOR
                     MENUITEM "Multi&cart: 'Last Bible' (VFame etc)", IDM_UNLLBMULTI
                     MENUITEM SEPARATOR
@@ -162,6 +163,7 @@ BEGIN
                 END
                 MENUITEM "&Halt on Unknown Opcode", IDM_CPUOPCODE, CHECKED
                 MENUITEM "Reduce &CPU Usage", IDM_OPTIONCPUUSAGE
+		MENUITEM "Use &Bootstrap ROM if available", IDM_OPTIONBOOTSTRAP
                 MENUITEM SEPARATOR
                 MENUITEM "Ch&eats...", IDM_CHEATS
                 MENUITEM "&Memory Search...", IDM_MEMSEARCH

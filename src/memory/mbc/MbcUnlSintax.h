@@ -11,12 +11,12 @@
 #define HHUGBOY_MBCUNLSINTAX_H
 
 #include "BasicMbc.h"
-#include "MbcNin5.h"
+#include "MbcNin5_LogoSwitch.h"
 
 //-------------------------------------------------------------------------
 // for Sintax standard carts
 //-------------------------------------------------------------------------
-class MbcUnlSintax : public MbcNin5 {
+class MbcUnlSintax : public MbcNin5_LogoSwitch {
 public:
     MbcUnlSintax();
     virtual byte readMemory(register unsigned short address) override;

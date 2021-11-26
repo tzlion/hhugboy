@@ -10,9 +10,9 @@
 #define HHUGBOY_MBCUNLBBD_H
 
 
-#include "MbcNin5.h"
+#include "MbcNin5_LogoSwitch.h"
 
-class MbcUnlBbd : public MbcNin5 {
+class MbcUnlBbd : public MbcNin5_LogoSwitch {
     public:
         MbcUnlBbd();
         virtual byte readMemory(register unsigned short address) override;
