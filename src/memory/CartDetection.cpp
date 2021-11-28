@@ -464,7 +464,6 @@ bool CartDetection::detectUnlicensedCarts(byte *rom, Cartridge *cartridge, int r
     unlCompatMode unlMode = options->unl_compat_mode;
     if ( unlMode == UNL_AUTO ) {
         unlMode = detectUnlCompatMode(rom, cartridge, romFileSize);
-        unlMode = UNL_GGB81;
     }
 
     switch(unlMode) {
