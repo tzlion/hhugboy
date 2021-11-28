@@ -149,8 +149,8 @@ set(SOURCE_FILES
         src/memory/mbc/MbcNin5_LogoSwitch.h
         src/memory/mbc/MbcUnlNewGbHk.cpp
         src/memory/mbc/MbcUnlNewGbHk.h
-        src/memory/mbc/MbcUnlMaVf.cpp
-        src/memory/mbc/MbcUnlMaVf.h
+        src/memory/mbc/MbcUnlGgb81.cpp
+        src/memory/mbc/MbcUnlGgb81.h
 )
 
 include_directories(

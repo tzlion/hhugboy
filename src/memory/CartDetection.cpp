@@ -464,7 +464,7 @@ bool CartDetection::detectUnlicensedCarts(byte *rom, Cartridge *cartridge, int r
     unlCompatMode unlMode = options->unl_compat_mode;
     if ( unlMode == UNL_AUTO ) {
         unlMode = detectUnlCompatMode(rom, cartridge, romFileSize);
-        unlMode = UNL_MAVF;
+        unlMode = UNL_GGB81;
     }
 
     switch(unlMode) {
@@ -546,8 +546,8 @@ bool CartDetection::detectUnlicensedCarts(byte *rom, Cartridge *cartridge, int r
             cartridge->ROMsize = detectGbRomSize(romFileSize);
             cartridge->mbcType = MEMORY_POKEJD;
             break;
-        case UNL_MAVF:
-            cartridge->mbcType = MEMORY_MAVF;
+        case UNL_GGB81:
+            cartridge->mbcType = MEMORY_GGB81;
             cartridge->RAMsize = 02; // some games underdeclare this
             break;
         case UNL_DBZTR:
