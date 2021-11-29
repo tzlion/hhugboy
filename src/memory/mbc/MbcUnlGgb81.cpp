@@ -1,6 +1,6 @@
 /*
  * Additional mapper support for hhugboy emulator
- * by taizou 2020
+ * by taizou 2021
  * This file released under Creative Commons CC0 https://creativecommons.org/publicdomain/zero/1.0/legalcode
  *
  * As part of the hhugboy project it is also licensed under the GNU General Public License v2
@@ -37,5 +37,4 @@ bool MbcUnlGgb81::isDataSwapModeSupported() {
 
 bool MbcUnlGgb81::isBankSwapModeSupported() {
     return (bankSwapMode == 0); // not supported or at least documented for this mapper
-
 }
