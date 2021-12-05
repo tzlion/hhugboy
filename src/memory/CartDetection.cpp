@@ -546,8 +546,9 @@ bool CartDetection::detectUnlicensedCarts(byte *rom, Cartridge *cartridge, int r
             cartridge->mbcType = MEMORY_POKEJD;
             break;
         case UNL_GGB81:
+            cartridge->ROMsize = detectGbRomSize(romFileSize);
             cartridge->mbcType = MEMORY_GGB81;
-            cartridge->RAMsize = 02; // some games underdeclare this
+            cartridge->RAMsize = 3; // games generally need 8k, but carts observed so far have 32k
             break;
         case UNL_DBZTR:
             cartridge->mbcType = MEMORY_DBZTRANS;
