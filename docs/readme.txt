@@ -89,6 +89,12 @@ https://github.com/tzlion/hhugboy
            with HKxxxx PCBs. Known games are both Pokémon platformer hacks:
            'Pokémon Action Chapter', 'Monster Go! Go! II' (translated names)
 
+ Vast Fame secondary releases
+           Certain mainland China and English versions of Vast Fame games.
+           Known so far: 'Harvest Moon 6', 'Lord of the Rings Legend',
+           'Digimon Pocket' (Chinese), 'Digimon Sapphire' (English).
+           The Chinese releases have DSHGGB-81 PCB code.
+
  'Last Bible' multicart
            A type of multicart using menu music taken from 'Megami Tensei
            Gaiden: Last Bible' aka 'Revelations: The Demon Slayer'.
@@ -191,7 +197,8 @@ https://github.com/tzlion/hhugboy
 [ RELEASE HISTORY ]- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 
  vx.x.x xxth xxxx 2021
- * New mapper support: New GB Color HKxxxx PCB (used for Pokémon hacks)
+ * New mapper support: New GB Color HKxxxx PCB (used for Pokémon hacks),
+   Vast Fame secondary releases on GGB-81 PCB (and others)
 
  v1.3.0 29th October 2020
  * New mapper support: Sachen MMC1, Sachen MMC2, Mani M161, Rocket Games,

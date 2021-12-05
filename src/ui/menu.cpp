@@ -51,11 +51,14 @@ void menu::checkOption(int option)
     int curItem = group;
     
     if (group > 0) {
-        // this isnt ideal, we are just unchecking 16 items in the group
-        // checkMenuItem is supposed to return -1 if the item doesnt exist but im not sure if it does
-        for (int curItem = group; curItem < group + 16; curItem++) {
-            CheckMenuItem(menuBar,curItem,MF_UNCHECKED);   
-       }
+
+        for (int curItem = group; true; curItem++) {
+            DWORD res = CheckMenuItem(menuBar,curItem,MF_UNCHECKED);
+            if (res == 0xffffffff) { // item doesn't exist
+                break;
+            }
+        }
+
     }
     
     CheckMenuItem(menuBar,option,MF_CHECKED);   
