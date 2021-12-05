@@ -199,6 +199,8 @@ https://github.com/tzlion/hhugboy
  vx.x.x xxth xxxx 2021
  * New mapper support: New GB Color HKxxxx PCB (used for Pokémon hacks),
    Vast Fame secondary releases on GGB-81 PCB (and others)
+ * Allow undersized save files to be read (to avoid saves being wiped when
+   an "unlicensed compatibility mode" change results in a RAM size change)
 
  v1.3.0 29th October 2020
  * New mapper support: Sachen MMC1, Sachen MMC2, Mani M161, Rocket Games,

@@ -394,7 +394,6 @@ bool gb_system::load_save(bool loading_GB1_save_to_GB2)
    {
       wcscat(save_filename,L".sv2");
    }
-
    FILE* savefile = _wfopen(save_filename,L"rb");
    if(!savefile) 
    {
@@ -402,47 +401,46 @@ bool gb_system::load_save(bool loading_GB1_save_to_GB2)
       return true;
    }
 
-   if(cartridge->mbcType == MEMORY_MBC7 || cartridge->mbcType == MEMORY_TAMA5) // Should be done on the MBC
-   {
-      if(fread(&memory[0xA000],sizeof(byte),256,savefile) < 256)
-      {
-         fclose(savefile);
-         SetCurrentDirectory(old_directory);
-         return false;
-      }      
-   } else
-   if(cartridge->mbcType == MEMORY_MBC2 && cartridge->battery) // MBC2 + battery
-   {
-      if(fread(&memory[0xA000],sizeof(byte),512,savefile) < 512)
-      {
-         fclose(savefile);
-         SetCurrentDirectory(old_directory);
-         return false;
-      }   
-   } else
-   if(cartridge->RAMsize > 2)
-   {
-      if((int)fread(cartRAM,sizeof(byte),ramsize[cartridge->RAMsize]*1024,savefile) < ramsize[cartridge->RAMsize]*1024)
-      {
-         fclose(savefile);
-         SetCurrentDirectory(old_directory);
-         return false;
-      }
-   } else
-   {
-      if((int)fread(&memory[0xA000],sizeof(byte),ramsize[cartridge->RAMsize]*1024,savefile) < ramsize[cartridge->RAMsize]*1024)
-      {
-         fclose(savefile);
-         SetCurrentDirectory(old_directory);
-         return false;
-      }
-   }
+   fseek(savefile, 0L, SEEK_END);
+   long saveFileSize = ftell(savefile);
+   rewind(savefile);
 
-   mbc->readMbcSpecificStuffFromSaveFile(savefile);
+   byte* dest;
+   int ramSizeBytes;
+
+    if (cartridge->mbcType == MEMORY_MBC7 || cartridge->mbcType == MEMORY_TAMA5) {
+        dest = &memory[0xA000];
+        ramSizeBytes = 256;
+    } else if (cartridge->mbcType == MEMORY_MBC2 && cartridge->battery) {
+        dest = &memory[0xA000];
+        ramSizeBytes = 512;
+    } else if (cartridge->RAMsize > 2) {
+        dest = cartRAM;
+        ramSizeBytes = ramsize[cartridge->RAMsize] * 1024;
+    } else {
+        dest = &memory[0xA000];
+        ramSizeBytes = ramsize[cartridge->RAMsize] * 1024;
+    }
+
+    // allow for save file being smaller than ram size in case a config change resulted in a ram size increase
+    int bytesToRead = saveFileSize < ramSizeBytes ? saveFileSize : ramSizeBytes;
+
+    ZeroMemory(dest, sizeof(byte) * ramSizeBytes);
+
+    int readBytes = (int)fread(dest, sizeof(byte), bytesToRead, savefile);
+    if (readBytes < bytesToRead) {
+        fclose(savefile);
+        SetCurrentDirectory(old_directory);
+        return false;
+    }
+
+    if (bytesToRead == ramSizeBytes) { // don't try to read subsequent data if this was an underread
+        mbc->readMbcSpecificStuffFromSaveFile(savefile);
+    }
 
     fclose(savefile);
-   SetCurrentDirectory(old_directory);
-   
-   return true;
+    SetCurrentDirectory(old_directory);
+
+    return true;
 }
 
