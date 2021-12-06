@@ -1,4 +1,4 @@
-hhugboy v1.3.0++dev
+hhugboy v1.3.1
 a Game Boy/Game Boy Color emulator for Windows
 by taizou (cactusgunman@gmail.com)
 http://hhug.me/
@@ -196,7 +196,7 @@ https://github.com/tzlion/hhugboy
 
 [ RELEASE HISTORY ]- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 
- vx.x.x xxth xxxx 2021
+ v1.3.1 xxth December 2021
  * New mapper support: New GB Color HKxxxx PCB (used for Pokémon hacks),
    Vast Fame secondary releases on GGB-81 PCB (and others)
  * Allow undersized save files to be read (to avoid saves being wiped when
