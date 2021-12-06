@@ -1,4 +1,4 @@
-hhugboy v1.3.0
+hhugboy v1.3.1
 a Game Boy/Game Boy Color emulator for Windows
 by taizou (cactusgunman@gmail.com)
 http://hhug.me/
@@ -79,10 +79,21 @@ https://github.com/tzlion/hhugboy
            English translation of DBZ Goku Gekitouden. Other games may use this
            too, especially Chinese translations.
 
- Pokemon Jade/Diamond
+ Pokémon Jade/Diamond
            For the original protected versions of the Telefang translations.
            Currently only verified working with Jade.
            (Not necessary for most common dumps which are hacks/reprints)
+
+ New GB Color Pokémon hacks
+           Protection found on carts released under the "New GB Color" brand
+           with HKxxxx PCBs. Known games are both Pokémon platformer hacks:
+           'Pokémon Action Chapter', 'Monster Go! Go! II' (translated names)
+
+ Vast Fame secondary releases
+           Certain mainland China and English versions of Vast Fame games.
+           Known so far: 'Harvest Moon 6', 'Lord of the Rings Legend',
+           'Digimon Pocket' (Chinese), 'Digimon Sapphire' (English).
+           The Chinese releases have DSHGGB-81 PCB code.
 
  'Last Bible' multicart
            A type of multicart using menu music taken from 'Megami Tensei
@@ -149,7 +160,7 @@ https://github.com/tzlion/hhugboy
 
  * Note this currently has the limitation that you have to know the *exact*
    value you are searching for- it doesn't allow you to do "greater than/
-   less than" type searches like some other emulators)
+   less than" type searches like some other emulators.
 
 [ COMPATIBILITY ]- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 
@@ -184,6 +195,12 @@ https://github.com/tzlion/hhugboy
  * Other language translations
 
 [ RELEASE HISTORY ]- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+
+ v1.3.1 6th December 2021
+ * New mapper support: New GB Color HKxxxx PCB (used for Pokémon hacks),
+   Vast Fame secondary releases on GGB-81 PCB (and others)
+ * Allow undersized save files to be read (to avoid saves being wiped when
+   an "unlicensed compatibility mode" change results in a RAM size change)
 
  v1.3.0 29th October 2020
  * New mapper support: Sachen MMC1, Sachen MMC2, Mani M161, Rocket Games,

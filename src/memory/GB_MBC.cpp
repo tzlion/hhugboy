@@ -62,6 +62,8 @@
 #include "mbc/MbcUnlSachenMMC2.h"
 #include "mbc/MbcLicM161.h"
 #include "mbc/MbcUnlRocketGames.h"
+#include "mbc/MbcUnlNewGbHk.h"
+#include "mbc/MbcUnlGgb81.h"
 
 // So maybe this should be "cart" and a lot of whats in rom.cpp now e.g. autodetection should go in here..
 
@@ -245,6 +247,12 @@ void gb_mbc::setMemoryReadWrite(MbcType memory_type) {
             break;
         case MEMORY_ROCKET:
             mbc = new MbcUnlRocketGames();
+            break;
+        case MEMORY_NEWGBHK:
+            mbc = new MbcUnlNewGbHk();
+            break;
+        case MEMORY_GGB81:
+            mbc = new MbcUnlGgb81();
             break;
         case MEMORY_DEFAULT:
         default:

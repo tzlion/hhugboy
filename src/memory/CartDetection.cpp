@@ -213,14 +213,14 @@ void CartDetection::readHeader(byte* rom, Cartridge* cartridge, int romFileSize)
 {
     byte rominfo[30];
     cartridge->mbcType = MEMORY_DEFAULT; // Was originally in setCartridgeAttributesFromHeader, but since we are already detecting three MBC types here, put it here as well.
-    
+
     // Determine whether we have a scrambled header, or a header at the end of the file, *and* that there is no unscrambled Nintendo logo. If so, we have already detected Sachen MMC1/2 or MMM01.
     int logoChecksum0104          =0; for(int lb=0;lb<0x30;++lb) { logoChecksum0104+=rom[0x104 +lb]; }
     int logoChecksum0104Scrambled =0; for(int lb=0;lb<0x30;++lb) { int address =0x104 +lb; address =address &~0x53 | address >>6 &0x01 | address >>3 &0x02 | address <<3 &0x10 | address <<6 &0x40; logoChecksum0104Scrambled+=rom[address]; }
     int logoChecksum0184Scrambled =0; for(int lb=0;lb<0x30;++lb) { int address =0x184 +lb; address =address &~0x53 | address >>6 &0x01 | address >>3 &0x02 | address <<3 &0x10 | address <<6 &0x40; logoChecksum0184Scrambled+=rom[address]; }
     if (logoChecksum0104 !=5446 && (logoChecksum0104Scrambled ==5542 || logoChecksum0104Scrambled ==7484)) cartridge->mbcType =MEMORY_SACHENMMC2;
     if (logoChecksum0104 !=5446 && (logoChecksum0184Scrambled ==5542 || logoChecksum0184Scrambled ==7484)) cartridge->mbcType =MEMORY_SACHENMMC1;
-    
+
     int logoChecksumEnd =0;
     int cartridgeHeaderAtEnd =(romFileSize &~0x7FFF) -0x8000;
     if (cartridgeHeaderAtEnd >=0) {
@@ -228,7 +228,7 @@ void CartDetection::readHeader(byte* rom, Cartridge* cartridge, int romFileSize)
 	byte cartridgeType =rom[cartridgeHeaderAtEnd +0x147];
 	if (logoChecksumEnd ==5446 && (cartridgeType ==0x0B || cartridgeType ==0x0C || cartridgeType ==0x0D || cartridgeType ==0x11)) cartridge->mbcType =MEMORY_MMM01;
     }
-    
+
     // Read unscrambled header from the correct file position
     switch (cartridge->mbcType) {
 	    case MEMORY_MMM01:
@@ -300,19 +300,19 @@ unlCompatMode CartDetection::detectUnlCompatMode(byte* rom, Cartridge* cartridge
     int logoChecksum0184=0; for(int lb=0;lb<0x30;++lb) logoChecksum0184+=rom[0x0184 +lb];
     int logoChecksum0104Scrambled =0; for(int lb=0;lb<0x30;++lb) { int address =0x104 +lb; address =address &~0x53 | address >>6 &0x01 | address >>3 &0x02 | address <<3 &0x10 | address <<6 &0x40; logoChecksum0104Scrambled+=rom[address] ; }
     int logoChecksum0184Scrambled =0; for(int lb=0;lb<0x30;++lb) { int address =0x184 +lb; address =address &~0x53 | address >>6 &0x01 | address >>3 &0x02 | address <<3 &0x10 | address <<6 &0x40; logoChecksum0184Scrambled+=rom[address] ; }
-    
+
     /*char buff[100];
     sprintf(buff,"logo: 0104=%d, 0184=%d", logoChecksum0104, logoChecksum0184);
     debug_win(buff);*/
 
     if (logoChecksum0104 !=5446 && (logoChecksum0104Scrambled ==5542 || logoChecksum0104Scrambled ==7484)) return UNL_SACHENMMC2;
     if (logoChecksum0104 !=5446 && (logoChecksum0184Scrambled ==5542 || logoChecksum0184Scrambled ==7484)) return UNL_SACHENMMC1;
-    
+
     switch ( logoChecksum0104 ) {
 	case 2756: // Rocket Games
 	case 4850: // Smartcom
 	    return UNL_ROCKET;
-    }    
+    }
     switch ( logoChecksum0184 ) {
         case 4048: // "GK.RX" = Gaoke(Hitek) x Ruanxin
             // (All known hacked versions of Hitek games are Li Cheng so have the Niutoude logo instead)
@@ -430,7 +430,7 @@ unlCompatMode CartDetection::detectUnlCompatMode(byte* rom, Cartridge* cartridge
     // Wisdom Tree
     static const char strWisdomTree1[12] ="WISDOM TREE";
     static const char strWisdomTree2[12] ="WISDOM\0TREE";
-    
+
     if(rom[0x147] ==0xC0 && rom[0x14A] ==0xD1 ||
        std::search(rom, rom +romFileSize, strWisdomTree1, strWisdomTree1 +11) !=(rom +romFileSize) ||
        std::search(rom, rom +romFileSize, strWisdomTree2, strWisdomTree2 +11) !=(rom +romFileSize)) {
@@ -545,8 +545,17 @@ bool CartDetection::detectUnlicensedCarts(byte *rom, Cartridge *cartridge, int r
             cartridge->ROMsize = detectGbRomSize(romFileSize);
             cartridge->mbcType = MEMORY_POKEJD;
             break;
-        case UNL_DBZTR: // Can't be manually selected currently
+        case UNL_GGB81:
+            cartridge->ROMsize = detectGbRomSize(romFileSize);
+            cartridge->mbcType = MEMORY_GGB81;
+            cartridge->RAMsize = 3; // games generally need 8k, but carts observed so far have 32k
+            break;
+        case UNL_DBZTR:
             cartridge->mbcType = MEMORY_DBZTRANS;
+            break;
+        case UNL_NEWGBHK:
+            cartridge->ROMsize = detectGbRomSize(romFileSize);
+            cartridge->mbcType = MEMORY_NEWGBHK;
             break;
         case UNL_RM8OLD: // Can't be manually selected currently
             cartridge->mbcType = MEMORY_ROCKMAN8;
