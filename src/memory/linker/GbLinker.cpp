@@ -2,6 +2,7 @@
   SIMPLIFIED GBLINK IMPLEMENTATION
   Based on: original gblinkdl by Brian Provinciano
   Modified gblinkdx by taizou
+  (this file is not strictly GPL it's just whatever sorry)
 */
 
 #include "GbLinker.h"
