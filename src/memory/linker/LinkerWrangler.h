@@ -5,13 +5,18 @@
 #include "../../types.h"
 #include "GbLinker.h"
 
+#define READ_ROM_THRU_LINKER false
+#define READ_RAM_THRU_LINKER true
+#define CACHE_BANK_0 false
+#define CACHE_BANK_1 false
+#define USE_PREDUMPED_BANK_0 false
+
 class LinkerWrangler {
     private:
         static bool readBank0;
         static U8 bank0[0x4000];
         static bool readBank1;
         static U8 bank1[0x4000];
-        static byte last4000;
     public:
         static bool shouldReadThroughLinker(unsigned short address);
         static byte readThroughLinker(unsigned short address);
