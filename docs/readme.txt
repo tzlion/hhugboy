@@ -1,4 +1,4 @@
-hhugboy v1.2.6+dev
+hhugboy v1.3.1
 a Game Boy/Game Boy Color emulator for Windows
 by taizou (cactusgunman@gmail.com)
 http://hhug.me/
@@ -10,6 +10,7 @@ https://github.com/tzlion/hhugboy
   * Unlicensed Mapper support! (Sintax, Li Cheng, BBD, Hitek, more!)
   * Support for Vast Fame and some other multicarts!
   * GBX ROM format support!
+  * Bootstrap ROM support!
   * Screenshots!
   * Memory searching
   * Recent ROM list
@@ -23,13 +24,16 @@ https://github.com/tzlion/hhugboy
 [ UNLICENSED COMPATIBILITY MODES ] - - - - - - - - - - - - - - - - - - - - - - -
 
  Auto      For unlicensed publishers with unique boot logos, the emulator will
-           attempt to automatically determine which mode to use based on the
+           attempt to automatically determine which mapper to use based on the
            logo present in the ROM.
-           * "Niutoude" -> Li Cheng mode
-           * part-inverted Nintendo (looks like "Kwichvu") -> Sintax mode
+           * "Niutoude" -> Li Cheng
+           * part-inverted Nintendo (looks like "Kwichvu") -> Sintax
+           * "GK.RX" -> Hitek
+           * "Rocket", "Smartcom" -> Rocket Games
            This is not always a 100% reliable indicator though! 
            e.g. some Li Cheng games do not have the "Niutoude" logo.
            If a game doesn't work, try selecting the mode manually.
+           Sachen and Wisdom Tree games will also be detected by other means.
 
            For other games and multicarts, the detection is currently done
            based on the ROM title and size, meaning only certain predefined
@@ -75,13 +79,29 @@ https://github.com/tzlion/hhugboy
            English translation of DBZ Goku Gekitouden. Other games may use this
            too, especially Chinese translations.
 
+ Pokémon Jade/Diamond
+           For the original protected versions of the Telefang translations.
+           Currently only verified working with Jade.
+           (Not necessary for most common dumps which are hacks/reprints)
+
+ New GB Color Pokémon hacks
+           Protection found on carts released under the "New GB Color" brand
+           with HKxxxx PCBs. Known games are both Pokémon platformer hacks:
+           'Pokémon Action Chapter', 'Monster Go! Go! II' (translated names)
+
+ Vast Fame secondary releases
+           Certain mainland China and English versions of Vast Fame games.
+           Known so far: 'Harvest Moon 6', 'Lord of the Rings Legend',
+           'Digimon Pocket' (Chinese), 'Digimon Sapphire' (English).
+           The Chinese releases have DSHGGB-81 PCB code.
+
  'Last Bible' multicart
            A type of multicart using menu music taken from 'Megami Tensei
            Gaiden: Last Bible' aka 'Revelations: The Demon Slayer'.
            This notably covers all of Vast Fame's multicarts, in addition to a
            number of more generic carts.
 
- MBC1/5 compatible
+ MBC1/3/5 compatible
            For unknown carts that fake their header value but are actually
            compatible with common mappers.
 
@@ -96,10 +116,10 @@ https://github.com/tzlion/hhugboy
                            Down       Down
                            Left       Left
                            Right      Right
-                           Z          A
-                           X          B
-                           A          Turbo A
-                           S          Turbo B
+                           X          A
+                           Z          B
+                           S          Turbo A
+                           A          Turbo B
                            Q          L (stretch in GBA mode)
                            W          R (unstretch in GBA mode)
                            Enter      Start
@@ -140,7 +160,7 @@ https://github.com/tzlion/hhugboy
 
  * Note this currently has the limitation that you have to know the *exact*
    value you are searching for- it doesn't allow you to do "greater than/
-   less than" type searches like some other emulators)
+   less than" type searches like some other emulators.
 
 [ COMPATIBILITY ]- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 
@@ -173,12 +193,39 @@ https://github.com/tzlion/hhugboy
  * Action Replay cheats
  * Implement a rendering engine other than DirectDraw
  * Other language translations
- * Proper MMM01 support
 
 [ RELEASE HISTORY ]- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 
- v1.x.x xxth xxxxx 20xx
+ v1.3.1 6th December 2021
+ * New mapper support: New GB Color HKxxxx PCB (used for Pokémon hacks),
+   Vast Fame secondary releases on GGB-81 PCB (and others)
+ * Allow undersized save files to be read (to avoid saves being wiped when
+   an "unlicensed compatibility mode" change results in a RAM size change)
+
+ v1.3.0 29th October 2020
+ * New mapper support: Sachen MMC1, Sachen MMC2, Mani M161, Rocket Games,
+   Wisdom Tree (NewRisingSun)
+ * MMM01 mapper rewritten & implemented properly (NewRisingSun)
+ * Support bootstrap ROMs named cgb_boot.bin or dmg_boot.bin (NewRisingSun)
+ * Fix certain Unicode filenames corrupting config file (NewRisingSun)
+   Note this changes the encoding of file paths, so if you are using a config
+   file from an older version, you will have to redefine them
+ * Fix rendering issues causing wrong colours in 32-bit rendering and 16-bit
+   when using colour mixing (NewRisingSun)
+ * Fix font file handle being kept open (NewRisingSun)
+ * Reverse default A and B buttons to X and Z to reflect real console order
+   (default turbo A and B buttons are also reversed accordingly)
+ * Don't activate menus when pressing Alt alone so it can be used as an input
+
+ v1.2.8 27th July 2020
+ * Add debug logging for Sintax & BBD protection initialisation modes
+   (to work with Sintaxinator in hhugtools)
+
+ v1.2.7 31st October 2018 (BOO)
  * Add memory searcher
+ * Add support for original Pokemon Jade/Diamond
+ * Add selectable MBC3 compatible mode
+ * Some refactoring of graphics code which should hopefully have no effect
 
  v1.2.6 11th March 2018
  * Fix MBC5 RAM banking bug observed to affect unlicensed games
@@ -248,7 +295,7 @@ https://github.com/tzlion/hhugboy
 [ COPYRIGHT/LICENSE ]- - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 
  hhugboy Game Boy emulator
- copyright 2013-2018 taizou
+ copyright 2013-2020 taizou
 
  Based on GEST
  Copyright (C) 2003-2010 TM
@@ -271,5 +318,6 @@ https://github.com/tzlion/hhugboy
 
 [ SPECIAL THANKS! ]- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 
+ Massive contributions by NewRisingSun
  PCPaint Bold font by codeman38 (http://www.zone38.net/)
  Beta testers - MLX, Robyn, KingPepe, JP

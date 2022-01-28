@@ -19,7 +19,7 @@ byte MbcUnlSintax::readMemory(register unsigned short address) {
         return  data ^ romBankXor;
     }
 
-    return gbMemMap[address>>12][address&0x0FFF];
+    return MbcNin5_LogoSwitch::readMemory(address);						   
 }
 
 void MbcUnlSintax::writeMemory(unsigned short address, register byte data) {
@@ -70,6 +70,10 @@ void MbcUnlSintax::writeMemory(unsigned short address, register byte data) {
 
         sintaxMode = (byte)(0x0F & data);
 
+        char buff[100];
+        sprintf(buff,"Sintax bank reorder mode: %X", data);
+        debug_win(buff);
+
         switch (sintaxMode) {
             // Supported modes
             case 0x00: // Lion King, Golden Sun
@@ -82,8 +86,7 @@ void MbcUnlSintax::writeMemory(unsigned short address, register byte data) {
             case 0x0F: // Default mode, no reordering
                 break;
             default:
-                char buff[100];
-                sprintf(buff, "Unknown Sintax Mode %X Addr %X - probably won't work!", data, address);
+                sprintf(buff, "Bank reorder mode unsupported - %X", data);
                 debug_print(buff);
                 break;
         }
@@ -96,19 +99,29 @@ void MbcUnlSintax::writeMemory(unsigned short address, register byte data) {
 
     if (address >= 0x7000 && address < 0x8000) {
 
+        char buff[100];
+
         int xorNo = (address & 0x00F0) >> 4;
         switch (xorNo) {
             case 2:
                 sintaxXor00 = data;
+                sprintf(buff, "Sintax XOR 0: %X", data);
+                debug_win(buff);
                 break;
             case 3:
                 sintaxXor01 = data;
+                sprintf(buff, "Sintax XOR 1: %X", data);
+                debug_win(buff);
                 break;
             case 4:
                 sintaxXor02 = data;
+                sprintf(buff, "Sintax XOR 2: %X", data);
+                debug_win(buff);
                 break;
             case 5:
                 sintaxXor03 = data;
+                sprintf(buff, "Sintax XOR 3: %X", data);
+                debug_win(buff);
                 break;
         }
 
@@ -129,7 +142,8 @@ MbcUnlSintax::MbcUnlSintax() :
         sintaxXor01(0),
         sintaxXor02(0),
         sintaxXor03(0),
-        sintaxBankNo(1) {
+        sintaxBankNo(1),
+        romBankXor(0) {
 
 }
 
@@ -140,7 +154,7 @@ void MbcUnlSintax::resetVars(bool preserveMulticartState) {
 
     romBankXor = 0;
 
-    AbstractMbc::resetVars(preserveMulticartState);
+    MbcNin5_LogoSwitch::resetVars(preserveMulticartState);
 }
 
 void MbcUnlSintax::readMbcSpecificVarsFromStateFile(FILE *statefile) {
@@ -150,6 +164,7 @@ void MbcUnlSintax::readMbcSpecificVarsFromStateFile(FILE *statefile) {
     fread(&(sintaxXor02), sizeof(byte), 1, statefile);
     fread(&(sintaxXor03), sizeof(byte), 1, statefile);
     fread(&(romBankXor), sizeof(byte), 1, statefile);
+    MbcNin5_LogoSwitch::readMbcSpecificVarsFromStateFile(statefile);
 }
 
 void MbcUnlSintax::writeMbcSpecificVarsToStateFile(FILE *statefile) {
@@ -159,6 +174,7 @@ void MbcUnlSintax::writeMbcSpecificVarsToStateFile(FILE *statefile) {
     fwrite(&(sintaxXor02), sizeof(byte), 1, statefile);
     fwrite(&(sintaxXor03), sizeof(byte), 1, statefile);
     fwrite(&(romBankXor), sizeof(byte), 1, statefile);
+    MbcNin5_LogoSwitch::writeMbcSpecificVarsToStateFile(statefile);
 }
 
 void MbcUnlSintax::setXorForBank(byte bankNo)

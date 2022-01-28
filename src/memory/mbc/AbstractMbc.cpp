@@ -50,9 +50,7 @@ AbstractMbc::AbstractMbc():
         RTC_latched(0),
 
         multicartOffset(0),
-        multicartRamOffset(0),
-
-        romBankXor(0)
+        multicartRamOffset(0)
 {
 
 }
@@ -184,4 +182,7 @@ void AbstractMbc::setRom1Bank(int bankNo) {
     bankAddress &= rom_size_mask[(*gbCartridge)->ROMsize];
     bankAddress += multicartOffset;
     setRom1Offset(bankAddress);
+}
+
+void AbstractMbc::signalMemoryWrite(unsigned short address, register byte data) {
 }

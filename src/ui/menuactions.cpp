@@ -523,9 +523,25 @@ void menuAction(int menuOption)
             options->unl_compat_mode = UNL_DBZTR;
             emuMenu.checkOption(IDM_UNLLIEBAO);
             break;
+        case IDM_UNLPOKEJD:
+            options->unl_compat_mode = UNL_POKEJD;
+            emuMenu.checkOption(IDM_UNLPOKEJD);
+            break;
+        case IDM_UNLNEWGBHK:
+            options->unl_compat_mode = UNL_NEWGBHK;
+            emuMenu.checkOption(IDM_UNLNEWGBHK);
+            break;
+        case IDM_UNLGGB81:
+            options->unl_compat_mode = UNL_GGB81;
+            emuMenu.checkOption(IDM_UNLGGB81);
+            break;
         case IDM_UNLMBC1COMPAT:
             options->unl_compat_mode = UNL_MBC1SAVE;
             emuMenu.checkOption(IDM_UNLMBC1COMPAT);
+            break;
+        case IDM_UNLMBC3COMPAT:
+            options->unl_compat_mode = UNL_MBC3SAVE;
+            emuMenu.checkOption(IDM_UNLMBC3COMPAT);
             break;
         case IDM_UNLMBC5COMPAT:
             options->unl_compat_mode = UNL_MBC5SAVE;
@@ -585,6 +601,17 @@ void menuAction(int menuOption)
             {
                 emuMenu.checkOption(IDM_OPTIONCPUUSAGE);
                 options->reduce_cpu_usage = true;
+            }
+            break;
+        case IDM_OPTIONBOOTSTRAP:
+            if(options->use_bootstrap)
+            {
+                emuMenu.uncheckOption(IDM_OPTIONBOOTSTRAP);
+                options->use_bootstrap = false;
+            } else
+            {
+                emuMenu.checkOption(IDM_OPTIONBOOTSTRAP);
+                options->use_bootstrap = true;
             }
             break;
         case IDM_OPTIONOPPOSITEDIRECTIONS:

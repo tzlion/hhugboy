@@ -66,6 +66,7 @@ menu emuMenu;
 program_configuration::program_configuration():
         halt_on_unknown_opcode(true),
         reduce_cpu_usage(false),
+	use_bootstrap(false),
         speedup_skip_9frames(false),
         speedup_sound_off(false),
         speedup_filter_off(true),
@@ -91,12 +92,12 @@ program_configuration::program_configuration():
         autofire_speed(0),
         unl_compat_mode(UNL_AUTO)
 {
-    multi_key_config[PLAYER1][BUTTON_A] = DIK_Z;
-    multi_key_config[PLAYER1][BUTTON_B] = DIK_X;
+    multi_key_config[PLAYER1][BUTTON_A] = DIK_X;
+    multi_key_config[PLAYER1][BUTTON_B] = DIK_Z;
     multi_key_config[PLAYER1][BUTTON_START] = DIK_RETURN;
     multi_key_config[PLAYER1][BUTTON_SELECT] = DIK_BACK;
-    multi_key_config[PLAYER1][BUTTON_TURBO_A] = DIK_A;
-    multi_key_config[PLAYER1][BUTTON_TURBO_B] = DIK_S;
+    multi_key_config[PLAYER1][BUTTON_TURBO_A] = DIK_S;
+    multi_key_config[PLAYER1][BUTTON_TURBO_B] = DIK_A;
     multi_key_config[PLAYER1][BUTTON_TURBO_START] = 0;
     multi_key_config[PLAYER1][BUTTON_TURBO_SELECT] = 0;
     multi_key_config[PLAYER1][BUTTON_UP] = DIK_UP;
@@ -166,6 +167,9 @@ void init_menu_options()
       case UNL_MBC1SAVE:
       	emuMenu.checkOption(IDM_UNLMBC1COMPAT);
       break;
+      case UNL_MBC3SAVE:
+      	emuMenu.checkOption(IDM_UNLMBC3COMPAT);
+      break;
       case UNL_MBC5SAVE:
       	emuMenu.checkOption(IDM_UNLMBC5COMPAT);
       break;
@@ -174,6 +178,15 @@ void init_menu_options()
       break;
       case UNL_DBZTR:
       	emuMenu.checkOption(IDM_UNLLIEBAO);
+      break;
+      case UNL_POKEJD:
+      	emuMenu.checkOption(IDM_UNLPOKEJD);
+      break;
+      case UNL_NEWGBHK:
+      	emuMenu.checkOption(IDM_UNLNEWGBHK);
+      break;
+      case UNL_GGB81:
+      	emuMenu.checkOption(IDM_UNLGGB81);
       break;
       default:
          emuMenu.checkOption(IDM_UNLAUTO);    
@@ -302,8 +315,11 @@ void init_menu_options()
    if(!options->halt_on_unknown_opcode)
       emuMenu.uncheckOption(IDM_CPUOPCODE);
    
-   if(!options->reduce_cpu_usage)
-      emuMenu.uncheckOption(IDM_OPTIONCPUUSAGE);  
+   if(options->reduce_cpu_usage)
+      emuMenu.checkOption(IDM_OPTIONCPUUSAGE);  
+  
+   if(options->use_bootstrap)
+      emuMenu.checkOption(IDM_OPTIONBOOTSTRAP);  
   
    if(options->opposite_directions_allowed)
       emuMenu.checkOption(IDM_OPTIONOPPOSITEDIRECTIONS);
@@ -388,11 +404,19 @@ void read_comment_line(ifstream& in)
     getline(in, commentline); // comment line
 }
 
-void getlinew(ifstream& in,wstring& dest){
-    string tmpstr;
-    getline(in,tmpstr);
-    dest = (wchar_t*)tmpstr.c_str();
-    dest.resize(tmpstr.size()/2); // sometimes dest would end up 2 chars bigger than it should be and idfk why
+void getlinew(ifstream& file, wstring& stringWide) {
+    string stringUTF8;
+    getline(file, stringUTF8);
+    auto sizeNeeded = MultiByteToWideChar(CP_UTF8, 0, &stringUTF8[0], stringUTF8.size(), NULL, 0);
+    stringWide.resize(sizeNeeded);
+    MultiByteToWideChar                  (CP_UTF8, 0, &stringUTF8[0], stringUTF8.size(), &stringWide[0], sizeNeeded);
+}
+
+void putlinew(ostream& file, const wstring& stringWide) {
+    auto sizeNeeded = WideCharToMultiByte(CP_UTF8, 0, &stringWide[0], stringWide.size(), NULL, 0, NULL, NULL);
+    string stringUTF8(sizeNeeded, 0);
+    WideCharToMultiByte                  (CP_UTF8, 0, &stringWide[0], stringWide.size(), &stringUTF8[0], sizeNeeded, NULL, NULL);
+    file.write(stringUTF8.c_str(), stringUTF8.size());
 }
 
 ifstream& operator>>(ifstream& in, program_configuration& config)
@@ -558,29 +582,33 @@ ifstream& operator>>(ifstream& in, program_configuration& config)
 
     in >> config.speedup_filter_off;
 
+    read_comment_line(in);
+    
+    in >> config.use_bootstrap;
+
    return in;
 }
 
 ostream& operator<<(ostream& out, const program_configuration& config)
 {
     out << "#ROM Directory:\n";
-    //out << config.rom_directory << "\n\n";
-    out.write ((char*)config.rom_directory.c_str(), config.rom_directory.size()*2);
+					    
+    putlinew(out, config.rom_directory);
     out << "\n\n";
 
     out << "#Save Directory:\n";
-    //out << config.save_directory << "\n\n";
-    out.write ((char*)config.save_directory.c_str(), config.save_directory.size()*2);
+					     
+    putlinew(out, config.save_directory);
     out << "\n\n";
 
     out << "#Save State Directory:\n";
-    //out << config.state_directory << "\n\n";
-    out.write ((char*)config.state_directory.c_str(), config.state_directory.size()*2);
+					      
+    putlinew(out, config.state_directory);
     out << "\n\n";
 
     out << "#Recent ROMs:\n";
     for(int x=0;x<10;x++) {
-        out.write ((char*)config.recent_rom_names[x].c_str(), config.recent_rom_names[x].size()*2);
+	putlinew(out, config.recent_rom_names[x]);
         out << "\n";
     }
     out << "\n";
@@ -735,6 +763,9 @@ ostream& operator<<(ostream& out, const program_configuration& config)
     out << "#On speedup filter off:\n";
     out << config.speedup_filter_off << "\n\n";
 
+    out << "#Use bootstrap ROM if available:\n";
+    out << config.use_bootstrap << "\n\n";
+
     return out;
 }
 
@@ -748,7 +779,7 @@ bool read_config_file()
 
    options->rom_directory = options->program_directory;
 
-   ifstream configfile("hhugboy.cfg", ifstream::in);
+   ifstream configfile("hhugboy.cfg", ifstream::in | ifstream::binary);
    if(configfile.fail())
    {
        cout << "Config file load failed, using defaults.";

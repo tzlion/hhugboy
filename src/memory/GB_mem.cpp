@@ -41,7 +41,13 @@ using namespace std;
 #include "../GB.h"
 #include "GB_MBC.h"
 
+unsigned char bootstrapDMG[256], bootstrapCGB[2304], *bootstrap;
+bool haveBootstrap_DMG =false;
+bool haveBootstrap_CGB =false;
+bool haveBootstrap =false;
+
 extern int ramsize[9];
+bool mapBootstrap =true;
 
 byte gb_system::readmemory(unsigned short address)
 {
@@ -50,6 +56,9 @@ byte gb_system::readmemory(unsigned short address)
             if(address == cheat[i].address && (!(cheat[i].long_code) || (cheat[i].old_value == mem_map[address>>12][address&0x0fff])))
                 return cheat[i].new_value;
 
+    if (mapBootstrap && (address <0x0100 || gbc_mode && address >=0x0200 && address <0x0900)) {
+	return bootstrap[address];
+    } else
     if ( address <= 0x7FFF || ( address >= 0xA000 && address <= 0xBFFF ) ) {
         return mbc->readmemory_cart(address);
     } else {
@@ -59,16 +68,26 @@ byte gb_system::readmemory(unsigned short address)
 
 void gb_system::writememory(unsigned short address,byte data)
 {
+    if ( address ==0xFF50)
+	mapBootstrap =false;
+
     if ( address <= 0x7FFF || ( address >= 0xA000 && address <= 0xBFFF ) ) {
         mbc->writememory_cart(address,data);
     } else {
         if(io_reg_write(address,data)) return;
         mem_map[address>>12][address&0x0FFF] = data;
     }
+    
+    // The cartridge needs to see any writes as well, even without the chip enable signal
+    mbc->signalMemoryWrite(address,data);
 }
 
 void gb_system::mem_reset(bool preserveMulticartState)
 {
+   bootstrap =gbc_mode? bootstrapCGB: bootstrapDMG;
+   haveBootstrap =gbc_mode? haveBootstrap_CGB: haveBootstrap_DMG;
+   mapBootstrap =haveBootstrap && options->use_bootstrap;
+   
    memset(memory+0x8000,0x00,0x1FFF);
    memset(memory+0xFE00,0x00,0xA0);
 
@@ -375,7 +394,6 @@ bool gb_system::load_save(bool loading_GB1_save_to_GB2)
    {
       wcscat(save_filename,L".sv2");
    }
-
    FILE* savefile = _wfopen(save_filename,L"rb");
    if(!savefile) 
    {
@@ -383,47 +401,46 @@ bool gb_system::load_save(bool loading_GB1_save_to_GB2)
       return true;
    }
 
-   if(cartridge->mbcType == MEMORY_MBC7 || cartridge->mbcType == MEMORY_TAMA5) // Should be done on the MBC
-   {
-      if(fread(&memory[0xA000],sizeof(byte),256,savefile) < 256)
-      {
-         fclose(savefile);
-         SetCurrentDirectory(old_directory);
-         return false;
-      }      
-   } else
-   if(cartridge->mbcType == MEMORY_MBC2 && cartridge->battery) // MBC2 + battery
-   {
-      if(fread(&memory[0xA000],sizeof(byte),512,savefile) < 512)
-      {
-         fclose(savefile);
-         SetCurrentDirectory(old_directory);
-         return false;
-      }   
-   } else
-   if(cartridge->RAMsize > 2)
-   {
-      if((int)fread(cartRAM,sizeof(byte),ramsize[cartridge->RAMsize]*1024,savefile) < ramsize[cartridge->RAMsize]*1024)
-      {
-         fclose(savefile);
-         SetCurrentDirectory(old_directory);
-         return false;
-      }
-   } else
-   {
-      if((int)fread(&memory[0xA000],sizeof(byte),ramsize[cartridge->RAMsize]*1024,savefile) < ramsize[cartridge->RAMsize]*1024)
-      {
-         fclose(savefile);
-         SetCurrentDirectory(old_directory);
-         return false;
-      }
-   }
+   fseek(savefile, 0L, SEEK_END);
+   long saveFileSize = ftell(savefile);
+   rewind(savefile);
 
-   mbc->readMbcSpecificStuffFromSaveFile(savefile);
+   byte* dest;
+   int ramSizeBytes;
+
+    if (cartridge->mbcType == MEMORY_MBC7 || cartridge->mbcType == MEMORY_TAMA5) {
+        dest = &memory[0xA000];
+        ramSizeBytes = 256;
+    } else if (cartridge->mbcType == MEMORY_MBC2 && cartridge->battery) {
+        dest = &memory[0xA000];
+        ramSizeBytes = 512;
+    } else if (cartridge->RAMsize > 2) {
+        dest = cartRAM;
+        ramSizeBytes = ramsize[cartridge->RAMsize] * 1024;
+    } else {
+        dest = &memory[0xA000];
+        ramSizeBytes = ramsize[cartridge->RAMsize] * 1024;
+    }
+
+    // allow for save file being smaller than ram size in case a config change resulted in a ram size increase
+    int bytesToRead = saveFileSize < ramSizeBytes ? saveFileSize : ramSizeBytes;
+
+    ZeroMemory(dest, sizeof(byte) * ramSizeBytes);
+
+    int readBytes = (int)fread(dest, sizeof(byte), bytesToRead, savefile);
+    if (readBytes < bytesToRead) {
+        fclose(savefile);
+        SetCurrentDirectory(old_directory);
+        return false;
+    }
+
+    if (bytesToRead == ramSizeBytes) { // don't try to read subsequent data if this was an underread
+        mbc->readMbcSpecificStuffFromSaveFile(savefile);
+    }
 
     fclose(savefile);
-   SetCurrentDirectory(old_directory);
-   
-   return true;
+    SetCurrentDirectory(old_directory);
+
+    return true;
 }
 

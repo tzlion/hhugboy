@@ -57,6 +57,7 @@ bool GbxParser::parseFooter(byte* cartROM, Cartridge *cartridge, int romFileSize
     cartridge->battery = (bool)footer[4];
     cartridge->rumble = (bool)footer[5];
     cartridge->RTC = (bool)footer[6];
+    memcpy(cartridge->mbcConfig, footer +16, 32);
 
     sprintf(msg,"Mapped to internal MBC type %d / ROM size %d / RAM size %d",cartridge->mbcType, cartridge->ROMsize, cartridge->RAMsize);
     debug_win(msg);
@@ -135,6 +136,14 @@ MbcType GbxParser::mapMapper(char* mapperType)
     if (!strcmp(mapperType,"LICH")) return MEMORY_NIUTOUDE;
     if (!strcmp(mapperType,"LBMC")) return MEMORY_LBMULTI;
     if (!strcmp(mapperType,"LIBA")) return MEMORY_DBZTRANS;
+    if (!strcmp(mapperType,"PKJD")) return MEMORY_POKEJD;
+    if (!strcmp(mapperType,"WISD")) return MEMORY_WISDOMTREE;
+    if (!strcmp(mapperType,"SAM1")) return MEMORY_SACHENMMC1;
+    if (!strcmp(mapperType,"SAM2")) return MEMORY_SACHENMMC2;
+    if (!strcmp(mapperType,"M161")) return MEMORY_M161;
+    if (!strcmp(mapperType,"ROCK")) return MEMORY_ROCKET;
+    if (!strcmp(mapperType,"NGHK")) return MEMORY_NEWGBHK;
+    if (!strcmp(mapperType,"GB81")) return MEMORY_GGB81;
     debug_win("Unsupported mapper type!");
     return MEMORY_DEFAULT;
 }
