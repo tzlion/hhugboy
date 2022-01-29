@@ -212,6 +212,43 @@ byte gb_mbc::readmemory_cart(register unsigned short address) {
     return mbc->readMemory(address);
 }
 
+byte last6000 = 00;
+byte last7000 = 00;
+byte last7001 = 00;
+byte last7002 = 00;
+byte last7003 = 00;
+byte last7004 = 00;
+byte last7005 = 00;
+byte last7006 = 00;
+byte last7007 = 00;
+byte last7008 = 00;
+byte last7009 = 00;
+byte last700a = 00;
+byte last700b = 00;
+byte last700c = 00;
+byte last700d = 00;
+byte last700e = 00;
+byte last700f = 00;
+
+byte next6000 = 00;
+byte next7000 = 00;
+byte next7001 = 00;
+byte next7002 = 00;
+byte next7003 = 00;
+byte next7004 = 00;
+byte next7005 = 00;
+byte next7006 = 00;
+byte next7007 = 00;
+byte next7008 = 00;
+byte next7009 = 00;
+byte next700a = 00;
+byte next700b = 00;
+byte next700c = 00;
+byte next700d = 00;
+byte next700e = 00;
+byte next700f = 00;
+
+
 void gb_mbc::writememory_cart(unsigned short address, register byte data) {
     if (LinkerWrangler::shouldWriteThroughLinker(address, data)) {
         LinkerWrangler::writeThroughLinker(address,data);
@@ -224,10 +261,70 @@ void gb_mbc::writememory_cart(unsigned short address, register byte data) {
     LinkerLog::addMessage(buffer);*/
     if (address >= 0x6000) {
 
+        if (address==0x6000) next6000= data;
+        if (address==0x7000) next7000= data;
+        if (address==0x7001) next7001= data;
+        if (address==0x7002) next7002= data;
+        if (address==0x7003) next7003= data;
+        if (address==0x7004) next7004= data;
+        if (address==0x7005) next7005= data;
+        if (address==0x7006) next7006= data;
+        if (address==0x7007) next7007= data;
+        if (address==0x7008) next7008= data;
+        if (address==0x7009) next7009= data;
+        if (address==0x700a) next700a= data;
+        if (address==0x700b) next700b= data;
+        if (address==0x700c) next700c= data;
+        if (address==0x700d) next700d= data;
+        if (address==0x700e) next700e= data;
+        if (address==0x700f) next700f= data;
+
     //if (address == 0x700f && data == 0x96) {
 
         if (address == 0x7008 || address == 0x700f) {
-            LinkerWrangler::recacheBank0();
+
+            if (
+                    last6000 != next6000 ||
+                    last7000 != next7000 ||
+                    last7001 != next7001 ||
+                    last7002 != next7002 ||
+                    last7003 != next7003 ||
+                    last7004 != next7004 ||
+                    last7005 != next7005 ||
+                    last7006 != next7006 ||
+                    last7007 != next7007 ||
+                    last7008 != next7008 ||
+                    last7009 != next7009 ||
+                    last700a != next700a ||
+                    last700b != next700b ||
+                    last700c != next700c ||
+                    last700d != next700d ||
+                    last700e != next700e ||
+                    last700f != next700f
+                    ) {
+
+                LinkerWrangler::recacheBank0();
+            }
+
+
+            last6000 = next6000;
+            last7000 = next7000;
+            last7001 = next7001;
+            last7002 = next7002;
+            last7003 = next7003;
+            last7004 = next7004;
+            last7005 = next7005;
+            last7006 = next7006;
+            last7007 = next7007;
+            last7008 = next7008;
+            last7009 = next7009;
+            last700a = next700a;
+            last700b = next700b;
+            last700c = next700c;
+            last700d = next700d;
+            last700e = next700e;
+            last700f = next700f;
+
         }
     }
     /*if (firstbank != 0x00) {
