@@ -14,8 +14,11 @@ bool LinkerWrangler::shouldReadThroughLinker(unsigned short address)
     if (!GbLinker::linkerActive) {
         return false;
     }
+    if (address < 0x4000) {
+        return READ_ROM0_THRU_LINKER;
+    }
     if (address < 0x8000) {
-        return READ_ROM_THRU_LINKER;
+        return READ_ROM1_THRU_LINKER;
     }
     if (address < 0xc000) {
         return READ_RAM_THRU_LINKER;

@@ -5,7 +5,8 @@
 #include "../../types.h"
 #include "GbLinker.h"
 
-#define READ_ROM_THRU_LINKER false
+#define READ_ROM0_THRU_LINKER true
+#define READ_ROM1_THRU_LINKER false
 #define READ_RAM_THRU_LINKER true
 #define CACHE_BANK_0 false
 #define CACHE_BANK_1 false
