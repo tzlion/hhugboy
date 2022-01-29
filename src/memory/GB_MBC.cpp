@@ -217,13 +217,18 @@ void gb_mbc::writememory_cart(unsigned short address, register byte data) {
         LinkerWrangler::writeThroughLinker(address,data);
     }
     mbc->writeMemory(address,data);
-    byte firstbank = determineSelectedBankNo(0x0000);
+   /* byte firstbank = determineSelectedBankNo(0x0000);
     byte rombank = determineSelectedBankNo(0x4000);
     char buffer[420];
     sprintf(buffer, "determined bank %02x / %02x", firstbank,rombank);
-    LinkerLog::addMessage(buffer);
-    if (address == 0x700f && data == 0x96) {
-        LinkerWrangler::recacheBank0();
+    LinkerLog::addMessage(buffer);*/
+    if (address >= 0x6000) {
+
+    //if (address == 0x700f && data == 0x96) {
+
+        if (address == 0x7008 || address == 0x700f) {
+            LinkerWrangler::recacheBank0();
+        }
     }
     /*if (firstbank != 0x00) {
         byte r00 = LinkerWrangler::readThroughLinker(0x0000);
@@ -239,9 +244,9 @@ void gb_mbc::writememory_cart(unsigned short address, register byte data) {
         sprintf(buffer, "rom0 2000 %02x %02x %02x %02x", r00,r01,r02,r03);
         LinkerLog::addMessage(buffer);
     }*/
-    if (rombank != 0xff) {
+    /*if (rombank != 0xff) {
         mbc->writeMemory(0x2000, rombank);
-    }
+    }*/
 }
 
 void gb_mbc::signalMemoryWrite(unsigned short address, register byte data) {

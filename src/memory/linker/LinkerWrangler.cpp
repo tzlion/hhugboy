@@ -69,6 +69,7 @@ bool LinkerWrangler::shouldWriteThroughLinker(unsigned short address, byte data)
     if (!GbLinker::linkerActive) {
         return false;
     }
+    if (address == 0x2000) return false;
     return true;
 }
 
