@@ -8,7 +8,7 @@
 #define READ_ROM0_THRU_LINKER true
 #define READ_ROM1_THRU_LINKER false
 #define READ_RAM_THRU_LINKER true
-#define CACHE_BANK_0 false
+#define CACHE_BANK_0 true
 #define CACHE_BANK_1 false
 #define USE_PREDUMPED_BANK_0 false
 
@@ -23,6 +23,7 @@ class LinkerWrangler {
         static byte readThroughLinker(unsigned short address);
         static bool shouldWriteThroughLinker(unsigned short address, byte data);
         static bool writeThroughLinker(unsigned short address, byte data);
+        static void recacheBank0();
 };
 
 #endif //HHUGBOY_LINKERWRANGLER_H
