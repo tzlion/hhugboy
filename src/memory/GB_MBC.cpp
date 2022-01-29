@@ -23,16 +23,8 @@
 */
 #include "../config.h"
 #include "../GB_gfx.h"
-#include "../debug.h"
-#include "../mainloop.h"
-#include <time.h>
 
-#include "../GB.h"
 #include "GB_MBC.h"
-
-#include "../debug.h"
-#include "zlib/zconf.h"
-#include <stdio.h>
 
 #include "../main.h"
 #include "mbc/MbcNin3.h"
@@ -65,11 +57,132 @@
 #include "mbc/MbcUnlNewGbHk.h"
 #include "mbc/MbcUnlGgb81.h"
 #include "linker/LinkerWrangler.h"
+#include "../ui/dialogs/LinkerLog.h"
 
 // So maybe this should be "cart" and a lot of whats in rom.cpp now e.g. autodetection should go in here..
 
 //int RTCIO = 0;
 //int RTC_latched = 0;
+
+byte determineSelectedBankNo(int offset) {
+    byte lastbyte = LinkerWrangler::readThroughLinker(offset + 0x3fff);
+    if (lastbyte <= 0x7f && (lastbyte != 0x00 && lastbyte != 0x01 && lastbyte != 0x7f && lastbyte != 0x20 && lastbyte != 0x10)) {
+        // last byte is the bank number
+        return lastbyte;
+    }
+
+    byte firstbyte;
+    byte twentiethbyte;
+    byte byteff0;
+    byte hundredthbyte;
+
+    switch(lastbyte) {
+        // last byte is unique so we can determine the bank number from it
+        case 0xf4: return 0x08;
+        case 0xda: return 0x15;
+        case 0x98: return 0x1b;
+        case 0x10: return 0x5d;
+        case 0x80: return 0x16;
+        case 0x01: return 0x04;
+        // last byte is not unique so we gotta find another byte that is unique within that subset
+        case 0x83:
+            firstbyte = LinkerWrangler::readThroughLinker(offset);
+            switch (firstbyte) {
+                case 0x00: return 0x01;
+                case 0x21: return 0x02;
+                default: return 0xff; // unexpected
+            }
+        case 0x7f:
+            firstbyte = LinkerWrangler::readThroughLinker(offset);
+            switch (firstbyte) {
+                case 0x19: return 0x19; // first byte in rare cases actually is the bank no too
+                case 0xcd: return 0x7f;
+                default: return 0xff; // unexpected
+            }
+        case 0x20:
+            twentiethbyte = LinkerWrangler::readThroughLinker(offset + 0x20);
+            switch (twentiethbyte) {
+                case 0x5e: return 0x20;
+                case 0x8f: return 0x22;
+                case 0x00: return 0x24;
+                case 0xfc: return 0x28;
+                default: return 0xff; // unexpected
+            }
+        case 0xff:
+            byteff0 = LinkerWrangler::readThroughLinker(offset + 0xff0);
+            switch (byteff0) {
+                case 0xc1: return 0x00;
+                case 0x3f: return 0x2d;
+                case 0x20: return 0x2f;
+                case 0xff: return 0x30;
+                case 0x7f: return 0x31;
+                case 0x60: return 0x32;
+                case 0xf8: return 0x38;
+                case 0xf6: return 0x5e;
+                default: return 0xff; // unexpected
+            }
+        case 0x00:
+            // this one is the worst
+            byteff0 = LinkerWrangler::readThroughLinker(offset + 0xff0);
+            switch (byteff0) {
+                case 0x62: return 0x03;
+                case 0x43: return 0x0b;
+                case 0x81: return 0x0e;
+                case 0x01: return 0x0f;
+                case 0x38: return 0x10;
+                case 0x10: return 0x12;
+                case 0x08: return 0x13;
+                case 0x80: return 0x1f;
+                case 0x3f: return 0x23;
+                case 0xe8: return 0x26;
+                case 0xfe: return 0x29;
+                case 0x09: return 0x2b;
+                case 0xfd: return 0x5c;
+                case 0xe0: return 0x60;
+                case 0x11: return 0x62;
+                case 0xff:
+                    firstbyte = LinkerWrangler::readThroughLinker(offset);
+                    switch (firstbyte) {
+                        case 0x1a: return 0x1a;
+                        case 0x00: return 0x35;
+                        default: return 0xff; // unexpected
+                    }
+                case 0xd1:
+                    hundredthbyte = LinkerWrangler::readThroughLinker(offset + 0x100);
+                    switch (hundredthbyte) {
+                        case 0x4e: return 0x0c;
+                        case 0x00: return 0x0d;
+                        default: return 0xff; // unexpected
+                    }
+                case 0xfc:
+                    hundredthbyte = LinkerWrangler::readThroughLinker(offset + 0x100);
+                    switch (hundredthbyte) {
+                        case 0xcb: return 0x14;
+                        case 0x00: return 0x2a;
+                        case 0xf0: return 0x2c;
+                        default: return 0xff; // unexpected
+                    }
+                case 0x00:
+                    // this one is the double worst
+                    firstbyte = LinkerWrangler::readThroughLinker(offset);
+                    switch (firstbyte) {
+                        case 0x07: return 0x07;
+                        case 0x17: return 0x17;
+                        case 0x18: return 0x18;
+                        case 0x00:
+                            hundredthbyte = LinkerWrangler::readThroughLinker(offset + 0x100);
+                            switch(hundredthbyte) {
+                                case 0x80: return 0x11;
+                                case 0x00: return 0x63;
+                                default: return 0xff; // unexpected
+                            }
+                        default: return 0xff; // unexpected
+                    }
+                default: return 0xff; // unexpected
+            }
+        default: return 0xff; // unexpected
+    }
+}
 
 // Eventually GB should contain cart and cart should contain MBC
 gb_mbc::gb_mbc(byte** gbMemMap, byte** gbCartRom, Cartridge** gbCartridge, byte** gbCartRam, int* gbRumbleCounter, byte** gbMemory):
@@ -104,6 +217,14 @@ void gb_mbc::writememory_cart(unsigned short address, register byte data) {
         LinkerWrangler::writeThroughLinker(address,data);
     }
     mbc->writeMemory(address,data);
+    byte firstbank = determineSelectedBankNo(0x0000);
+    byte rombank = determineSelectedBankNo(0x4000);
+    char buffer[420];
+    sprintf(buffer, "determined bank %02x / %02x", firstbank,rombank);
+    LinkerLog::addMessage(buffer);
+    if (rombank != 0xff) {
+        mbc->writeMemory(0x2000, rombank);
+    }
 }
 
 void gb_mbc::signalMemoryWrite(unsigned short address, register byte data) {
