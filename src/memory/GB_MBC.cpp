@@ -219,6 +219,7 @@ byte cur7007 = 00;
 byte cur7009 = 00;
 byte cur700a = 00;
 
+int changebank = 0;
 int changeaddr = 0;
 int changevals = 0;
 byte changeval1 = 0;
@@ -236,7 +237,12 @@ byte gb_mbc::readmemory_cart(register unsigned short address) {
     if (LinkerWrangler::shouldReadThroughLinker(address)) {
         return LinkerWrangler::readThroughLinker(address);
     }
-    if (address == changeaddr && changesleft == 0) {
+    // note im not 100% sure on the non-zero bank behaviour
+    // as i observed it on a cart returning 3 bytes changes (instead of 4) immediately after the bank was switched
+    // and not caring about the specified address
+    // but it seems to work this way for now. needs more testing
+    bool shouldtriggerchange = (changebank == 0 && address < 0x3fff) || (changebank == getRomBank() && address >= 4000);
+    if (shouldtriggerchange && address == changeaddr && changesleft == 0) {
         changesleft = changevals;
     }
     if (changesleft > 0 && address < 0x8000) {
@@ -374,8 +380,8 @@ void gb_mbc::writememory_cart(unsigned short address, register byte data) {
                     cur7007 = runningvalue;
                     break;
                 case 0x7000:
-                    changeaddr = (cur7003 << 16) + (cur7002 << 8) + cur7001;
-                    changeaddr &= 0x3fff; /// hMMMMMM
+                    changebank = cur7003;
+                    changeaddr =(cur7002 << 8) + cur7001;
                     changeval1 = cur7004;
                     changeval2 = cur7005;
                     changeval3 = cur7006;
