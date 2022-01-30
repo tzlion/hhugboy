@@ -28,7 +28,7 @@ bool LinkerWrangler::shouldReadThroughLinker(unsigned short address)
 
 void LinkerWrangler::recacheBank0()
 {
-    if (!CACHE_BANK_0) return;
+    if (!CACHE_BANK_0 || !GbLinker::linkerActive) return;
     LinkerLog::addMessage("DUMPING BANK 0");
     GbLinker::readBlock(bank0,0,0x4000);
     readBank0=true;
