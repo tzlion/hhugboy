@@ -226,6 +226,8 @@ byte changeval2 = 0;
 byte changeval3 = 0;
 byte changeval4 = 0;
 
+int changesleft = 0;
+
 bool shouldreplace = false;
 int replaceaddr = 0;
 int replacesourcebank = 0;
@@ -234,12 +236,23 @@ byte gb_mbc::readmemory_cart(register unsigned short address) {
     if (LinkerWrangler::shouldReadThroughLinker(address)) {
         return LinkerWrangler::readThroughLinker(address);
     }
-    if (address >= changeaddr && address < (changeaddr + changevals)) {
+    if (address == changeaddr && changesleft == 0) {
+        changesleft = changevals;
+    }
+    if (changesleft > 0 && address < 0x8000) {
+        changesleft--;
+        int curchange = changevals - changesleft;
+        if (curchange == 1) return changeval1;
+        if (curchange == 2) return changeval2;
+        if (curchange == 3) return changeval3;
+        if (curchange == 4) return changeval4;
+    }
+    /*if (address >= changeaddr && address < (changeaddr + changevals)) {
         if (address == changeaddr) return changeval1;
         if (address == changeaddr+1) return changeval2;
         if (address == changeaddr+2) return changeval3;
         if (address == changeaddr+3) return changeval4;
-    }
+    }*/
     if (shouldreplace && address >= replaceaddr && address < 0x4000) {
        //int actualaddress = (replacesourcebank << 0xe) + address;
         byte* pointer = &(*this->gbCartRom)[replacesourcebank << 0xe];
@@ -295,7 +308,7 @@ void gb_mbc::writememory_cart(unsigned short address, register byte data) {
     byte rombank = determineSelectedBankNo(0x4000);
     sprintf(buffer, "determined bank %02x / %02x", firstbank,rombank);
     LinkerLog::addMessage(buffer);*/
-    if (address >= 0x6000) {
+    if (address >= 0x6000 && address < 0x8000) {
 
         unsigned short funkyaddress = address & 0xf00f;
 
