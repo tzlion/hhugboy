@@ -405,7 +405,7 @@ void gb_mbc::writememory_cart(unsigned short address, register byte data) {
                             debug_win(buffer);
                             changevals = 0;
                     }
-                    sprintf(buffer, "Now changing: addr %06x vals %02x %02x %02x %02x count %01x", changeaddr, changeval1, changeval2, changeval3, changeval4, changevals);
+                    sprintf(buffer, "Now changing: bank %02x addr %04x vals %02x %02x %02x %02x count %01x", changebank, changeaddr, changeval1, changeval2, changeval3, changeval4, changevals);
                     debug_win(buffer);
                     break;
 
