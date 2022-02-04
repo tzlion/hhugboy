@@ -22,6 +22,8 @@ class LinkerWrangler {
         static byte readThroughLinker(unsigned short address);
         static bool shouldWriteThroughLinker(unsigned short address, byte data);
         static bool writeThroughLinker(unsigned short address, byte data);
+        static bool initLinker();
+        static bool deinitLinker();
 };
 
 #endif //HHUGBOY_LINKERWRANGLER_H

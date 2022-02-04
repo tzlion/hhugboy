@@ -69,3 +69,13 @@ bool LinkerWrangler::writeThroughLinker(unsigned short address, byte data)
     LinkerLog::addMessage(buffer);
     GbLinker::writeByte(address,data);
 }
+
+bool LinkerWrangler::initLinker()
+{
+    GbLinker::initLinker();
+}
+
+bool LinkerWrangler::deinitLinker()
+{
+    GbLinker::deinitLinker();
+}
