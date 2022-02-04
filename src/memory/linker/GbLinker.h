@@ -23,6 +23,7 @@ private:
     static void gb_sendblockread(U16 addr, U16 length);
     static void gb_sendwrite(U16 addr, U8 val);
     static void readBankZero();
+    static void logMessage(const char* message);
 public:
     static bool linkerActive;
     static bool linkerInitialising;

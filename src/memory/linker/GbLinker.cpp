@@ -98,7 +98,7 @@ void GbLinker::gb_sendblockread(U16 addr, U16 length)
 
 void GbLinker::readBlock(U8 *dest, U16 addr, int len)
 {
-    LinkerLog::addMessage(msg);
+    logMessage(msg);
     GbLinker::gb_sendblockread(addr,len);
     for(int i=0;i<len;i++)
         dest[i] = GbLinker::gb_readbyte();
@@ -118,7 +118,7 @@ void GbLinker::writeByte(U16 addr, U8 val)
 void GbLinker::readBankZero()
 {
     // read the first bank of ROM
-    LinkerLog::addMessage("Downloading first bank...");
+    logMessage("Downloading first bank...");
     for(int i=0;i<0x4000;i++) {
         GbLinker::bank0[i] = GbLinker::gb_readbyte();
     }
@@ -127,7 +127,7 @@ void GbLinker::readBankZero()
 bool GbLinker::initLinker()
 {
     if (linkerInitialising) {
-        LinkerLog::addMessage("Already initialising");
+        logMessage("Already initialising");
         return false;
     }
 
@@ -138,14 +138,14 @@ bool GbLinker::initLinker()
         gfpOut32 = (lpOut32)GetProcAddress(hInpOutDll, "Out32");
         gfpInp32 = (lpInp32)GetProcAddress(hInpOutDll, "Inp32");
     } else {
-        LinkerLog::addMessage("Unable to load inpout32.dll");
+        logMessage("Unable to load inpout32.dll");
         return false;
     }
 
-    LinkerLog::addMessage("GBlinkDX client adaptation for hhugboy");
-    LinkerLog::addMessage("Based on original GBlinkdl by Brian Provinciano & GBlinkDX by taizou");
+    logMessage("GBlinkDX client adaptation for hhugboy");
+    logMessage("Based on original GBlinkdl by Brian Provinciano & GBlinkDX by taizou");
 
-    LinkerLog::addMessage("Setting up ports...");
+    logMessage("Setting up ports...");
 
     // set up the parallel port
     outportb(LPTREG_CONTROL, inportb(LPTREG_CONTROL)&(~CTL_MODE_DATAIN));
@@ -153,15 +153,15 @@ bool GbLinker::initLinker()
     outportb(LPTREG_DATA, D_CLOCK_HIGH);
 
     // perform communication
-    LinkerLog::addMessage("Waiting for Game Boy...");
+    logMessage("Waiting for Game Boy...");
     while(gb_sendbyte(0x9A)!=0xB4) {}
     lptdelay(2000);
     if(gb_sendbyte(0x9A)!=0x1D) {
-        LinkerLog::addMessage("Bad connection");
+        logMessage("Bad connection");
         return false;
     }
 
-    LinkerLog::addMessage("Connected.");
+    logMessage("Connected.");
 
     U8 carttype = gb_readbyte();
     U8 romsize = gb_readbyte();
@@ -177,22 +177,22 @@ bool GbLinker::initLinker()
             "Cartridge header: Title %s / Cart type %02X / ROM size %02X / RAM size %02X / Checksum %04X",
             gamename,carttype,romsize,ramsize,checksum
     );
-    LinkerLog::addMessage(msg);
+    logMessage(msg);
 
     if(gb_readbyte() != 0) {// verify we're done
-        LinkerLog::addMessage("expected 0x00 from GB, bad connection");
+        logMessage("expected 0x00 from GB, bad connection");
         return false;
     }
     if(gb_readbyte() != 0xFF) {// verify we're done
-        LinkerLog::addMessage("expected 0xFF from GB, bad connection");
+        logMessage("expected 0xFF from GB, bad connection");
         return false;
     }
 
-    LinkerLog::addMessage("Reading first bank...");
+    logMessage("Reading first bank...");
 
     readBankZero();
 
-    LinkerLog::addMessage("Ready!");
+    logMessage("Ready!");
 
     linkerInitialising = false;
     linkerActive = true;
@@ -209,5 +209,9 @@ void GbLinker::deinitLinker() {
     outportb(LPTREG_CONTROL, inportb(LPTREG_CONTROL)&(~CTL_MODE_DATAIN));
     outportb(LPTREG_DATA, 0xFF);
     FreeLibrary(hInpOutDll);
-    LinkerLog::addMessage("Disconnected");
+    logMessage("Disconnected");
+}
+
+void GbLinker::logMessage(const char* message) {
+    LinkerLog::addMessage(message);
 }
