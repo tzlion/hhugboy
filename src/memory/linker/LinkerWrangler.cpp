@@ -72,6 +72,7 @@ bool LinkerWrangler::writeThroughLinker(unsigned short address, byte data)
 
 bool LinkerWrangler::initLinker()
 {
+    GbLinker::setLogger(LinkerLog::addMessage);
     GbLinker::initLinker();
 }
 

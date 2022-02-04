@@ -13,6 +13,8 @@ typedef unsigned short U16;
 #define CTL_MODE_DATAIN 0x20
 #define D_CLOCK_HIGH 0x02
 
+typedef void(*LinkerLogger)(const char*);
+
 class GbLinker {
 private:
     static unsigned char inportb(unsigned short port);
@@ -24,6 +26,7 @@ private:
     static void gb_sendwrite(U16 addr, U8 val);
     static void readBankZero();
     static void logMessage(const char* message);
+    static LinkerLogger logger;
 public:
     static bool linkerActive;
     static bool linkerInitialising;
@@ -33,6 +36,7 @@ public:
     static void readBlock(U8 *dest, U16 addr, int len);
     static U8 readByte(U16 addr);
     static void writeByte(U16 addr, U8 val);
+    static void setLogger(LinkerLogger newlogger);
 };
 
 #endif //HHUGBOY_LINKER_H

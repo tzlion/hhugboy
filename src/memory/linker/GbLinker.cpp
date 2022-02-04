@@ -11,13 +11,13 @@
 #include "string.h"
 
 #include "windows.h"
-#include "../../ui/dialogs/LinkerLog.h"
 
 using namespace std;
 
 U8 GbLinker::bank0[0x4000];
 bool GbLinker::linkerActive = false;
 bool GbLinker::linkerInitialising = false;
+LinkerLogger GbLinker::logger = NULL;
 HINSTANCE hInpOutDll;
 
 typedef void(__stdcall *lpOut32)(short, short);
@@ -126,6 +126,9 @@ void GbLinker::readBankZero()
 
 bool GbLinker::initLinker()
 {
+    logMessage("cha cha cha");
+    return false;
+
     if (linkerInitialising) {
         logMessage("Already initialising");
         return false;
@@ -213,5 +216,11 @@ void GbLinker::deinitLinker() {
 }
 
 void GbLinker::logMessage(const char* message) {
-    LinkerLog::addMessage(message);
+  if (logger) {
+   logger(message);
+   }
+}
+
+void GbLinker::setLogger(LinkerLogger newlogger) {
+    logger = newlogger;
 }
