@@ -56,27 +56,17 @@ byte MbcUnlVf001::readMemory(unsigned short address) {
         if (curchange == 3) return changeval3;
         if (curchange == 4) return changeval4;
     }
-    /*if (address >= changeaddr && address < (changeaddr + changevals)) {
-        if (address == changeaddr) return changeval1;
-        if (address == changeaddr+1) return changeval2;
-        if (address == changeaddr+2) return changeval3;
-        if (address == changeaddr+3) return changeval4;
-    }*/
     if (shouldreplace && address >= replaceaddr && address < 0x4000) {
-        //int actualaddress = (replacesourcebank << 0xe) + address;
-        byte* pointer = &(*this->gbCartRom)[replacesourcebank << 0xe];
+        byte* pointer = &(*this->gbCartRom)[(replacesourcebank << 0xe) & (rom_size_mask[(*gbCartridge)->ROMsize])];
         return pointer[address];
     }
     return MbcNin5_LogoSwitch::readMemory(address);
 }
 
 void MbcUnlVf001::writeMemory(unsigned short address, byte data) {
-    MbcNin5::writeMemory(address, data);
+
     char buffer[420];
-    /* byte firstbank = determineSelectedBankNo(0x0000);
-     byte rombank = determineSelectedBankNo(0x4000);
-     sprintf(buffer, "determined bank %02x / %02x", firstbank,rombank);
-     LinkerLog::addMessage(buffer);*/
+
     if (address >= 0x6000 && address < 0x8000) {
 
         unsigned short funkyaddress = address & 0xf00f;
@@ -115,19 +105,9 @@ void MbcUnlVf001::writeMemory(unsigned short address, byte data) {
                     cur7001 = runningvalue;
                     break;
                 case 0x7002:
-                    if (runningvalue >= 0x40) {
-                        sprintf(buffer, "Value outside bank 0 at 7002: %02x", runningvalue);
-                        // debug_print(buffer);
-                        debug_win(buffer);
-                    }
                     cur7002 = runningvalue;
                     break;
                 case 0x7003:
-                    if (runningvalue != 0) {
-                        sprintf(buffer, "Nonzero value at 7003: %02x", runningvalue);
-                        // debug_print(buffer);
-                        debug_win(buffer);
-                    }
                     cur7003 = runningvalue;
                     break;
                 case 0x7004:
@@ -163,8 +143,7 @@ void MbcUnlVf001::writeMemory(unsigned short address, byte data) {
                             changevals = 4;
                             break;
                         default:
-                            sprintf(buffer, "Unknown command at 7008: %02x", runningvalue);
-                            debug_print(buffer);
+                            sprintf(buffer, "Unknown command at 7000: %02x", runningvalue);
                             debug_win(buffer);
                             changevals = 0;
                     }
@@ -178,7 +157,6 @@ void MbcUnlVf001::writeMemory(unsigned short address, byte data) {
                 case 0x700a:
                     if (runningvalue >= 0x40) {
                         sprintf(buffer, "Value outside bank 0 at 700a: %02x", runningvalue);
-                        debug_print(buffer);
                         debug_win(buffer);
                     }
                     cur700a = runningvalue;
@@ -194,7 +172,6 @@ void MbcUnlVf001::writeMemory(unsigned short address, byte data) {
                     } else {
                         shouldreplace = false;
                         sprintf(buffer, "Unknown command at 7008: %02x", runningvalue);
-                        debug_print(buffer);
                         debug_win(buffer);
                     }
                     sprintf(buffer, "Now replacing: addr %04x sourcebank %02x shouldreplace %01x", replaceaddr, replacesourcebank, shouldreplace);
@@ -204,7 +181,11 @@ void MbcUnlVf001::writeMemory(unsigned short address, byte data) {
             }
         }
 
+        return;
+
     }
+
+    MbcNin5_LogoSwitch::writeMemory(address, data);
 }
 
 void MbcUnlVf001::resetVars(bool preserveMulticartState) {
