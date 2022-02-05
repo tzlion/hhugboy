@@ -177,8 +177,7 @@ void MbcUnlVf001::writeMemory(unsigned short address, byte data) {
     MbcNin5_LogoSwitch::writeMemory(address, data);
 }
 
-void MbcUnlVf001::resetVars(bool preserveMulticartState) {
-
+void MbcUnlVf001::init() {
     configMode = false;
     runningValue = 0;
 
@@ -196,9 +195,15 @@ void MbcUnlVf001::resetVars(bool preserveMulticartState) {
     shouldReplace = false;
     replaceStartAddress = 0;
     replaceSourceBank = 0;
+}
 
+MbcUnlVf001::MbcUnlVf001() {
+    init();
+}
+
+void MbcUnlVf001::resetVars(bool preserveMulticartState) {
+    init();
     MbcNin5_LogoSwitch::resetVars(preserveMulticartState);
-
 }
 
 void MbcUnlVf001::readMbcSpecificVarsFromStateFile(FILE *savefile) {
