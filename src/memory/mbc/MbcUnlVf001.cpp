@@ -8,6 +8,7 @@
  */
 
 #include <cstdio>
+#include <cstring>
 #include "MbcUnlVf001.h"
 #include "../../debug.h"
 
@@ -177,7 +178,27 @@ void MbcUnlVf001::writeMemory(unsigned short address, byte data) {
 }
 
 void MbcUnlVf001::resetVars(bool preserveMulticartState) {
+
+    configMode = false;
+    runningValue = 0;
+
+    cur6000 = 0;
+    byte zeroes15[15] = {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0};
+    memcpy(cur700x, zeroes15, sizeof zeroes15);
+
+    sequenceStartBank = 0;
+    sequenceStartAddress = 0;
+    sequenceLength = 0;
+    byte zeroes4[4] = {0, 0, 0, 0};
+    memcpy(sequence, zeroes4, sizeof zeroes4);
+    sequenceBytesLeft = 0;
+
+    shouldReplace = false;
+    replaceStartAddress = 0;
+    replaceSourceBank = 0;
+
     MbcNin5_LogoSwitch::resetVars(preserveMulticartState);
+
 }
 
 void MbcUnlVf001::readMbcSpecificVarsFromStateFile(FILE *savefile) {
