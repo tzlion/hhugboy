@@ -17,9 +17,7 @@ byte MbcUnlVf001::readMemory(unsigned short address) {
     // Protection affects ROM reads in 2 ways
 
     // (1) ROM reads return a specified sequence of bytes triggered by a read from a specified address
-    byte effectiveStartBank = sequenceStartBank & maxROMbank[(*gbCartridge)->ROMsize];
-    byte effectiveCurrentBank = rom_bank & maxROMbank[(*gbCartridge)->ROMsize];
-    bool inChangeStartBank = (effectiveStartBank == 0 && address < 0x3fff) || (effectiveStartBank == effectiveCurrentBank && address >= 4000);
+    bool inChangeStartBank = (sequenceStartBank == 0 && address < 0x3fff) || (sequenceStartBank == rom_bank && address >= 4000);
     if (inChangeStartBank && address == sequenceStartAddress && sequenceBytesLeft == 0) {
         sequenceBytesLeft = sequenceLength;
     }
