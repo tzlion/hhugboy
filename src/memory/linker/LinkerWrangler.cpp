@@ -3,7 +3,6 @@
 #include "../../ui/dialogs/LinkerLog.h"
 
 #include "stdio.h"
-#include "string.h"
 
 #include "windows.h"
 
@@ -11,6 +10,7 @@ bool LinkerWrangler::readBank0 = false;
 byte LinkerWrangler::bank0[0x4000];
 bool LinkerWrangler::readBank1 = false;
 byte LinkerWrangler::bank1[0x4000];
+bool LinkerWrangler::libLoaded = false;
 
 LibInitLinker LinkerWrangler::libInitLinker;
 LibDeinitLinker LinkerWrangler::libDeinitLinker;
@@ -24,7 +24,7 @@ HINSTANCE LinkerWrangler::libgblink;
 
 bool LinkerWrangler::shouldReadThroughLinker(unsigned short address)
 {
-    if (libgblink == nullptr || !libIsLinkerActive()) {
+    if (!libLoaded || !libIsLinkerActive()) {
         return false;
     }
     if (address < 0x8000) {
@@ -68,13 +68,13 @@ byte LinkerWrangler::readThroughLinker(unsigned short address)
 
 bool LinkerWrangler::shouldWriteThroughLinker(unsigned short address, byte data)
 {
-    if (libgblink == nullptr || !libIsLinkerActive()) {
+    if (!libLoaded || !libIsLinkerActive()) {
         return false;
     }
     return true;
 }
 
-bool LinkerWrangler::writeThroughLinker(unsigned short address, byte data)
+void LinkerWrangler::writeThroughLinker(unsigned short address, byte data)
 {
     readBank1 = false;
     char buffer[420];
@@ -83,12 +83,16 @@ bool LinkerWrangler::writeThroughLinker(unsigned short address, byte data)
     libWriteByte(address, data);
 }
 
-
 bool LinkerWrangler::initLinker()
 {
-    libgblink = LoadLibrary("libgblink.dll");
+    if (!libLoaded) {
 
-    if (libgblink != NULL) {
+        libgblink = LoadLibrary("libgblink.dll");
+        if (libgblink == nullptr) {
+            LinkerLog::addMessage("Unable to load libgblink.dll");
+            return false;
+        }
+
         libSetLogger = (LibSetLogger)GetProcAddress(libgblink, "SetLogger");
         libInitLinker = (LibInitLinker)GetProcAddress(libgblink, "InitLinker");
         libDeinitLinker = (LibDeinitLinker)GetProcAddress(libgblink, "DeinitLinker");
@@ -97,16 +101,22 @@ bool LinkerWrangler::initLinker()
         libWriteByte = (LibWriteByte)GetProcAddress(libgblink, "WriteByte");
         libIsLinkerActive = (LibIsLinkerActive)GetProcAddress(libgblink, "IsLinkerActive");
         libGetBank0 = (LibGetBank0)GetProcAddress(libgblink, "GetBank0");
-    } else {
-        LinkerLog::addMessage("Unable to load libgblink.dll");
-        return false;
+        if (!libSetLogger || !libInitLinker || !libDeinitLinker || !libReadByte || !libReadBlock
+            || !libWriteByte || !libIsLinkerActive || !libGetBank0) {
+            LinkerLog::addMessage("Unable to link with libgblink.dll");
+            return false;
+        }
+
+        libLoaded = true;
+
     }
 
     libSetLogger(LinkerLog::addMessage);
     libInitLinker();
+    return true;
 }
 
-bool LinkerWrangler::deinitLinker()
+void LinkerWrangler::deinitLinker()
 {
     libDeinitLinker();
 }

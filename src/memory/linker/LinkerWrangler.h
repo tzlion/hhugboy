@@ -26,6 +26,7 @@ class LinkerWrangler {
         static byte bank0[0x4000];
         static bool readBank1;
         static byte bank1[0x4000];
+        static bool libLoaded;
         static LibInitLinker libInitLinker;
         static LibDeinitLinker libDeinitLinker;
         static LibReadBlock libReadBlock;
@@ -39,9 +40,9 @@ public:
         static bool shouldReadThroughLinker(unsigned short address);
         static byte readThroughLinker(unsigned short address);
         static bool shouldWriteThroughLinker(unsigned short address, byte data);
-        static bool writeThroughLinker(unsigned short address, byte data);
+        static void writeThroughLinker(unsigned short address, byte data);
         static bool initLinker();
-        static bool deinitLinker();
+        static void deinitLinker();
 };
 
 #endif //HHUGBOY_LINKERWRANGLER_H
