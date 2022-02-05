@@ -3,12 +3,9 @@
 
 #include <windows.h>
 
-#include <string>
 #include <cstdio>
 #include "LinkerLog.h"
-#include "../../debug.h"
 #include "../../GB.h"
-#include "../../memory/linker/GbLinker.h"
 #include "../../memory/linker/LinkerWrangler.h"
 
 using namespace std;
