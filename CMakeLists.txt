@@ -151,8 +151,6 @@ set(SOURCE_FILES
         src/memory/mbc/MbcUnlNewGbHk.h
         src/memory/mbc/MbcUnlGgb81.cpp
         src/memory/mbc/MbcUnlGgb81.h
-        src/memory/linker/GbLinker.cpp
-        src/memory/linker/GbLinker.h
         src/ui/dialogs/LinkerLog.cpp
         src/ui/dialogs/LinkerLog.h
         src/ui/dialogs/LinkerLog.rc

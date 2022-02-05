@@ -3,12 +3,10 @@
 
 #include <windows.h>
 
-#include <string>
 #include <cstdio>
 #include "LinkerLog.h"
-#include "../../debug.h"
 #include "../../GB.h"
-#include "../../memory/linker/GbLinker.h"
+#include "../../memory/linker/LinkerWrangler.h"
 
 using namespace std;
 
@@ -53,14 +51,14 @@ BOOL CALLBACK LinkerLog::LinkerLogDialogProc(HWND hwndDlg, UINT message, WPARAM 
             {
                 case ID_LINKER_LOG_BTN:
                     if (linkerInitialised) {
-                        GbLinker::deinitLinker();
+                        LinkerWrangler::deinitLinker();
                     }
-                    GbLinker::initLinker();
+                    LinkerWrangler::initLinker();
                     linkerInitialised = true;
                     break;
                 case ID_LINKER_LOG_BTN_STOP:
                     if (linkerInitialised) {
-                        GbLinker::deinitLinker();
+                        LinkerWrangler::deinitLinker();
                         linkerInitialised = false;
                     }
                     break;
