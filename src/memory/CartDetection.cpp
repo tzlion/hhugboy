@@ -553,7 +553,9 @@ bool CartDetection::detectUnlicensedCarts(byte *rom, Cartridge *cartridge, int r
         case UNL_VF001:
             cartridge->ROMsize = detectGbRomSize(romFileSize);
             if (cartridge->header.RAMsize > 0) {
-                cartridge->RAMsize = 2; // games with ram seem to underdeclare it, observed 8k on carts so far
+                if (cartridge->RAMsize < 2) cartridge->RAMsize = 2; // digimon 3 underdeclares this
+                cartridge->battery = true; // feng kuang da fu weng doesn't declare having a battery
+                                           // (also, it declares 32k ram but i haven't been able to verify on cart)
             }
             cartridge->mbcType = MEMORY_VF001;
             break;
