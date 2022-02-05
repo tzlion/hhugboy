@@ -111,109 +111,78 @@ void MbcUnlVf001::writeMemory(unsigned short address, byte data) {
         sprintf(buffer, "Protection write: Addr %04x Data %02x Running %02x", address, data, runningValue);
         debug_win(buffer);
 
-        // Then the running value is used for some config depending on the address written to
+        // Then the running value is stored until one of the protection modes is activated
+        // At which point it will be used for some config depending on the address written to
+        if (effectiveAddress >= 0x7000) {
+            byte offset700x = effectiveAddress & 0xf;
+            cur700x[offset700x] = runningValue;
+        } else if (effectiveAddress == 0x6000) {
+            cur6000 = runningValue;
+        }
 
-        switch(effectiveAddress) {
-
-            // (1) "byte sequence" related writes
-
-            // set start address & bank
-            case 0x7001:
-                cur700x[1] = runningValue;
-                break;
-            case 0x7002:
-                cur700x[2] = runningValue;
-                break;
-            case 0x7003:
-                cur700x[3] = runningValue;
-                break;
-
-            // set sequence values
-            case 0x7004:
-                cur700x[4] = runningValue;
-                break;
-            case 0x7005:
-                cur700x[5] = runningValue;
-                break;
-            case 0x7006:
-                cur700x[6] = runningValue;
-                break;
-            case 0x7007:
-                cur700x[7] = runningValue;
-                break;
-
-            // set sequence length & activate the changes
-            case 0x7000:
-                sequenceStartBank = cur700x[3];
-                sequenceStartAddress = (cur700x[2] << 8) + cur700x[1];
-                sequence[0] = cur700x[4];
-                sequence[1] = cur700x[5];
-                sequence[2] = cur700x[6];
-                sequence[3] = cur700x[7];
-                switch(runningValue & 7) {
-                    case 4:
-                        sequenceLength = 1;
-                        break;
-                    case 5:
-                        sequenceLength = 2;
-                        break;
-                    case 6:
-                        sequenceLength = 3;
-                        break;
-                    case 7:
-                        sequenceLength = 4;
-                        break;
-                    default:
-                        sprintf(buffer, "Unknown command at 7000: %02x", runningValue);
-                        debug_win(buffer);
-                        sequenceLength = 0;
-                }
-                sprintf(
-                    buffer,
-                    "Sequence set up: bank %02x addr %04x vals %02x %02x %02x %02x count %01x",
-                    sequenceStartBank, sequenceStartAddress, sequence[0], sequence[1], sequence[2], sequence[3], sequenceLength
-                );
-                debug_win(buffer);
-                break;
-
-            // (2) "bank 0 replacement" related writes
-
-            // set start address
-            case 0x7009:
-                cur700x[9] = runningValue;
-                break;
-            case 0x700a:
-                if (runningValue >= 0x40) {
-                    sprintf(buffer, "Value outside bank 0 at 700a: %02x", runningValue);
+        // Byte sequence activation
+        // Uses values from the following writes:
+        // 7001-7002  Start address
+        // 7003       Start bank
+        // 7004-7007  Sequence values
+        // 7000       Sequence length
+        if (effectiveAddress == 0x7000) {
+            sequenceStartBank = cur700x[3];
+            sequenceStartAddress = (cur700x[2] << 8) + cur700x[1];
+            sequence[0] = cur700x[4];
+            sequence[1] = cur700x[5];
+            sequence[2] = cur700x[6];
+            sequence[3] = cur700x[7];
+            switch(cur700x[0] & 7) {
+                case 4:
+                    sequenceLength = 1;
+                    break;
+                case 5:
+                    sequenceLength = 2;
+                    break;
+                case 6:
+                    sequenceLength = 3;
+                    break;
+                case 7:
+                    sequenceLength = 4;
+                    break;
+                default:
+                    sprintf(buffer, "Unknown command at 7000: %02x", runningValue);
                     debug_win(buffer);
-                }
-                cur700x[10] = runningValue;
-                break;
+                    sequenceLength = 0;
+            }
+            sprintf(
+                buffer,
+                "Sequence set up: bank %02x addr %04x vals %02x %02x %02x %02x count %01x",
+                sequenceStartBank, sequenceStartAddress, sequence[0], sequence[1], sequence[2], sequence[3], sequenceLength
+            );
+            debug_win(buffer);
+        }
 
-            // set replacement source bank
-            case 0x6000:
-                cur6000 = runningValue;
-                break;
-
-            // activate the changes
-            case 0x7008:
-                replaceStartAddress = (cur700x[10] << 8) + cur700x[9];
-                replaceSourceBank = cur6000;
-                if ((runningValue & 0xf) == 0xf) { // to pay respects
-                    shouldReplace = true;
-                } else {
-                    shouldReplace = false;
-                    sprintf(buffer, "Unknown command at 7008: %02x", runningValue);
-                    debug_win(buffer);
-                }
-                sprintf(
-                    buffer,
-                    "Bank 0 replacement set up: addr %04x bank %02x enabled %01x",
-                    replaceStartAddress, replaceSourceBank, shouldReplace
-                );
+        // Bank 0 replacement activation
+        // Uses values from the following writes:
+        // 7009-700a  Start address
+        // 6000       Replacement data source bank
+        if (effectiveAddress == 0x7008) {
+            replaceStartAddress = (cur700x[10] << 8) + cur700x[9];
+            replaceSourceBank = cur6000;
+            if ((cur700x[8] & 0xf) == 0xf) { // to pay respects
+                shouldReplace = true;
+            } else {
+                shouldReplace = false;
+                sprintf(buffer, "Unknown command at 7008: %02x", runningValue);
                 debug_win(buffer);
-                break;
-
+            }
+            if (cur700x[10] >= 0x40) {
+                sprintf(buffer, "Value outside bank 0 at 700a: %02x", runningValue);
+                debug_win(buffer);
+            }
+            sprintf(
+                buffer,
+                "Bank 0 replacement set up: addr %04x bank %02x enabled %01x",
+                replaceStartAddress, replaceSourceBank, shouldReplace
+            );
+            debug_win(buffer);
         }
 
         return;
