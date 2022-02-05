@@ -17,15 +17,15 @@ byte runningValue = 0;
 byte cur6000 = 0;
 byte cur700x[15] = {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0};
 
-int sequenceStartBank = 0;
-int sequenceStartAddress = 0;
-int sequenceLength = 0;
+byte sequenceStartBank = 0;
+unsigned short sequenceStartAddress = 0;
+byte sequenceLength = 0;
 byte sequence[4] = {0, 0, 0, 0};
-int sequenceBytesLeft = 0;
+byte sequenceBytesLeft = 0;
 
 bool shouldReplace = false;
-int replaceStartAddress = 0;
-int replaceSourceBank = 0;
+unsigned short replaceStartAddress = 0;
+byte replaceSourceBank = 0;
 
 byte MbcUnlVf001::readMemory(unsigned short address) {
 
@@ -39,7 +39,7 @@ byte MbcUnlVf001::readMemory(unsigned short address) {
     // After the sequence is triggered it will be continued by any read from ROM
     if (sequenceBytesLeft > 0 && address < 0x8000) {
         sequenceBytesLeft--;
-        int currentByte = sequenceLength - sequenceBytesLeft;
+        byte currentByte = sequenceLength - sequenceBytesLeft;
         return sequence[currentByte - 1];
     }
     // Note I'm not 100% sure on the non-zero bank behaviour here
