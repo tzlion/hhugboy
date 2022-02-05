@@ -553,7 +553,7 @@ bool CartDetection::detectUnlicensedCarts(byte *rom, Cartridge *cartridge, int r
         case UNL_VF001:
             cartridge->ROMsize = detectGbRomSize(romFileSize);
             if (cartridge->header.RAMsize > 0) {
-                cartridge->RAMsize = 3; // games with ram seem to underdeclare it - todo how much does digimon really have onboard
+                cartridge->RAMsize = 2; // games with ram seem to underdeclare it, observed 8k on carts so far
             }
             cartridge->mbcType = MEMORY_VF001;
             break;
