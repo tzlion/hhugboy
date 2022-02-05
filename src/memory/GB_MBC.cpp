@@ -58,7 +58,6 @@
 #include "mbc/MbcUnlGgb81.h"
 #include "mbc/MbcUnlVf001.h"
 #include "linker/LinkerWrangler.h"
-#include "../ui/dialogs/LinkerLog.h"
 
 // So maybe this should be "cart" and a lot of whats in rom.cpp now e.g. autodetection should go in here..
 
@@ -92,7 +91,6 @@ byte gb_mbc::readmemory_cart(register unsigned short address) {
     }
     return mbc->readMemory(address);
 }
-
 
 void gb_mbc::writememory_cart(unsigned short address, register byte data) {
     if (LinkerWrangler::shouldWriteThroughLinker(address, data)) {
@@ -256,13 +254,14 @@ void gb_mbc::setMemoryReadWrite(MbcType memory_type) {
         case MEMORY_GGB81:
             mbc = new MbcUnlGgb81();
             break;
+        case MEMORY_VF001:
+            mbc = new MbcUnlVf001();
+            break;
         case MEMORY_DEFAULT:
         default:
             mbc = new BasicMbc();
             break;
     }
-
-    mbc = new MbcUnlVf001();
 
     mbc->init( gbMemMap, gbCartridge, gbMemory, gbCartRom, gbCartRam, gbRumbleCounter );
 }

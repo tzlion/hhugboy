@@ -188,6 +188,9 @@ void init_menu_options()
       case UNL_GGB81:
       	emuMenu.checkOption(IDM_UNLGGB81);
       break;
+      case UNL_VF001:
+      	emuMenu.checkOption(IDM_UNLVF001);
+      break;
       default:
          emuMenu.checkOption(IDM_UNLAUTO);    
       break;

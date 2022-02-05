@@ -292,6 +292,7 @@
 #define IDM_UNLPOKEJD       IDM_GROUP_UNL | 0x0E
 #define IDM_UNLNEWGBHK      IDM_GROUP_UNL | 0x0F
 #define IDM_UNLGGB81        IDM_GROUP_UNL | 0x10
+#define IDM_UNLVF001        IDM_GROUP_UNL | 0x11
 
 #define WIN32_LEAN_AND_MEAN
 #define UNICODE
