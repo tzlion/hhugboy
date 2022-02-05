@@ -14,7 +14,26 @@
 
 class MbcUnlVf001 : public MbcNin5_LogoSwitch {
 
+    private:
+
+        bool configMode = false;
+        byte runningValue = 0;
+
+        byte cur6000 = 0;
+        byte cur700x[15] = {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0};
+
+        byte sequenceStartBank = 0;
+        unsigned short sequenceStartAddress = 0;
+        byte sequenceLength = 0;
+        byte sequence[4] = {0, 0, 0, 0};
+        byte sequenceBytesLeft = 0;
+
+        bool shouldReplace = false;
+        unsigned short replaceStartAddress = 0;
+        byte replaceSourceBank = 0;
+
     public:
+
         virtual byte readMemory(register unsigned short address) override;
         virtual void writeMemory(unsigned short address, register byte data) override;
 
