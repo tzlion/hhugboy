@@ -1,4 +1,4 @@
-hhugboy v1.3.1
+hhugboy v1.3.1+dev
 a Game Boy/Game Boy Color emulator for Windows
 by taizou (cactusgunman@gmail.com)
 http://hhug.me/
@@ -195,6 +195,11 @@ https://github.com/tzlion/hhugboy
  * Other language translations
 
 [ RELEASE HISTORY ]- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+
+ v1.x.x Xth XXXX 20xx
+ * Integration with LibGBlink to assist with reverse engineering cartridge
+   mappers using the actual cartridge in a connected Game Boy
+   (this one has pretty niche appeal) (maybe the audience is just me)
 
  v1.3.1 6th December 2021
  * New mapper support: New GB Color HKxxxx PCB (used for Pokémon hacks),

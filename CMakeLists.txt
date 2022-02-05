@@ -151,6 +151,11 @@ set(SOURCE_FILES
         src/memory/mbc/MbcUnlNewGbHk.h
         src/memory/mbc/MbcUnlGgb81.cpp
         src/memory/mbc/MbcUnlGgb81.h
+        src/ui/dialogs/LinkerLog.cpp
+        src/ui/dialogs/LinkerLog.h
+        src/ui/dialogs/LinkerLog.rc
+        src/memory/linker/LinkerWrangler.cpp
+        src/memory/linker/LinkerWrangler.h
 )
 
 include_directories(

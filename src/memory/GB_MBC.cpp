@@ -64,6 +64,7 @@
 #include "mbc/MbcUnlRocketGames.h"
 #include "mbc/MbcUnlNewGbHk.h"
 #include "mbc/MbcUnlGgb81.h"
+#include "linker/LinkerWrangler.h"
 
 // So maybe this should be "cart" and a lot of whats in rom.cpp now e.g. autodetection should go in here..
 
@@ -92,10 +93,16 @@ void gb_mbc::resetMbcVariables(bool preserveMulticartState = false)
 }
 
 byte gb_mbc::readmemory_cart(register unsigned short address) {
+    if (LinkerWrangler::shouldReadThroughLinker(address)) {
+        return LinkerWrangler::readThroughLinker(address);
+    }
     return mbc->readMemory(address);
 }
 
 void gb_mbc::writememory_cart(unsigned short address, register byte data) {
+    if (LinkerWrangler::shouldWriteThroughLinker(address, data)) {
+        LinkerWrangler::writeThroughLinker(address,data);
+    }
     mbc->writeMemory(address,data);
 }
 
