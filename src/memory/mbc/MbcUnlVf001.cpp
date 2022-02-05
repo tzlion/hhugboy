@@ -12,26 +12,15 @@
 #include "../../debug.h"
 
 bool configMode = false;
-byte runningValue = 00;
+byte runningValue = 0;
 
-byte cur6000 = 00;
-byte cur7001 = 00;
-byte cur7002 = 00;
-byte cur7003 = 00;
-byte cur7004 = 00;
-byte cur7005 = 00;
-byte cur7006 = 00;
-byte cur7007 = 00;
-byte cur7009 = 00;
-byte cur700a = 00;
+byte cur6000 = 0;
+byte cur700x[15] = {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0};
 
 int sequenceStartBank = 0;
 int sequenceStartAddress = 0;
 int sequenceLength = 0;
-byte sequenceVal1 = 0;
-byte sequenceVal2 = 0;
-byte sequenceVal3 = 0;
-byte sequenceVal4 = 0;
+byte sequence[4] = {0, 0, 0, 0};
 int sequenceBytesLeft = 0;
 
 bool shouldReplace = false;
@@ -51,10 +40,7 @@ byte MbcUnlVf001::readMemory(unsigned short address) {
     if (sequenceBytesLeft > 0 && address < 0x8000) {
         sequenceBytesLeft--;
         int currentByte = sequenceLength - sequenceBytesLeft;
-        if (currentByte == 1) return sequenceVal1;
-        if (currentByte == 2) return sequenceVal2;
-        if (currentByte == 3) return sequenceVal3;
-        if (currentByte == 4) return sequenceVal4;
+        return sequence[currentByte - 1];
     }
     // Note I'm not 100% sure on the non-zero bank behaviour here
     // as I observed it on a cart returning 3 bytes from the sequence (instead of the specified 4)
@@ -133,37 +119,37 @@ void MbcUnlVf001::writeMemory(unsigned short address, byte data) {
 
             // set start address & bank
             case 0x7001:
-                cur7001 = runningValue;
+                cur700x[1] = runningValue;
                 break;
             case 0x7002:
-                cur7002 = runningValue;
+                cur700x[2] = runningValue;
                 break;
             case 0x7003:
-                cur7003 = runningValue;
+                cur700x[3] = runningValue;
                 break;
 
             // set sequence values
             case 0x7004:
-                cur7004 = runningValue;
+                cur700x[4] = runningValue;
                 break;
             case 0x7005:
-                cur7005 = runningValue;
+                cur700x[5] = runningValue;
                 break;
             case 0x7006:
-                cur7006 = runningValue;
+                cur700x[6] = runningValue;
                 break;
             case 0x7007:
-                cur7007 = runningValue;
+                cur700x[7] = runningValue;
                 break;
 
             // set sequence length & activate the changes
             case 0x7000:
-                sequenceStartBank = cur7003;
-                sequenceStartAddress = (cur7002 << 8) + cur7001;
-                sequenceVal1 = cur7004;
-                sequenceVal2 = cur7005;
-                sequenceVal3 = cur7006;
-                sequenceVal4 = cur7007;
+                sequenceStartBank = cur700x[3];
+                sequenceStartAddress = (cur700x[2] << 8) + cur700x[1];
+                sequence[0] = cur700x[4];
+                sequence[1] = cur700x[5];
+                sequence[2] = cur700x[6];
+                sequence[3] = cur700x[7];
                 switch(runningValue & 7) {
                     case 4:
                         sequenceLength = 1;
@@ -185,7 +171,7 @@ void MbcUnlVf001::writeMemory(unsigned short address, byte data) {
                 sprintf(
                     buffer,
                     "Sequence set up: bank %02x addr %04x vals %02x %02x %02x %02x count %01x",
-                    sequenceStartBank, sequenceStartAddress, sequenceVal1, sequenceVal2, sequenceVal3, sequenceVal4, sequenceLength
+                    sequenceStartBank, sequenceStartAddress, sequence[0], sequence[1], sequence[2], sequence[3], sequenceLength
                 );
                 debug_win(buffer);
                 break;
@@ -194,14 +180,14 @@ void MbcUnlVf001::writeMemory(unsigned short address, byte data) {
 
             // set start address
             case 0x7009:
-                cur7009 = runningValue;
+                cur700x[9] = runningValue;
                 break;
             case 0x700a:
                 if (runningValue >= 0x40) {
                     sprintf(buffer, "Value outside bank 0 at 700a: %02x", runningValue);
                     debug_win(buffer);
                 }
-                cur700a = runningValue;
+                cur700x[10] = runningValue;
                 break;
 
             // set replacement source bank
@@ -211,7 +197,7 @@ void MbcUnlVf001::writeMemory(unsigned short address, byte data) {
 
             // activate the changes
             case 0x7008:
-                replaceStartAddress = (cur700a << 8) + cur7009;
+                replaceStartAddress = (cur700x[10] << 8) + cur700x[9];
                 replaceSourceBank = cur6000;
                 if ((runningValue & 0xf) == 0xf) { // to pay respects
                     shouldReplace = true;
