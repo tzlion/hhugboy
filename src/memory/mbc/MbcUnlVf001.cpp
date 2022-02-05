@@ -80,112 +80,154 @@ void MbcUnlVf001::writeMemory(unsigned short address, byte data) {
 
         unsigned short effectiveAddress = address & 0xf00f;
 
-        sprintf(buffer, "Protection write: %04x %02x", address, data);
-        debug_win(buffer);
-
+        // Enable config mode
         if (effectiveAddress == 0x7000 && data == 0x96) {
             if (configMode) {
-                debug_print("Config mode enabled when config mode already on");
-                debug_win(buffer);
+                debug_win("Protection config mode enabled when config mode already on");
+            } else {
+                debug_win("Protection config mode enabled");
             }
             configMode = true;
             runningValue = 00;
-        } else if (effectiveAddress == 0x700f && data == 0x96) {
+            return;
+        }
+
+        // Disable config mode
+        if (effectiveAddress == 0x700f && data == 0x96) {
             if (!configMode) {
-                debug_print("Config mode disabled when config mode already off");
-                debug_win(buffer);
+                debug_win("Protection config mode disabled when config mode already off");
+            } else {
+                debug_win("Protection config mode disabled");
             }
             configMode = false;
-        } else if (!configMode) {
-            sprintf(buffer, "Protection address written when Config mode off: %04x %02x", address, data);
+            return;
+        }
+
+        // If we have any other protection write and config mode was NOT enabled we don't expect that so do nothing
+        // (Not verified on cart whether anything actually happens in this case)
+        if (!configMode) {
+            sprintf(buffer, "Protection address written when config mode off: %04x %02x", address, data);
             debug_win(buffer);
-        } else if (effectiveAddress >= 0x700b) {
+            return;
+        }
+
+        // Writes to unknown addresses - do nothing for now
+        // (Not verified on cart whether these addresses affect the running value or do anything else)
+        if (effectiveAddress >= 0x700b || (effectiveAddress < 0x7000 && effectiveAddress > 0x6000)) {
             sprintf(buffer, "Write to unknown protection address: %04x %02x", address, data);
             debug_win(buffer);
-        } else {
-            runningValue = ((runningValue & 1) ? 0x80 : 0) + (runningValue >> 1);
-            runningValue = runningValue ^ data;
-            sprintf(buffer, "Addr %04x Data %02x Running %02x", address, data, runningValue);
-            debug_win(buffer);
-            switch(effectiveAddress) {
-                case 0x7001:
-                    cur7001 = runningValue;
-                    break;
-                case 0x7002:
-                    cur7002 = runningValue;
-                    break;
-                case 0x7003:
-                    cur7003 = runningValue;
-                    break;
-                case 0x7004:
-                    cur7004 = runningValue;
-                    break;
-                case 0x7005:
-                    cur7005 = runningValue;
-                    break;
-                case 0x7006:
-                    cur7006 = runningValue;
-                    break;
-                case 0x7007:
-                    cur7007 = runningValue;
-                    break;
-                case 0x7000:
-                    sequenceStartBank = cur7003;
-                    sequenceStartAddress = (cur7002 << 8) + cur7001;
-                    sequenceVal1 = cur7004;
-                    sequenceVal2 = cur7005;
-                    sequenceVal3 = cur7006;
-                    sequenceVal4 = cur7007;
-                    switch(runningValue & 7) {
-                        case 4:
-                            sequenceLength = 1;
-                            break;
-                        case 5:
-                            sequenceLength = 2;
-                            break;
-                        case 6:
-                            sequenceLength = 3;
-                            break;
-                        case 7:
-                            sequenceLength = 4;
-                            break;
-                        default:
-                            sprintf(buffer, "Unknown command at 7000: %02x", runningValue);
-                            debug_win(buffer);
-                            sequenceLength = 0;
-                    }
-                    sprintf(buffer, "Now changing: bank %02x addr %04x vals %02x %02x %02x %02x count %01x", sequenceStartBank, sequenceStartAddress, sequenceVal1, sequenceVal2, sequenceVal3, sequenceVal4, sequenceLength);
-                    debug_win(buffer);
-                    break;
+            return;
+        }
 
-                case 0x7009:
-                    cur7009 = runningValue;
-                    break;
-                case 0x700a:
-                    if (runningValue >= 0x40) {
-                        sprintf(buffer, "Value outside bank 0 at 700a: %02x", runningValue);
-                        debug_win(buffer);
-                    }
-                    cur700a = runningValue;
-                    break;
-                case 0x6000:
-                    cur6000 = runningValue;
-                    break;
-                case 0x7008:
-                    replaceStartAddress = (cur700a << 8) + cur7009;
-                    replaceSourceBank = cur6000;
-                    if ((runningValue & 0xf) == 0xf) { // F to pay respects
-                        shouldReplace = true;
-                    } else {
-                        shouldReplace = false;
-                        sprintf(buffer, "Unknown command at 7008: %02x", runningValue);
-                        debug_win(buffer);
-                    }
-                    sprintf(buffer, "Now replacing: addr %04x sourcebank %02x shouldReplace %01x", replaceStartAddress, replaceSourceBank, shouldReplace);
-                    debug_win(buffer);
+        // Otherwise, any known write should affect the running value like so
+        runningValue = ((runningValue & 1) ? 0x80 : 0) + (runningValue >> 1);
+        runningValue = runningValue ^ data;
+        sprintf(buffer, "Protection write: Addr %04x Data %02x Running %02x", address, data, runningValue);
+        debug_win(buffer);
 
-                    break;
-            }
+        // Then the running value is used for some config depending on the address written to
+
+        switch(effectiveAddress) {
+
+            // (1) "byte sequence" related writes
+
+            // set start address & bank
+            case 0x7001:
+                cur7001 = runningValue;
+                break;
+            case 0x7002:
+                cur7002 = runningValue;
+                break;
+            case 0x7003:
+                cur7003 = runningValue;
+                break;
+
+            // set sequence values
+            case 0x7004:
+                cur7004 = runningValue;
+                break;
+            case 0x7005:
+                cur7005 = runningValue;
+                break;
+            case 0x7006:
+                cur7006 = runningValue;
+                break;
+            case 0x7007:
+                cur7007 = runningValue;
+                break;
+
+            // set sequence length & activate the changes
+            case 0x7000:
+                sequenceStartBank = cur7003;
+                sequenceStartAddress = (cur7002 << 8) + cur7001;
+                sequenceVal1 = cur7004;
+                sequenceVal2 = cur7005;
+                sequenceVal3 = cur7006;
+                sequenceVal4 = cur7007;
+                switch(runningValue & 7) {
+                    case 4:
+                        sequenceLength = 1;
+                        break;
+                    case 5:
+                        sequenceLength = 2;
+                        break;
+                    case 6:
+                        sequenceLength = 3;
+                        break;
+                    case 7:
+                        sequenceLength = 4;
+                        break;
+                    default:
+                        sprintf(buffer, "Unknown command at 7000: %02x", runningValue);
+                        debug_win(buffer);
+                        sequenceLength = 0;
+                }
+                sprintf(
+                    buffer,
+                    "Sequence set up: bank %02x addr %04x vals %02x %02x %02x %02x count %01x",
+                    sequenceStartBank, sequenceStartAddress, sequenceVal1, sequenceVal2, sequenceVal3, sequenceVal4, sequenceLength
+                );
+                debug_win(buffer);
+                break;
+
+            // (2) "bank 0 replacement" related writes
+
+            // set start address
+            case 0x7009:
+                cur7009 = runningValue;
+                break;
+            case 0x700a:
+                if (runningValue >= 0x40) {
+                    sprintf(buffer, "Value outside bank 0 at 700a: %02x", runningValue);
+                    debug_win(buffer);
+                }
+                cur700a = runningValue;
+                break;
+
+            // set replacement source bank
+            case 0x6000:
+                cur6000 = runningValue;
+                break;
+
+            // activate the changes
+            case 0x7008:
+                replaceStartAddress = (cur700a << 8) + cur7009;
+                replaceSourceBank = cur6000;
+                if ((runningValue & 0xf) == 0xf) { // to pay respects
+                    shouldReplace = true;
+                } else {
+                    shouldReplace = false;
+                    sprintf(buffer, "Unknown command at 7008: %02x", runningValue);
+                    debug_win(buffer);
+                }
+                sprintf(
+                    buffer,
+                    "Bank 0 replacement set up: addr %04x bank %02x enabled %01x",
+                    replaceStartAddress, replaceSourceBank, shouldReplace
+                );
+                debug_win(buffer);
+                break;
+
         }
 
         return;
