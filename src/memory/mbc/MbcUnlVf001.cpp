@@ -206,10 +206,32 @@ void MbcUnlVf001::resetVars(bool preserveMulticartState) {
     MbcNin5_LogoSwitch::resetVars(preserveMulticartState);
 }
 
-void MbcUnlVf001::readMbcSpecificVarsFromStateFile(FILE *savefile) {
-    MbcNin5_LogoSwitch::readMbcSpecificVarsFromStateFile(savefile);
+void MbcUnlVf001::readMbcSpecificVarsFromStateFile(FILE *statefile) {
+    MbcNin5_LogoSwitch::readMbcSpecificVarsFromStateFile(statefile);
+    fread(&(configMode),            sizeof(bool),             1, statefile);
+    fread(&(runningValue),          sizeof(byte),             1, statefile);
+    fread(&(cur6000),               sizeof(byte),             1, statefile);
+    fread(&(cur700x),               sizeof(byte),            15, statefile);
+    fread(&(sequenceStartBank),     sizeof(byte),             1, statefile);
+    fread(&(sequenceStartAddress),  sizeof(unsigned short),   1, statefile);
+    fread(&(sequenceLength),        sizeof(byte),             1, statefile);
+    fread(&(sequence),              sizeof(byte),             4, statefile);
+    fread(&(shouldReplace),         sizeof(bool),             1, statefile);
+    fread(&(replaceStartAddress),   sizeof(unsigned short),   1, statefile);
+    fread(&(replaceSourceBank),     sizeof(byte),             1, statefile);
 }
 
-void MbcUnlVf001::writeMbcSpecificVarsToStateFile(FILE *savefile) {
-    MbcNin5_LogoSwitch::writeMbcSpecificVarsToStateFile(savefile);
+void MbcUnlVf001::writeMbcSpecificVarsToStateFile(FILE *statefile) {
+    MbcNin5_LogoSwitch::writeMbcSpecificVarsToStateFile(statefile);
+    fwrite(&(configMode),            sizeof(bool),             1, statefile);
+    fwrite(&(runningValue),          sizeof(byte),             1, statefile);
+    fwrite(&(cur6000),               sizeof(byte),             1, statefile);
+    fwrite(&(cur700x),               sizeof(byte),            15, statefile);
+    fwrite(&(sequenceStartBank),     sizeof(byte),             1, statefile);
+    fwrite(&(sequenceStartAddress),  sizeof(unsigned short),   1, statefile);
+    fwrite(&(sequenceLength),        sizeof(byte),             1, statefile);
+    fwrite(&(sequence),              sizeof(byte),             4, statefile);
+    fwrite(&(shouldReplace),         sizeof(bool),             1, statefile);
+    fwrite(&(replaceStartAddress),   sizeof(unsigned short),   1, statefile);
+    fwrite(&(replaceSourceBank),     sizeof(byte),             1, statefile);
 }

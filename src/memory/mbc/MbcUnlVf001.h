@@ -43,8 +43,8 @@ class MbcUnlVf001 : public MbcNin5_LogoSwitch {
 
         virtual void resetVars(bool preserveMulticartState) override;
 
-        virtual void readMbcSpecificVarsFromStateFile(FILE *savefile) override;
-        virtual void writeMbcSpecificVarsToStateFile(FILE *savefile) override;
+        virtual void readMbcSpecificVarsFromStateFile(FILE *statefile) override;
+        virtual void writeMbcSpecificVarsToStateFile(FILE *statefile) override;
 
 };
 
