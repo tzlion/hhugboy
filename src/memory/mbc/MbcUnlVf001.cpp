@@ -59,7 +59,7 @@ void MbcUnlVf001::writeMemory(unsigned short address, byte data) {
                 debug_win("Protection config mode enabled");
             }
             configMode = true;
-            runningValue = 00;
+            runningValue = 0; // 0x10 for emocheng2.. SL-004 PCB
             return;
         }
 
