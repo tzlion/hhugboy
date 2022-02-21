@@ -310,6 +310,73 @@ gb_system::~gb_system()
    }
 }
 
+void gb_system::set_system_type(bool rereadHeader)
+{
+    int cgbState = cartridge->header.CGB;
+    int sgbState = cartridge->header.SGB;
+
+    if ( rereadHeader ) { // It's a multicart resetting so we may need to change modes..
+        byte cgbFlag = mbc->readmemory_cart( 0x0143 );
+        if(cgbFlag == 0x80)
+            cgbState = 1;
+        else if(cgbFlag == 0xC0)
+            cgbState = 2; // gbc only
+        else
+            cgbState = 0;
+        byte sgbFlag = mbc->readmemory_cart( 0x0146 );
+        if(sgbFlag == 0x03)
+            sgbState = 1;
+        else
+            sgbState = 0;
+    }
+
+    if(system_type == SYS_GBP || system_type == SYS_GB)
+        sgb_mode = gbc_mode = 0;
+    else
+    if(system_type == SYS_GBC || system_type == SYS_GBA)
+    {
+        gbc_mode = 1;
+        sgb_mode = 0;
+        if(options->GBC_SGB_border == GBC_WITH_SGB_BORDER && sgbState)
+        {
+            sgb_mode = 1;
+            gbc_mode = 1;
+        } else
+        if(options->GBC_SGB_border == GBC_WITH_INITIAL_SGB_BORDER && sgbState)
+        {
+            sgb_mode = 1;
+            gbc_mode = 0;
+        }
+    }
+    else
+    if((system_type == SYS_SGB || system_type == SYS_SGB2) || (options->GBC_SGB_border && cgbState && sgbState))
+    {
+        sgb_mode = 1;
+        gbc_mode = 0;
+        if(cgbState && options->GBC_SGB_border == GBC_WITH_SGB_BORDER)
+            gbc_mode = 1;
+    }
+    else
+    {
+        sgb_mode = gbc_mode = 0;
+
+        if(cgbState)
+            gbc_mode = 1;
+
+        if(sgbState && !gbc_mode)
+            sgb_mode = 1;
+    }
+
+    if(multiple_gb && sgb_mode) // don't allow SGB mode
+    {
+        sgb_mode = 0;
+        if(cgbState) gbc_mode = 1;
+    }
+
+    // map bootstrap here since it depends on the system type
+    map_bootstrap();
+}
+
 void gb_system::reset(bool change_mode, bool preserveMulticartState)
 {
    int old_sgb_mode = sgb_mode;
@@ -317,78 +384,12 @@ void gb_system::reset(bool change_mode, bool preserveMulticartState)
 
    emulating = true;
 
-    int cgbState = cartridge->header.CGB;
-    int sgbState = cartridge->header.SGB;
-
-   
    //change mode according to user selection
-   if(change_mode == false)
-   {
-     ; // do nothing
-   } else {
-
-       if ( preserveMulticartState ) { // It's a multicart resetting so we may need to change modes..
-           byte cgbFlag = mbc->readmemory_cart( 0x0143 );
-           if(cgbFlag == 0x80)
-               cgbState = 1;
-           else if(cgbFlag == 0xC0)
-               cgbState = 2; // gbc only
-           else
-               cgbState = 0;
-           byte sgbFlag = mbc->readmemory_cart( 0x0146 );
-           if(sgbFlag == 0x03)
-               sgbState = 1;
-           else
-               sgbState = 0;
-       }
-
-       if(system_type == SYS_GBP || system_type == SYS_GB)
-           sgb_mode = gbc_mode = 0;
-       else
-       if(system_type == SYS_GBC || system_type == SYS_GBA)
-       {
-           gbc_mode = 1;
-           sgb_mode = 0;
-           if(options->GBC_SGB_border == GBC_WITH_SGB_BORDER && sgbState)
-           {
-               sgb_mode = 1;
-               gbc_mode = 1;
-           } else
-           if(options->GBC_SGB_border == GBC_WITH_INITIAL_SGB_BORDER && sgbState)
-           {
-               sgb_mode = 1;
-               gbc_mode = 0;
-           }
-       }
-       else
-       if((system_type == SYS_SGB || system_type == SYS_SGB2) || (options->GBC_SGB_border && cgbState && sgbState))
-       {
-           sgb_mode = 1;
-           gbc_mode = 0;
-           if(cgbState && options->GBC_SGB_border == GBC_WITH_SGB_BORDER)
-               gbc_mode = 1;
-       }
-       else
-       {
-           sgb_mode = gbc_mode = 0;
-
-           if(cgbState)
-               gbc_mode = 1;
-
-           if(sgbState && !gbc_mode)
-               sgb_mode = 1;
-       }
-
+   if(change_mode) {
+       set_system_type(preserveMulticartState);
+       border_uploaded = 0;
    }
-   if(change_mode)
-      border_uploaded = 0;
-   
-   if(multiple_gb && sgb_mode) // don't allow SGB mode
-   {
-      sgb_mode = 0;
-      if(cgbState) gbc_mode = 1;
-   }
-         
+
    if(sgb_mode)
    {
       fill_gfx_buffers(0UL);             
