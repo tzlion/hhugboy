@@ -1,4 +1,4 @@
-hhugboy v1.3.1
+hhugboy v1.3.2
 a Game Boy/Game Boy Color emulator for Windows
 by taizou (cactusgunman@gmail.com)
 http://hhug.me/
@@ -165,8 +165,14 @@ https://github.com/tzlion/hhugboy
 [ COMPATIBILITY ]- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 
  This emulator was primarily designed for Windows, but it will also run on
- Linux using WINE. However it has not been extensively tested in this
- environment - your mileage may vary. 
+ Linux or macOS using Wine. However it has not been extensively tested in this
+ environment - your mileage may vary.
+
+ Tip thanks to codeman38:
+ For anyone trying to run hhugboy on macOS or Linux via anything Wine-based
+ (Wineskin, Crossover, PlayOnMac) and getting a black screen, go into the Wine
+ registry editor, find HKEY_CURRENT_USER\Software\Wine\Direct3D, and create
+ a string value OffscreenRenderingMode with the value backbuffer.
 
 [ ISSUES ] - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 
@@ -195,6 +201,10 @@ https://github.com/tzlion/hhugboy
  * Other language translations
 
 [ RELEASE HISTORY ]- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+
+ v1.3.2 22nd February 2022
+ * Fix logo swap behaviour for GGB-81 PCB when using bootstrap & implement GBX
+   support for PCB variants that do not swap the logo
 
  v1.3.1 6th December 2021
  * New mapper support: New GB Color HKxxxx PCB (used for Pokémon hacks),
