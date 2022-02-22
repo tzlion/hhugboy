@@ -361,9 +361,6 @@ void gb_system::set_system_type(bool rereadHeader)
         sgb_mode = 0;
         if(headerCgbEnabled) gbc_mode = headerCgbEnabled;
     }
-
-    // map bootstrap here since it depends on the system type
-    map_bootstrap();
 }
 
 void gb_system::reset(bool change_mode, bool preserveMulticartState)

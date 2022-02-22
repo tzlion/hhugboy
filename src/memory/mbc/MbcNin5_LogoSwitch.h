@@ -16,16 +16,16 @@
 //-------------------------------------------------------------------------
 class MbcNin5_LogoSwitch : public MbcNin5 {
 public:
-    MbcNin5_LogoSwitch();
     virtual void resetVars(bool preserveMulticartState) override;
     virtual byte readMemory(register unsigned short address) override;
     virtual void signalMemoryWrite(unsigned short address, register byte data) override;
     virtual void readMbcSpecificVarsFromStateFile(FILE *savefile) override;
     virtual void writeMbcSpecificVarsToStateFile(FILE *savefile) override;
+protected:
+    virtual bool shouldEnableLogoSwap();
 private:
     byte logoMode;
     byte logoCount;
-    void initLogoState();
 };
 
 #endif //HHUGBOY_MBCNIN5_LOGOSWITCH_H

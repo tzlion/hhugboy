@@ -252,9 +252,6 @@ bool gb_system::load_rom(const wchar_t* filename,int offset)
     if ( !romloaded ) return false;
 
     cartridge = (new CartDetection())->processRomInfo(cartROM, romFileSize);
-    // we have to set the system type here because auto detection works from the loaded ROM
-    // meanwhile some MBC initialisation depends on the loaded bootstrap, and the bootstrap depends on the system type
-    set_system_type(false);
     mbc->setMemoryReadWrite(cartridge->mbcType);
 
     wchar_t temp2[ROM_FILENAME_SIZE];
