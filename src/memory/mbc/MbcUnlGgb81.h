@@ -24,9 +24,9 @@ public:
     MbcUnlGgb81();
     virtual void writeMemory(unsigned short address, register byte data) override;
 
-    virtual void resetVars(bool preserveMulticartState) override;
-
 protected:
+    bool shouldEnableLogoSwap() override;
+
     virtual byte swapDataByte( byte data ) override;
     virtual byte swapBankByte( byte data ) override;
 

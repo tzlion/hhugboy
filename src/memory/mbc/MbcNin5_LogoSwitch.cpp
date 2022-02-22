@@ -15,19 +15,15 @@
 #define MODE_UNLOCKED   2
 #define MODE_DONE       3
 
-MbcNin5_LogoSwitch::MbcNin5_LogoSwitch() {
-    initLogoState();
-}
-
-void MbcNin5_LogoSwitch::initLogoState() {
-    logoMode = haveBootstrap && options->use_bootstrap ? MODE_LOCKED_DMG : MODE_DONE;
-    logoCount = 0;
+bool MbcNin5_LogoSwitch::shouldEnableLogoSwap() {
+    return haveBootstrap && options->use_bootstrap;
 }
 
 void MbcNin5_LogoSwitch::resetVars(bool preserveMulticartState) {
     MbcNin5::resetVars(preserveMulticartState);
     if (!preserveMulticartState) {
-        initLogoState();
+        logoMode = shouldEnableLogoSwap() ? MODE_LOCKED_DMG : MODE_DONE;
+        logoCount = 0;
     }	
 }
 
