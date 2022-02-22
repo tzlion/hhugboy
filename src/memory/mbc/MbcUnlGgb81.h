@@ -16,7 +16,7 @@
 // Digimon Pocket "Game GB Color" mainland China release (DSHGGB-81 PCB)
 // Harvest Moon 6 & Lord of the Rings "GB全彩中文" mainland China releases (both DSHGGB-81 PCB)
 // Digimon Sapphire "New Game Color Advance" English worldwide release (BC-R1616T3P PCB)
-// Some games have logo swaps - HM6 & Digimon Pocket has "DIGI", LOTR has "TD-SOFT", not sure about Digimon Sapphire
+// DSHGGB-81 has logo swap, BC-R1616T3P does not
 
 class MbcUnlGgb81 : public MbcUnlBbd {
     
@@ -24,9 +24,9 @@ public:
     MbcUnlGgb81();
     virtual void writeMemory(unsigned short address, register byte data) override;
 
-    virtual void resetVars(bool preserveMulticartState) override;
-
 protected:
+    bool shouldEnableLogoSwap() override;
+
     virtual byte swapDataByte( byte data ) override;
     virtual byte swapBankByte( byte data ) override;
 
@@ -43,6 +43,10 @@ protected:
             {0,2,5,3,4,1,6,7},
             {0,6,1,3,4,2,5,7},
     };
+
+private:
+    static const byte PCB_TYPE_DSHGGB81 = 0;
+    static const byte PCB_TYPE_BCR1616T3P = 1;
     
 };
 
