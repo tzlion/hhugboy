@@ -17,10 +17,8 @@ MbcUnlGgb81::MbcUnlGgb81() : MbcUnlBbd( 0, 0 )
 {
 }
 
-void MbcUnlGgb81::resetVars(bool preserveMulticartState) {
-    bitSwapMode = 0;
-    bankSwapMode = 0;
-    AbstractMbc::resetVars(preserveMulticartState);
+bool MbcUnlGgb81::shouldEnableLogoSwap() {
+    return !(*gbCartridge)->mbcConfig[0] && MbcNin5_LogoSwitch::shouldEnableLogoSwap();
 }
 
 byte MbcUnlGgb81::swapDataByte(byte data) {
