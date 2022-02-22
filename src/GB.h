@@ -372,6 +372,8 @@ private:
     int romFileSize;
     bool loadrom_zip(const wchar_t* filename);
     bool loadrom_file(const wchar_t* filename, int offset);
+    void set_system_type(bool rereadHeader);
+    void set_bootstrap();
 };
 
 extern gb_system *GB;

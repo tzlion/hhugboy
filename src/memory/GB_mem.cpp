@@ -82,12 +82,17 @@ void gb_system::writememory(unsigned short address,byte data)
     mbc->signalMemoryWrite(address,data);
 }
 
+void gb_system::set_bootstrap()
+{
+    bootstrap = gbc_mode ? bootstrapCGB: bootstrapDMG;
+    haveBootstrap = gbc_mode ? haveBootstrap_CGB: haveBootstrap_DMG;
+    mapBootstrap = haveBootstrap && options->use_bootstrap;
+}
+
 void gb_system::mem_reset(bool preserveMulticartState)
 {
-   bootstrap =gbc_mode? bootstrapCGB: bootstrapDMG;
-   haveBootstrap =gbc_mode? haveBootstrap_CGB: haveBootstrap_DMG;
-   mapBootstrap =haveBootstrap && options->use_bootstrap;
-   
+    set_bootstrap();
+
    memset(memory+0x8000,0x00,0x1FFF);
    memset(memory+0xFE00,0x00,0xA0);
 
