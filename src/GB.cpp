@@ -312,65 +312,54 @@ gb_system::~gb_system()
 
 void gb_system::set_system_type(bool rereadHeader)
 {
-    int cgbState = cartridge->header.CGB;
-    int sgbState = cartridge->header.SGB;
+    bool headerCgbEnabled;
+    bool headerSgbEnabled;
 
-    if ( rereadHeader ) { // It's a multicart resetting so we may need to change modes..
-        byte cgbFlag = mbc->readmemory_cart( 0x0143 );
-        if(cgbFlag == 0x80)
-            cgbState = 1;
-        else if(cgbFlag == 0xC0)
-            cgbState = 2; // gbc only
-        else
-            cgbState = 0;
-        byte sgbFlag = mbc->readmemory_cart( 0x0146 );
-        if(sgbFlag == 0x03)
-            sgbState = 1;
-        else
-            sgbState = 0;
+    // if the header may have changed from initial load - e.g. it's a multicart
+    if (rereadHeader) {
+        byte cgbFlag = mbc->readmemory_cart(0x0143);
+        headerCgbEnabled = (cgbFlag == 0x80 || cgbFlag == 0xC0);
+        byte sgbFlag = mbc->readmemory_cart(0x0146);
+        headerSgbEnabled = (sgbFlag == 0x03);
+    } else {
+        headerCgbEnabled = cartridge->header.CGB >= 1;
+        headerSgbEnabled = cartridge->header.SGB >= 1;
     }
 
-    if(system_type == SYS_GBP || system_type == SYS_GB)
-        sgb_mode = gbc_mode = 0;
-    else
-    if(system_type == SYS_GBC || system_type == SYS_GBA)
-    {
-        gbc_mode = 1;
-        sgb_mode = 0;
-        if(options->GBC_SGB_border == GBC_WITH_SGB_BORDER && sgbState)
-        {
-            sgb_mode = 1;
-            gbc_mode = 1;
-        } else
-        if(options->GBC_SGB_border == GBC_WITH_INITIAL_SGB_BORDER && sgbState)
-        {
-            sgb_mode = 1;
+    // normal stuff
+    switch (system_type) {
+        case SYS_GBP:
+        case SYS_GB:
             gbc_mode = 0;
-        }
-    }
-    else
-    if((system_type == SYS_SGB || system_type == SYS_SGB2) || (options->GBC_SGB_border && cgbState && sgbState))
-    {
-        sgb_mode = 1;
-        gbc_mode = 0;
-        if(cgbState && options->GBC_SGB_border == GBC_WITH_SGB_BORDER)
+            sgb_mode = 0;
+            break;
+        case SYS_GBC:
+        case SYS_GBA:
             gbc_mode = 1;
-    }
-    else
-    {
-        sgb_mode = gbc_mode = 0;
-
-        if(cgbState)
-            gbc_mode = 1;
-
-        if(sgbState && !gbc_mode)
+            sgb_mode = 0;
+            break;
+        case SYS_SGB:
+        case SYS_SGB2:
+            gbc_mode = 0;
             sgb_mode = 1;
+            break;
+        default: // auto
+            gbc_mode = headerCgbEnabled;
+            sgb_mode = headerSgbEnabled && !gbc_mode;
     }
 
-    if(multiple_gb && sgb_mode) // don't allow SGB mode
-    {
+    // attempts to combine sgb and gbc
+    if (options->GBC_SGB_border && ((gbc_mode && headerSgbEnabled) || (sgb_mode && headerCgbEnabled))) {
+        sgb_mode = 1;
+        // gbc_mode disabled initially for GBC_WITH_INITIAL_SGB_BORDER setting
+        // but enabled initially for GBC_WITH_SGB_BORDER
+        gbc_mode = options->GBC_SGB_border == GBC_WITH_SGB_BORDER;
+    }
+
+    // don't allow SGB mode with two GBs, for now
+    if (multiple_gb && sgb_mode) {
         sgb_mode = 0;
-        if(cgbState) gbc_mode = 1;
+        if(headerCgbEnabled) gbc_mode = headerCgbEnabled;
     }
 
     // map bootstrap here since it depends on the system type
