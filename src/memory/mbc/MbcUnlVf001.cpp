@@ -12,6 +12,8 @@
 #include "MbcUnlVf001.h"
 #include "../../debug.h"
 
+#define MORE_DEBUG_MESSAGING false
+
 byte MbcUnlVf001::readMemory(unsigned short address) {
 
     // Protection affects ROM reads in 2 ways
@@ -55,7 +57,7 @@ void MbcUnlVf001::writeMemory(unsigned short address, byte data) {
         if (effectiveAddress == 0x7000 && data == 0x96) {
             if (configMode) {
                 debug_win("Protection config mode enabled when config mode already on");
-            } else {
+            } else if (MORE_DEBUG_MESSAGING) {
                 debug_win("Protection config mode enabled");
             }
             configMode = true;
@@ -67,8 +69,8 @@ void MbcUnlVf001::writeMemory(unsigned short address, byte data) {
         if (effectiveAddress == 0x700f && data == 0x96) {
             if (!configMode) {
                 debug_win("Protection config mode disabled when config mode already off");
-            } else {
-                debug_win("Protection config mode disabled");
+            } else if (MORE_DEBUG_MESSAGING) {
+               debug_win("Protection config mode disabled");
             }
             configMode = false;
             return;
@@ -93,8 +95,11 @@ void MbcUnlVf001::writeMemory(unsigned short address, byte data) {
         // Otherwise, any known write should affect the running value like so
         runningValue = ((runningValue & 1) ? 0x80 : 0) + (runningValue >> 1);
         runningValue = runningValue ^ data;
-        sprintf(buffer, "Protection write: Addr %04x Data %02x Running %02x", address, data, runningValue);
-        debug_win(buffer);
+
+        if (MORE_DEBUG_MESSAGING) {
+            sprintf(buffer, "Protection write: Addr %04x Data %02x Running %02x", address, data, runningValue);
+            debug_win(buffer);
+        }
 
         // Then the running value is stored until one of the protection modes is activated
         // At which point it will be used for some config depending on the address written to
@@ -136,12 +141,14 @@ void MbcUnlVf001::writeMemory(unsigned short address, byte data) {
                     debug_win(buffer);
                     sequenceLength = 0;
             }
-            sprintf(
-                buffer,
-                "Sequence set up: bank %02x addr %04x vals %02x %02x %02x %02x count %01x",
-                sequenceStartBank, sequenceStartAddress, sequence[0], sequence[1], sequence[2], sequence[3], sequenceLength
-            );
-            debug_win(buffer);
+            if (MORE_DEBUG_MESSAGING) {
+                sprintf(
+                    buffer,
+                    "Sequence set up: bank %02x addr %04x vals %02x %02x %02x %02x count %01x",
+                    sequenceStartBank, sequenceStartAddress, sequence[0], sequence[1], sequence[2], sequence[3], sequenceLength
+                ;
+                debug_win(buffer);
+            }
         }
 
         // Bank 0 replacement activation
@@ -162,12 +169,14 @@ void MbcUnlVf001::writeMemory(unsigned short address, byte data) {
                 sprintf(buffer, "Value outside bank 0 at 700a: %02x", runningValue);
                 debug_win(buffer);
             }
-            sprintf(
-                buffer,
-                "Bank 0 replacement set up: addr %04x bank %02x enabled %01x",
-                replaceStartAddress, replaceSourceBank, shouldReplace
-            );
-            debug_win(buffer);
+            if (MORE_DEBUG_MESSAGING) {
+                sprintf(
+                    buffer,
+                    "Bank 0 replacement set up: addr %04x bank %02x enabled %01x",
+                    replaceStartAddress, replaceSourceBank, shouldReplace
+                );
+                debug_win(buffer);
+            }
         }
 
         return;
