@@ -146,7 +146,7 @@ void MbcUnlVf001::writeMemory(unsigned short address, byte data) {
                     buffer,
                     "Sequence set up: bank %02x addr %04x vals %02x %02x %02x %02x count %01x",
                     sequenceStartBank, sequenceStartAddress, sequence[0], sequence[1], sequence[2], sequence[3], sequenceLength
-                ;
+                );
                 debug_win(buffer);
             }
         }
