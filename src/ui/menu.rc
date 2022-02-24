@@ -142,6 +142,7 @@ BEGIN
                     MENUITEM "&Pokémon Jade/Diamond", IDM_UNLPOKEJD
                     MENUITEM "&Sintax", IDM_UNLSINTAX
                     MENUITEM "&Vast Fame primary releases", IDM_UNLVF001
+                    MENUITEM "&Vast Fame primary-ish releases", IDM_UNLVF001A
                     MENUITEM "Vast &Fame secondary releases", IDM_UNLGGB81
                     MENUITEM SEPARATOR
                     MENUITEM "Multi&cart: 'Last Bible' (VFame etc)", IDM_UNLLBMULTI

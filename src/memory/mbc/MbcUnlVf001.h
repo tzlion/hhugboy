@@ -48,5 +48,4 @@ class MbcUnlVf001 : public MbcNin5_LogoSwitch {
 
 };
 
-
 #endif //HHUGBOY_MBCUNLVF001_H
