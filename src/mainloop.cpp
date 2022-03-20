@@ -240,8 +240,6 @@ void gb_system::mainloop()
                   cycles_LCD += 28;      
                break;
 
-               vibeCycles = 0;
-
             }  
                           
             set_LCD_mode(2); // next: MODE 2
