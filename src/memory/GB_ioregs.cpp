@@ -31,6 +31,7 @@
 
 #include "../devices.h"
 #include "../state.h"
+#include "../cpu.h"
 #include "../SGB.h"
 #include "../directinput.h"
 #include "../sound.h"

@@ -19,126 +19,20 @@
    along with this program; if not, write to the Free Software Foundation, Inc.,
    51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
-#ifndef CPU_H
-#define CPU_H
+#ifndef STATE_H
+#define STATE_H
 
 #include "types.h"
 
 #include "options.h"
 
-#define PUSH(n) (writememory(--SP.W,(n)));
-#define POP(n) ((n) = readmemory(SP.W++));
-
-/*
-extern byte A;
-extern byte F; 
-extern word BC;
-extern word DE;
-extern word HL;
-extern word SP;   
-
-extern unsigned short flags; */
-// flags in x86 order
-// size word because lahf loads flags to ah
-
-//inline void PUSH(unsigned short data) { writememory(--SP.W,data>>8); writememory(--SP.W,data); }
-//inline void POP(unsigned short& target) { target = readword(SP.W); SP.W+=2; }
-
 extern int emulating;
 extern int sgb_mode;
-
-const int cycles[256] =
-{ 
-//0   1   2   3   4   5  6   7   8   9   A  B   C   D  E   F
-  4, 12,  8,  8,  4,  4, 8,  4, 20,  8,  8, 8,  4,  4, 8,  4, // 0
-  4, 12,  8,  8,  4,  4, 8,  4, 12,  8,  8, 8,  4,  4, 8,  4, // 1
-  8, 12,  8,  8,  4,  4, 8,  4,  8,  8,  8, 8,  4,  4, 8,  4, // 2 
-  8, 12,  8,  8, 12, 12,12,  4,  8,  8,  8, 8,  4,  4, 8,  4, // 3
-  4,  4,  4,  4,  4,  4, 8,  4,  4,  4,  4, 4,  4,  4, 8,  4, // 4
-  4,  4,  4,  4,  4,  4, 8,  4,  4,  4,  4, 4,  4,  4, 8,  4, // 5
-  4,  4,  4,  4,  4,  4, 8,  4,  4,  4,  4, 4,  4,  4, 8,  4, // 6
-  8,  8,  8,  8,  8,  8, 4,  8,  4,  4,  4, 4,  4,  4, 8,  4, // 7
-  4,  4,  4,  4,  4,  4, 8,  4,  4,  4,  4, 4,  4,  4, 8,  4, // 8
-  4,  4,  4,  4,  4,  4, 8,  4,  4,  4,  4, 4,  4,  4, 8,  4, // 9
-  4,  4,  4,  4,  4,  4, 8,  4,  4,  4,  4, 4,  4,  4, 8,  4, // A
-  4,  4,  4,  4,  4,  4, 8,  4,  4,  4,  4, 4,  4,  4, 8,  4, // B
-  8, 12, 12, 16, 12, 16, 8, 16,  8, 16, 12, 8, 12, 24, 8, 16, // C 
-  8, 12, 12,  0, 12, 16, 8, 16,  8, 16, 12, 0, 12,  0, 8, 16, // D
-  12, 12, 8,  0,  0, 16, 8, 16, 16,  4, 16, 0,  0,  0, 8, 16, // E
-  12, 12, 8,  4,  0, 16, 8, 16, 12,  8, 16, 4,  0,  0, 8, 16  // F
-};
-
-const int CB_cycles[256] =
-{
-//0  1  2  3  4  5   6  7  8  9  A  B  C  D   E  F
-  8, 8, 8, 8, 8, 8, 16, 8, 8, 8, 8, 8, 8, 8, 16, 8, // 0
-  8, 8, 8, 8, 8, 8, 16, 8, 8, 8, 8, 8, 8, 8, 16, 8, // 1
-  8, 8, 8, 8, 8, 8, 16, 8, 8, 8, 8, 8, 8, 8, 16, 8, // 2
-  8, 8, 8, 8, 8, 8, 16, 8, 8, 8, 8, 8, 8, 8, 16, 8, // 3
-  8, 8, 8, 8, 8, 8, 12, 8, 8, 8, 8, 8, 8, 8, 12, 8, // 4
-  8, 8, 8, 8, 8, 8, 12, 8, 8, 8, 8, 8, 8, 8, 12, 8, // 5
-  8, 8, 8, 8, 8, 8, 12, 8, 8, 8, 8, 8, 8, 8, 12, 8, // 6  
-  8, 8, 8, 8, 8, 8, 12, 8, 8, 8, 8, 8, 8, 8, 12, 8, // 7
-  8, 8, 8, 8, 8, 8, 16, 8, 8, 8, 8, 8, 8, 8, 16, 8, // 8
-  8, 8, 8, 8, 8, 8, 16, 8, 8, 8, 8, 8, 8, 8, 16, 8, // 9
-  8, 8, 8, 8, 8, 8, 16, 8, 8, 8, 8, 8, 8, 8, 16, 8, // A
-  8, 8, 8, 8, 8, 8, 16, 8, 8, 8, 8, 8, 8, 8, 16, 8, // B
-  8, 8, 8, 8, 8, 8, 16, 8, 8, 8, 8, 8, 8, 8, 16, 8, // C
-  8, 8, 8, 8, 8, 8, 16, 8, 8, 8, 8, 8, 8, 8, 16, 8, // D
-  8, 8, 8, 8, 8, 8, 16, 8, 8, 8, 8, 8, 8, 8, 16, 8, // E
-  8, 8, 8, 8, 8, 8, 16, 8, 8, 8, 8, 8, 8, 8, 16, 8  // F
-};
-
-const int zero_table[256] =
-{
-  1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
-  0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
-  0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
-  0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
-  0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
-  0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
-  0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
-  0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
-  0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
-  0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
-  0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
-  0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
-  0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
-  0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
-  0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
-  0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
-};
-/*
-extern int CFLAG;
-extern int HFLAG;
-extern int ZFLAG;
-extern int NFLAG;
-*/
-
 
 bool init_gb2();
 
 extern int multiple_gb;
 extern int gb_speed_another;
-
-const int STOP = 1;
-const int HALT = 2;
-const int HALT2 = 3;
-
-const int CYCLES_DIV = 256; // 256
-const int CYCLES_TIMER_MODE0 = 1024; // 1024
-const int CYCLES_TIMER_MODE1 = 16; // 16
-const int CYCLES_TIMER_MODE2 = 64; // 64
-const int CYCLES_TIMER_MODE3 = 256; // 256
-const int CYCLES_SGB_TIMEOUT = 66666;
-
-const int CYCLES_SERIAL_GB = 512;
-const int CYCLES_SERIAL_GBC = 16;
-
-const int CYCLES_LCD_MODE0 = 375; // 376 / 375
-const int CYCLES_LCD_MODE1 = 456; // 456
-const int CYCLES_LCD_MODE2 = 82; // 80 / 82
-const int CYCLES_LCD_MODE3 = 172; // 172 
 
 extern int cycles_SGB;
 

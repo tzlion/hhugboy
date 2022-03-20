@@ -26,6 +26,7 @@
 #include "rendering/render.h"
 #include "GB.h"
 #include "SGB.h"
+#include "cpu.h"
 #include "state.h"
 #include "debug.h"
 #include "mainloop.h"

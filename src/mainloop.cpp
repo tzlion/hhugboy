@@ -32,6 +32,7 @@ using namespace std;
 #include "types.h"
 #include "debug.h"
 #include "state.h"
+#include "cpu.h"
 #include "rom.h"
 #include "GB_gfx.h"
 #include "SGB.h"

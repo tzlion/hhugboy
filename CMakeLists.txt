@@ -30,6 +30,7 @@ set(SOURCE_FILES
         src/config.h
         src/state.cpp
         src/state.h
+        src/cpu.h
         src/cpucore.h
         src/debug.cpp
         src/debug.h
