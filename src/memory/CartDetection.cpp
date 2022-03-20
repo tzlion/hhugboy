@@ -301,9 +301,9 @@ unlCompatMode CartDetection::detectUnlCompatMode(byte* rom, Cartridge* cartridge
     int logoChecksum0104Scrambled =0; for(int lb=0;lb<0x30;++lb) { int address =0x104 +lb; address =address &~0x53 | address >>6 &0x01 | address >>3 &0x02 | address <<3 &0x10 | address <<6 &0x40; logoChecksum0104Scrambled+=rom[address] ; }
     int logoChecksum0184Scrambled =0; for(int lb=0;lb<0x30;++lb) { int address =0x184 +lb; address =address &~0x53 | address >>6 &0x01 | address >>3 &0x02 | address <<3 &0x10 | address <<6 &0x40; logoChecksum0184Scrambled+=rom[address] ; }
 
-    /*char buff[100];
-    sprintf(buff,"logo: 0104=%d, 0184=%d", logoChecksum0104, logoChecksum0184);
-    debug_win(buff);*/
+    char buff[100];
+    sprintf(buff,"Attempting to detect with logo hashes: 0104=%d, 0184=%d", logoChecksum0104, logoChecksum0184);
+    debug_win(buff);
 
     if (logoChecksum0104 !=5446 && (logoChecksum0104Scrambled ==5542 || logoChecksum0104Scrambled ==7484)) return UNL_SACHENMMC2;
     if (logoChecksum0104 !=5446 && (logoChecksum0184Scrambled ==5542 || logoChecksum0184Scrambled ==7484)) return UNL_SACHENMMC1;
@@ -340,6 +340,12 @@ unlCompatMode CartDetection::detectUnlCompatMode(byte* rom, Cartridge* cartridge
                 return UNL_SINTAX;
             else
                 return UNL_NONE;
+        case 4844: // V.fame
+        case 6127: // SOUL (Falchion)
+        case 4406: // DIGI (italic)
+            return UNL_VF001;
+        case 2692: // DIGI.
+            return UNL_GGB81;
     }
 
     if (
