@@ -12,6 +12,11 @@
 
 #include "MbcNin5_LogoSwitch.h"
 
+// Vast Fame mostly Taiwan releases
+// PCBs inc: G6R16M01, G6R16M02, KGB-126, VF001
+// Also mainland "SL" releases use this mapper with a config difference
+// PCBs inc: SL-01-16, SL-004
+
 class MbcUnlVf001 : public MbcNin5_LogoSwitch {
 
     private:
