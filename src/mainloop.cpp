@@ -232,6 +232,8 @@ void gb_system::mainloop()
                
                IWait = 1;          
 
+               vibeCycles = 0;
+
                if(gbc_mode)
                   cycles_LCD += 22;
                else
