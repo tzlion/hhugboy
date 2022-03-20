@@ -439,7 +439,7 @@ void gb_system::reset(bool change_mode, bool preserveMulticartState)
 
    sound_reset();
 
-    mbc->resetMbcVariables(preserveMulticartState);
+    mbc->mbc->resetVars(preserveMulticartState);
 
    reset_devices();
 

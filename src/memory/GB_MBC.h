@@ -39,32 +39,15 @@ public:
 
     byte readmemory_cart(register unsigned short address);
     void writememory_cart(unsigned short address,register byte data);
-    void signalMemoryWrite(unsigned short address,register byte data);
-    void resetMbcVariables(bool preserveMulticartState);
-    void resetRomMemoryMap(bool preserveMulticartState);
 
-    void readMbcSpecificStuffFromSaveFile(FILE *savefile);
-    void writeMbcSpecificStuffToSaveFile(FILE *savefile);
-
-    void readMbcBanksFromStateFile(FILE *statefile);
-    void readMbcMoreCrapFromStateFile(FILE *statefile);
-    void writeMbcBanksToStateFile(FILE *statefile);
-    void writeMbcOtherStuffToStateFile(FILE *statefile);
-
-    void writeNewerCartSpecificVarsToStateFile(FILE *statefile);
-    void writeCartSpecificVarsToStateFile(FILE *statefile);
-    void readCartSpecificVarsFromStateFile(FILE *statefile);
-    void readNewerCartSpecificVarsFromStateFile(FILE *statefile);
-
-    bool shouldReset();
     bool isVibrating();
 
     int getOffset();
     int getRamOffset();
 
-private:
-
     AbstractMbc *mbc;
+
+private:
 
     byte** gbMemMap;
     Cartridge** gbCartridge;

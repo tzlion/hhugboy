@@ -79,11 +79,6 @@ gb_mbc::gb_mbc(byte** gbMemMap, byte** gbCartRom, Cartridge** gbCartridge, byte*
     setMemoryReadWrite(mbcType);
 }
 
-void gb_mbc::resetMbcVariables(bool preserveMulticartState = false)
-{
-    mbc->resetVars(preserveMulticartState);
-}
-
 byte gb_mbc::readmemory_cart(register unsigned short address) {
     if (LinkerWrangler::shouldReadThroughLinker(address)) {
         return LinkerWrangler::readThroughLinker(address);
@@ -96,55 +91,6 @@ void gb_mbc::writememory_cart(unsigned short address, register byte data) {
         LinkerWrangler::writeThroughLinker(address,data);
     }
     mbc->writeMemory(address,data);
-}
-
-void gb_mbc::signalMemoryWrite(unsigned short address, register byte data) {
-    mbc->signalMemoryWrite(address,data);
-}
-
-void gb_mbc::writeMbcSpecificStuffToSaveFile(FILE *savefile) {
-    mbc->writeMbcSpecificVarsToSaveFile(savefile);
-}
-
-void gb_mbc::readMbcSpecificStuffFromSaveFile(FILE *savefile){
-    mbc->readMbcSpecificVarsFromSaveFile(savefile);
-}
-
-void gb_mbc::readNewerCartSpecificVarsFromStateFile(FILE *statefile) {
-    mbc->readSgbMbcSpecificVarsFromStateFile(statefile);
-}
-
-void gb_mbc::readCartSpecificVarsFromStateFile(FILE *statefile){
-    mbc->readMbcSpecificVarsFromStateFile(statefile);
-}
-
-void gb_mbc::writeCartSpecificVarsToStateFile(FILE *statefile) {
-    mbc->writeMbcSpecificVarsToStateFile(statefile);
-}
-
-void gb_mbc::writeNewerCartSpecificVarsToStateFile(FILE *statefile) {
-    mbc->writeSgbMbcSpecificVarsToStateFile(statefile);
-}
-
-
-void gb_mbc::writeMbcOtherStuffToStateFile(FILE *statefile) {
-    mbc->writeMbcOtherStuffToStateFile(statefile);
-}
-
-void gb_mbc::writeMbcBanksToStateFile(FILE *statefile) {
-    mbc->writeMbcBanksToStateFile(statefile);
-}
-
-void gb_mbc::readMbcMoreCrapFromStateFile(FILE *statefile) {
-    mbc->readMbcOtherStuffFromStateFile(statefile);
-}
-
-void gb_mbc::readMbcBanksFromStateFile(FILE *statefile) {
-    mbc->readMbcBanksFromStateFile(statefile);
-}
-
-void gb_mbc::resetRomMemoryMap(bool preserveMulticartState = false) {
-    mbc->resetRomMemoryMap(preserveMulticartState);
 }
 
 int gb_mbc::getRomBank() {
