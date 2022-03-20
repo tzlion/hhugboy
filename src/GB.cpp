@@ -34,13 +34,13 @@
 #include "sound.h"
 #include "devices.h"
 #include "main.h"
-#include "memory/GB_MBC.h"
+#include "memory/Cartridge.h"
 #include "ui/window.h"
 
 int gb_system::gfx_bit_count = 16;
 
 gb_system::gb_system():
-        cart(new gb_mbc(mem_map, &cartROM, &cartridge, &cartRAM)),
+        cart(new Cartridge(mem_map, &cartROM, &cartridge, &cartRAM)),
         frames(0),
         LCD_clear_needed(false),
         skip_frame(0),

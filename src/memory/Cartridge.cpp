@@ -24,7 +24,7 @@
 #include "../config.h"
 #include "../GB_gfx.h"
 
-#include "GB_MBC.h"
+#include "Cartridge.h"
 
 #include "../main.h"
 #include "mbc/MbcNin3.h"
@@ -59,9 +59,7 @@
 #include "mbc/MbcUnlVf001.h"
 #include "linker/LinkerWrangler.h"
 
-// maybe this should be "cart" and not MBC now
-
-gb_mbc::gb_mbc(byte** gbMemMap, byte** gbCartRom, CartridgeMetadata** gbCartridge, byte** gbCartRam)
+Cartridge::Cartridge(byte** gbMemMap, byte** gbCartRom, CartridgeMetadata** gbCartridge, byte** gbCartRam)
 {
     this->gbCartRom = gbCartRom;
     this->gbMemMap = gbMemMap;
@@ -71,21 +69,21 @@ gb_mbc::gb_mbc(byte** gbMemMap, byte** gbCartRom, CartridgeMetadata** gbCartridg
     setMemoryReadWrite(MEMORY_DEFAULT);
 }
 
-byte gb_mbc::readmemory_cart(register unsigned short address) {
+byte Cartridge::readmemory_cart(register unsigned short address) {
     if (LinkerWrangler::shouldReadThroughLinker(address)) {
         return LinkerWrangler::readThroughLinker(address);
     }
     return mbc->readMemory(address);
 }
 
-void gb_mbc::writememory_cart(unsigned short address, register byte data) {
+void Cartridge::writememory_cart(unsigned short address, register byte data) {
     if (LinkerWrangler::shouldWriteThroughLinker(address, data)) {
         LinkerWrangler::writeThroughLinker(address,data);
     }
     mbc->writeMemory(address,data);
 }
 
-void gb_mbc::setMemoryReadWrite(MbcType memory_type) {
+void Cartridge::setMemoryReadWrite(MbcType memory_type) {
 
     switch(memory_type)
     {

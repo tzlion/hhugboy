@@ -27,10 +27,10 @@
 #include "mbc/AbstractMbc.h"
 #include "mbc/MbcLicHuc3.h"
 
-class gb_mbc {
+class Cartridge {
 
 public:
-    gb_mbc(byte** gbMemMap, byte** gbCartRom, CartridgeMetadata** gbCartridge, byte** gbCartRam);
+    Cartridge(byte** gbMemMap, byte** gbCartRom, CartridgeMetadata** gbCartridge, byte** gbCartRam);
 
     void setMemoryReadWrite(MbcType memory_type);
 

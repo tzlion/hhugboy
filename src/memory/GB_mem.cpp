@@ -39,7 +39,7 @@ using namespace std;
 #include "../rendering/render.h"
 
 #include "../GB.h"
-#include "GB_MBC.h"
+#include "Cartridge.h"
 
 unsigned char bootstrapDMG[256], bootstrapCGB[2304], *bootstrap;
 bool haveBootstrap_DMG =false;

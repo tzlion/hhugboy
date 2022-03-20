@@ -26,7 +26,7 @@
 #include "SGB.h"
 #include "GB_gfx.h"
 #include "GB.h"
-#include "memory/GB_MBC.h"
+#include "memory/Cartridge.h"
 #include "mainloop.h"
 
 #include "main.h"
@@ -49,7 +49,7 @@ extern int sensorY;
 #include "ui/strings.h"
 #include "rom.h"
 #include "config.h"
-#include "memory/GB_MBC.h"
+#include "memory/Cartridge.h"
 
 /*
 byte A;

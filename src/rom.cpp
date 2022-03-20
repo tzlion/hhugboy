@@ -36,7 +36,7 @@
 #include "zlib/unzip.h"
 
 #include "GB.h"
-#include "memory/GB_MBC.h"
+#include "memory/Cartridge.h"
 #include "memory/CartDetection.h"
 
 int get_size(int real_size) // return good size to use

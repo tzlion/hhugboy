@@ -26,7 +26,7 @@
 
 #include "../types.h"
 #include "../options.h"
-#include "GB_MBC.h"
+#include "Cartridge.h"
 
 class CartDetection {
     public:

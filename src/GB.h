@@ -25,7 +25,7 @@
 #include "types.h"
 #include "rom.h"
 #include "cheats.h"
-#include "memory/GB_MBC.h"
+#include "memory/Cartridge.h"
 #include "options.h"
 
 extern unsigned char bootstrapDMG[256], bootstrapCGB[2304], *bootstrap;
@@ -43,7 +43,7 @@ public:
    void mem_reset(bool preserveMulticartState = false);
    void cpu_reset();
 
-   gb_mbc* cart;
+   Cartridge* cart;
 
    wchar_t rom_filename[ROM_FILENAME_SIZE];
    bool load_rom(const wchar_t* filename, int offset=0);

@@ -38,7 +38,7 @@ using namespace std;
 #include "sound.h"
 #include "devices.h"
 #include "GB.h"
-#include "memory/GB_MBC.h"
+#include "memory/Cartridge.h"
 #include "directinput.h"
 #include "config.h"
 
