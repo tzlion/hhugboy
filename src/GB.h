@@ -25,7 +25,7 @@
 #include "types.h"
 #include "rom.h"
 #include "cheats.h"
-#include "memory/GB_MBC.h"
+#include "memory/Cartridge.h"
 #include "options.h"
 
 extern unsigned char bootstrapDMG[256], bootstrapCGB[2304], *bootstrap;
@@ -43,7 +43,7 @@ public:
    void mem_reset(bool preserveMulticartState = false);
    void cpu_reset();
 
-    gb_mbc* mbc;
+   Cartridge* cart;
 
    wchar_t rom_filename[ROM_FILENAME_SIZE];
    bool load_rom(const wchar_t* filename, int offset=0);
@@ -180,12 +180,11 @@ public:
    byte *WRAM;
    byte* mem_map[0x10];
    byte* cartROM;
-   Cartridge* cartridge;
+   CartridgeMetadata* cartridge;
 
    byte *memory_another;
 
-    // things that are somewhat MBC related but would be mildly annoying to move
-   int rumble_counter; // this can stay in GB for now because, uh, let's say because the cartridge makes the whole GB rumble
+   int vibeCycles;
 
    //Sound ---------------------------------------
    byte sound_buffer[4][735];
@@ -316,7 +315,7 @@ public:
 	return bootstrap[address];
       else	    
       if ((address >= 0x0000 && address < 0x8000)|| (address >= 0xa000 && address < 0xc000) ) {
-      	return mbc->readmemory_cart(address);
+      	return cart->readMemory(address);
       }
 
       return mem_map[address>>12][address&0x0FFF];
@@ -327,7 +326,7 @@ public:
       if (mapBootstrap && (address <0x0100 || gbc_mode && address >=0x0200 && address <0x0900))
 	return (unsigned short) bootstrap[address] | bootstrap[address +1] <<8;
       if ((address >= 0x0000 && address < 0x8000) || (address >= 0xa000 && address < 0xc000) ) {
-      	return  (unsigned short) ( mbc->readmemory_cart(address) | mbc->readmemory_cart(address+1) << 8  );
+      	return  (unsigned short) (cart->readMemory(address) | cart->readMemory(address + 1) << 8  );
       }
 
       return (unsigned short)(mem_map[address>>12][address&0x0FFF]|(mem_map[(address+1)>>12][(address+1)&0x0FFF]<<8));
@@ -345,7 +344,7 @@ public:
 			
 			while(count)
 		      {
-		         mem_map[to>>12][to&0x0FFF] = mbc->readmemory_cart(from);
+		         mem_map[to>>12][to&0x0FFF] = cart->readMemory(from);
 		         ++to;
 		         ++from;
 		         --count;
@@ -372,6 +371,8 @@ private:
     int romFileSize;
     bool loadrom_zip(const wchar_t* filename);
     bool loadrom_file(const wchar_t* filename, int offset);
+    void set_system_type(bool rereadHeader);
+    void set_bootstrap();
 };
 
 extern gb_system *GB;

@@ -21,6 +21,8 @@ public:
     virtual void signalMemoryWrite(unsigned short address, register byte data) override;
     virtual void readMbcSpecificVarsFromStateFile(FILE *savefile) override;
     virtual void writeMbcSpecificVarsToStateFile(FILE *savefile) override;
+protected:
+    virtual bool shouldEnableLogoSwap();
 private:
     byte logoMode;
     byte logoCount;

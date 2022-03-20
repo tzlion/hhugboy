@@ -38,7 +38,7 @@ using namespace std;
 #include "sound.h"
 #include "devices.h"
 #include "GB.h"
-#include "memory/GB_MBC.h"
+#include "memory/Cartridge.h"
 #include "directinput.h"
 #include "config.h"
 
@@ -232,11 +232,14 @@ void gb_system::mainloop()
                
                IWait = 1;          
 
+               vibeCycles = 0;
+
                if(gbc_mode)
                   cycles_LCD += 22;
                else
                   cycles_LCD += 28;      
                break;
+
             }  
                           
             set_LCD_mode(2); // next: MODE 2
@@ -443,6 +446,8 @@ void gb_system::mainloop()
          {
              (renderer.*renderer.drawScreen)();
          }
+
+         vibeCycles = 0;
       }
    }
    
@@ -542,7 +547,11 @@ void gb_system::mainloop()
       EI_count = 0;
    }
 
-   if ( mbc->shouldReset() ) {
+   if (cart->mbc->isVibrating()) {
+       vibeCycles += cur_cycle;
+   }
+
+   if ( cart->mbc->shouldReset() ) {
        reset(true,true);
    }
 }

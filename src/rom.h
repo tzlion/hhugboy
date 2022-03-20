@@ -44,7 +44,7 @@ struct Header
     int CGB; // this gets modified but it shouldn't
 };
 
-struct Cartridge
+struct CartridgeMetadata
 {
    int ROMsize;
    int RAMsize;

@@ -18,7 +18,7 @@ class GbxParser {
     public:
 
         static bool isGbx(byte* cartROM, int romFileSize);
-        static bool parseFooter(byte* cartROM, Cartridge *cartridge, int romFileSize);
+        static bool parseFooter(byte* cartROM, CartridgeMetadata *cartridge, int romFileSize);
 
     private:
 

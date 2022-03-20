@@ -18,7 +18,7 @@ bool GbxParser::isGbx(byte* cartROM, int romFileSize)
     return !memcmp(cartROM + romFileSize - 4, signature, 4);
 }
 
-bool GbxParser::parseFooter(byte* cartROM, Cartridge *cartridge, int romFileSize)
+bool GbxParser::parseFooter(byte* cartROM, CartridgeMetadata *cartridge, int romFileSize)
 {
     char msg[420];
 
@@ -143,6 +143,8 @@ MbcType GbxParser::mapMapper(char* mapperType)
     if (!strcmp(mapperType,"M161")) return MEMORY_M161;
     if (!strcmp(mapperType,"ROCK")) return MEMORY_ROCKET;
     if (!strcmp(mapperType,"NGHK")) return MEMORY_NEWGBHK;
+    if (!strcmp(mapperType,"GB81")) return MEMORY_GGB81;
+    if (!strcmp(mapperType,"VF01")) return MEMORY_VF001;
     debug_win("Unsupported mapper type!");
     return MEMORY_DEFAULT;
 }

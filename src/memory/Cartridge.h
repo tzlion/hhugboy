@@ -21,45 +21,31 @@
    along with this program; if not, write to the Free Software Foundation, Inc.,
    51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
+#ifndef HHUGBOY_GB_MBC_H_H
+#define HHUGBOY_GB_MBC_H_H
 
-#ifndef HHUGBOY_MEMORYACCESS_H
-#define HHUGBOY_MEMORYACCESS_H
+#include "mbc/AbstractMbc.h"
+#include "mbc/MbcLicHuc3.h"
 
-enum MbcType
-{
-    MEMORY_DEFAULT = 0,
-    MEMORY_MBC1,
-    MEMORY_MBC2,
-    MEMORY_MBC3,
-    MEMORY_MBC5,
-    MEMORY_CAMERA,
-    MEMORY_HUC3,
-    MEMORY_MBC7,
-    MEMORY_TAMA5,
-    MEMORY_NTOLD1,
-    MEMORY_NTOLD2,
-    MEMORY_ROCKMAN8,
-    MEMORY_MBC1MULTI,
-    MEMORY_MMM01,
-    MEMORY_MK12,
-    MEMORY_POKE,
-    MEMORY_NIUTOUDE,
-    MEMORY_SINTAX,
-    MEMORY_BBD,
-    MEMORY_ROMONLY,
-    MEMORY_LBMULTI,
-    MEMORY_DBZTRANS,
-    MEMORY_HITEK,
-    MEMORY_NTNEW,
-    MEMORY_POKEJD,
-    MEMORY_WISDOMTREE,
-    MEMORY_SACHENMMC1,
-    MEMORY_SACHENMMC2,
-    MEMORY_M161,
-    MEMORY_ROCKET,
-    MEMORY_NEWGBHK,
-    MEMORY_GGB81,
-    MEMORY_VF001
+class Cartridge {
+
+public:
+    Cartridge(byte** gbMemMap, byte** cartRom, byte** cartRam, CartridgeMetadata** metadata);
+
+    void setMbcType(MbcType memory_type);
+
+    byte readMemory(register unsigned short address);
+    void writeMemory(unsigned short address, register byte data);
+
+    AbstractMbc *mbc;
+
+private:
+
+    byte** gbMemMap;
+    CartridgeMetadata** metadata;
+    byte** cartRam;
+    byte** cartRom;
+
 };
 
-#endif //HHUGBOY_MEMORYACCESS_H
+#endif //HHUGBOY_GB_MBC_H_H

@@ -31,6 +31,7 @@ ID_ICON ICON MOVEABLE DISCARDABLE "../hhugboy.ico"
 
 #include "dialogs.rc"
 #include "dialogs/MemorySearcher.rc"
+#include "dialogs/LinkerLog.rc"
 
 ID_MENU MENU 
 BEGIN
@@ -133,13 +134,16 @@ BEGIN
                     MENUITEM "&BBD", IDM_UNLBBD
                     MENUITEM "&Hitek", IDM_UNLHITEK
                     MENUITEM "&Li Cheng (XingXing/Niutoude)", IDM_UNLNIUTOUDE
+                    MENUITEM "L&iebao Technology", IDM_UNLLIEBAO
+                    MENUITEM "New GB Color P&okémon hacks", IDM_UNLNEWGBHK
                     MENUITEM "&NT (Makon) old type 1", IDM_UNLNTOLD1
                     MENUITEM "N&T (Makon) old type 2", IDM_UNLNTOLD2
                     MENUITEM "NT (&Makon) new", IDM_UNLNTNEW
-                    MENUITEM "L&iebao Technology", IDM_UNLLIEBAO
                     MENUITEM "&Pokémon Jade/Diamond", IDM_UNLPOKEJD
                     MENUITEM "&Sintax", IDM_UNLSINTAX
-                    MENUITEM "New GB Color P&okémon hacks", IDM_UNLNEWGBHK
+                    MENUITEM "&Vast Fame (Taiwan releases)", IDM_UNLVF001
+                    MENUITEM "&Vast Fame (SL releases)", IDM_UNLVF001A
+                    MENUITEM "Vast &Fame (KongFeng/other releases)", IDM_UNLGGB81
                     MENUITEM SEPARATOR
                     MENUITEM "Multi&cart: 'Last Bible' (VFame etc)", IDM_UNLLBMULTI
                     MENUITEM SEPARATOR

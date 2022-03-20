@@ -24,13 +24,11 @@
 #include "AbstractMbc.h"
 #include <cstdio>
 
-void AbstractMbc::init(byte** gbMemMap, Cartridge** gbCartridge, byte** gbMemory, byte** gbCartRom, byte** gbCartRam, int* gbRumbleCounter) {
+void AbstractMbc::init(byte** gbMemMap, CartridgeMetadata** gbCartridge, byte** gbCartRom, byte** gbCartRam) {
     this->gbMemMap = gbMemMap;
     this->gbCartridge = gbCartridge;
-    this->gbMemory = gbMemory;
     this->gbCartRom = gbCartRom;
     this->gbCartRam = gbCartRam;
-    this->gbRumbleCounter = gbRumbleCounter;
 }
 
 AbstractMbc::AbstractMbc():
@@ -50,7 +48,9 @@ AbstractMbc::AbstractMbc():
         RTC_latched(0),
 
         multicartOffset(0),
-        multicartRamOffset(0)
+        multicartRamOffset(0),
+
+        vibrating(0)
 {
 
 }
@@ -78,17 +78,11 @@ void AbstractMbc::resetVars(bool preserveMulticartState = false) {
     rtc.last_time = time(0);
     rtc.cur_register = 0x08;
 
-}
-
-void AbstractMbc::readSgbMbcSpecificVarsFromStateFile(FILE *statefile) {
+    vibrating = 0;
 
 }
 
 void AbstractMbc::readMbcSpecificVarsFromStateFile(FILE *statefile) {
-
-}
-
-void AbstractMbc::writeSgbMbcSpecificVarsToStateFile(FILE *statefile) {
 
 }
 
@@ -185,4 +179,32 @@ void AbstractMbc::setRom1Bank(int bankNo) {
 }
 
 void AbstractMbc::signalMemoryWrite(unsigned short address, register byte data) {
+}
+
+int AbstractMbc::getRomBank() {
+    return rom_bank;
+}
+
+int AbstractMbc::getRamBank() {
+    return ram_bank;
+}
+
+bool AbstractMbc::isVibrating() {
+    return vibrating;
+}
+
+int AbstractMbc::getOffset() {
+    return multicartOffset;
+}
+
+int AbstractMbc::getRamOffset() {
+    return multicartRamOffset;
+}
+
+bool AbstractMbc::shouldReset() {
+    if ( deferredReset ) {
+        deferredReset = false;
+        return true;
+    }
+    return false;
 }

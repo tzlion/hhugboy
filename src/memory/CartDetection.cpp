@@ -29,9 +29,9 @@
 #include "../config.h"
 #include "GbxParser.h"
 
-Cartridge* CartDetection::processRomInfo(byte* rom, int romFileSize)
+CartridgeMetadata* CartDetection::processRomInfo(byte* rom, int romFileSize)
 {
-    Cartridge* cartridge = new Cartridge();
+    CartridgeMetadata* cartridge = new CartridgeMetadata();
     memset(cartridge->mbcConfig, 0, 32);
     readHeader(rom, cartridge, romFileSize);
 
@@ -52,7 +52,7 @@ Cartridge* CartDetection::processRomInfo(byte* rom, int romFileSize)
     return cartridge;
 }
 
-void CartDetection::setCartridgeAttributesFromHeader(Cartridge *cartridge)
+void CartDetection::setCartridgeAttributesFromHeader(CartridgeMetadata *cartridge)
 {
     cartridge->RTC = false;
     cartridge->rumble = false;
@@ -209,18 +209,18 @@ void CartDetection::setCartridgeAttributesFromHeader(Cartridge *cartridge)
     }
 }
 
-void CartDetection::readHeader(byte* rom, Cartridge* cartridge, int romFileSize)
+void CartDetection::readHeader(byte* rom, CartridgeMetadata* cartridge, int romFileSize)
 {
     byte rominfo[30];
     cartridge->mbcType = MEMORY_DEFAULT; // Was originally in setCartridgeAttributesFromHeader, but since we are already detecting three MBC types here, put it here as well.
-    
+
     // Determine whether we have a scrambled header, or a header at the end of the file, *and* that there is no unscrambled Nintendo logo. If so, we have already detected Sachen MMC1/2 or MMM01.
     int logoChecksum0104          =0; for(int lb=0;lb<0x30;++lb) { logoChecksum0104+=rom[0x104 +lb]; }
     int logoChecksum0104Scrambled =0; for(int lb=0;lb<0x30;++lb) { int address =0x104 +lb; address =address &~0x53 | address >>6 &0x01 | address >>3 &0x02 | address <<3 &0x10 | address <<6 &0x40; logoChecksum0104Scrambled+=rom[address]; }
     int logoChecksum0184Scrambled =0; for(int lb=0;lb<0x30;++lb) { int address =0x184 +lb; address =address &~0x53 | address >>6 &0x01 | address >>3 &0x02 | address <<3 &0x10 | address <<6 &0x40; logoChecksum0184Scrambled+=rom[address]; }
     if (logoChecksum0104 !=5446 && (logoChecksum0104Scrambled ==5542 || logoChecksum0104Scrambled ==7484)) cartridge->mbcType =MEMORY_SACHENMMC2;
     if (logoChecksum0104 !=5446 && (logoChecksum0184Scrambled ==5542 || logoChecksum0184Scrambled ==7484)) cartridge->mbcType =MEMORY_SACHENMMC1;
-    
+
     int logoChecksumEnd =0;
     int cartridgeHeaderAtEnd =(romFileSize &~0x7FFF) -0x8000;
     if (cartridgeHeaderAtEnd >=0) {
@@ -228,7 +228,7 @@ void CartDetection::readHeader(byte* rom, Cartridge* cartridge, int romFileSize)
 	byte cartridgeType =rom[cartridgeHeaderAtEnd +0x147];
 	if (logoChecksumEnd ==5446 && (cartridgeType ==0x0B || cartridgeType ==0x0C || cartridgeType ==0x0D || cartridgeType ==0x11)) cartridge->mbcType =MEMORY_MMM01;
     }
-    
+
     // Read unscrambled header from the correct file position
     switch (cartridge->mbcType) {
 	    case MEMORY_MMM01:
@@ -293,26 +293,34 @@ void CartDetection::readHeader(byte* rom, Cartridge* cartridge, int romFileSize)
     cmpl+=25; cartridge->header.complementok = !cmpl;
 }
 
-unlCompatMode CartDetection::detectUnlCompatMode(byte* rom, Cartridge* cartridge, int romFileSize)
+unlCompatMode CartDetection::detectUnlCompatMode(byte* rom, CartridgeMetadata* cartridge, int romFileSize)
 {
     if (cartridge->mbcType ==MEMORY_MMM01) return UNL_NONE; // Might be misdetected as something else, so don't even try
+
+    if (
+        (strstr(cartridge->header.name,"POKEMON_GLDAAUJ")&&romFileSize==4194304) || // SL 36 in 1 w/Pokemon GS
+        (strstr(cartridge->header.name,"TIMER MONSTER")&&(romFileSize==16777216||romFileSize==8388608) ) // V.Fame 12in1 Silver / 18in1
+    ) {
+        return UNL_LBMULTI;
+    }
+
     int logoChecksum0104=0; for(int lb=0;lb<0x30;++lb) logoChecksum0104+=rom[0x0104 +lb];
     int logoChecksum0184=0; for(int lb=0;lb<0x30;++lb) logoChecksum0184+=rom[0x0184 +lb];
     int logoChecksum0104Scrambled =0; for(int lb=0;lb<0x30;++lb) { int address =0x104 +lb; address =address &~0x53 | address >>6 &0x01 | address >>3 &0x02 | address <<3 &0x10 | address <<6 &0x40; logoChecksum0104Scrambled+=rom[address] ; }
     int logoChecksum0184Scrambled =0; for(int lb=0;lb<0x30;++lb) { int address =0x184 +lb; address =address &~0x53 | address >>6 &0x01 | address >>3 &0x02 | address <<3 &0x10 | address <<6 &0x40; logoChecksum0184Scrambled+=rom[address] ; }
-    
-    /*char buff[100];
-    sprintf(buff,"logo: 0104=%d, 0184=%d", logoChecksum0104, logoChecksum0184);
-    debug_win(buff);*/
+
+    char buff[100];
+    sprintf(buff,"Attempting to detect with logo hashes: 0104=%d, 0184=%d", logoChecksum0104, logoChecksum0184);
+    debug_win(buff);
 
     if (logoChecksum0104 !=5446 && (logoChecksum0104Scrambled ==5542 || logoChecksum0104Scrambled ==7484)) return UNL_SACHENMMC2;
     if (logoChecksum0104 !=5446 && (logoChecksum0184Scrambled ==5542 || logoChecksum0184Scrambled ==7484)) return UNL_SACHENMMC1;
-    
+
     switch ( logoChecksum0104 ) {
 	case 2756: // Rocket Games
 	case 4850: // Smartcom
 	    return UNL_ROCKET;
-    }    
+    }
     switch ( logoChecksum0184 ) {
         case 4048: // "GK.RX" = Gaoke(Hitek) x Ruanxin
             // (All known hacked versions of Hitek games are Li Cheng so have the Niutoude logo instead)
@@ -340,13 +348,12 @@ unlCompatMode CartDetection::detectUnlCompatMode(byte* rom, Cartridge* cartridge
                 return UNL_SINTAX;
             else
                 return UNL_NONE;
-    }
-
-    if (
-        (strstr(cartridge->header.name,"POKEMON_GLDAAUJ")&&romFileSize==4194304) || // SL 36 in 1 w/Pokemon GS
-        (strstr(cartridge->header.name,"TIMER MONSTER")&&(romFileSize==16777216||romFileSize==8388608) ) // V.Fame 12in1 Silver / 18in1
-    ) {
-        return UNL_LBMULTI;
+        case 4844: // V.fame
+        case 6127: // SOUL (Falchion)
+        case 4406: // DIGI (italic)
+            return UNL_VF001;
+        case 2692: // DIGI.
+            return UNL_GGB81;
     }
 
     // Makon/NT multicarts with menu in Pocket Bomberman
@@ -430,7 +437,7 @@ unlCompatMode CartDetection::detectUnlCompatMode(byte* rom, Cartridge* cartridge
     // Wisdom Tree
     static const char strWisdomTree1[12] ="WISDOM TREE";
     static const char strWisdomTree2[12] ="WISDOM\0TREE";
-    
+
     if(rom[0x147] ==0xC0 && rom[0x14A] ==0xD1 ||
        std::search(rom, rom +romFileSize, strWisdomTree1, strWisdomTree1 +11) !=(rom +romFileSize) ||
        std::search(rom, rom +romFileSize, strWisdomTree2, strWisdomTree2 +11) !=(rom +romFileSize)) {
@@ -459,7 +466,7 @@ byte CartDetection::detectGbRomSize(int romFileSize) {
     return 0x00;
 }
 
-bool CartDetection::detectUnlicensedCarts(byte *rom, Cartridge *cartridge, int romFileSize)
+bool CartDetection::detectUnlicensedCarts(byte *rom, CartridgeMetadata *cartridge, int romFileSize)
 {
     unlCompatMode unlMode = options->unl_compat_mode;
     if ( unlMode == UNL_AUTO ) {
@@ -545,6 +552,22 @@ bool CartDetection::detectUnlicensedCarts(byte *rom, Cartridge *cartridge, int r
             cartridge->ROMsize = detectGbRomSize(romFileSize);
             cartridge->mbcType = MEMORY_POKEJD;
             break;
+        case UNL_GGB81:
+            cartridge->ROMsize = detectGbRomSize(romFileSize);
+            cartridge->mbcType = MEMORY_GGB81;
+            cartridge->RAMsize = 3; // games generally need 8k, but carts observed so far have 32k
+            break;
+        case UNL_VF001A:
+            cartridge->mbcConfig[0] = 0x10;
+        case UNL_VF001:
+            cartridge->ROMsize = detectGbRomSize(romFileSize);
+            if (cartridge->header.RAMsize > 0) {
+                cartridge->RAMsize = 2; // digimon 3 declares 1k but really has 8
+                                        // feng kuang da fu weng declares 32k but again has 8
+                cartridge->battery = true; // feng kuang da fu weng also doesn't declare having a battery
+            }
+            cartridge->mbcType = MEMORY_VF001;
+            break;
         case UNL_DBZTR:
             cartridge->mbcType = MEMORY_DBZTRANS;
             break;
@@ -585,7 +608,7 @@ bool CartDetection::detectUnlicensedCarts(byte *rom, Cartridge *cartridge, int r
 /**
  * Fix homebrew, cracks, trainers etc that were designed to run on a flashcart and have incorrect header values
  */
-bool CartDetection::detectFlashCartHomebrew(Cartridge *cartridge, int romFileSize)
+bool CartDetection::detectFlashCartHomebrew(CartridgeMetadata *cartridge, int romFileSize)
 {
     // Trainers expecting some RAM where the original cart had none
     // - Fix & Foxi - Episode 1 Lupo (E) (M3) [C][t1]
@@ -631,7 +654,7 @@ bool CartDetection::detectFlashCartHomebrew(Cartridge *cartridge, int romFileSiz
 /**
  * Detect licensed MBC1 multicarts (they use the regular MBC1 cart type values in the header)
  */
-bool CartDetection::detectMbc1ComboPacks(Cartridge *cartridge, int romFileSize)
+bool CartDetection::detectMbc1ComboPacks(CartridgeMetadata *cartridge, int romFileSize)
 {
     // Maintain support for Mortal Kombat I & II (UE) [a1][!] .. for now
     if(strstr(cartridge->header.name,"MORTALKOMBATI&I") && romFileSize == 540672) {

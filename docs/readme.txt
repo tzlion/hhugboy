@@ -1,4 +1,4 @@
-hhugboy v1.3.0++dev
+hhugboy v1.3.2+dev
 a Game Boy/Game Boy Color emulator for Windows
 by taizou (cactusgunman@gmail.com)
 http://hhug.me/
@@ -30,7 +30,8 @@ https://github.com/tzlion/hhugboy
            * part-inverted Nintendo (looks like "Kwichvu") -> Sintax
            * "GK.RX" -> Hitek
            * "Rocket", "Smartcom" -> Rocket Games
-           This is not always a 100% reliable indicator though! 
+           * "V.fame", "SOUL", "DIGI" -> Vast Fame
+           This is not always a 100% reliable indicator though!
            e.g. some Li Cheng games do not have the "Niutoude" logo.
            If a game doesn't work, try selecting the mode manually.
            Sachen and Wisdom Tree games will also be detected by other means.
@@ -88,6 +89,19 @@ https://github.com/tzlion/hhugboy
            Protection found on carts released under the "New GB Color" brand
            with HKxxxx PCBs. Known games are both Pokémon platformer hacks:
            'Pokémon Action Chapter', 'Monster Go! Go! II' (translated names)
+
+ Vast Fame (Taiwan releases)
+           Original Taiwanese releases of Vast Fame games
+           (from about 2000 onwards)
+
+ Vast Fame (SL releases)
+           Mainland China releases of Vast Fame games with "SL" codes
+
+ Vast Fame (KongFeng/other releases)
+           Certain mainland China and English versions of Vast Fame games.
+           Known so far: 'Harvest Moon 6', 'Lord of the Rings Legend',
+           'Digimon Pocket' (Chinese), 'Digimon Sapphire' (English).
+           The Chinese releases have DSHGGB-81 PCB code.
 
  'Last Bible' multicart
            A type of multicart using menu music taken from 'Megami Tensei
@@ -159,8 +173,14 @@ https://github.com/tzlion/hhugboy
 [ COMPATIBILITY ]- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 
  This emulator was primarily designed for Windows, but it will also run on
- Linux using WINE. However it has not been extensively tested in this
- environment - your mileage may vary. 
+ Linux or macOS using Wine. However it has not been extensively tested in this
+ environment - your mileage may vary.
+
+ Tip thanks to codeman38:
+ For anyone trying to run hhugboy on macOS or Linux via anything Wine-based
+ (Wineskin, Crossover, PlayOnMac) and getting a black screen, go into the Wine
+ registry editor, find HKEY_CURRENT_USER\Software\Wine\Direct3D, and create
+ a string value OffscreenRenderingMode with the value backbuffer.
 
 [ ISSUES ] - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 
@@ -168,17 +188,16 @@ https://github.com/tzlion/hhugboy
    (However it still works if the file inside the zip is named unicodely)
  * Unicode filenames will not be preserved for screenshots
  * Compatibility mode selection does not autosave. May/may not be beneficial
- * Saved games will probably be lost if you load the same game in different
-   compatibility modes
  * You can't choose the screenshot directory
- * Pirate mapper autodetection is not 100%, you may have to manually select
-   for some games.
+ * Unlicensed mappers cannot be detected 100% reliably from raw dumps, some
+   won't be detected at all, I recommend you use GBX files where available
  * 8x nearest scaling is slow, if you have speed issues you may want to use
    another mode
  * Emu freezes unrecoverably if you press Ctrl+Alt+Del, standby or lock the PC 
  * (Visual) rumble only works for the first Makon game you load
  * On a multicart, loading a savestate from a mono game while playing a colour
    game (including the menu) will not work properly
+ * GB2 does not work when using a bootstrap ROM
 
 [ FUTURE DEVELOPMENTS? ] - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 
@@ -194,8 +213,26 @@ https://github.com/tzlion/hhugboy
  * Improve accuracy of Li Cheng mapper emulation (WIP, breaks stuff)
  * Support every Sintax bank reordering mode (WIP, breaks stuff too)
 
- vx.x.x xxth xxxx 2021
- * New mapper support:
+ v1.x.x Xth XXXX 20xx
+ * Vast Fame original mapper support
+ * Integration with LibGBlink to assist with reverse engineering cartridge
+   mappers using the actual cartridge in a connected Game Boy
+   (this one has pretty niche appeal) (maybe the audience is just me)
+ * Overhaul visual rumble feature, fix games that didn't "rumble" at all,
+   & simulate different "strengths" of rumble e.g. Pokemon Pinball EU ver.
+ * A bunch of behind-the-scenes changes to how mappers work. This should mostly
+   have no perceptible effect but will mean old savestates for Tamagotchi 3
+   won't work in this version. Sorry if anyone was playing that :(
+
+ v1.3.2 22nd February 2022
+ * Fix logo swap behaviour for GGB-81 PCB when using bootstrap & implement GBX
+   support for PCB variants that do not swap the logo
+
+ v1.3.1 6th December 2021
+ * New mapper support: New GB Color HKxxxx PCB (used for Pokémon hacks),
+   Vast Fame secondary releases on GGB-81 PCB (and others)
+ * Allow undersized save files to be read (to avoid saves being wiped when
+   an "unlicensed compatibility mode" change results in a RAM size change)
 
  v1.3.0 29th October 2020
  * New mapper support: Sachen MMC1, Sachen MMC2, Mani M161, Rocket Games,
@@ -290,7 +327,7 @@ https://github.com/tzlion/hhugboy
 [ COPYRIGHT/LICENSE ]- - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 
  hhugboy Game Boy emulator
- copyright 2013-2020 taizou
+ copyright 2013-2022 taizou
 
  Based on GEST
  Copyright (C) 2003-2010 TM
