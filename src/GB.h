@@ -184,7 +184,6 @@ public:
 
    byte *memory_another;
 
-   int isVibrating;
    int vibeCycles;
 
    //Sound ---------------------------------------

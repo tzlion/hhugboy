@@ -549,7 +549,7 @@ void gb_system::mainloop()
       EI_count = 0;
    }
 
-   if (isVibrating) {
+   if (mbc->isVibrating()) {
        vibeCycles += cur_cycle;
    }
 

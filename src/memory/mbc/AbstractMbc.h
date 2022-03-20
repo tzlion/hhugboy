@@ -52,6 +52,7 @@ public:
     int multicartRamOffset;
 
     bool deferredReset = false;
+    bool isVibrating;
 
     int rom_bank;
     int ram_bank;
@@ -60,7 +61,7 @@ public:
 
     AbstractMbc();
 
-    void init(byte** gbMemMap, Cartridge** gbCartridge, byte** gbMemory, byte** gbCartRom, byte** gbCartRam, int* gbIsVibrating);
+    void init(byte** gbMemMap, Cartridge** gbCartridge, byte** gbMemory, byte** gbCartRom, byte** gbCartRam);
     virtual byte readMemory(register unsigned short address) = 0;
     virtual void writeMemory(unsigned short address, register byte data) = 0;
     virtual void signalMemoryWrite(unsigned short address, register byte data);
@@ -84,7 +85,6 @@ protected:
     Cartridge** gbCartridge;
     byte** gbCartRom;
     byte** gbCartRam;
-    int* isVibrating;
 
     unsigned short MBChi;
     unsigned short MBClo;

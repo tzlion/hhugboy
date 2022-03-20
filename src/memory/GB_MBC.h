@@ -30,7 +30,7 @@
 class gb_mbc {
 
 public:
-    gb_mbc(byte** gbMemMap, byte** gbCartRom, Cartridge** gbCartridge, byte** gbCartRam, int* gbIsVibrating, byte** gbMemory);
+    gb_mbc(byte** gbMemMap, byte** gbCartRom, Cartridge** gbCartridge, byte** gbCartRam, byte** gbMemory);
 
     void setMemoryReadWrite(MbcType memory_type);
 
@@ -57,6 +57,7 @@ public:
     void readNewerCartSpecificVarsFromStateFile(FILE *statefile);
 
     bool shouldReset();
+    bool isVibrating();
 
     int getOffset();
     int getRamOffset();
@@ -69,7 +70,6 @@ private:
     Cartridge** gbCartridge;
     byte** gbCartRam;
     byte** gbCartRom;
-    int* gbIsVibrating;
     byte** gbMemory;
 
     MbcType mbcType;
