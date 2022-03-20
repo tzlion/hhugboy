@@ -57,9 +57,7 @@ DirectDraw::DirectDraw(HWND* inHwnd)
    gbFilter = new NoFilter();
    borderFilter = new NoFilter();
    this->hwnd = inHwnd;
-   //RECT this->targetBltRect;
-   this->changeRect = 0;
-   windowRumbleCounter = 0;
+   oddframe = 0;
 }
 
 DirectDraw::~DirectDraw()
@@ -548,18 +546,23 @@ void DirectDraw::drawScreenGeneric(TYPE* buffer)
 	this->gameboyFilter((TYPE*)ddsd.lpSurface,buffer,160,144,lPitch);
 	
 	directDrawStuff->bSurface->Unlock(NULL);
-	// Options accessed in here
-    if (options->video_visual_rumble && GB->isVibrating) {
-        if (windowRumbleCounter < 4) windowRumbleCounter += 4;
+
+    oddframe ^= 1;
+
+    int vibeStrength = 0;
+
+    if (options->video_visual_rumble && GB->vibrocycles) {
+        vibeStrength = GB->vibrocycles / 10000;
+        GB->vibrocycles = 0;
+        if (vibeStrength > 8) vibeStrength = 8;
+        if (oddframe) vibeStrength *= -1;
     }
-	if(windowRumbleCounter) {
-        --windowRumbleCounter;
-		if(!(windowRumbleCounter%2)) {
-			this->targetBltRect.left-=VISUAL_RUMBLE_STRENGTH;
-			this->targetBltRect.right-=VISUAL_RUMBLE_STRENGTH;
-			this->changeRect = 1;
-		} else this->changeRect = 0;
-	} else this->changeRect = 0;
+
+    if (vibeStrength) {
+        this->targetBltRect.left -= vibeStrength;
+        this->targetBltRect.right -= vibeStrength;
+    }
+
 	this->gbTextOut();
 	
 	int screen_real_width = this->targetBltRect.right - this->targetBltRect.left;
@@ -579,9 +582,9 @@ void DirectDraw::drawScreenGeneric(TYPE* buffer)
 		this->targetBltRect.right -= screen_real_width;
 	} 
 	
-	if(this->changeRect){
-		this->targetBltRect.left += VISUAL_RUMBLE_STRENGTH;
-		this->targetBltRect.right += VISUAL_RUMBLE_STRENGTH;
+	if (vibeStrength) {
+		this->targetBltRect.left += vibeStrength;
+		this->targetBltRect.right += vibeStrength;
     }
 }
 template<typename TYPE>

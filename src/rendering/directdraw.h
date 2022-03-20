@@ -42,8 +42,6 @@
 
 using namespace std;
 
-#define VISUAL_RUMBLE_STRENGTH 5
-
 
 #define SafeRelease(x) if(x) { x->Release(), x=NULL; }
 
@@ -91,8 +89,6 @@ class DirectDraw: public Renderer {
         wstring messageText;
         int messageDuration;
         gb_system* messageGb;
-		
-        int changeRect;
             
 		template<typename TYPE>
 		void drawScreenGeneric(TYPE* buffer);
@@ -117,7 +113,7 @@ class DirectDraw: public Renderer {
 
 	    bool createSurfaces(int gbWidthMulti, int gbHeightMulti, int borderWidthMulti, int borderHeightMulti);
 
-        int windowRumbleCounter;
+        int oddframe;
 
     int borderFilterHeight;
         int borderFilterWidth;
