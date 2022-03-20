@@ -315,7 +315,7 @@ public:
 	return bootstrap[address];
       else	    
       if ((address >= 0x0000 && address < 0x8000)|| (address >= 0xa000 && address < 0xc000) ) {
-      	return cart->readmemory_cart(address);
+      	return cart->readMemory(address);
       }
 
       return mem_map[address>>12][address&0x0FFF];
@@ -326,7 +326,7 @@ public:
       if (mapBootstrap && (address <0x0100 || gbc_mode && address >=0x0200 && address <0x0900))
 	return (unsigned short) bootstrap[address] | bootstrap[address +1] <<8;
       if ((address >= 0x0000 && address < 0x8000) || (address >= 0xa000 && address < 0xc000) ) {
-      	return  (unsigned short) (cart->readmemory_cart(address) | cart->readmemory_cart(address + 1) << 8  );
+      	return  (unsigned short) (cart->readMemory(address) | cart->readMemory(address + 1) << 8  );
       }
 
       return (unsigned short)(mem_map[address>>12][address&0x0FFF]|(mem_map[(address+1)>>12][(address+1)&0x0FFF]<<8));
@@ -344,7 +344,7 @@ public:
 			
 			while(count)
 		      {
-		         mem_map[to>>12][to&0x0FFF] = cart->readmemory_cart(from);
+		         mem_map[to>>12][to&0x0FFF] = cart->readMemory(from);
 		         ++to;
 		         ++from;
 		         --count;

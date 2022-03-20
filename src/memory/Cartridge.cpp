@@ -59,31 +59,31 @@
 #include "mbc/MbcUnlVf001.h"
 #include "linker/LinkerWrangler.h"
 
-Cartridge::Cartridge(byte** gbMemMap, byte** gbCartRom, CartridgeMetadata** gbCartridge, byte** gbCartRam)
+Cartridge::Cartridge(byte** gbMemMap, byte** cartRom, byte** cartRam, CartridgeMetadata** metadata)
 {
-    this->gbCartRom = gbCartRom;
     this->gbMemMap = gbMemMap;
-    this->gbCartridge = gbCartridge;
-    this->gbCartRam = gbCartRam;
+    this->cartRom = cartRom;
+    this->cartRam = cartRam;
+    this->metadata = metadata;
 
-    setMemoryReadWrite(MEMORY_DEFAULT);
+    setMbcType(MEMORY_DEFAULT);
 }
 
-byte Cartridge::readmemory_cart(register unsigned short address) {
+byte Cartridge::readMemory(register unsigned short address) {
     if (LinkerWrangler::shouldReadThroughLinker(address)) {
         return LinkerWrangler::readThroughLinker(address);
     }
     return mbc->readMemory(address);
 }
 
-void Cartridge::writememory_cart(unsigned short address, register byte data) {
+void Cartridge::writeMemory(unsigned short address, register byte data) {
     if (LinkerWrangler::shouldWriteThroughLinker(address, data)) {
         LinkerWrangler::writeThroughLinker(address,data);
     }
     mbc->writeMemory(address,data);
 }
 
-void Cartridge::setMemoryReadWrite(MbcType memory_type) {
+void Cartridge::setMbcType(MbcType memory_type) {
 
     switch(memory_type)
     {
@@ -130,10 +130,10 @@ void Cartridge::setMemoryReadWrite(MbcType memory_type) {
             mbc = new MbcUnlRockman8();
             break;
         case MEMORY_NTOLD1:
-            mbc = new MbcUnlNtOld1((*gbCartridge)->ROMsize);
+            mbc = new MbcUnlNtOld1((*metadata)->ROMsize);
             break;
         case MEMORY_NTOLD2:
-            mbc = new MbcUnlNtOld2((*gbCartridge)->ROMsize);
+            mbc = new MbcUnlNtOld2((*metadata)->ROMsize);
             break;
         case MEMORY_MBC1MULTI:
             mbc = new MbcNin1Multi();
@@ -189,5 +189,5 @@ void Cartridge::setMemoryReadWrite(MbcType memory_type) {
             break;
     }
 
-    mbc->init(gbMemMap, gbCartridge, gbCartRom, gbCartRam);
+    mbc->init(gbMemMap, metadata, cartRom, cartRam);
 }

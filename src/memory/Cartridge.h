@@ -30,21 +30,21 @@
 class Cartridge {
 
 public:
-    Cartridge(byte** gbMemMap, byte** gbCartRom, CartridgeMetadata** gbCartridge, byte** gbCartRam);
+    Cartridge(byte** gbMemMap, byte** cartRom, byte** cartRam, CartridgeMetadata** metadata);
 
-    void setMemoryReadWrite(MbcType memory_type);
+    void setMbcType(MbcType memory_type);
 
-    byte readmemory_cart(register unsigned short address);
-    void writememory_cart(unsigned short address,register byte data);
+    byte readMemory(register unsigned short address);
+    void writeMemory(unsigned short address, register byte data);
 
     AbstractMbc *mbc;
 
 private:
 
     byte** gbMemMap;
-    CartridgeMetadata** gbCartridge;
-    byte** gbCartRam;
-    byte** gbCartRom;
+    CartridgeMetadata** metadata;
+    byte** cartRam;
+    byte** cartRom;
 
 };
 

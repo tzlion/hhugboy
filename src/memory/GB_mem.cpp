@@ -60,7 +60,7 @@ byte gb_system::readmemory(unsigned short address)
 	return bootstrap[address];
     } else
     if ( address <= 0x7FFF || ( address >= 0xA000 && address <= 0xBFFF ) ) {
-        return cart->readmemory_cart(address);
+        return cart->readMemory(address);
     } else {
         return io_reg_read(address);
     }
@@ -72,7 +72,7 @@ void gb_system::writememory(unsigned short address,byte data)
 	mapBootstrap =false;
 
     if ( address <= 0x7FFF || ( address >= 0xA000 && address <= 0xBFFF ) ) {
-        cart->writememory_cart(address, data);
+        cart->writeMemory(address, data);
     } else {
         if(io_reg_write(address,data)) return;
         mem_map[address>>12][address&0x0FFF] = data;

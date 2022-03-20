@@ -40,7 +40,7 @@
 int gb_system::gfx_bit_count = 16;
 
 gb_system::gb_system():
-        cart(new Cartridge(mem_map, &cartROM, &cartridge, &cartRAM)),
+        cart(new Cartridge(mem_map, &cartROM, &cartRAM, &cartridge)),
         frames(0),
         LCD_clear_needed(false),
         skip_frame(0),
@@ -317,9 +317,9 @@ void gb_system::set_system_type(bool rereadHeader)
 
     // if the header may have changed from initial load - e.g. it's a multicart
     if (rereadHeader) {
-        byte cgbFlag = cart->readmemory_cart(0x0143);
+        byte cgbFlag = cart->readMemory(0x0143);
         headerCgbEnabled = (cgbFlag == 0x80 || cgbFlag == 0xC0);
-        byte sgbFlag = cart->readmemory_cart(0x0146);
+        byte sgbFlag = cart->readMemory(0x0146);
         headerSgbEnabled = (sgbFlag == 0x03);
     } else {
         headerCgbEnabled = cartridge->header.CGB >= 1;
