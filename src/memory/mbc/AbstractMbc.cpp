@@ -24,13 +24,12 @@
 #include "AbstractMbc.h"
 #include <cstdio>
 
-void AbstractMbc::init(byte** gbMemMap, Cartridge** gbCartridge, byte** gbMemory, byte** gbCartRom, byte** gbCartRam, int* gbRumbleCounter) {
+void AbstractMbc::init(byte** gbMemMap, Cartridge** gbCartridge, byte** gbMemory, byte** gbCartRom, byte** gbCartRam) {
     this->gbMemMap = gbMemMap;
     this->gbCartridge = gbCartridge;
     this->gbMemory = gbMemory;
     this->gbCartRom = gbCartRom;
     this->gbCartRam = gbCartRam;
-    this->gbRumbleCounter = gbRumbleCounter;
 }
 
 AbstractMbc::AbstractMbc():
@@ -50,7 +49,9 @@ AbstractMbc::AbstractMbc():
         RTC_latched(0),
 
         multicartOffset(0),
-        multicartRamOffset(0)
+        multicartRamOffset(0),
+
+        isVibrating(0)
 {
 
 }
@@ -77,6 +78,8 @@ void AbstractMbc::resetVars(bool preserveMulticartState = false) {
     rtc.control = 0;
     rtc.last_time = time(0);
     rtc.cur_register = 0x08;
+
+    isVibrating = 0;
 
 }
 

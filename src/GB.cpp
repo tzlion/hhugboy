@@ -40,7 +40,7 @@
 int gb_system::gfx_bit_count = 16;
 
 gb_system::gb_system():
-        mbc(new gb_mbc(mem_map,&cartROM,&cartridge,&cartRAM,&rumble_counter,&memory)),
+        mbc(new gb_mbc(mem_map, &cartROM, &cartridge, &cartRAM, &memory)),
         frames(0),
         LCD_clear_needed(false),
         skip_frame(0),
@@ -158,7 +158,7 @@ gb_system::gb_system():
         channel4_envelopedir(0),
         channel4_envelopeATLreload(0),
 
-        rumble_counter(0),
+        vibeCycles(0),
 
         romFileSize(0)
 {
