@@ -52,7 +52,7 @@ public:
     int multicartRamOffset;
 
     bool deferredReset = false;
-    bool isVibrating;
+    bool vibrating;
 
     int rom_bank;
     int ram_bank;
@@ -78,6 +78,12 @@ public:
     void readMbcOtherStuffFromStateFile(FILE *statefile);
     void writeMbcOtherStuffToStateFile(FILE *statefile);
     void resetRomMemoryMap(bool preserveMulticartState=false);
+
+    int getRomBank();
+    int getRamBank();
+    bool isVibrating();
+    int getOffset();
+    int getRamOffset();
 
 protected:
     byte** gbMemMap;

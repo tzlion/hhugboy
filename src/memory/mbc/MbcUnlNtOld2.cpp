@@ -41,9 +41,9 @@ void MbcUnlNtOld2::writeMemory(unsigned short address, register byte data) {
         // In initialised weird-Makon mode it works on the same writes as official rumble carts
         // In uninitialised mode it's different (so official rumble games wouldn't rumble on these carts?)
         if(isWeirdMode ? (data & 0x08) : (data & 0x02)) {
-            isVibrating = 1;
+            vibrating = 1;
         } else {
-            isVibrating = 0;
+            vibrating = 0;
         }
     }
 

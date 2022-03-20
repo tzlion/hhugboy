@@ -77,9 +77,9 @@ void MbcNin5::writeMemory(unsigned short address, register byte data) {
         if((*gbCartridge)->rumble)
         {
             if(data&0x08) {
-                isVibrating = 1;
+                vibrating = 1;
             } else {
-                isVibrating = 0;
+                vibrating = 0;
             }
 
             // Previous implementation had a "rumble counter" adding 4 frames of rumble whenever 08 was written

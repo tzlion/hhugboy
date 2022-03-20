@@ -93,14 +93,6 @@ void gb_mbc::writememory_cart(unsigned short address, register byte data) {
     mbc->writeMemory(address,data);
 }
 
-int gb_mbc::getRomBank() {
-    return mbc->rom_bank;
-}
-
-int gb_mbc::getRamBank() {
-    return mbc->ram_bank;
-}
-
 void gb_mbc::setMemoryReadWrite(MbcType memory_type) {
     gb_mbc::mbcType = memory_type;
 
@@ -211,10 +203,6 @@ void gb_mbc::setMemoryReadWrite(MbcType memory_type) {
     mbc->init(gbMemMap, gbCartridge, gbMemory, gbCartRom, gbCartRam );
 }
 
-bool gb_mbc::isVibrating() {
-    return mbc->isVibrating;
-}
-
 bool gb_mbc::shouldReset() {
     if ( mbc->deferredReset ) {
         mbc->deferredReset = false;
@@ -222,12 +210,3 @@ bool gb_mbc::shouldReset() {
     }
     return false;
 }
-
-int gb_mbc::getOffset() {
-    return mbc->multicartOffset;
-}
-
-int gb_mbc::getRamOffset() {
-    return mbc->multicartOffset;
-}
-

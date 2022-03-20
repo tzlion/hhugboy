@@ -34,16 +34,10 @@ public:
 
     void setMemoryReadWrite(MbcType memory_type);
 
-    int getRomBank();
-    int getRamBank();
-
     byte readmemory_cart(register unsigned short address);
     void writememory_cart(unsigned short address,register byte data);
 
-    bool isVibrating();
-
-    int getOffset();
-    int getRamOffset();
+    bool shouldReset();
 
     AbstractMbc *mbc;
 
