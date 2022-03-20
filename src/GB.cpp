@@ -209,7 +209,7 @@ bool gb_system::init()
    if(!WRAM)
       return false;
       
-   cartridge = new Cartridge;
+   cartridge = new CartridgeMetadata;
    if(!cartridge)
       return false;
            

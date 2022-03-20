@@ -180,7 +180,7 @@ public:
    byte *WRAM;
    byte* mem_map[0x10];
    byte* cartROM;
-   Cartridge* cartridge;
+   CartridgeMetadata* cartridge;
 
    byte *memory_another;
 

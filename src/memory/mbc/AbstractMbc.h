@@ -48,7 +48,7 @@ public:
 
     AbstractMbc();
 
-    void init(byte** gbMemMap, Cartridge** gbCartridge, byte** gbCartRom, byte** gbCartRam);
+    void init(byte** gbMemMap, CartridgeMetadata** gbCartridge, byte** gbCartRom, byte** gbCartRam);
     virtual byte readMemory(register unsigned short address) = 0;
     virtual void writeMemory(unsigned short address, register byte data) = 0;
     virtual void signalMemoryWrite(unsigned short address, register byte data);
@@ -86,7 +86,7 @@ protected:
     bool deferredReset = false;
 
     byte** gbMemMap;
-    Cartridge** gbCartridge;
+    CartridgeMetadata** gbCartridge;
     byte** gbCartRom;
     byte** gbCartRam;
 

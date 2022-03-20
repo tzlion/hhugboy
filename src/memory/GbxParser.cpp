@@ -18,7 +18,7 @@ bool GbxParser::isGbx(byte* cartROM, int romFileSize)
     return !memcmp(cartROM + romFileSize - 4, signature, 4);
 }
 
-bool GbxParser::parseFooter(byte* cartROM, Cartridge *cartridge, int romFileSize)
+bool GbxParser::parseFooter(byte* cartROM, CartridgeMetadata *cartridge, int romFileSize)
 {
     char msg[420];
 

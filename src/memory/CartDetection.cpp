@@ -29,9 +29,9 @@
 #include "../config.h"
 #include "GbxParser.h"
 
-Cartridge* CartDetection::processRomInfo(byte* rom, int romFileSize)
+CartridgeMetadata* CartDetection::processRomInfo(byte* rom, int romFileSize)
 {
-    Cartridge* cartridge = new Cartridge();
+    CartridgeMetadata* cartridge = new CartridgeMetadata();
     memset(cartridge->mbcConfig, 0, 32);
     readHeader(rom, cartridge, romFileSize);
 
@@ -52,7 +52,7 @@ Cartridge* CartDetection::processRomInfo(byte* rom, int romFileSize)
     return cartridge;
 }
 
-void CartDetection::setCartridgeAttributesFromHeader(Cartridge *cartridge)
+void CartDetection::setCartridgeAttributesFromHeader(CartridgeMetadata *cartridge)
 {
     cartridge->RTC = false;
     cartridge->rumble = false;
@@ -209,7 +209,7 @@ void CartDetection::setCartridgeAttributesFromHeader(Cartridge *cartridge)
     }
 }
 
-void CartDetection::readHeader(byte* rom, Cartridge* cartridge, int romFileSize)
+void CartDetection::readHeader(byte* rom, CartridgeMetadata* cartridge, int romFileSize)
 {
     byte rominfo[30];
     cartridge->mbcType = MEMORY_DEFAULT; // Was originally in setCartridgeAttributesFromHeader, but since we are already detecting three MBC types here, put it here as well.
@@ -293,7 +293,7 @@ void CartDetection::readHeader(byte* rom, Cartridge* cartridge, int romFileSize)
     cmpl+=25; cartridge->header.complementok = !cmpl;
 }
 
-unlCompatMode CartDetection::detectUnlCompatMode(byte* rom, Cartridge* cartridge, int romFileSize)
+unlCompatMode CartDetection::detectUnlCompatMode(byte* rom, CartridgeMetadata* cartridge, int romFileSize)
 {
     if (cartridge->mbcType ==MEMORY_MMM01) return UNL_NONE; // Might be misdetected as something else, so don't even try
     int logoChecksum0104=0; for(int lb=0;lb<0x30;++lb) logoChecksum0104+=rom[0x0104 +lb];
@@ -465,7 +465,7 @@ byte CartDetection::detectGbRomSize(int romFileSize) {
     return 0x00;
 }
 
-bool CartDetection::detectUnlicensedCarts(byte *rom, Cartridge *cartridge, int romFileSize)
+bool CartDetection::detectUnlicensedCarts(byte *rom, CartridgeMetadata *cartridge, int romFileSize)
 {
     unlCompatMode unlMode = options->unl_compat_mode;
     if ( unlMode == UNL_AUTO ) {
@@ -607,7 +607,7 @@ bool CartDetection::detectUnlicensedCarts(byte *rom, Cartridge *cartridge, int r
 /**
  * Fix homebrew, cracks, trainers etc that were designed to run on a flashcart and have incorrect header values
  */
-bool CartDetection::detectFlashCartHomebrew(Cartridge *cartridge, int romFileSize)
+bool CartDetection::detectFlashCartHomebrew(CartridgeMetadata *cartridge, int romFileSize)
 {
     // Trainers expecting some RAM where the original cart had none
     // - Fix & Foxi - Episode 1 Lupo (E) (M3) [C][t1]
@@ -653,7 +653,7 @@ bool CartDetection::detectFlashCartHomebrew(Cartridge *cartridge, int romFileSiz
 /**
  * Detect licensed MBC1 multicarts (they use the regular MBC1 cart type values in the header)
  */
-bool CartDetection::detectMbc1ComboPacks(Cartridge *cartridge, int romFileSize)
+bool CartDetection::detectMbc1ComboPacks(CartridgeMetadata *cartridge, int romFileSize)
 {
     // Maintain support for Mortal Kombat I & II (UE) [a1][!] .. for now
     if(strstr(cartridge->header.name,"MORTALKOMBATI&I") && romFileSize == 540672) {

@@ -61,7 +61,7 @@
 
 // maybe this should be "cart" and not MBC now
 
-gb_mbc::gb_mbc(byte** gbMemMap, byte** gbCartRom, Cartridge** gbCartridge, byte** gbCartRam)
+gb_mbc::gb_mbc(byte** gbMemMap, byte** gbCartRom, CartridgeMetadata** gbCartridge, byte** gbCartRam)
 {
     this->gbCartRom = gbCartRom;
     this->gbMemMap = gbMemMap;
