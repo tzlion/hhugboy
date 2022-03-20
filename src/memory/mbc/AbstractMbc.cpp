@@ -209,3 +209,11 @@ int AbstractMbc::getOffset() {
 int AbstractMbc::getRamOffset() {
     return multicartRamOffset;
 }
+
+bool AbstractMbc::shouldReset() {
+    if ( deferredReset ) {
+        deferredReset = false;
+        return true;
+    }
+    return false;
+}

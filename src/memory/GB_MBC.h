@@ -37,8 +37,6 @@ public:
     byte readmemory_cart(register unsigned short address);
     void writememory_cart(unsigned short address,register byte data);
 
-    bool shouldReset();
-
     AbstractMbc *mbc;
 
 private:
@@ -48,8 +46,6 @@ private:
     byte** gbCartRam;
     byte** gbCartRom;
     byte** gbMemory;
-
-    MbcType mbcType;
 
 };
 

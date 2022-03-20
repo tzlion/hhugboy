@@ -551,7 +551,7 @@ void gb_system::mainloop()
        vibeCycles += cur_cycle;
    }
 
-   if ( mbc->shouldReset() ) {
+   if ( mbc->mbc->shouldReset() ) {
        reset(true,true);
    }
 }

@@ -46,19 +46,6 @@ class AbstractMbc {
 
 public:
 
-/*** THESE SHOULD PROBABLY BE PROTECTED BUT ARE ACCESSED FROM OUTSIDE AT THE MOMENT ***/
-
-    int multicartOffset;
-    int multicartRamOffset;
-
-    bool deferredReset = false;
-    bool vibrating;
-
-    int rom_bank;
-    int ram_bank;
-
-/*** SHOULD BE PROTECTED END ***/
-
     AbstractMbc();
 
     void init(byte** gbMemMap, Cartridge** gbCartridge, byte** gbMemory, byte** gbCartRom, byte** gbCartRam);
@@ -84,8 +71,20 @@ public:
     bool isVibrating();
     int getOffset();
     int getRamOffset();
+    bool shouldReset();
 
 protected:
+
+    int multicartOffset;
+    int multicartRamOffset;
+
+    bool vibrating;
+
+    int rom_bank;
+    int ram_bank;
+
+    bool deferredReset = false;
+
     byte** gbMemMap;
     byte** gbMemory;
     Cartridge** gbCartridge;

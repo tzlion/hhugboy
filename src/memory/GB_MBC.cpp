@@ -59,16 +59,9 @@
 #include "mbc/MbcUnlVf001.h"
 #include "linker/LinkerWrangler.h"
 
-// So maybe this should be "cart" and a lot of whats in rom.cpp now e.g. autodetection should go in here..
+// maybe this should be "cart" and not MBC now
 
-//int RTCIO = 0;
-//int RTC_latched = 0;
-
-// Eventually GB should contain cart and cart should contain MBC
-gb_mbc::gb_mbc(byte** gbMemMap, byte** gbCartRom, Cartridge** gbCartridge, byte** gbCartRam, byte** gbMemory):
-
-        mbcType(MEMORY_DEFAULT)
-
+gb_mbc::gb_mbc(byte** gbMemMap, byte** gbCartRom, Cartridge** gbCartridge, byte** gbCartRam, byte** gbMemory)
 {
     this->gbCartRom = gbCartRom;
     this->gbMemMap = gbMemMap;
@@ -76,7 +69,7 @@ gb_mbc::gb_mbc(byte** gbMemMap, byte** gbCartRom, Cartridge** gbCartridge, byte*
     this->gbCartRam = gbCartRam;
     this->gbMemory = gbMemory;
 
-    setMemoryReadWrite(mbcType);
+    setMemoryReadWrite(MEMORY_DEFAULT);
 }
 
 byte gb_mbc::readmemory_cart(register unsigned short address) {
@@ -94,9 +87,8 @@ void gb_mbc::writememory_cart(unsigned short address, register byte data) {
 }
 
 void gb_mbc::setMemoryReadWrite(MbcType memory_type) {
-    gb_mbc::mbcType = memory_type;
 
-    switch(mbcType)
+    switch(memory_type)
     {
         case MEMORY_MBC3:
             mbc = new MbcNin3();
@@ -200,13 +192,5 @@ void gb_mbc::setMemoryReadWrite(MbcType memory_type) {
             break;
     }
 
-    mbc->init(gbMemMap, gbCartridge, gbMemory, gbCartRom, gbCartRam );
-}
-
-bool gb_mbc::shouldReset() {
-    if ( mbc->deferredReset ) {
-        mbc->deferredReset = false;
-        return true;
-    }
-    return false;
+    mbc->init(gbMemMap, gbCartridge, gbMemory, gbCartRom, gbCartRam);
 }
