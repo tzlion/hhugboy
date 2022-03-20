@@ -23,6 +23,9 @@
 
 #include "MbcNin2.h"
 
+// note; cart ram is currently always initialised with FFs
+// mbc2 apparently should be initialised with 0Fs
+
 void MbcNin2::writeMemory(unsigned short address, register byte data) {
     if(address < 0x2000)// Is it a RAM bank enable/disable?
     {

@@ -216,6 +216,7 @@ https://github.com/tzlion/hhugboy
    (this one has pretty niche appeal) (maybe the audience is just me)
  * Overhaul visual rumble feature, fix games that didn't "rumble" at all,
    & simulate different "strengths" of rumble e.g. Pokemon Pinball EU ver.
+ * Fix saving for MBC2 games (FF Legend, FF Adventure etc)
  * A bunch of behind-the-scenes changes to how mappers work.
    This should mostly have no perceptible effect but might've fixed
    some obscure bugs around loading savestates using multicarts.

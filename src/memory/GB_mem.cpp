@@ -96,12 +96,6 @@ void gb_system::mem_reset(bool preserveMulticartState)
    memset(memory+0x8000,0x00,0x1FFF);
    memset(memory+0xFE00,0x00,0xA0);
 
-   if(cartridge->mbcType == MEMORY_MBC2) // Should be done on the MBC
-      for(int a=0xa000;a<0xc000;++a)
-         memory[a] = 0x0F;
-   else
-      for(int a=0xa000;a<0xc000;++a)
-         memory[a] = 0xFF;
 
    // Beat Mania 2 (bad dump)
    memory[0xbccc] = 0xC9; // set RET opcode where Beat Mania 2 jumps
@@ -116,8 +110,6 @@ void gb_system::mem_reset(bool preserveMulticartState)
    {
       mem_map[0x8] = &VRAM[0x0000];
       mem_map[0x9] = &VRAM[0x1000];
-      mem_map[0xA] = &memory[0xA000];
-      mem_map[0xB] = &memory[0xB000];
       mem_map[0xC] = &memory[0xC000];
       mem_map[0xD] = &WRAM[0x1000];
       mem_map[0xE] = &memory[0xE000];
@@ -126,8 +118,6 @@ void gb_system::mem_reset(bool preserveMulticartState)
    {
       mem_map[0x8] = &memory[0x8000];
       mem_map[0x9] = &memory[0x9000];
-      mem_map[0xA] = &memory[0xA000];
-      mem_map[0xB] = &memory[0xB000];
       mem_map[0xC] = &memory[0xC000];
       mem_map[0xD] = &memory[0xD000];
       mem_map[0xE] = &memory[0xE000];
@@ -324,7 +314,7 @@ bool gb_system::write_save()
    
    if(cartridge->mbcType == MEMORY_MBC7 || cartridge->mbcType == MEMORY_TAMA5) // Should be done on the MBC
    {
-      if(fwrite(&memory[0xA000],sizeof(byte),256,savefile) < 256)
+      if(fwrite(cartRAM,sizeof(byte),256,savefile) < 256)
       {
          fclose(savefile);
          SetCurrentDirectory(old_directory);
@@ -333,7 +323,7 @@ bool gb_system::write_save()
    } else
    if(cartridge->mbcType == MEMORY_MBC2 && cartridge->battery) // MBC2 + battery
    {
-      if(fwrite(&memory[0xA000],sizeof(byte),512,savefile) < 512)
+      if(fwrite(cartRAM,sizeof(byte),512,savefile) < 512)
       {
          fclose(savefile);
          SetCurrentDirectory(old_directory);
@@ -350,7 +340,7 @@ bool gb_system::write_save()
       }
    } else
    {
-      if((int)fwrite(&memory[0xA000],sizeof(byte),ramsize[cartridge->RAMsize]*1024,savefile) < ramsize[cartridge->RAMsize]*1024)
+      if((int)fwrite(cartRAM,sizeof(byte),ramsize[cartridge->RAMsize]*1024,savefile) < ramsize[cartridge->RAMsize]*1024)
       {
          fclose(savefile);
          SetCurrentDirectory(old_directory);
@@ -408,16 +398,16 @@ bool gb_system::load_save(bool loading_GB1_save_to_GB2)
    int ramSizeBytes;
 
     if (cartridge->mbcType == MEMORY_MBC7 || cartridge->mbcType == MEMORY_TAMA5) {
-        dest = &memory[0xA000];
+        dest = cartRAM;
         ramSizeBytes = 256;
     } else if (cartridge->mbcType == MEMORY_MBC2 && cartridge->battery) {
-        dest = &memory[0xA000];
+        dest = cartRAM;
         ramSizeBytes = 512;
     } else if (cartridge->RAMsize > 2) {
         dest = cartRAM;
         ramSizeBytes = ramsize[cartridge->RAMsize] * 1024;
     } else {
-        dest = &memory[0xA000];
+        dest = cartRAM;
         ramSizeBytes = ramsize[cartridge->RAMsize] * 1024;
     }
 

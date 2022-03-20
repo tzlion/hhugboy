@@ -149,19 +149,15 @@ void AbstractMbc::resetMemoryMap(bool preserveMulticartState) {
     setRom0Offset(multicartOffset);
     setRom1Offset(multicartOffset + 0x4000);
 
-    if((*gbCartridge)->RAMsize>2) {
-        setRamOffset(multicartRamOffset);
-    }
+    setRamOffset(multicartRamOffset);
 }
 
 void AbstractMbc::setMemoryMap() {
     int rom1Offset = (rom_bank << 14) + multicartOffset;
     setRom1Offset(rom1Offset);
 
-    if((*gbCartridge)->RAMsize>2) {
-        int ramOffset = (ram_bank << 13) + multicartRamOffset;
-        setRamOffset(ramOffset);
-    }
+    int ramOffset = (ram_bank << 13) + multicartRamOffset;
+    setRamOffset(ramOffset);
 }
 
 void AbstractMbc::setRom0Offset(int offset) {
