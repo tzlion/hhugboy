@@ -112,8 +112,6 @@ void gb_system::mem_reset(bool preserveMulticartState)
    
    memory[0xc100] = 0xff;// fix for Minesweeper for 'Windows'
 
-    cart->mbc->resetMemoryMap(preserveMulticartState);
-
    if(gbc_mode)
    {
       mem_map[0x8] = &VRAM[0x0000];
@@ -136,11 +134,7 @@ void gb_system::mem_reset(bool preserveMulticartState)
       mem_map[0xF] = &memory[0xF000];
    }
 
-   if(cartridge->RAMsize>2)
-   {
-      mem_map[0xA] = &cartRAM[0x0000];
-      mem_map[0xB] = &cartRAM[0x1000];
-   }
+   cart->mbc->resetMemoryMap(preserveMulticartState);
 
    memset(memory+0xFEA0,0xFF,0x60);
 

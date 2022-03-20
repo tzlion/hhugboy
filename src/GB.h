@@ -334,12 +334,20 @@ public:
 
    void writeword(register unsigned short address, register unsigned short data) //for fast memory access
    {
+       if ( (address >= 0x0000 && address < 0x8000)  || (address >= 0xa000 && address < 0xc000) ) {
+           debug_win("Attempted to write word into cart space");
+       }
+
       mem_map[address>>12][address&0x0FFF] = data;
       mem_map[((address+1)&0xFFFF)>>12][(address+1)&0x0FFF] = (data>>8);
    }
 
    void copy_memory(unsigned short to,unsigned short from,int count)
    {
+       if ( (to >= 0x0000 && to < 0x8000)  || (to >= 0xa000 && to < 0xc000) ) {
+           debug_win("Attempted to copy memory into cart space");
+       }
+
 		if ( (from >= 0x0000 && from < 0x8000)  || (from >= 0xa000 && from < 0xc000) ) {
 			
 			while(count)
