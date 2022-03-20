@@ -37,6 +37,8 @@ public:
     byte readMemory(register unsigned short address);
     void writeMemory(unsigned short address, register byte data);
 
+    int determineRamSize();
+
     AbstractMbc *mbc;
 
 private:
