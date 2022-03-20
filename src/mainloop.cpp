@@ -294,7 +294,7 @@ void gb_system::mainloop()
         
                IWait = 0;
 			   
-               if(cartridge->mbcType == MEMORY_MBC7) // So this could be replaced with some input handling method on the cart
+               if(cartridge->mbcType == MEMORY_MBC7) // So this could be replaced with some input handling method on the mbc
                   check_sensor();
 			   
                break;

@@ -36,12 +36,6 @@ enum
     HUC3_NONE = 2
 };
 
-/**
- * MBC shouldn't really start knowing too much that actually should be under cart though
- * E.g. anything currently in the "rom" object like ramsize,romsize,...
- * Maybe our current GB_MBC could become Cartridge or CartWrangler or something and ROM should then belong to that.
- */
-
 class AbstractMbc {
 
 public:
