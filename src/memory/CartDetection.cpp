@@ -296,6 +296,14 @@ void CartDetection::readHeader(byte* rom, Cartridge* cartridge, int romFileSize)
 unlCompatMode CartDetection::detectUnlCompatMode(byte* rom, Cartridge* cartridge, int romFileSize)
 {
     if (cartridge->mbcType ==MEMORY_MMM01) return UNL_NONE; // Might be misdetected as something else, so don't even try
+
+    if (
+        (strstr(cartridge->header.name,"POKEMON_GLDAAUJ")&&romFileSize==4194304) || // SL 36 in 1 w/Pokemon GS
+        (strstr(cartridge->header.name,"TIMER MONSTER")&&(romFileSize==16777216||romFileSize==8388608) ) // V.Fame 12in1 Silver / 18in1
+    ) {
+        return UNL_LBMULTI;
+    }
+
     int logoChecksum0104=0; for(int lb=0;lb<0x30;++lb) logoChecksum0104+=rom[0x0104 +lb];
     int logoChecksum0184=0; for(int lb=0;lb<0x30;++lb) logoChecksum0184+=rom[0x0184 +lb];
     int logoChecksum0104Scrambled =0; for(int lb=0;lb<0x30;++lb) { int address =0x104 +lb; address =address &~0x53 | address >>6 &0x01 | address >>3 &0x02 | address <<3 &0x10 | address <<6 &0x40; logoChecksum0104Scrambled+=rom[address] ; }
@@ -346,13 +354,6 @@ unlCompatMode CartDetection::detectUnlCompatMode(byte* rom, Cartridge* cartridge
             return UNL_VF001;
         case 2692: // DIGI.
             return UNL_GGB81;
-    }
-
-    if (
-        (strstr(cartridge->header.name,"POKEMON_GLDAAUJ")&&romFileSize==4194304) || // SL 36 in 1 w/Pokemon GS
-        (strstr(cartridge->header.name,"TIMER MONSTER")&&(romFileSize==16777216||romFileSize==8388608) ) // V.Fame 12in1 Silver / 18in1
-    ) {
-        return UNL_LBMULTI;
     }
 
     // Makon/NT multicarts with menu in Pocket Bomberman
