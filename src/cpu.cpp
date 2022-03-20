@@ -213,10 +213,10 @@ bool gb_system::save_state()
    fwrite(&hdma_source, sizeof(int),1,statefile);  
    fwrite(&hdma_destination, sizeof(int),1,statefile);  
    fwrite(&hdma_bytes, sizeof(int),1,statefile);
-   mbc->mbc->writeMbcBanksToStateFile(statefile);
+   cart->mbc->writeMbcBanksToStateFile(statefile);
     fwrite(&wram_bank, sizeof(int),1,statefile);
    fwrite(&vram_bank, sizeof(int),1,statefile);
-   mbc->mbc->writeMbcOtherStuffToStateFile(statefile);
+   cart->mbc->writeMbcOtherStuffToStateFile(statefile);
     fwrite(&sound_on, sizeof(int),1,statefile);
    fwrite(&sound_index, sizeof(int),1,statefile);           
    fwrite(&sound_buffer_index, sizeof(int),1,statefile);           
@@ -292,7 +292,7 @@ bool gb_system::save_state()
       fwrite(cartRAM,sizeof(byte),ramsize[cartridge->RAMsize]*1024,statefile);
    }
 
-    mbc->mbc->writeMbcSpecificVarsToStateFile(statefile);
+    cart->mbc->writeMbcSpecificVarsToStateFile(statefile);
 
     if(sgb_mode)
    {
@@ -320,7 +320,7 @@ bool gb_system::save_state()
       
    }
 
-    mbc->mbc->writeSgbMbcSpecificVarsToStateFile(statefile);
+    cart->mbc->writeSgbMbcSpecificVarsToStateFile(statefile);
 
     fclose(statefile);
    
@@ -402,10 +402,10 @@ bool gb_system::load_state()
    fread(&hdma_source, sizeof(int),1,statefile);  
    fread(&hdma_destination, sizeof(int),1,statefile);  
    fread(&hdma_bytes, sizeof(int),1,statefile);
-   mbc->mbc->readMbcBanksFromStateFile(statefile);
+   cart->mbc->readMbcBanksFromStateFile(statefile);
     fread(&wram_bank, sizeof(int),1,statefile);
    fread(&vram_bank, sizeof(int),1,statefile);
-   mbc->mbc->readMbcOtherStuffFromStateFile(statefile);
+   cart->mbc->readMbcOtherStuffFromStateFile(statefile);
     fread(&sound_on, sizeof(int),1,statefile);
    fread(&sound_index, sizeof(int),1,statefile);           
    fread(&sound_buffer_index, sizeof(int),1,statefile);           
@@ -481,7 +481,7 @@ bool gb_system::load_state()
       fread(cartRAM,sizeof(byte),ramsize[cartridge->RAMsize]*1024,statefile);
    }
 
-    mbc->mbc->readMbcSpecificVarsFromStateFile(statefile);
+    cart->mbc->readMbcSpecificVarsFromStateFile(statefile);
 
     char c = fgetc(statefile);
    
@@ -512,9 +512,9 @@ bool gb_system::load_state()
       (renderer.*renderer.drawBorder)();   
    }
 
-    mbc->mbc->readSgbMbcSpecificVarsFromStateFile(statefile);
+    cart->mbc->readSgbMbcSpecificVarsFromStateFile(statefile);
 
-    int cadr = ((mbc->mbc->getRomBank())<<14) + mbc->mbc->getOffset();
+    int cadr = ((cart->mbc->getRomBank()) << 14) + cart->mbc->getOffset();
    mem_map[0x4] = &cartROM[cadr];
    mem_map[0x5] = &cartROM[cadr+0x1000];
    mem_map[0x6] = &cartROM[cadr+0x2000];
@@ -522,7 +522,7 @@ bool gb_system::load_state()
    
    if(cartridge->RAMsize > 2)
    {
-      int madr = (mbc->mbc->getRamBank())<<13 + mbc->mbc->getRamOffset();
+      int madr = (cart->mbc->getRamBank()) << 13 + cart->mbc->getRamOffset();
       mem_map[0xA] = &cartRAM[madr];
       mem_map[0xB] = &cartRAM[madr+0x1000];          
    }

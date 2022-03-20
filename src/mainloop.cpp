@@ -294,7 +294,7 @@ void gb_system::mainloop()
         
                IWait = 0;
 			   
-               if(cartridge->mbcType == MEMORY_MBC7) // So this could be replaced with some input handling method on the mbc
+               if(cartridge->mbcType == MEMORY_MBC7) // So this could be replaced with some input handling method on the cart
                   check_sensor();
 			   
                break;
@@ -547,11 +547,11 @@ void gb_system::mainloop()
       EI_count = 0;
    }
 
-   if (mbc->mbc->isVibrating()) {
+   if (cart->mbc->isVibrating()) {
        vibeCycles += cur_cycle;
    }
 
-   if ( mbc->mbc->shouldReset() ) {
+   if ( cart->mbc->shouldReset() ) {
        reset(true,true);
    }
 }

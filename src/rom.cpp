@@ -252,7 +252,7 @@ bool gb_system::load_rom(const wchar_t* filename,int offset)
     if ( !romloaded ) return false;
 
     cartridge = (new CartDetection())->processRomInfo(cartROM, romFileSize);
-    mbc->setMemoryReadWrite(cartridge->mbcType);
+    cart->setMemoryReadWrite(cartridge->mbcType);
 
     wchar_t temp2[ROM_FILENAME_SIZE];
 

@@ -60,7 +60,7 @@ byte gb_system::readmemory(unsigned short address)
 	return bootstrap[address];
     } else
     if ( address <= 0x7FFF || ( address >= 0xA000 && address <= 0xBFFF ) ) {
-        return mbc->readmemory_cart(address);
+        return cart->readmemory_cart(address);
     } else {
         return io_reg_read(address);
     }
@@ -72,14 +72,14 @@ void gb_system::writememory(unsigned short address,byte data)
 	mapBootstrap =false;
 
     if ( address <= 0x7FFF || ( address >= 0xA000 && address <= 0xBFFF ) ) {
-        mbc->writememory_cart(address,data);
+        cart->writememory_cart(address, data);
     } else {
         if(io_reg_write(address,data)) return;
         mem_map[address>>12][address&0x0FFF] = data;
     }
     
     // The cartridge needs to see any writes as well, even without the chip enable signal
-    mbc->mbc->signalMemoryWrite(address,data);
+    cart->mbc->signalMemoryWrite(address, data);
 }
 
 void gb_system::set_bootstrap()
@@ -112,7 +112,7 @@ void gb_system::mem_reset(bool preserveMulticartState)
    
    memory[0xc100] = 0xff;// fix for Minesweeper for 'Windows'
 
-    mbc->mbc->resetRomMemoryMap(preserveMulticartState);
+    cart->mbc->resetRomMemoryMap(preserveMulticartState);
 
    if(gbc_mode)
    {
@@ -364,7 +364,7 @@ bool gb_system::write_save()
       }
    }
 
-   mbc->mbc->writeMbcSpecificVarsToSaveFile(savefile);
+   cart->mbc->writeMbcSpecificVarsToSaveFile(savefile);
 
     fclose(savefile);
 
@@ -440,7 +440,7 @@ bool gb_system::load_save(bool loading_GB1_save_to_GB2)
     }
 
     if (bytesToRead == ramSizeBytes) { // don't try to read subsequent data if this was an underread
-        mbc->mbc->readMbcSpecificVarsFromSaveFile(savefile);
+        cart->mbc->readMbcSpecificVarsFromSaveFile(savefile);
     }
 
     fclose(savefile);

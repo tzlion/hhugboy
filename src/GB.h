@@ -43,7 +43,7 @@ public:
    void mem_reset(bool preserveMulticartState = false);
    void cpu_reset();
 
-    gb_mbc* mbc;
+   gb_mbc* cart;
 
    wchar_t rom_filename[ROM_FILENAME_SIZE];
    bool load_rom(const wchar_t* filename, int offset=0);
@@ -315,7 +315,7 @@ public:
 	return bootstrap[address];
       else	    
       if ((address >= 0x0000 && address < 0x8000)|| (address >= 0xa000 && address < 0xc000) ) {
-      	return mbc->readmemory_cart(address);
+      	return cart->readmemory_cart(address);
       }
 
       return mem_map[address>>12][address&0x0FFF];
@@ -326,7 +326,7 @@ public:
       if (mapBootstrap && (address <0x0100 || gbc_mode && address >=0x0200 && address <0x0900))
 	return (unsigned short) bootstrap[address] | bootstrap[address +1] <<8;
       if ((address >= 0x0000 && address < 0x8000) || (address >= 0xa000 && address < 0xc000) ) {
-      	return  (unsigned short) ( mbc->readmemory_cart(address) | mbc->readmemory_cart(address+1) << 8  );
+      	return  (unsigned short) (cart->readmemory_cart(address) | cart->readmemory_cart(address + 1) << 8  );
       }
 
       return (unsigned short)(mem_map[address>>12][address&0x0FFF]|(mem_map[(address+1)>>12][(address+1)&0x0FFF]<<8));
@@ -344,7 +344,7 @@ public:
 			
 			while(count)
 		      {
-		         mem_map[to>>12][to&0x0FFF] = mbc->readmemory_cart(from);
+		         mem_map[to>>12][to&0x0FFF] = cart->readmemory_cart(from);
 		         ++to;
 		         ++from;
 		         --count;
