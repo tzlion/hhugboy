@@ -61,13 +61,12 @@
 
 // maybe this should be "cart" and not MBC now
 
-gb_mbc::gb_mbc(byte** gbMemMap, byte** gbCartRom, Cartridge** gbCartridge, byte** gbCartRam, byte** gbMemory)
+gb_mbc::gb_mbc(byte** gbMemMap, byte** gbCartRom, Cartridge** gbCartridge, byte** gbCartRam)
 {
     this->gbCartRom = gbCartRom;
     this->gbMemMap = gbMemMap;
     this->gbCartridge = gbCartridge;
     this->gbCartRam = gbCartRam;
-    this->gbMemory = gbMemory;
 
     setMemoryReadWrite(MEMORY_DEFAULT);
 }
@@ -192,5 +191,5 @@ void gb_mbc::setMemoryReadWrite(MbcType memory_type) {
             break;
     }
 
-    mbc->init(gbMemMap, gbCartridge, gbMemory, gbCartRom, gbCartRam);
+    mbc->init(gbMemMap, gbCartridge, gbCartRom, gbCartRam);
 }

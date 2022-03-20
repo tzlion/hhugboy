@@ -40,7 +40,7 @@
 int gb_system::gfx_bit_count = 16;
 
 gb_system::gb_system():
-        mbc(new gb_mbc(mem_map, &cartROM, &cartridge, &cartRAM, &memory)),
+        mbc(new gb_mbc(mem_map, &cartROM, &cartridge, &cartRAM)),
         frames(0),
         LCD_clear_needed(false),
         skip_frame(0),

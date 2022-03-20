@@ -30,7 +30,7 @@
 class gb_mbc {
 
 public:
-    gb_mbc(byte** gbMemMap, byte** gbCartRom, Cartridge** gbCartridge, byte** gbCartRam, byte** gbMemory);
+    gb_mbc(byte** gbMemMap, byte** gbCartRom, Cartridge** gbCartridge, byte** gbCartRam);
 
     void setMemoryReadWrite(MbcType memory_type);
 
@@ -45,7 +45,6 @@ private:
     Cartridge** gbCartridge;
     byte** gbCartRam;
     byte** gbCartRom;
-    byte** gbMemory;
 
 };
 
