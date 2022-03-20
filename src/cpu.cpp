@@ -51,17 +51,6 @@ extern int sensorY;
 #include "config.h"
 #include "memory/Cartridge.h"
 
-/*
-byte A;
-byte F; 
-word BC;
-word DE;
-word HL;
-word SP;
-word PC; 
-
-unsigned short flags;
-*/
 int emulating = 1;
 
 int sgb_mode = 0;
@@ -71,25 +60,8 @@ byte opcode = 0x00;
 int cycles_SGB = 0;
 
 int cur_cycle = 0;
-/*
-int CFLAG = 1;
-int HFLAG = 1;
-int ZFLAG = 1;
-int NFLAG = 0;
-*/
-int multiple_gb = 0;
-int gb_speed_another = 0;
 
-/*void init_gb1()
-{
-   if(current_gb == 1)
-      switch_gb();
-      
-   stored_readmemory = NULL;
-   stored_writememory = NULL;
-   
-   switch_gb();  
-}*/
+int multiple_gb = 0;
 
 bool init_gb2()
 {
@@ -122,20 +94,6 @@ bool init_gb2()
 
    return true;
 }
-
-/*void switch_gb()
-{
-   if(!GB2 || GB2->cartridge == NULL)
-      return;
-
-   if(GB == GB2)
-   {
-      GB = GB1;
-   } else
-   {
-      GB = GB2;
-   }
-}*/
 
 bool gb_system::save_state()
 {
