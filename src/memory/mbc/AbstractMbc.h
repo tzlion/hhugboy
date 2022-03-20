@@ -48,9 +48,7 @@ public:
     virtual void signalMemoryWrite(unsigned short address, register byte data);
     virtual void resetVars(bool preserveMulticartState);
     virtual void writeMbcSpecificVarsToStateFile(FILE *statefile);
-    virtual void writeSgbMbcSpecificVarsToStateFile(FILE *statefile);
     virtual void readMbcSpecificVarsFromStateFile(FILE *statefile);
-    virtual void readSgbMbcSpecificVarsFromStateFile(FILE *statefile);
     virtual void readMbcSpecificVarsFromSaveFile(FILE *savefile);
     virtual void writeMbcSpecificVarsToSaveFile(FILE *savefile);
 

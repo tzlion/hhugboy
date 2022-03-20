@@ -82,15 +82,7 @@ void AbstractMbc::resetVars(bool preserveMulticartState = false) {
 
 }
 
-void AbstractMbc::readSgbMbcSpecificVarsFromStateFile(FILE *statefile) {
-
-}
-
 void AbstractMbc::readMbcSpecificVarsFromStateFile(FILE *statefile) {
-
-}
-
-void AbstractMbc::writeSgbMbcSpecificVarsToStateFile(FILE *statefile) {
 
 }
 

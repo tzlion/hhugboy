@@ -203,7 +203,9 @@ void MbcLicTama5::updateTamaRtc() {
     rtc.last_time = now;
 }
 
-void MbcLicTama5::readSgbMbcSpecificVarsFromStateFile(FILE *statefile) {
+void MbcLicTama5::readMbcSpecificVarsFromStateFile(FILE *statefile) {
+    fread(&(tama_flag), sizeof(int), 1, statefile);
+
     fread(&(rtc).s, sizeof(int), 1, statefile);
     fread(&(rtc).m, sizeof(int), 1, statefile);
     fread(&(rtc).h, sizeof(int), 1, statefile);
@@ -221,11 +223,9 @@ void MbcLicTama5::readSgbMbcSpecificVarsFromStateFile(FILE *statefile) {
     fread(&(tama_change_clock), sizeof(int), 1, statefile);
 }
 
-void MbcLicTama5::readMbcSpecificVarsFromStateFile(FILE *statefile) {
-    fread(&(tama_flag), sizeof(int), 1, statefile);
-}
+void MbcLicTama5::writeMbcSpecificVarsToStateFile(FILE *statefile) {
+    fwrite(&(tama_flag), sizeof(int), 1, statefile);
 
-void MbcLicTama5::writeSgbMbcSpecificVarsToStateFile(FILE *statefile) {
     fwrite(&(rtc).s, sizeof(int), 1, statefile);
     fwrite(&(rtc).m, sizeof(int), 1, statefile);
     fwrite(&(rtc).h, sizeof(int), 1, statefile);
@@ -241,10 +241,6 @@ void MbcLicTama5::writeSgbMbcSpecificVarsToStateFile(FILE *statefile) {
     fwrite(&(tama_count), sizeof(int), 1, statefile);
     fwrite(&(tama_month), sizeof(int), 1, statefile);
     fwrite(&(tama_change_clock), sizeof(int), 1, statefile);
-}
-
-void MbcLicTama5::writeMbcSpecificVarsToStateFile(FILE *statefile) {
-    fwrite(&(tama_flag), sizeof(int), 1, statefile);
 }
 
 void MbcLicTama5::writeMemory(unsigned short address, register byte data) {

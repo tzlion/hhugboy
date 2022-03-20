@@ -320,8 +320,6 @@ bool gb_system::save_state()
       
    }
 
-    cart->mbc->writeSgbMbcSpecificVarsToStateFile(statefile);
-
     fclose(statefile);
    
    wchar_t dx_message[50];
@@ -511,8 +509,6 @@ bool gb_system::load_state()
       
       (renderer.*renderer.drawBorder)();   
    }
-
-    cart->mbc->readSgbMbcSpecificVarsFromStateFile(statefile);
 
     int cadr = ((cart->mbc->getRomBank()) << 14) + cart->mbc->getOffset();
    mem_map[0x4] = &cartROM[cadr];
