@@ -185,7 +185,7 @@ public:
    byte *memory_another;
 
    int isVibrating;
-   int vibrocycles;
+   int vibeCycles;
 
    //Sound ---------------------------------------
    byte sound_buffer[4][735];

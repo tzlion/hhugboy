@@ -42,7 +42,6 @@ using namespace std;
 #include "filters/filters.h"
 
 #include "../cpu.h"
-#include "../debug.h"
 #include "../SGB.h"
 #include "../ui/strings.h"
 #include "../config.h"
@@ -551,9 +550,8 @@ void DirectDraw::drawScreenGeneric(TYPE* buffer)
 
     int vibeStrength = 0;
 
-    if (options->video_visual_rumble && GB->vibrocycles) {
-        vibeStrength = GB->vibrocycles / 10000;
-        GB->vibrocycles = 0;
+    if (options->video_visual_rumble && GB->vibeCycles) {
+        vibeStrength = GB->vibeCycles / 10000;
         if (vibeStrength > 8) vibeStrength = 8;
         if (oddframe) vibeStrength *= -1;
     }

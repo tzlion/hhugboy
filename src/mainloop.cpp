@@ -237,6 +237,9 @@ void gb_system::mainloop()
                else
                   cycles_LCD += 28;      
                break;
+
+               vibeCycles = 0;
+
             }  
                           
             set_LCD_mode(2); // next: MODE 2
@@ -443,6 +446,8 @@ void gb_system::mainloop()
          {
              (renderer.*renderer.drawScreen)();
          }
+
+         vibeCycles = 0;
       }
    }
    
@@ -543,7 +548,7 @@ void gb_system::mainloop()
    }
 
    if (isVibrating) {
-       vibrocycles += cur_cycle;
+       vibeCycles += cur_cycle;
    }
 
    if ( mbc->shouldReset() ) {

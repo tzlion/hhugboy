@@ -159,7 +159,7 @@ gb_system::gb_system():
         channel4_envelopeATLreload(0),
 
         isVibrating(0),
-        vibrocycles(0),
+        vibeCycles(0),
 
         romFileSize(0)
 {
