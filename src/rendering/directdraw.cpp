@@ -59,6 +59,7 @@ DirectDraw::DirectDraw(HWND* inHwnd)
    this->hwnd = inHwnd;
    //RECT this->targetBltRect;
    this->changeRect = 0;
+   windowRumbleCounter = 0;
 }
 
 DirectDraw::~DirectDraw()
@@ -548,9 +549,12 @@ void DirectDraw::drawScreenGeneric(TYPE* buffer)
 	
 	directDrawStuff->bSurface->Unlock(NULL);
 	// Options accessed in here
-	if(options->video_visual_rumble && GB->rumble_counter) {
-		--GB->rumble_counter;
-		if(!(GB->rumble_counter%2)) {
+    if (options->video_visual_rumble && GB->isVibrating) {
+        if (windowRumbleCounter < 4) windowRumbleCounter += 4;
+    }
+	if(windowRumbleCounter) {
+        --windowRumbleCounter;
+		if(!(windowRumbleCounter%2)) {
 			this->targetBltRect.left-=VISUAL_RUMBLE_STRENGTH;
 			this->targetBltRect.right-=VISUAL_RUMBLE_STRENGTH;
 			this->changeRect = 1;

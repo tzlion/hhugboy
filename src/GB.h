@@ -184,8 +184,7 @@ public:
 
    byte *memory_another;
 
-    // things that are somewhat MBC related but would be mildly annoying to move
-   int rumble_counter; // this can stay in GB for now because, uh, let's say because the cartridge makes the whole GB rumble
+   int isVibrating;
 
    //Sound ---------------------------------------
    byte sound_buffer[4][735];

@@ -117,6 +117,8 @@ class DirectDraw: public Renderer {
 
 	    bool createSurfaces(int gbWidthMulti, int gbHeightMulti, int borderWidthMulti, int borderHeightMulti);
 
+        int windowRumbleCounter;
+
     int borderFilterHeight;
         int borderFilterWidth;
         int gameboyFilterHeight;

@@ -24,13 +24,13 @@
 #include "AbstractMbc.h"
 #include <cstdio>
 
-void AbstractMbc::init(byte** gbMemMap, Cartridge** gbCartridge, byte** gbMemory, byte** gbCartRom, byte** gbCartRam, int* gbRumbleCounter) {
+void AbstractMbc::init(byte** gbMemMap, Cartridge** gbCartridge, byte** gbMemory, byte** gbCartRom, byte** gbCartRam, int* gbIsVibrating) {
     this->gbMemMap = gbMemMap;
     this->gbCartridge = gbCartridge;
     this->gbMemory = gbMemory;
     this->gbCartRom = gbCartRom;
     this->gbCartRam = gbCartRam;
-    this->gbRumbleCounter = gbRumbleCounter;
+    this->isVibrating = gbIsVibrating;
 }
 
 AbstractMbc::AbstractMbc():

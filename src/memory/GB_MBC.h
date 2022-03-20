@@ -30,7 +30,7 @@
 class gb_mbc {
 
 public:
-    gb_mbc(byte** gbMemMap, byte** gbCartRom, Cartridge** gbCartridge, byte** gbCartRam, int* rumbleCounter, byte** gbMemory);
+    gb_mbc(byte** gbMemMap, byte** gbCartRom, Cartridge** gbCartridge, byte** gbCartRam, int* gbIsVibrating, byte** gbMemory);
 
     void setMemoryReadWrite(MbcType memory_type);
 
@@ -69,7 +69,7 @@ private:
     Cartridge** gbCartridge;
     byte** gbCartRam;
     byte** gbCartRom;
-    int* gbRumbleCounter;
+    int* gbIsVibrating;
     byte** gbMemory;
 
     MbcType mbcType;
