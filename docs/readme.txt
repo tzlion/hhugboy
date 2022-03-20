@@ -216,6 +216,8 @@ https://github.com/tzlion/hhugboy
    (this one has pretty niche appeal) (maybe the audience is just me)
  * Overhaul visual rumble feature, fix games that didn't "rumble" at all,
    & simulate different "strengths" of rumble e.g. Pokemon Pinball EU ver.
+ * A bunch of behind-the-scenes changes to how mappers work
+   (should have no perceptible effect)
 
  v1.3.2 22nd February 2022
  * Fix logo swap behaviour for GGB-81 PCB when using bootstrap & implement GBX
