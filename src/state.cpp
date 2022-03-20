@@ -462,18 +462,7 @@ bool gb_system::load_state()
       (renderer.*renderer.drawBorder)();   
    }
 
-    int cadr = ((cart->mbc->getRomBank()) << 14) + cart->mbc->getOffset();
-   mem_map[0x4] = &cartROM[cadr];
-   mem_map[0x5] = &cartROM[cadr+0x1000];
-   mem_map[0x6] = &cartROM[cadr+0x2000];
-   mem_map[0x7] = &cartROM[cadr+0x3000];
-   
-   if(cartridge->RAMsize > 2)
-   {
-      int madr = (cart->mbc->getRamBank()) << 13 + cart->mbc->getRamOffset();
-      mem_map[0xA] = &cartRAM[madr];
-      mem_map[0xB] = &cartRAM[madr+0x1000];          
-   }
+   cart->mbc->setMemoryMap();
    
    if(gbc_mode)
    {

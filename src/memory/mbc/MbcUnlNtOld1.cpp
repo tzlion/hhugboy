@@ -49,7 +49,7 @@ void MbcUnlNtOld1::handleOldMakonCartModeSet(unsigned short address, byte data) 
             data &= 0x3f; // should be limited to the actual rom size
             multicartOffset = (data << 0x0f);
             if (multicartOffset > 0) {
-                resetRomMemoryMap(true);
+                resetMemoryMap(true);
             }
             // unemulated behaviour: a further switch should not be possible after the 1st one
             // also unemulated: the actual change should not be effected until you do the write to 5002
@@ -104,7 +104,7 @@ void MbcUnlNtOld1::readMbcSpecificVarsFromStateFile(FILE *statefile) {
     fread(&(isWeirdMode), sizeof(bool), 1, statefile);
     fread(&(multicartOffset),sizeof(int),1,statefile);
     fread(&((*gbCartridge)->ROMsize),sizeof(bool),1,statefile);
-    resetRomMemoryMap(true);
+    resetMemoryMap(true);
 }
 
 void MbcUnlNtOld1::writeMbcSpecificVarsToStateFile(FILE *statefile) {

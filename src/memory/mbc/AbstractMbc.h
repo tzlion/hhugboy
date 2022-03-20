@@ -56,13 +56,11 @@ public:
     void writeMbcBanksToStateFile(FILE *statefile);
     void readMbcOtherStuffFromStateFile(FILE *statefile);
     void writeMbcOtherStuffToStateFile(FILE *statefile);
-    void resetRomMemoryMap(bool preserveMulticartState=false);
+    void resetMemoryMap(bool preserveMulticartState=false);
 
-    int getRomBank();
-    int getRamBank();
+    void setMemoryMap();
+
     bool isVibrating();
-    int getOffset();
-    int getRamOffset();
     bool shouldReset();
 
 protected:
@@ -88,6 +86,7 @@ protected:
 
     void setRom0Offset(int offset);
     void setRom1Offset(int offset);
+    void setRamOffset(int offset);
     void setRom1Bank(int bankNo);
 
 /*** THESE SHOULD GO SOMEWHERE ELSE ***/

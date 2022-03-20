@@ -141,7 +141,7 @@ void AbstractMbc::readMbcBanksFromStateFile(FILE *statefile) {
     fread(&(ram_bank), sizeof(int), 1, statefile);
 }
 
-void AbstractMbc::resetRomMemoryMap(bool preserveMulticartState) {
+void AbstractMbc::resetMemoryMap(bool preserveMulticartState) {
     if ( !preserveMulticartState ) {
         multicartOffset = 0;
         multicartRamOffset = 0;
@@ -149,10 +149,18 @@ void AbstractMbc::resetRomMemoryMap(bool preserveMulticartState) {
     setRom0Offset(multicartOffset);
     setRom1Offset(multicartOffset + 0x4000);
 
-    //todo: do this on savestates too
     if((*gbCartridge)->RAMsize>2) {
-        gbMemMap[0xA] = &(*gbCartRam)[multicartRamOffset];
-        gbMemMap[0xB] = &(*gbCartRam)[multicartRamOffset + 0x1000];
+        setRamOffset(multicartRamOffset);
+    }
+}
+
+void AbstractMbc::setMemoryMap() {
+    int rom1Offset = (rom_bank << 14) + multicartOffset;
+    setRom1Offset(rom1Offset);
+
+    if((*gbCartridge)->RAMsize>2) {
+        int ramOffset = (ram_bank << 13) + multicartRamOffset;
+        setRamOffset(ramOffset);
     }
 }
 
@@ -170,6 +178,11 @@ void AbstractMbc::setRom1Offset(int offset) {
     gbMemMap[0x7] = &(*gbCartRom)[offset+0x3000];
 }
 
+void AbstractMbc::setRamOffset(int offset) {
+    gbMemMap[0xA] = &(*gbCartRam)[offset];
+    gbMemMap[0xB] = &(*gbCartRam)[offset+0x1000];
+}
+
 void AbstractMbc::setRom1Bank(int bankNo) {
     rom_bank = bankNo;
     int bankAddress = rom_bank<<14;
@@ -181,24 +194,8 @@ void AbstractMbc::setRom1Bank(int bankNo) {
 void AbstractMbc::signalMemoryWrite(unsigned short address, register byte data) {
 }
 
-int AbstractMbc::getRomBank() {
-    return rom_bank;
-}
-
-int AbstractMbc::getRamBank() {
-    return ram_bank;
-}
-
 bool AbstractMbc::isVibrating() {
     return vibrating;
-}
-
-int AbstractMbc::getOffset() {
-    return multicartOffset;
-}
-
-int AbstractMbc::getRamOffset() {
-    return multicartRamOffset;
 }
 
 bool AbstractMbc::shouldReset() {
