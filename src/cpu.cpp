@@ -19,17 +19,11 @@
    along with this program; if not, write to the Free Software Foundation, Inc.,
    51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
-#ifndef STATE_H
-#define STATE_H
 
-extern int emulating;
-extern int sgb_mode;
+#include "cpu.h"
 
-bool init_gb2();
+byte opcode = 0x00;
 
-extern int multiple_gb;
+int cycles_SGB = 0;
 
-extern int GB1_state_slot;
-extern int GB2_state_slot;
-
-#endif
+int cur_cycle = 0;

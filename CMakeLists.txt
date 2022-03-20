@@ -31,6 +31,7 @@ set(SOURCE_FILES
         src/state.cpp
         src/state.h
         src/cpu.h
+        src/cpu.cpp
         src/cpucore.h
         src/debug.cpp
         src/debug.h

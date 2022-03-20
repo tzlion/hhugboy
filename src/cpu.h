@@ -22,8 +22,14 @@
 #ifndef CPU_H
 #define CPU_H
 
+#include "types.h"
+
 #define PUSH(n) (writememory(--SP.W,(n)));
 #define POP(n) ((n) = readmemory(SP.W++));
+
+extern int cycles_SGB;
+extern int cur_cycle;
+extern byte opcode;
 
 const int cycles[256] =
 {

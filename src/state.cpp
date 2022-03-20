@@ -55,12 +55,6 @@ int emulating = 1;
 
 int sgb_mode = 0;
 
-byte opcode = 0x00;
-
-int cycles_SGB = 0;
-
-int cur_cycle = 0;
-
 int multiple_gb = 0;
 
 bool init_gb2()
