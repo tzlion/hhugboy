@@ -24,10 +24,9 @@
 #include "AbstractMbc.h"
 #include <cstdio>
 
-void AbstractMbc::init(byte** gbMemMap, Cartridge** gbCartridge, byte** gbMemory, byte** gbCartRom, byte** gbCartRam) {
+void AbstractMbc::init(byte** gbMemMap, CartridgeMetadata** gbCartridge, byte** gbCartRom, byte** gbCartRam) {
     this->gbMemMap = gbMemMap;
     this->gbCartridge = gbCartridge;
-    this->gbMemory = gbMemory;
     this->gbCartRom = gbCartRom;
     this->gbCartRam = gbCartRam;
 }
@@ -51,7 +50,7 @@ AbstractMbc::AbstractMbc():
         multicartOffset(0),
         multicartRamOffset(0),
 
-        isVibrating(0)
+        vibrating(0)
 {
 
 }
@@ -79,7 +78,7 @@ void AbstractMbc::resetVars(bool preserveMulticartState = false) {
     rtc.last_time = time(0);
     rtc.cur_register = 0x08;
 
-    isVibrating = 0;
+    vibrating = 0;
 
 }
 
@@ -188,4 +187,32 @@ void AbstractMbc::setRom1Bank(int bankNo) {
 }
 
 void AbstractMbc::signalMemoryWrite(unsigned short address, register byte data) {
+}
+
+int AbstractMbc::getRomBank() {
+    return rom_bank;
+}
+
+int AbstractMbc::getRamBank() {
+    return ram_bank;
+}
+
+bool AbstractMbc::isVibrating() {
+    return vibrating;
+}
+
+int AbstractMbc::getOffset() {
+    return multicartOffset;
+}
+
+int AbstractMbc::getRamOffset() {
+    return multicartRamOffset;
+}
+
+bool AbstractMbc::shouldReset() {
+    if ( deferredReset ) {
+        deferredReset = false;
+        return true;
+    }
+    return false;
 }

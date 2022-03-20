@@ -43,9 +43,9 @@ set(SOURCE_FILES
         src/GB.h
         src/GB_gfx.cpp
         src/GB_gfx.h
-        src/memory/GB_MBC.h
+        src/memory/Cartridge.h
         src/memory/GB_ioregs.cpp
-        src/memory/GB_MBC.cpp
+        src/memory/Cartridge.cpp
         src/memory/GB_mem.cpp
         src/GB_sound.cpp
         src/ui/keynames.h

@@ -38,7 +38,7 @@ using namespace std;
 #include "sound.h"
 #include "devices.h"
 #include "GB.h"
-#include "memory/GB_MBC.h"
+#include "memory/Cartridge.h"
 #include "directinput.h"
 #include "config.h"
 
@@ -547,11 +547,11 @@ void gb_system::mainloop()
       EI_count = 0;
    }
 
-   if (mbc->isVibrating()) {
+   if (cart->mbc->isVibrating()) {
        vibeCycles += cur_cycle;
    }
 
-   if ( mbc->shouldReset() ) {
+   if ( cart->mbc->shouldReset() ) {
        reset(true,true);
    }
 }
