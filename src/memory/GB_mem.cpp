@@ -289,7 +289,7 @@ void gb_system::mem_reset(bool preserveMulticartState)
 
 bool gb_system::write_save()
 {
-   if(cartridge->RAMsize == 0) return true;
+   if(cartridge->RAMsize == 0 && cartridge->mbcType != MEMORY_MBC2) return true;
 
    wchar_t old_directory[PROGRAM_PATH_SIZE];
 
@@ -368,7 +368,7 @@ bool gb_system::write_save()
 }
 bool gb_system::load_save(bool loading_GB1_save_to_GB2)
 {
-   if(cartridge->RAMsize == 0) return true;
+   if(cartridge->RAMsize == 0 && cartridge->mbcType != MEMORY_MBC2) return true;
 
    wchar_t old_directory[PROGRAM_PATH_SIZE];
 
