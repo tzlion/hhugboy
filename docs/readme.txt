@@ -30,6 +30,7 @@ https://github.com/tzlion/hhugboy
            * part-inverted Nintendo (looks like "Kwichvu") -> Sintax
            * "GK.RX" -> Hitek
            * "Rocket", "Smartcom" -> Rocket Games
+           * "V.fame", "SOUL", "DIGI" -> Vast Fame
            This is not always a 100% reliable indicator though! 
            e.g. some Li Cheng games do not have the "Niutoude" logo.
            If a game doesn't work, try selecting the mode manually.
@@ -89,7 +90,14 @@ https://github.com/tzlion/hhugboy
            with HKxxxx PCBs. Known games are both Pokémon platformer hacks:
            'Pokémon Action Chapter', 'Monster Go! Go! II' (translated names)
 
- Vast Fame secondary releases
+ Vast Fame (Taiwan releases)
+           Original Taiwanese releases of Vast Fame games
+           (from about 2000 onwards)
+
+ Vast Fame (SL releases)
+           Mainland China releases of Vast Fame games with "SL" codes
+
+ Vast Fame (KongFeng/other releases)
            Certain mainland China and English versions of Vast Fame games.
            Known so far: 'Harvest Moon 6', 'Lord of the Rings Legend',
            'Digimon Pocket' (Chinese), 'Digimon Sapphire' (English).
@@ -180,17 +188,16 @@ https://github.com/tzlion/hhugboy
    (However it still works if the file inside the zip is named unicodely)
  * Unicode filenames will not be preserved for screenshots
  * Compatibility mode selection does not autosave. May/may not be beneficial
- * Saved games will probably be lost if you load the same game in different
-   compatibility modes
  * You can't choose the screenshot directory
- * Pirate mapper autodetection is not 100%, you may have to manually select
-   for some games.
+ * Unlicensed mappers cannot be detected 100% reliably from raw dumps, some
+   won't be detected at all, I recommend you use GBX files where available
  * 8x nearest scaling is slow, if you have speed issues you may want to use
    another mode
  * Emu freezes unrecoverably if you press Ctrl+Alt+Del, standby or lock the PC 
  * (Visual) rumble only works for the first Makon game you load
  * On a multicart, loading a savestate from a mono game while playing a colour
    game (including the menu) will not work properly
+ * GB2 does not work when using a bootstrap ROM
 
 [ FUTURE DEVELOPMENTS? ] - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 
@@ -203,6 +210,7 @@ https://github.com/tzlion/hhugboy
 [ RELEASE HISTORY ]- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 
  v1.x.x Xth XXXX 20xx
+ * Vast Fame original mapper support
  * Integration with LibGBlink to assist with reverse engineering cartridge
    mappers using the actual cartridge in a connected Game Boy
    (this one has pretty niche appeal) (maybe the audience is just me)
@@ -310,7 +318,7 @@ https://github.com/tzlion/hhugboy
 [ COPYRIGHT/LICENSE ]- - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 
  hhugboy Game Boy emulator
- copyright 2013-2020 taizou
+ copyright 2013-2022 taizou
 
  Based on GEST
  Copyright (C) 2003-2010 TM
