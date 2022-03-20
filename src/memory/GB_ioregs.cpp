@@ -30,7 +30,7 @@
 //using namespace std;
 
 #include "../devices.h"
-#include "../cpu.h"
+#include "../state.h"
 #include "../SGB.h"
 #include "../directinput.h"
 #include "../sound.h"

@@ -26,7 +26,7 @@
 #include "../main.h"
 #include "strings.h"
 #include "../GB_gfx.h"
-#include "../cpu.h"
+#include "../state.h"
 #include "../directinput.h"
 #include "dialogs.h"
 #include "dialogs/LinkerLog.h"

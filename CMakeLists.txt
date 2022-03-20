@@ -28,8 +28,8 @@ set(SOURCE_FILES
         src/cheats.h
         src/config.cpp
         src/config.h
-        src/cpu.cpp
-        src/cpu.h
+        src/state.cpp
+        src/state.h
         src/cpucore.h
         src/debug.cpp
         src/debug.h

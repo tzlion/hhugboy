@@ -31,7 +31,7 @@ using namespace std;
 #include "rendering/render.h"
 #include "types.h"
 #include "debug.h"
-#include "cpu.h"
+#include "state.h"
 #include "rom.h"
 #include "GB_gfx.h"
 #include "SGB.h"

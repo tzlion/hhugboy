@@ -41,7 +41,7 @@ using namespace std;
 
 #include "filters/filters.h"
 
-#include "../cpu.h"
+#include "../state.h"
 #include "../SGB.h"
 #include "../ui/strings.h"
 #include "../config.h"

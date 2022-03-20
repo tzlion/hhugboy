@@ -26,7 +26,7 @@
 #include "menu.h"
 #include "../main.h"
 #include "strings.h"
-#include "../cpu.h"
+#include "../state.h"
 #include "../directinput.h"
 #include "../sound.h"
 #include "../GB_gfx.h"

@@ -20,7 +20,7 @@
    51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
 
-#include "cpu.h"
+#include "state.h"
 #include "debug.h"
 #include "sound.h"
 #include "SGB.h"

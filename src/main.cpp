@@ -39,7 +39,7 @@ using namespace std;
 #include "config.h"
 
 #include "main.h"
-#include "cpu.h"
+#include "state.h"
 #include "mainloop.h"
 #include "sound.h"
 #include "SGB.h"

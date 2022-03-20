@@ -30,7 +30,7 @@
 #include "menuactions.h"
 #include "keyactions.h"
 #include "../SGB.h"
-#include "../cpu.h"
+#include "../state.h"
 #include "../directinput.h"
 
 HWND hwnd = NULL;

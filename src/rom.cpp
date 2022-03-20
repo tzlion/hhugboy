@@ -31,7 +31,7 @@
 #include "config.h"
 #include "rom.h"
 #include "debug.h"
-#include "cpu.h"
+#include "state.h"
 #include "mainloop.h"
 #include "zlib/unzip.h"
 
