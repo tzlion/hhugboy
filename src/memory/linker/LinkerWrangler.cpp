@@ -27,13 +27,24 @@ bool LinkerWrangler::shouldReadThroughLinker(unsigned short address)
     if (!libLoaded || !libIsLinkerActive()) {
         return false;
     }
+    if (address < 0x4000) {
+        return READ_ROM0_THRU_LINKER;
+    }
     if (address < 0x8000) {
-        return READ_ROM_THRU_LINKER;
+        return READ_ROM1_THRU_LINKER;
     }
     if (address < 0xc000) {
         return READ_RAM_THRU_LINKER;
     }
     return true;
+}
+
+void LinkerWrangler::recacheBank0()
+{
+    if (!CACHE_BANK_0 || !libLoaded || !libIsLinkerActive()) return;
+    LinkerLog::addMessage("DUMPING BANK 0");
+    libReadBlock(bank0,0,0x4000);
+    readBank0=true;
 }
 
 byte LinkerWrangler::readThroughLinker(unsigned short address)
@@ -71,6 +82,7 @@ bool LinkerWrangler::shouldWriteThroughLinker(unsigned short address, byte data)
     if (!libLoaded || !libIsLinkerActive()) {
         return false;
     }
+    if (address == 0x2000) return false;
     return true;
 }
 

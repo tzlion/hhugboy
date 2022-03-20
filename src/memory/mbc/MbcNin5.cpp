@@ -23,11 +23,6 @@
 
 #include "MbcNin5.h"
 
-#include <stdio.h>
-#include "../../GB.h"
-#include "../../main.h"
-// ^ can we not
-
 void MbcNin5::writeMemory(unsigned short address, register byte data) {
 
     if(address < 0x2000)// Is it a RAM bank enable/disable?
@@ -51,14 +46,6 @@ void MbcNin5::writeMemory(unsigned short address, register byte data) {
         gbMemMap[0x5] = &(*gbCartRom)[cart_address+0x1000];
         gbMemMap[0x6] = &(*gbCartRom)[cart_address+0x2000];
         gbMemMap[0x7] = &(*gbCartRom)[cart_address+0x3000];
-
-        //  if(origData == 0x69) {
-        //    	char buff[100];
-        //		sprintf(buff,"%X %X %X",origData,data,cart_address);
-        //		debug_print(buff);
-        //  }
-
-
 
         return;
     }

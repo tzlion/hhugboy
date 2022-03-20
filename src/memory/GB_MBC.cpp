@@ -23,16 +23,8 @@
 */
 #include "../config.h"
 #include "../GB_gfx.h"
-#include "../debug.h"
-#include "../mainloop.h"
-#include <time.h>
 
-#include "../GB.h"
 #include "GB_MBC.h"
-
-#include "../debug.h"
-#include "zlib/zconf.h"
-#include <stdio.h>
 
 #include "../main.h"
 #include "mbc/MbcNin3.h"
@@ -64,6 +56,7 @@
 #include "mbc/MbcUnlRocketGames.h"
 #include "mbc/MbcUnlNewGbHk.h"
 #include "mbc/MbcUnlGgb81.h"
+#include "mbc/MbcUnlVf001.h"
 #include "linker/LinkerWrangler.h"
 
 // So maybe this should be "cart" and a lot of whats in rom.cpp now e.g. autodetection should go in here..
@@ -260,6 +253,9 @@ void gb_mbc::setMemoryReadWrite(MbcType memory_type) {
             break;
         case MEMORY_GGB81:
             mbc = new MbcUnlGgb81();
+            break;
+        case MEMORY_VF001:
+            mbc = new MbcUnlVf001();
             break;
         case MEMORY_DEFAULT:
         default:

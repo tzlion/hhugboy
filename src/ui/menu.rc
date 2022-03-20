@@ -141,7 +141,9 @@ BEGIN
                     MENUITEM "NT (&Makon) new", IDM_UNLNTNEW
                     MENUITEM "&Pokémon Jade/Diamond", IDM_UNLPOKEJD
                     MENUITEM "&Sintax", IDM_UNLSINTAX
-                    MENUITEM "Vast &Fame secondary releases", IDM_UNLGGB81
+                    MENUITEM "&Vast Fame (Taiwan releases)", IDM_UNLVF001
+                    MENUITEM "&Vast Fame (SL releases)", IDM_UNLVF001A
+                    MENUITEM "Vast &Fame (KongFeng/other releases)", IDM_UNLGGB81
                     MENUITEM SEPARATOR
                     MENUITEM "Multi&cart: 'Last Bible' (VFame etc)", IDM_UNLLBMULTI
                     MENUITEM SEPARATOR

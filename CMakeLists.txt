@@ -156,6 +156,8 @@ set(SOURCE_FILES
         src/ui/dialogs/LinkerLog.rc
         src/memory/linker/LinkerWrangler.cpp
         src/memory/linker/LinkerWrangler.h
+        src/memory/mbc/MbcUnlVf001.cpp
+        src/memory/mbc/MbcUnlVf001.h
 )
 
 include_directories(

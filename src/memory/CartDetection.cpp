@@ -550,6 +550,17 @@ bool CartDetection::detectUnlicensedCarts(byte *rom, Cartridge *cartridge, int r
             cartridge->mbcType = MEMORY_GGB81;
             cartridge->RAMsize = 3; // games generally need 8k, but carts observed so far have 32k
             break;
+        case UNL_VF001A:
+            cartridge->mbcConfig[0] = 0x10;
+        case UNL_VF001:
+            cartridge->ROMsize = detectGbRomSize(romFileSize);
+            if (cartridge->header.RAMsize > 0) {
+                cartridge->RAMsize = 2; // digimon 3 declares 1k but really has 8
+                                        // feng kuang da fu weng declares 32k but again has 8
+                cartridge->battery = true; // feng kuang da fu weng also doesn't declare having a battery
+            }
+            cartridge->mbcType = MEMORY_VF001;
+            break;
         case UNL_DBZTR:
             cartridge->mbcType = MEMORY_DBZTRANS;
             break;
