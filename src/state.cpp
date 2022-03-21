@@ -229,7 +229,7 @@ bool gb_system::save_state()
    fwrite(OBP1, sizeof(byte),4,statefile);         
    fwrite(memory+0x8000,sizeof(byte),0x2000,statefile);
    if (cartridge->RAMsize <= 2) {
-       // an extremely dodgy way of keeping backwards compatibility with old savestates
+       // dodgy way of keeping backwards compatibility with old savestates
        // generated when cartRAM was not used for non-banked cart ram
        fwrite(cartRAM,sizeof(byte),0x2000,statefile);
    } else {
