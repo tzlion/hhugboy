@@ -227,7 +227,15 @@ bool gb_system::save_state()
    fwrite(BGP, sizeof(byte),4,statefile);   
    fwrite(OBP0, sizeof(byte),4,statefile);   
    fwrite(OBP1, sizeof(byte),4,statefile);         
-   fwrite(memory+0x8000,sizeof(byte),0x8000,statefile);
+   fwrite(memory+0x8000,sizeof(byte),0x2000,statefile);
+   if (cartridge->RAMsize <= 2) {
+       // an extremely dodgy way of keeping backwards compatibility with old savestates
+       // generated when cartRAM was not used for non-banked cart ram
+       fwrite(cartRAM,sizeof(byte),0x2000,statefile);
+   } else {
+       fwrite(memory+0xA000,sizeof(byte),0x2000,statefile);
+   }
+   fwrite(memory+0xC000,sizeof(byte),0x4000,statefile);
    fwrite(sound_buffer, sizeof(byte),4*735,statefile);
    //fwrite(final_wave, sizeof(signed short),2*735,statefile);
       
@@ -413,8 +421,16 @@ bool gb_system::load_state()
    fread(&windowline,sizeof(int),1,statefile);   
    fread(BGP, sizeof(byte),4,statefile);   
    fread(OBP0, sizeof(byte),4,statefile);   
-   fread(OBP1, sizeof(byte),4,statefile);    
-   fread(memory+0x8000,sizeof(byte),0x8000,statefile);
+   fread(OBP1, sizeof(byte),4,statefile);
+   fread(memory+0x8000,sizeof(byte),0x2000,statefile);
+   if (cartridge->RAMsize <= 2) {
+       // dodgy way of keeping backwards compatibility with old savestates
+       // generated when cartRAM was not used for non-banked cart ram
+       fread(cartRAM,sizeof(byte),0x2000,statefile);
+   } else {
+       fread(memory+0xA000,sizeof(byte),0x2000,statefile);
+   }
+   fread(memory+0xC000,sizeof(byte),0x4000,statefile);
    fread(sound_buffer, sizeof(byte),4*735,statefile);
    //fread(final_wave, sizeof(signed short),2*735,statefile);
       
