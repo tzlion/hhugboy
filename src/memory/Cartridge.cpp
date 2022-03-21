@@ -191,3 +191,13 @@ void Cartridge::setMbcType(MbcType memory_type) {
 
     mbc->init(gbMemMap, metadata, cartRom, cartRam);
 }
+
+int Cartridge::determineRamSize() {
+    if ((*metadata)->mbcType == MEMORY_MBC7 || (*metadata)->mbcType == MEMORY_TAMA5) {
+        return 256;
+    } else if ((*metadata)->mbcType == MEMORY_MBC2 && (*metadata)->battery) {
+        return 512;
+    } else {
+        return ramsize[(*metadata)->RAMsize] * 1024;
+    }
+}
