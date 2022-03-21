@@ -26,9 +26,10 @@
 #include "../main.h"
 #include "strings.h"
 #include "../GB_gfx.h"
-#include "../cpu.h"
+#include "../state.h"
 #include "../directinput.h"
 #include "dialogs.h"
+#include "dialogs/LinkerLog.h"
 
 #define UNICODE
 
@@ -231,6 +232,11 @@ void keyAction(int key)
                 break;
             debugDialogHandle = CreateDialog(hinst, MAKEINTRESOURCE(ID_DEBUG_DIALOG), hwnd, (DLGPROC)DebugLogProc);
             ShowWindow(debugDialogHandle, SW_SHOW);
+            break;
+        case 'L':
+            if(!control_pressed)
+                break;
+            LinkerLog::SpawnLinkerLog();
             break;
         case '1':
         case '2':

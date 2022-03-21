@@ -24,7 +24,7 @@
 #include <stdlib.h>
 #include "GB_gfx.h"
 #include "rendering/render.h"
-#include "cpu.h"
+#include "state.h"
 #include "debug.h"
 #include "SGB.h"
 #include "GB.h"

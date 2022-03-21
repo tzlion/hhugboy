@@ -31,12 +31,12 @@
 #include "config.h"
 #include "rom.h"
 #include "debug.h"
-#include "cpu.h"
+#include "state.h"
 #include "mainloop.h"
 #include "zlib/unzip.h"
 
 #include "GB.h"
-#include "memory/GB_MBC.h"
+#include "memory/Cartridge.h"
 #include "memory/CartDetection.h"
 
 int get_size(int real_size) // return good size to use
@@ -252,7 +252,7 @@ bool gb_system::load_rom(const wchar_t* filename,int offset)
     if ( !romloaded ) return false;
 
     cartridge = (new CartDetection())->processRomInfo(cartROM, romFileSize);
-    mbc->setMemoryReadWrite(cartridge->mbcType);
+    cart->setMbcType(cartridge->mbcType);
 
     wchar_t temp2[ROM_FILENAME_SIZE];
 

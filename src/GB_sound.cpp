@@ -26,7 +26,7 @@
 #include <stdio.h>
 
 #include "sound.h"
-#include "cpu.h"
+#include "state.h"
 #include "GB.h"
 #include "config.h"
 

@@ -23,11 +23,6 @@
 
 #include "MbcNin5.h"
 
-#include <stdio.h>
-#include "../../GB.h"
-#include "../../main.h"
-// ^ can we not
-
 void MbcNin5::writeMemory(unsigned short address, register byte data) {
 
     if(address < 0x2000)// Is it a RAM bank enable/disable?
@@ -51,14 +46,6 @@ void MbcNin5::writeMemory(unsigned short address, register byte data) {
         gbMemMap[0x5] = &(*gbCartRom)[cart_address+0x1000];
         gbMemMap[0x6] = &(*gbCartRom)[cart_address+0x2000];
         gbMemMap[0x7] = &(*gbCartRom)[cart_address+0x3000];
-
-        //  if(origData == 0x69) {
-        //    	char buff[100];
-        //		sprintf(buff,"%X %X %X",origData,data,cart_address);
-        //		debug_print(buff);
-        //  }
-
-
 
         return;
     }
@@ -90,10 +77,18 @@ void MbcNin5::writeMemory(unsigned short address, register byte data) {
         if((*gbCartridge)->rumble)
         {
             if(data&0x08) {
-                *gbRumbleCounter += 4;
+                vibrating = 1;
             } else {
-                *gbRumbleCounter = 0;
+                vibrating = 0;
             }
+
+            // Previous implementation had a "rumble counter" adding 4 frames of rumble whenever 08 was written
+            // But rumble on carts operates on an on/off basis e.g. write 08 to 4000 to turn it on, 00 to 4000 to turn it off
+            // So this implementation now reflects this
+            // But most games will continually write to the address anyway, for whatever reason
+            // Observed this both on Top Gear Rally (official) and DK5 (not)
+            // Pokemon Pinball turns it on/off constantly
+            // Rumble doesn't seem to be well documented in any case
 
             data &= 0x07;
         }

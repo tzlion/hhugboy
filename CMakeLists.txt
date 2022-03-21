@@ -28,8 +28,10 @@ set(SOURCE_FILES
         src/cheats.h
         src/config.cpp
         src/config.h
-        src/cpu.cpp
+        src/state.cpp
+        src/state.h
         src/cpu.h
+        src/cpu.cpp
         src/cpucore.h
         src/debug.cpp
         src/debug.h
@@ -43,9 +45,9 @@ set(SOURCE_FILES
         src/GB.h
         src/GB_gfx.cpp
         src/GB_gfx.h
-        src/memory/GB_MBC.h
+        src/memory/Cartridge.h
         src/memory/GB_ioregs.cpp
-        src/memory/GB_MBC.cpp
+        src/memory/Cartridge.cpp
         src/memory/GB_mem.cpp
         src/GB_sound.cpp
         src/ui/keynames.h
@@ -151,6 +153,13 @@ set(SOURCE_FILES
         src/memory/mbc/MbcUnlNewGbHk.h
         src/memory/mbc/MbcUnlGgb81.cpp
         src/memory/mbc/MbcUnlGgb81.h
+        src/ui/dialogs/LinkerLog.cpp
+        src/ui/dialogs/LinkerLog.h
+        src/ui/dialogs/LinkerLog.rc
+        src/memory/linker/LinkerWrangler.cpp
+        src/memory/linker/LinkerWrangler.h
+        src/memory/mbc/MbcUnlVf001.cpp
+        src/memory/mbc/MbcUnlVf001.h
 )
 
 include_directories(

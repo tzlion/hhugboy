@@ -39,7 +39,7 @@ using namespace std;
 #include "config.h"
 
 #include "main.h"
-#include "cpu.h"
+#include "state.h"
 #include "mainloop.h"
 #include "sound.h"
 #include "SGB.h"
@@ -54,7 +54,7 @@ gb_system* GB = NULL;
 gb_system* GB1 = NULL;
 gb_system* GB2 = NULL;
 
-const wchar_t* prg_version = L"1.3.2";
+const wchar_t* prg_version = L"1.4.0";
 
 // Window stuff? ----------------------------------------
 

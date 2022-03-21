@@ -24,7 +24,7 @@
 #include <dinput.h>
 
 #include "directinput.h"
-#include "cpu.h"
+#include "state.h"
 #include "debug.h"
 #include "mainloop.h"
 #include "sound.h"

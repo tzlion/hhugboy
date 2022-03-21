@@ -67,7 +67,7 @@ void MbcUnlLbMulti::writeMemory(unsigned short address, register byte data) {
                     multicartRamOffset = 0;
                 }
 
-                resetRomMemoryMap(true);
+                resetMemoryMap(true);
 
                 if ( doReset ) {
                     deferredReset = true;
@@ -132,5 +132,5 @@ void MbcUnlLbMulti::readMbcSpecificVarsFromStateFile(FILE *statefile) {
     fread(&(mbc1Mode),sizeof(bool),1,statefile);
     fread(&((*gbCartridge)->ROMsize),sizeof(bool),1,statefile);
 
-    resetRomMemoryMap(true);
+    resetMemoryMap(true);
 }

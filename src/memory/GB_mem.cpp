@@ -39,7 +39,7 @@ using namespace std;
 #include "../rendering/render.h"
 
 #include "../GB.h"
-#include "GB_MBC.h"
+#include "Cartridge.h"
 
 unsigned char bootstrapDMG[256], bootstrapCGB[2304], *bootstrap;
 bool haveBootstrap_DMG =false;
@@ -60,7 +60,7 @@ byte gb_system::readmemory(unsigned short address)
 	return bootstrap[address];
     } else
     if ( address <= 0x7FFF || ( address >= 0xA000 && address <= 0xBFFF ) ) {
-        return mbc->readmemory_cart(address);
+        return cart->readMemory(address);
     } else {
         return io_reg_read(address);
     }
@@ -72,31 +72,30 @@ void gb_system::writememory(unsigned short address,byte data)
 	mapBootstrap =false;
 
     if ( address <= 0x7FFF || ( address >= 0xA000 && address <= 0xBFFF ) ) {
-        mbc->writememory_cart(address,data);
+        cart->writeMemory(address, data);
     } else {
         if(io_reg_write(address,data)) return;
         mem_map[address>>12][address&0x0FFF] = data;
     }
     
     // The cartridge needs to see any writes as well, even without the chip enable signal
-    mbc->signalMemoryWrite(address,data);
+    cart->mbc->signalMemoryWrite(address, data);
+}
+
+void gb_system::set_bootstrap()
+{
+    bootstrap = gbc_mode ? bootstrapCGB: bootstrapDMG;
+    haveBootstrap = gbc_mode ? haveBootstrap_CGB: haveBootstrap_DMG;
+    mapBootstrap = haveBootstrap && options->use_bootstrap;
 }
 
 void gb_system::mem_reset(bool preserveMulticartState)
 {
-   bootstrap =gbc_mode? bootstrapCGB: bootstrapDMG;
-   haveBootstrap =gbc_mode? haveBootstrap_CGB: haveBootstrap_DMG;
-   mapBootstrap =haveBootstrap && options->use_bootstrap;
-   
+    set_bootstrap();
+
    memset(memory+0x8000,0x00,0x1FFF);
    memset(memory+0xFE00,0x00,0xA0);
 
-   if(cartridge->mbcType == MEMORY_MBC2) // Should be done on the MBC
-      for(int a=0xa000;a<0xc000;++a)
-         memory[a] = 0x0F;
-   else
-      for(int a=0xa000;a<0xc000;++a)
-         memory[a] = 0xFF;
 
    // Beat Mania 2 (bad dump)
    memory[0xbccc] = 0xC9; // set RET opcode where Beat Mania 2 jumps
@@ -107,14 +106,10 @@ void gb_system::mem_reset(bool preserveMulticartState)
    
    memory[0xc100] = 0xff;// fix for Minesweeper for 'Windows'
 
-    mbc->resetRomMemoryMap(preserveMulticartState);
-
    if(gbc_mode)
    {
       mem_map[0x8] = &VRAM[0x0000];
       mem_map[0x9] = &VRAM[0x1000];
-      mem_map[0xA] = &memory[0xA000];
-      mem_map[0xB] = &memory[0xB000];
       mem_map[0xC] = &memory[0xC000];
       mem_map[0xD] = &WRAM[0x1000];
       mem_map[0xE] = &memory[0xE000];
@@ -123,19 +118,13 @@ void gb_system::mem_reset(bool preserveMulticartState)
    {
       mem_map[0x8] = &memory[0x8000];
       mem_map[0x9] = &memory[0x9000];
-      mem_map[0xA] = &memory[0xA000];
-      mem_map[0xB] = &memory[0xB000];
       mem_map[0xC] = &memory[0xC000];
       mem_map[0xD] = &memory[0xD000];
       mem_map[0xE] = &memory[0xE000];
       mem_map[0xF] = &memory[0xF000];
    }
 
-   if(cartridge->RAMsize>2)
-   {
-      mem_map[0xA] = &cartRAM[0x0000];
-      mem_map[0xB] = &cartRAM[0x1000];
-   }
+   cart->mbc->resetMemoryMap(preserveMulticartState);
 
    memset(memory+0xFEA0,0xFF,0x60);
 
@@ -290,7 +279,7 @@ void gb_system::mem_reset(bool preserveMulticartState)
 
 bool gb_system::write_save()
 {
-   if(cartridge->RAMsize == 0) return true;
+   if(cartridge->RAMsize == 0 && cartridge->mbcType != MEMORY_MBC2) return true;
 
    wchar_t old_directory[PROGRAM_PATH_SIZE];
 
@@ -310,11 +299,6 @@ bool gb_system::write_save()
    {
        wcscat(save_filename,L".sv2");
    }
-   
-   
-   //char saveFileA[PROGRAM_PATH_SIZE];
-   //wcstombs(saveFileA,save_filename,PROGRAM_PATH_SIZE);
-   //debug_print(saveFileA);
 
    FILE* savefile = _wfopen(save_filename,L"wb");
    if(!savefile)
@@ -322,44 +306,17 @@ bool gb_system::write_save()
       SetCurrentDirectory(old_directory);
       return false;
    }
-   
-   if(cartridge->mbcType == MEMORY_MBC7 || cartridge->mbcType == MEMORY_TAMA5) // Should be done on the MBC
-   {
-      if(fwrite(&memory[0xA000],sizeof(byte),256,savefile) < 256)
-      {
-         fclose(savefile);
-         SetCurrentDirectory(old_directory);
-         return false;
-      }      
-   } else
-   if(cartridge->mbcType == MEMORY_MBC2 && cartridge->battery) // MBC2 + battery
-   {
-      if(fwrite(&memory[0xA000],sizeof(byte),512,savefile) < 512)
-      {
-         fclose(savefile);
-         SetCurrentDirectory(old_directory);
-         return false;
-      }   
-   } else
-   if(cartridge->RAMsize > 2)
-   {
-      if((int)fwrite(cartRAM,sizeof(byte),ramsize[cartridge->RAMsize]*1024,savefile) < ramsize[cartridge->RAMsize]*1024)
-      {
-         fclose(savefile);
-         SetCurrentDirectory(old_directory);
-         return false;
-      }
-   } else
-   {
-      if((int)fwrite(&memory[0xA000],sizeof(byte),ramsize[cartridge->RAMsize]*1024,savefile) < ramsize[cartridge->RAMsize]*1024)
-      {
-         fclose(savefile);
-         SetCurrentDirectory(old_directory);
-         return false;
-      }
-   }
 
-   mbc->writeMbcSpecificStuffToSaveFile(savefile);
+    int ramSizeBytes = cart->determineRamSize();
+
+    if((int)fwrite(cartRAM,sizeof(byte),ramSizeBytes,savefile) < ramSizeBytes)
+    {
+        fclose(savefile);
+        SetCurrentDirectory(old_directory);
+        return false;
+    }
+
+   cart->mbc->writeMbcSpecificVarsToSaveFile(savefile);
 
     fclose(savefile);
 
@@ -369,7 +326,7 @@ bool gb_system::write_save()
 }
 bool gb_system::load_save(bool loading_GB1_save_to_GB2)
 {
-   if(cartridge->RAMsize == 0) return true;
+   if(cartridge->RAMsize == 0 && cartridge->mbcType != MEMORY_MBC2) return true;
 
    wchar_t old_directory[PROGRAM_PATH_SIZE];
 
@@ -405,29 +362,14 @@ bool gb_system::load_save(bool loading_GB1_save_to_GB2)
    long saveFileSize = ftell(savefile);
    rewind(savefile);
 
-   byte* dest;
-   int ramSizeBytes;
-
-    if (cartridge->mbcType == MEMORY_MBC7 || cartridge->mbcType == MEMORY_TAMA5) {
-        dest = &memory[0xA000];
-        ramSizeBytes = 256;
-    } else if (cartridge->mbcType == MEMORY_MBC2 && cartridge->battery) {
-        dest = &memory[0xA000];
-        ramSizeBytes = 512;
-    } else if (cartridge->RAMsize > 2) {
-        dest = cartRAM;
-        ramSizeBytes = ramsize[cartridge->RAMsize] * 1024;
-    } else {
-        dest = &memory[0xA000];
-        ramSizeBytes = ramsize[cartridge->RAMsize] * 1024;
-    }
+    int ramSizeBytes = cart->determineRamSize();
 
     // allow for save file being smaller than ram size in case a config change resulted in a ram size increase
     int bytesToRead = saveFileSize < ramSizeBytes ? saveFileSize : ramSizeBytes;
 
-    ZeroMemory(dest, sizeof(byte) * ramSizeBytes);
+    ZeroMemory(cartRAM, sizeof(byte) * ramSizeBytes);
 
-    int readBytes = (int)fread(dest, sizeof(byte), bytesToRead, savefile);
+    int readBytes = (int)fread(cartRAM, sizeof(byte), bytesToRead, savefile);
     if (readBytes < bytesToRead) {
         fclose(savefile);
         SetCurrentDirectory(old_directory);
@@ -435,7 +377,7 @@ bool gb_system::load_save(bool loading_GB1_save_to_GB2)
     }
 
     if (bytesToRead == ramSizeBytes) { // don't try to read subsequent data if this was an underread
-        mbc->readMbcSpecificStuffFromSaveFile(savefile);
+        cart->mbc->readMbcSpecificVarsFromSaveFile(savefile);
     }
 
     fclose(savefile);

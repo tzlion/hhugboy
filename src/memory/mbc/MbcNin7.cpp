@@ -159,8 +159,8 @@ void MbcNin7::writeMemory(unsigned short address, register byte data) {
                 {
                     if(MBC7_writeEnable)
                     {
-                        (*gbMemory)[0xa000+MBC7_address*2] = MBC7_buffer>>8;
-                        (*gbMemory)[0xa000+MBC7_address*2+1] = MBC7_buffer&0xff;
+                        (*gbCartRam)[MBC7_address*2] = MBC7_buffer>>8;
+                        (*gbCartRam)[MBC7_address*2+1] = MBC7_buffer&0xff;
                     }
                     MBC7_state = 0;
                     MBC7_value = 1;
@@ -243,8 +243,8 @@ void MbcNin7::writeMemory(unsigned short address, register byte data) {
                                             {
                                                 for(int i=0;i<256;i++)
                                                 {
-                                                    (*gbMemory)[0xa000+i*2] = MBC7_buffer >> 8;
-                                                    (*gbMemory)[0xa000+i*2+1] = MBC7_buffer & 0xff;
+                                                    (*gbCartRam)[i*2] = MBC7_buffer >> 8;
+                                                    (*gbCartRam)[i*2+1] = MBC7_buffer & 0xff;
                                                 }
                                             }
                                             MBC7_state = 5;
@@ -253,7 +253,7 @@ void MbcNin7::writeMemory(unsigned short address, register byte data) {
                                             if(MBC7_writeEnable)
                                             {
                                                 for(int i=0;i<256;i++)
-                                                    *((unsigned short *)&((*gbMemory))[0xa000+i*2]) = 0xffff;
+                                                    *((unsigned short *)&((*gbCartRam))[i*2]) = 0xffff;
                                             }
                                             MBC7_state = 5;
                                         } else if((MBC7_address>>6) == 3)
@@ -277,7 +277,7 @@ void MbcNin7::writeMemory(unsigned short address, register byte data) {
                                     {
                                         MBC7_state = 4;
                                         MBC7_count = 0;
-                                        MBC7_buffer = ((*gbMemory)[0xa000+MBC7_address*2]<<8)|((*gbMemory)[0xa000+MBC7_address*2+1]);
+                                        MBC7_buffer = ((*gbCartRam)[MBC7_address*2]<<8)|((*gbCartRam)[MBC7_address*2+1]);
                                     }
                                     break;
                                 case 3:

@@ -36,39 +36,19 @@ enum
     HUC3_NONE = 2
 };
 
-/**
- * MBC shouldn't really start knowing too much that actually should be under cart though
- * E.g. anything currently in the "rom" object like ramsize,romsize,...
- * Maybe our current GB_MBC could become Cartridge or CartWrangler or something and ROM should then belong to that.
- */
-
 class AbstractMbc {
 
 public:
 
-/*** THESE SHOULD PROBABLY BE PROTECTED BUT ARE ACCESSED FROM OUTSIDE AT THE MOMENT ***/
-
-    int multicartOffset;
-    int multicartRamOffset;
-
-    bool deferredReset = false;
-
-    int rom_bank;
-    int ram_bank;
-
-/*** SHOULD BE PROTECTED END ***/
-
     AbstractMbc();
 
-    void init(byte** gbMemMap, Cartridge** gbCartridge, byte** gbMemory, byte** gbCartRom, byte** gbCartRam, int* gbRumbleCounter);
+    void init(byte** gbMemMap, CartridgeMetadata** gbCartridge, byte** gbCartRom, byte** gbCartRam);
     virtual byte readMemory(register unsigned short address) = 0;
     virtual void writeMemory(unsigned short address, register byte data) = 0;
     virtual void signalMemoryWrite(unsigned short address, register byte data);
     virtual void resetVars(bool preserveMulticartState);
     virtual void writeMbcSpecificVarsToStateFile(FILE *statefile);
-    virtual void writeSgbMbcSpecificVarsToStateFile(FILE *statefile);
     virtual void readMbcSpecificVarsFromStateFile(FILE *statefile);
-    virtual void readSgbMbcSpecificVarsFromStateFile(FILE *statefile);
     virtual void readMbcSpecificVarsFromSaveFile(FILE *savefile);
     virtual void writeMbcSpecificVarsToSaveFile(FILE *savefile);
 
@@ -76,15 +56,29 @@ public:
     void writeMbcBanksToStateFile(FILE *statefile);
     void readMbcOtherStuffFromStateFile(FILE *statefile);
     void writeMbcOtherStuffToStateFile(FILE *statefile);
-    void resetRomMemoryMap(bool preserveMulticartState=false);
+    void resetMemoryMap(bool preserveMulticartState=false);
+
+    void setMemoryMap();
+
+    bool isVibrating();
+    bool shouldReset();
 
 protected:
+
+    int multicartOffset;
+    int multicartRamOffset;
+
+    bool vibrating;
+
+    int rom_bank;
+    int ram_bank;
+
+    bool deferredReset = false;
+
     byte** gbMemMap;
-    byte** gbMemory;
-    Cartridge** gbCartridge;
+    CartridgeMetadata** gbCartridge;
     byte** gbCartRom;
     byte** gbCartRam;
-    int* gbRumbleCounter;
 
     unsigned short MBChi;
     unsigned short MBClo;
@@ -92,6 +86,7 @@ protected:
 
     void setRom0Offset(int offset);
     void setRom1Offset(int offset);
+    void setRamOffset(int offset);
     void setRom1Bank(int bankNo);
 
 /*** THESE SHOULD GO SOMEWHERE ELSE ***/

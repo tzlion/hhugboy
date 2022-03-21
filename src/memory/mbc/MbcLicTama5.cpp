@@ -76,7 +76,7 @@ byte MbcLicTama5::readMemory(register unsigned short address) {
                         }
                     } else
                     { // read memory ?
-                        read = (*gbMemory)[0xA000|(tama_val6<<4)|tama_val7];
+                        read = (*gbCartRam)[(tama_val6<<4)|tama_val7];
                     }
                     return read;
                 }
@@ -203,7 +203,9 @@ void MbcLicTama5::updateTamaRtc() {
     rtc.last_time = now;
 }
 
-void MbcLicTama5::readSgbMbcSpecificVarsFromStateFile(FILE *statefile) {
+void MbcLicTama5::readMbcSpecificVarsFromStateFile(FILE *statefile) {
+    fread(&(tama_flag), sizeof(int), 1, statefile);
+
     fread(&(rtc).s, sizeof(int), 1, statefile);
     fread(&(rtc).m, sizeof(int), 1, statefile);
     fread(&(rtc).h, sizeof(int), 1, statefile);
@@ -221,11 +223,9 @@ void MbcLicTama5::readSgbMbcSpecificVarsFromStateFile(FILE *statefile) {
     fread(&(tama_change_clock), sizeof(int), 1, statefile);
 }
 
-void MbcLicTama5::readMbcSpecificVarsFromStateFile(FILE *statefile) {
-    fread(&(tama_flag), sizeof(int), 1, statefile);
-}
+void MbcLicTama5::writeMbcSpecificVarsToStateFile(FILE *statefile) {
+    fwrite(&(tama_flag), sizeof(int), 1, statefile);
 
-void MbcLicTama5::writeSgbMbcSpecificVarsToStateFile(FILE *statefile) {
     fwrite(&(rtc).s, sizeof(int), 1, statefile);
     fwrite(&(rtc).m, sizeof(int), 1, statefile);
     fwrite(&(rtc).h, sizeof(int), 1, statefile);
@@ -241,10 +241,6 @@ void MbcLicTama5::writeSgbMbcSpecificVarsToStateFile(FILE *statefile) {
     fwrite(&(tama_count), sizeof(int), 1, statefile);
     fwrite(&(tama_month), sizeof(int), 1, statefile);
     fwrite(&(tama_change_clock), sizeof(int), 1, statefile);
-}
-
-void MbcLicTama5::writeMbcSpecificVarsToStateFile(FILE *statefile) {
-    fwrite(&(tama_flag), sizeof(int), 1, statefile);
 }
 
 void MbcLicTama5::writeMemory(unsigned short address, register byte data) {
@@ -298,7 +294,7 @@ void MbcLicTama5::writeMemory(unsigned short address, register byte data) {
                     if(tama_count==2 && data == 1) tama_change_clock |= 1;
                     if(tama_change_clock == 3) rtc.last_time = time(0);
 
-                    (*gbMemory)[0xA000+(tama_val6<<4)+tama_val7] = tama_val4|(data<<4);
+                    (*gbCartRam)[(tama_val6<<4)+tama_val7] = tama_val4|(data<<4);
 
                     //which time counter is changed?
                     if(tama_count==6 && tama_change_clock==3)
