@@ -217,11 +217,11 @@ https://github.com/tzlion/hhugboy
  * Overhaul visual rumble feature, fix games that didn't "rumble" at all,
    & simulate different "strengths" of rumble e.g. Pokemon Pinball EU ver.
  * Fix saving for MBC2 games (FF Legend, FF Adventure etc)
- * A bunch of behind-the-scenes changes to how mappers work.
+ * A bunch of behind-the-scenes changes to how mappers & saving work.
    This should mostly have no perceptible effect but might've fixed
    some obscure bugs around loading savestates using multicarts.
    However it will also mean old savestates for Tamagotchi 3 won't load in
-   this version. Sorry if anyone was playing that:(
+   this version. Sorry if anyone was playing that :(
 
  v1.3.2 22nd February 2022
  * Fix logo swap behaviour for GGB-81 PCB when using bootstrap & implement GBX
