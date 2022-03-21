@@ -1,4 +1,4 @@
-hhugboy v1.3.2+dev
+hhugboy v1.4.0
 a Game Boy/Game Boy Color emulator for Windows
 by taizou (cactusgunman@gmail.com)
 http://hhug.me/
@@ -209,7 +209,7 @@ https://github.com/tzlion/hhugboy
 
 [ RELEASE HISTORY ]- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 
- v1.x.x Xth XXXX 20xx
+ v1.4.0 21st March 2022
  * Vast Fame original mapper support
  * Integration with LibGBlink to assist with reverse engineering cartridge
    mappers using the actual cartridge in a connected Game Boy
@@ -351,4 +351,6 @@ https://github.com/tzlion/hhugboy
 
  Massive contributions by NewRisingSun
  PCPaint Bold font by codeman38 (http://www.zone38.net/)
- Beta testers - MLX, Robyn, KingPepe, JP
+ Testers - MLX, Robyn, KingPepe, JP, bawkers
+
+ Dedicated to Near
