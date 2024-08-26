@@ -1,4 +1,4 @@
-hhugboy v1.4.0
+hhugboy v1.4.1
 a Game Boy/Game Boy Color emulator for Windows
 by taizou (cactusgunman@gmail.com)
 http://hhug.me/
@@ -208,6 +208,10 @@ https://github.com/tzlion/hhugboy
  * Other language translations
 
 [ RELEASE HISTORY ]- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+
+ v1.4.1 26th August 2024
+ * Support additional BBD bit scramble mode & logo detection for SKOB-published
+   Pocket Monsters Crystal game (thanks to JS7457)
 
  v1.4.0 21st March 2022
  * Vast Fame original mapper support
