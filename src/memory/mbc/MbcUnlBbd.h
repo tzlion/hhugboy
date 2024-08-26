@@ -38,7 +38,7 @@ class MbcUnlBbd : public MbcNin5_LogoSwitch {
         byte bbdDataReordering[8][8] = {
                 {0,1,2,3,4,5,6,7}, // 00 - Normal
                 {0,1,2,3,4,5,6,7}, // 01 - NOT KNOWN YET
-                {0,1,2,3,4,5,6,7}, // 02 - NOT KNOWN YET
+                {0,1,5,6,4,2,3,7}, // 02 - Pokemon Crystal
                 {0,1,2,3,4,5,6,7}, // 03 - NOT KNOWN YET
                 {0,1,5,3,4,6,2,7}, // 04 - Garou
                 {0,1,2,6,4,5,3,7}, // 05 - Harry

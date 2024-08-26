@@ -99,7 +99,8 @@ byte MbcUnlBbd::swapBankByte(byte data) {
 }
 
 bool MbcUnlBbd::isDataSwapModeSupported() {
-    return ( bitSwapMode == 0x07 || bitSwapMode == 0x05 || bitSwapMode == 0x04 || bitSwapMode == 0x00 );
+    return ( bitSwapMode == 0x07 || bitSwapMode == 0x05 || bitSwapMode == 0x04
+             || bitSwapMode == 0x00 || bitSwapMode == 0x02 );
 }
 
 bool MbcUnlBbd::isBankSwapModeSupported() {
