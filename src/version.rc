@@ -1,8 +1,8 @@
 
 #include <windows.h> // include for version info constants
 
-#define VER_VERSION             1,4,0,0
-#define VER_VERSION_STR         "1.4.0.0"
+#define VER_VERSION             1,4,1,0
+#define VER_VERSION_STR         "1.4.1.0"
 
 1 VERSIONINFO
 FILEVERSION VER_VERSION
@@ -17,7 +17,7 @@ FILETYPE VFT_APP
       VALUE "FileVersion", VER_VERSION_STR
       VALUE "FileDescription", "hhugboy GB emulator"
       VALUE "InternalName", ""
-      VALUE "LegalCopyright", "taizou 2013-22"
+      VALUE "LegalCopyright", "taizou 2013-24"
       VALUE "LegalTrademarks", ""
       VALUE "OriginalFilename", "hhugboy.exe"
       VALUE "ProductName", "hhugboy"
