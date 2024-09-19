@@ -349,6 +349,12 @@ unlCompatMode CartDetection::detectUnlCompatMode(byte* rom, CartridgeMetadata* c
                 return UNL_SINTAX;
             else
                 return UNL_NONE;
+        case 4932: // "Yiutoudz" present in SKOB FFX but not displayed (at least by the Space Fighter X cart)
+            // Similar check to BBD here to detect fixes/hacks/reprints/etc
+            if ( rom[0x7fff] != 01 || rom[0xbfff] != 02 )
+                return UNL_SKOBFFX;
+            else
+                return UNL_NONE;
         case 4844: // V.fame
         case 6127: // SOUL (Falchion)
         case 4406: // DIGI (italic)
@@ -492,6 +498,10 @@ bool CartDetection::detectUnlicensedCarts(byte *rom, CartridgeMetadata *cartridg
             cartridge->mbcType = MEMORY_SINTAX;
             cartridge->ROMsize=07; // assumption for now
             cartridge->RAMsize=03; // assumption for now
+            break;;
+        case UNL_SKOBFFX:
+            cartridge->mbcType = MEMORY_SKOBFFX;
+            cartridge->ROMsize = detectGbRomSize(romFileSize);
             break;
         case UNL_NTNEW:
             cartridge->battery = true; // not all of them have battery + RAM, but some that have it don't declare it

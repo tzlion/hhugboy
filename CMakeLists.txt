@@ -160,6 +160,8 @@ set(SOURCE_FILES
         src/memory/linker/LinkerWrangler.h
         src/memory/mbc/MbcUnlVf001.cpp
         src/memory/mbc/MbcUnlVf001.h
+        src/memory/mbc/MbcUnlSkobFfx.cpp
+        src/memory/mbc/MbcUnlSkobFfx.h
 )
 
 include_directories(
