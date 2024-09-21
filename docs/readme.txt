@@ -31,7 +31,8 @@ https://github.com/tzlion/hhugboy
            * "GK.RX" -> Hitek
            * "Rocket", "Smartcom" -> Rocket Games
            * "V.fame", "SOUL", "DIGI" -> Vast Fame
-           This is not always a 100% reliable indicator though! 
+           * "Yiutoudz" -> SKOB-published BBD-developed games
+           This is not always a 100% reliable indicator though!
            e.g. some Li Cheng games do not have the "Niutoude" logo.
            If a game doesn't work, try selecting the mode manually.
            Sachen and Wisdom Tree games will also be detected by other means.
@@ -65,6 +66,10 @@ https://github.com/tzlion/hhugboy
            but works with known dumps.
 
  Hitek     For games by Hitek.
+
+ SKOB-BBD  For certain games published by SKOB and developed (as far as I know)
+           by BBD with a LEE8 PCB.
+           Known: Space Fighter X/Final Fantasy X Fantasy War, Digimon D-3.
 
  NT old type 1/2
            Earlier carts released by NT, including older Makon games and some
@@ -208,6 +213,9 @@ https://github.com/tzlion/hhugboy
  * Other language translations
 
 [ RELEASE HISTORY ]- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+
+ v1.4.2 xxth xxxxxt 2024
+ * Support SKOB-published BBD-developed games with LEE8 PCB
 
  v1.4.1 26th August 2024
  * Support additional BBD bit scramble mode & logo detection for SKOB-published
