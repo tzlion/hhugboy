@@ -349,10 +349,10 @@ unlCompatMode CartDetection::detectUnlCompatMode(byte* rom, CartridgeMetadata* c
                 return UNL_SINTAX;
             else
                 return UNL_NONE;
-        case 4932: // "Yiutoudz" present in SKOB FFX but not displayed (at least by the Space Fighter X cart)
+        case 4932: // "Yiutoudz" present in SKOB LEE8 PCB games
             // Similar check to BBD here to detect fixes/hacks/reprints/etc
             if ( rom[0x7fff] != 01 || rom[0xbfff] != 02 )
-                return UNL_SKOBFFX;
+                return UNL_SKOBLEE8;
             else
                 return UNL_NONE;
         case 4844: // V.fame
@@ -499,8 +499,8 @@ bool CartDetection::detectUnlicensedCarts(byte *rom, CartridgeMetadata *cartridg
             cartridge->ROMsize=07; // assumption for now
             cartridge->RAMsize=03; // assumption for now
             break;;
-        case UNL_SKOBFFX:
-            cartridge->mbcType = MEMORY_SKOBFFX;
+        case UNL_SKOBLEE8:
+            cartridge->mbcType = MEMORY_SKOBLEE8;
             cartridge->ROMsize = detectGbRomSize(romFileSize);
             break;
         case UNL_NTNEW:

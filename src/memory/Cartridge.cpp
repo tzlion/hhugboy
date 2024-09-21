@@ -58,7 +58,7 @@
 #include "mbc/MbcUnlGgb81.h"
 #include "mbc/MbcUnlVf001.h"
 #include "linker/LinkerWrangler.h"
-#include "mbc/MbcUnlSkobFfx.h"
+#include "mbc/MbcUnlSkobLee8.h"
 
 Cartridge::Cartridge(byte** gbMemMap, byte** cartRom, byte** cartRam, CartridgeMetadata** metadata)
 {
@@ -106,8 +106,8 @@ void Cartridge::setMbcType(MbcType memory_type) {
         case MEMORY_SINTAX:
             mbc = new MbcUnlSintax();
             break;
-        case MEMORY_SKOBFFX:
-            mbc = new MbcUnlSkobFfx();
+        case MEMORY_SKOBLEE8:
+            mbc = new MbcUnlSkobLee8();
             break;
         case MEMORY_BBD:
             mbc = new MbcUnlBbd();

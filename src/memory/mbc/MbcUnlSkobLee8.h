@@ -7,8 +7,8 @@
  * See "license.txt" in the project root
  */
 
-#ifndef HHUGBOY_MBCUNLSKOBFFX_H
-#define HHUGBOY_MBCUNLSKOBFFX_H
+#ifndef HHUGBOY_MBCUNLSKOBLEE8_H
+#define HHUGBOY_MBCUNLSKOBLEE8_H
 
 #include "BasicMbc.h"
 #include "MbcNin5_LogoSwitch.h"
@@ -18,9 +18,9 @@
 // Note unlike most GBC protected carts this does not boot up in standard MBC5 mode
 // To dump one of these carts "normally" you will need to write 00 to 5001, 7000, 7001, 7002, 7003 before dumping
 //-------------------------------------------------------------------------
-class MbcUnlSkobFfx : public MbcNin5_LogoSwitch {
+class MbcUnlSkobLee8 : public MbcNin5_LogoSwitch {
 public:
-    MbcUnlSkobFfx();
+    MbcUnlSkobLee8();
     virtual byte readMemory(register unsigned short address) override;
     virtual void writeMemory(unsigned short address, register byte data) override;
 
@@ -46,4 +46,4 @@ private:
 };
 
 
-#endif //HHUGBOY_MBCUNLSKOBFFX_H
+#endif //HHUGBOY_MBCUNLSKOBLEE8_H

@@ -8,10 +8,10 @@
  */
 
 #include <cstdio>
-#include "MbcUnlSkobFfx.h"
+#include "MbcUnlSkobLee8.h"
 #include "../../GB.h"
 
-byte MbcUnlSkobFfx::readMemory(register unsigned short address) {
+byte MbcUnlSkobLee8::readMemory(register unsigned short address) {
 
     if(address >= 0x4000 && address < 0x8000)
     {
@@ -22,7 +22,7 @@ byte MbcUnlSkobFfx::readMemory(register unsigned short address) {
     return MbcNin5::readMemory(address);
 }
 
-void MbcUnlSkobFfx::writeMemory(unsigned short address, register byte data) {
+void MbcUnlSkobLee8::writeMemory(unsigned short address, register byte data) {
 
     if(address>= 0x2000 && address < 0x3000)
     {
@@ -109,7 +109,7 @@ void MbcUnlSkobFfx::writeMemory(unsigned short address, register byte data) {
 
 }
 
-MbcUnlSkobFfx::MbcUnlSkobFfx() :
+MbcUnlSkobLee8::MbcUnlSkobLee8() :
 // todo: at least ffx boots up with some default xor already applied, can we figure out/do we care what it is
         bankReorderMode(0x0f),
         xor00(0),
@@ -121,7 +121,7 @@ MbcUnlSkobFfx::MbcUnlSkobFfx() :
 
 }
 
-void MbcUnlSkobFfx::resetVars(bool preserveMulticartState) {
+void MbcUnlSkobLee8::resetVars(bool preserveMulticartState) {
 
     bankReorderMode = 0x0f;
     xor00 = xor01 = xor02 = xor03 = 0;
@@ -131,7 +131,7 @@ void MbcUnlSkobFfx::resetVars(bool preserveMulticartState) {
     MbcNin5::resetVars(preserveMulticartState);
 }
 
-void MbcUnlSkobFfx::readMbcSpecificVarsFromStateFile(FILE *statefile) {
+void MbcUnlSkobLee8::readMbcSpecificVarsFromStateFile(FILE *statefile) {
     fread(&(bankReorderMode), sizeof(byte), 1, statefile);
     fread(&(xor00), sizeof(byte), 1, statefile);
     fread(&(xor01), sizeof(byte), 1, statefile);
@@ -141,7 +141,7 @@ void MbcUnlSkobFfx::readMbcSpecificVarsFromStateFile(FILE *statefile) {
     MbcNin5::readMbcSpecificVarsFromStateFile(statefile);
 }
 
-void MbcUnlSkobFfx::writeMbcSpecificVarsToStateFile(FILE *statefile) {
+void MbcUnlSkobLee8::writeMbcSpecificVarsToStateFile(FILE *statefile) {
     fwrite(&(bankReorderMode), sizeof(byte), 1, statefile);
     fwrite(&(xor00), sizeof(byte), 1, statefile);
     fwrite(&(xor01), sizeof(byte), 1, statefile);
@@ -151,7 +151,7 @@ void MbcUnlSkobFfx::writeMbcSpecificVarsToStateFile(FILE *statefile) {
     MbcNin5::writeMbcSpecificVarsToStateFile(statefile);
 }
 
-void MbcUnlSkobFfx::setXorForBank(byte bankNo)
+void MbcUnlSkobLee8::setXorForBank(byte bankNo)
 {
     switch(bankNo & 0x03) {
         case 0x00:
