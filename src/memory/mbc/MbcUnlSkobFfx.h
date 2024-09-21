@@ -18,7 +18,7 @@
 // Note unlike most GBC protected carts this does not boot up in standard MBC5 mode
 // To dump one of these carts "normally" you will need to write 00 to 5001, 7000, 7001, 7002, 7003 before dumping
 //-------------------------------------------------------------------------
-class MbcUnlSkobFfx : public MbcNin5 {
+class MbcUnlSkobFfx : public MbcNin5_LogoSwitch {
 public:
     MbcUnlSkobFfx();
     virtual byte readMemory(register unsigned short address) override;
