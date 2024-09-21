@@ -19,7 +19,7 @@ byte MbcUnlSkobLee8::readMemory(register unsigned short address) {
         return  data ^ romBankXor;
     }
 
-    return MbcNin5::readMemory(address);
+    return MbcNin5_LogoSwitch::readMemory(address);
 }
 
 void MbcUnlSkobLee8::writeMemory(unsigned short address, register byte data) {
@@ -128,7 +128,7 @@ void MbcUnlSkobLee8::resetVars(bool preserveMulticartState) {
 
     romBankXor = 0;
 
-    MbcNin5::resetVars(preserveMulticartState);
+    MbcNin5_LogoSwitch::resetVars(preserveMulticartState);
 }
 
 void MbcUnlSkobLee8::readMbcSpecificVarsFromStateFile(FILE *statefile) {
@@ -138,7 +138,7 @@ void MbcUnlSkobLee8::readMbcSpecificVarsFromStateFile(FILE *statefile) {
     fread(&(xor02), sizeof(byte), 1, statefile);
     fread(&(xor03), sizeof(byte), 1, statefile);
     fread(&(romBankXor), sizeof(byte), 1, statefile);
-    MbcNin5::readMbcSpecificVarsFromStateFile(statefile);
+    MbcNin5_LogoSwitch::readMbcSpecificVarsFromStateFile(statefile);
 }
 
 void MbcUnlSkobLee8::writeMbcSpecificVarsToStateFile(FILE *statefile) {
@@ -148,7 +148,7 @@ void MbcUnlSkobLee8::writeMbcSpecificVarsToStateFile(FILE *statefile) {
     fwrite(&(xor02), sizeof(byte), 1, statefile);
     fwrite(&(xor03), sizeof(byte), 1, statefile);
     fwrite(&(romBankXor), sizeof(byte), 1, statefile);
-    MbcNin5::writeMbcSpecificVarsToStateFile(statefile);
+    MbcNin5_LogoSwitch::writeMbcSpecificVarsToStateFile(statefile);
 }
 
 void MbcUnlSkobLee8::setXorForBank(byte bankNo)
