@@ -145,6 +145,7 @@ MbcType GbxParser::mapMapper(char* mapperType)
     if (!strcmp(mapperType,"NGHK")) return MEMORY_NEWGBHK;
     if (!strcmp(mapperType,"GB81")) return MEMORY_GGB81;
     if (!strcmp(mapperType,"VF01")) return MEMORY_VF001;
+    if (!strcmp(mapperType,"SKL8")) return MEMORY_SKOBLEE8;
     debug_win("Unsupported mapper type!");
     return MEMORY_DEFAULT;
 }
