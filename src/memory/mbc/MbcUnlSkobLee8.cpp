@@ -59,8 +59,8 @@ void MbcUnlSkobLee8::writeMemory(unsigned short address, register byte data) {
         switch (bankReorderMode) {
             // Supported modes
             case 0x00: // None
-            case 0x05: // Digimon D-3
-            case 0x07: // Default mode used for FFX
+            case 0x05: // Selected by Digimon D-3
+            case 0x07: // Assumed as default? FFX relies on the default and can run under this mode anyway
                 break;
             default:
                 sprintf(buff, "Bank reorder mode unsupported - %X", data);
@@ -114,21 +114,24 @@ void MbcUnlSkobLee8::writeMemory(unsigned short address, register byte data) {
 }
 
 MbcUnlSkobLee8::MbcUnlSkobLee8() :
-// todo: at least ffx boots up with some default xor already applied, can we figure out/do we care what it is
+        // Default reorder mode and XORs apply for known cartridges, they may differ with different PCB configurations.
+        // FFX relies on the default bank reorder mode, but no games seem to rely on the default XORs so far.
         bankReorderMode(0x0f),
-        xor00(0),
-        xor01(0),
-        xor02(0),
-        xor03(0),
+        xor00(0x55),
+        xor01(0xaa),
+        xor02(0xf0),
+        xor03(0x0f),
         requestedBankNo(1),
         romBankXor(0) {
-
 }
 
 void MbcUnlSkobLee8::resetVars(bool preserveMulticartState) {
 
     bankReorderMode = 0x0f;
-    xor00 = xor01 = xor02 = xor03 = 0;
+    xor00 = 0x55;
+    xor01 = 0xaa;
+    xor02 = 0xf0;
+    xor03 = 0x0f;
 
     romBankXor = 0;
 

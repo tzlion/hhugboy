@@ -15,8 +15,8 @@
 
 //----------------------------------------------------------------------------------------------------------------------
 // For SKOB LEE8 PCB carts: Space Fighter X/Final Fantasy X/Fantasy War. Digimon D-3
-// Note unlike most GBC protected carts these do not boot up in standard MBC5 mode
-// To dump one of these carts "normally" you will need to write 00 to 5001, 7000, 7001, 7002, 7003 before dumping
+// Note unlike most GBC protected carts these boot up with some address scrambling and XORs already applied
+// To dump one of these carts "normally" you will need to write 00 to 7000, 7001, 7002, 7003 and 5001 before dumping
 // PCB config on all observed carts so far: R1 bridged, R2 empty, C1 empty, C2 100 nF capacitor, C3 empty
 // Different configurations might be possible, might change the initial state or something
 //----------------------------------------------------------------------------------------------------------------------
@@ -43,8 +43,11 @@ private:
     byte requestedBankNo;
     byte romBankXor;
 
-    byte reordering05[8] = {1,3,2,0,5,4,7,6}; // 1 and 3 unconfirmed
-    byte reordering07[8] = {1,3,2,0,5,4,7,6}; // 1 and 3 unconfirmed
+    // 5 and 7 are functionally identical for known carts
+    // the actual order of bits 1 and 3 is unknown though as no known game has a >1MB ROM
+    byte reordering05[8] = {1,3,2,0,5,4,7,6};
+    byte reordering07[8] = {1,3,2,0,5,4,7,6};
+
     byte noReordering[8] = {0,1,2,3,4,5,6,7};
 };
 
