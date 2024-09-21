@@ -64,7 +64,7 @@ void MbcUnlSkobLee8::writeMemory(unsigned short address, register byte data) {
                 break;
         }
 
-        writeMemory(0x2000, requestedBankNo); // fake a bank switch to select the correct bank (todo: does this happen for ffx?)
+        writeMemory(0x2000, requestedBankNo); // fake a bank switch to select the correct bank
 
         return;
 
@@ -98,7 +98,7 @@ void MbcUnlSkobLee8::writeMemory(unsigned short address, register byte data) {
                 break;
         }
 
-        // xor is applied immediately to the current bank (todo: is it for ffx?)
+        // xor is applied immediately to the current bank
         setXorForBank(rom_bank);
 
         return;

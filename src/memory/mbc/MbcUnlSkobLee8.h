@@ -13,11 +13,13 @@
 #include "BasicMbc.h"
 #include "MbcNin5_LogoSwitch.h"
 
-//-------------------------------------------------------------------------
-// For SKOB Space Fighter X/Final Fantasy x/Fantasy War (possibly others?)
-// Note unlike most GBC protected carts this does not boot up in standard MBC5 mode
+//----------------------------------------------------------------------------------------------------------------------
+// For SKOB LEE8 PCB carts: Space Fighter X/Final Fantasy X/Fantasy War. Digimon D-3
+// Note unlike most GBC protected carts these do not boot up in standard MBC5 mode
 // To dump one of these carts "normally" you will need to write 00 to 5001, 7000, 7001, 7002, 7003 before dumping
-//-------------------------------------------------------------------------
+// PCB config on all observed carts so far: R1 bridged, R2 empty, C1 empty, C2 100 nF capacitor, C3 empty
+// Different configurations might be possible, might change the initial state or something
+//----------------------------------------------------------------------------------------------------------------------
 class MbcUnlSkobLee8 : public MbcNin5_LogoSwitch {
 public:
     MbcUnlSkobLee8();
