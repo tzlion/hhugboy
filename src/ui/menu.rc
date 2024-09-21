@@ -141,6 +141,7 @@ BEGIN
                     MENUITEM "NT (&Makon) new", IDM_UNLNTNEW
                     MENUITEM "&Pokémon Jade/Diamond", IDM_UNLPOKEJD
                     MENUITEM "&Sintax", IDM_UNLSINTAX
+                    MENUITEM "S&KOB-BBD", IDM_UNLSKOBLEE8
                     MENUITEM "&Vast Fame (Taiwan releases)", IDM_UNLVF001
                     MENUITEM "&Vast Fame (SL releases)", IDM_UNLVF001A
                     MENUITEM "Vast &Fame (KongFeng/other releases)", IDM_UNLGGB81
