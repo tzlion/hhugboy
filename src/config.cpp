@@ -149,6 +149,9 @@ void init_menu_options()
       case UNL_SINTAX:
       	emuMenu.checkOption(IDM_UNLSINTAX);
       break;
+      case UNL_SKOBLEE8:
+      	emuMenu.checkOption(IDM_UNLSKOBLEE8);
+      break;
       case UNL_BBD:
       	emuMenu.checkOption(IDM_UNLBBD);
       break;
