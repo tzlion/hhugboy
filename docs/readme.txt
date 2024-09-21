@@ -1,7 +1,7 @@
-hhugboy v1.4.1
+hhugboy v1.4.2
 a Game Boy/Game Boy Color emulator for Windows
 by taizou (cactusgunman@gmail.com)
-http://hhug.me/
+https://hhug.me/
 https://github.com/tzlion/hhugboy
 
  hhugboy is based on GEST v1.1.1 by TM (http://koti.mbnet.fi/gest_emu/)
@@ -214,7 +214,7 @@ https://github.com/tzlion/hhugboy
 
 [ RELEASE HISTORY ]- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 
- v1.4.2 xxth xxxxxt 2024
+ v1.4.2 22nd September 2024
  * Support SKOB-published BBD-developed games with LEE8 PCB
 
  v1.4.1 26th August 2024
