@@ -43,7 +43,8 @@ private:
     byte requestedBankNo;
     byte romBankXor;
 
-    byte reordering0f[8] = {1,3,2,0,5,4,7,6}; // 1 and 3 unconfirmed
+    byte reordering05[8] = {1,3,2,0,5,4,7,6}; // 1 and 3 unconfirmed
+    byte reordering07[8] = {1,3,2,0,5,4,7,6}; // 1 and 3 unconfirmed
     byte noReordering[8] = {0,1,2,3,4,5,6,7};
 };
 

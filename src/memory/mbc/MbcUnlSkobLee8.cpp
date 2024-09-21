@@ -30,9 +30,12 @@ void MbcUnlSkobLee8::writeMemory(unsigned short address, register byte data) {
 
         byte* romBankNoReordering;
 
-        switch(bankReorderMode & 0x0f) {
-            case 0x0F:
-                romBankNoReordering = reordering0f;
+        switch(bankReorderMode & 0x07) {
+            case 0x05:
+                romBankNoReordering = reordering05;
+                break;
+            case 0x07:
+                romBankNoReordering = reordering07;
                 break;
             case 0x00:
                 romBankNoReordering = noReordering;
@@ -47,7 +50,7 @@ void MbcUnlSkobLee8::writeMemory(unsigned short address, register byte data) {
 
         // FFX is not observed to set reorder mode on the fly but the mapper does support it to some extent
 
-        bankReorderMode = (byte)(0x0F & data);
+        bankReorderMode = (byte)(0x07 & data);
 
         char buff[100];
         sprintf(buff,"Bank reorder mode: %X", data);
@@ -56,7 +59,8 @@ void MbcUnlSkobLee8::writeMemory(unsigned short address, register byte data) {
         switch (bankReorderMode) {
             // Supported modes
             case 0x00: // None
-            case 0x0F: // Default mode for FFX
+            case 0x05: // Digimon D-3
+            case 0x07: // Default mode used for FFX
                 break;
             default:
                 sprintf(buff, "Bank reorder mode unsupported - %X", data);
